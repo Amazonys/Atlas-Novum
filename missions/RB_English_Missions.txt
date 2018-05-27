@@ -1,0 +1,2821 @@
+#Orion English mission overhaul
+#slot 1
+eng_slot_1 = {
+
+	slot = 1
+	generic = no
+	ai = yes
+	
+	potential = {
+		OR = {
+			tag = ENG
+			tag = GBR
+			tag = AGV
+		}
+	}
+	has_country_shield = yes
+	
+	occupy_paris = {
+		icon = mission_unite_home_region
+		required_missions = { }
+		
+		trigger = {
+			183 = { controlled_by = ROOT }
+			184 = { controlled_by = ROOT }
+			186 = { controlled_by = ROOT }
+			179 = { controlled_by = ROOT }
+			177 = { controlled_by = ROOT }
+		}
+		
+		effect = {
+			white_peace = FRA
+			183 = { cede_province = ENG }
+			create_union = FRA
+			add_years_of_income = 1
+		}
+	}
+	
+	eng_end_hyw = {
+		icon = mission_alliances
+		required_missions = { occupy_paris }
+		position = 2
+		
+		trigger = {
+			overlord_of = FRA
+		}
+		
+		effect = {
+			add_prestige = 25
+			every_province = {
+				limit = { NOT = { owned_by = ROOT } country_or_non_sovereign_subject_holds = ROOT region = france_region }
+				add_core = ROOT 
+			}
+		}
+	}
+	
+	eng_angevin_kingdom = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { eng_end_hyw }
+		position = 3
+		
+		
+		trigger = {
+			NOT = { OR = { tag = ENG tag = GBR } }
+			tag = AGV
+		}
+		
+		effect = {
+			brittany_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			picardy_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			bourgogne_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_sieze_burgundy = {
+		icon = mission_rb_repatriate_burgundy
+		required_missions = { eng_angevin_kingdom }
+		position = 4
+		
+		provinces_to_highlight = {
+			OR = {
+				area = picardy_area
+				area = bourgogne_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		ai_weight = {
+			factor = 2
+			modifier = {
+				factor = 0
+				exists = BUR
+				BUR = {
+					alliance_with = ROOT
+				}
+			}
+		}
+		
+		trigger = {
+			picardy_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			bourgogne_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			picardy_area = {
+				add_province_modifier = {
+					name = "eng_rb_local_conv"
+					duration = 7300
+				}
+			}
+			bourgogne_area = {
+				add_province_modifier = {
+					name = "eng_rb_local_conv"
+					duration = 7300
+				}
+			}
+		}
+	}
+	
+	eng_rb_hre_electors = {
+		icon = mission_rb_control_electors
+		required_missions = { eng_sieze_burgundy eng_conquer_brittany }
+		position = 5
+		
+		trigger = {
+			if = {
+				limit = {
+					num_of_electors = 3
+				}
+				OR = {
+					calc_true_if = {
+						amount = 3
+						all_elector = {
+							preferred_emperor = ROOT
+						}
+					}
+					calc_true_if = {
+						amount = 3
+						all_elector = {
+							vassal_of = ROOT
+						}
+					}
+				}
+				else = {
+					always = yes
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "eng_rb_hre_relations"
+				duration = 7300
+			}
+		}
+	}
+	
+	eng_rb_hre_emperor = {
+		icon = mission_rb_ascendant
+		required_missions = { eng_rb_hre_electors }
+		position = 6
+		
+		trigger = {
+			OR = {
+				ROOT = {
+					is_emperor = yes
+					hre_reform_level = 6
+				}
+				AND = {
+					NOT = { hre_size = 1 }
+					NOT = { exists = HLR }
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "eng_rb_imperial_ban_mod"
+				duration = 7300
+			}
+		}
+	
+	}
+	eng_discover_newfoundland = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { }
+		position = 7
+		
+		provinces_to_highlight = {
+			OR = { 
+				colonial_region = colonial_newfoundland
+			}
+		}
+		
+		trigger = {
+			avalon_area = { type = all has_discovered = ROOT }
+			has_idea_group = exploration_ideas
+		}
+		
+		effect = {
+			add_dip_power = 25
+			hidden_effect = {
+				avalon_area = {
+					limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+					change_religion = ROOT	
+					change_culture = english
+					add_territorial_core = ROOT
+				}
+			}
+			avalon_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				#add_territorial_core = ROOT
+				cede_province = ROOT
+			}
+			colonial_newfoundland = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_colonize_newfoundland = {
+		icon = mission_cannons_firing
+		required_missions = { eng_discover_newfoundland }
+		position = 8
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_newfoundland
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			colonial_newfoundland = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+		
+			colonial_acadia = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			add_country_modifier = {
+				name = "newfoundland_conquered"
+				duration = 18250
+			}
+		}
+	}	
+	
+	eng_colonize_acadia = {
+		icon = mission_cannons_firing
+		required_missions = { eng_colonize_newfoundland }
+		position = 9
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_acadia
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			colonial_acadia = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			colonial_quebec = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_colonize_quebec = {
+		icon = mission_cannons_firing
+		required_missions = { eng_colonize_acadia }
+		position = 10
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_quebec
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			colonial_quebec = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			colonial_ontario = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			colonial_ohio = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_canada = {
+		icon = mission_alliances
+		required_missions = { eng_discover_hudson eng_colonize_quebec }
+		position = 11
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_ontario
+				colonial_region = colonial_ohio
+				colonial_region = colonial_acadia
+				colonial_region = colonial_quebec
+				colonial_region = colonial_newfoundland
+				colonial_region = colonial_hudson
+				colonial_region = colonial_columbia
+				colonial_region = colonial_alberta
+				colonial_region = colonial_manitoba
+				colonial_region = colonial_yukon
+			}
+		}
+		
+		trigger = {
+			NOT = { overlord_of = CAN }
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 50
+				OR = {
+					colonial_region = colonial_ontario
+					colonial_region = colonial_ohio
+					colonial_region = colonial_acadia
+					colonial_region = colonial_quebec
+					colonial_region = colonial_newfoundland
+					colonial_region = colonial_hudson
+					colonial_region = colonial_columbia
+					colonial_region = colonial_alberta
+					colonial_region = colonial_manitoba
+					colonial_region = colonial_yukon
+				}
+				is_city = yes
+			}
+			
+		}
+		
+		effect = {
+			add_dip_power = 200
+			hidden_effect = {
+				every_province = {
+					limit = { OR = { region = canada_region region = hudson_bay_region region = northwest_territories_region } country_or_non_sovereign_subject_holds = ROOT }
+					remove_core = ROOT
+				}
+				canada_region = { 
+					limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT }}
+					add_territorial_core = CAN
+					cede_province = CAN				
+				}
+				hudson_bay_region = { 
+					limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT }}
+					add_territorial_core = CAN
+					cede_province = CAN
+				}
+				northwest_territories_region = { 
+					limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT }}
+					add_territorial_core = CAN
+					cede_province = CAN
+				}	
+			}
+			canada_region = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = CAN
+				cede_province = CAN				
+			}
+			hudson_bay_region = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = CAN
+				cede_province = CAN
+			}
+			northwest_territories_region = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = CAN
+				cede_province = CAN
+			}
+			ROOT = {
+				create_subject = {
+					subject_type = colony
+					subject = CAN
+				}
+			}
+			CAN = {
+				add_liberty_desire = -50
+				set_capital = 2670
+			}
+		}
+	}
+}
+#slot 2
+eng_slot_2 = {
+
+	slot = 2
+	generic = no
+	ai = yes
+	
+	potential = {
+		OR = {
+			tag = ENG
+			tag = GBR
+			tag = AGV
+		}
+	}
+	has_country_shield = yes
+	
+	eng_rb_war_of_roses = {
+		icon = mission_rb_war_of_the_roses
+		required_missions = {  }
+		
+		
+		trigger = {
+			custom_trigger_tooltip = {
+				tooltip = eng_rb_war_of_roses.tooltip
+				OR = {
+					has_country_flag = had_war_of_the_roses
+					NOT = {
+						current_age = age_of_discovery
+					}
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "eng_rb_roses_legit"
+				duration = 7300
+			}
+		}
+	}
+	
+	eng_rb_control_state_religion = {
+		icon = mission_rb_control_state_religion
+		required_missions = { eng_rb_war_of_roses }
+		position = 2
+		
+		trigger = {
+			#NOT = { current_age = age_of_discovery }
+			OR = {
+				AND = {
+					NOT = {
+						religion = catholic
+					}
+					OR = {
+						religion = protestant
+						religion = reformed
+						religion = anglican
+					}
+				}
+				AND = {
+					religion = catholic
+					has_country_modifier = "counter_reformation"
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "eng_rb_state_religion_mod"
+				duration = 7300
+			}
+		}
+	}
+	eng_conquer_brittany = {
+		icon = mission_cannons_firing
+		required_missions = { eng_angevin_kingdom }
+		position = 4
+		
+		provinces_to_highlight = {
+			OR = {
+				area = brittany_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			brittany_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			
+		}
+	}
+	
+	eng_colonize_virginia = {
+		icon = mission_colonial
+		required_missions = { eng_discover_america }
+		position = 5
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_virginia
+				#colonial_region = colonial_carolina
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 6
+				OR = {
+					colonial_region = colonial_virginia
+					#colonial_region = colonial_carolina
+				}
+			}
+		}
+		
+		effect = {
+			#custom_tooltip = eng_colonize_virginia.tooltip
+			hidden_effect = {	
+				colonial_virginia = {
+					limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { province_id = 2526 province_id = 941 province_id = 939 province_id = 940 province_id = 951 province_id = 2551 }}}
+					add_territorial_core = ROOT	
+				}
+				colonial_maryland = {
+					limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { province_id = 2526 province_id = 941 province_id = 939 province_id = 940 province_id = 951 province_id = 2551 }}}
+					add_territorial_core = ROOT	
+				}
+				2526 = {
+					change_culture = cherokee
+					add_core = CHE 
+					cede_province = CHE
+				}
+				941 = {
+					change_culture = cherokee
+					add_core = CHE 
+					cede_province = CHE
+				}
+				940 = {
+					change_culture = cherokee
+					add_core = CHE 
+					cede_province = CHE
+				}
+				948 = {
+					add_core = SHA 
+					cede_province = SHA
+				}
+				951 = {
+					change_culture = shawnee
+					add_core = SHA 
+					cede_province = SHA
+				}
+				2551 = {
+					change_culture = shawnee
+					add_core = SHA 
+					cede_province = SHA
+				}
+			}
+			colonial_virginia = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { province_id = 2526 province_id = 941 province_id = 939 province_id = 940 province_id = 951 province_id = 2551 }}}
+				cede_province = ROOT	
+			}
+			colonial_maryland = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { province_id = 2526 province_id = 941 province_id = 939 province_id = 940 province_id = 951 province_id = 2551 }}}
+				cede_province = ROOT	
+			}
+		}
+	}
+	
+	eng_colonize_pennsyvlania = {
+		icon = mission_colonial
+		required_missions = { eng_colonize_virginia }
+		position = 6
+		
+		provinces_to_highlight = {
+			OR = {
+				#colonial_region = colonial_virginia
+				colonial_region = colonial_pennsylvania
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 4
+				OR = {
+					colonial_region = colonial_pennsylvania
+				}
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+				colonial_pennsylvania = {
+					limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } is_empty = yes }
+					add_territorial_core = ROOT
+				}
+			}
+			colonial_pennsylvania = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } is_empty = yes }
+				cede_province = ROOT
+			}
+			colonial_new_sweden = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT }}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_conquer_foreign_colonies = {
+		icon = mission_cannons_firing
+		required_missions = { eng_colonize_pennsyvlania eng_colonize_georgia eng_colonize_new_england }
+		position = 7
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_new_york
+				colonial_region = colonial_new_sweden
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			colonial_new_york = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			colonial_new_sweden = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "eng_chesapeake_dominance"
+				duration = 7300
+			}
+		}
+	}
+	
+	eng_colonize_thirteen_colonies = {
+		icon = mission_rb_the_thirteen_colonies
+		required_missions = { eng_conquer_foreign_colonies }
+		position = 8
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_new_york
+				colonial_region = colonial_new_sweden
+				colonial_region = colonial_virginia
+				colonial_region = colonial_carolina
+				colonial_region = colonial_georgia
+				colonial_region = colonial_new_england
+				colonial_region = colonial_pennsylvania
+				colonial_region = colonial_maryland
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			colonial_new_york = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			colonial_new_sweden = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			colonial_virginia = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			colonial_carolina = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			colonial_georgia = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			colonial_new_england = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			colonial_pennsylvania = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			colonial_maryland = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+				every_province = {
+					limit = { OR = { colonial_region = colonial_new_york
+				colonial_region = colonial_new_sweden
+				colonial_region = colonial_virginia
+				colonial_region = colonial_carolina
+				colonial_region = colonial_georgia
+				colonial_region = colonial_new_england
+				colonial_region = colonial_pennsylvania
+				colonial_region = colonial_maryland } country_or_non_sovereign_subject_holds = ROOT }
+					remove_core = ROOT
+				}
+			}
+			colonial_new_sweden = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = USA
+				cede_province = USA				
+			}
+			colonial_virginia = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = USA
+				cede_province = USA
+			}
+			colonial_carolina = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = USA
+				cede_province = USA
+			}
+			colonial_georgia = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = USA
+				cede_province = USA				
+			}
+			colonial_new_england = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = USA
+				cede_province = USA
+			}
+			colonial_pennsylvania = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = USA
+				cede_province = USA
+			}
+			colonial_maryland = { 
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_territorial_core = USA
+				cede_province = USA
+			}
+			
+			ROOT = {
+				create_subject = {
+					subject_type = colony
+					subject = USA
+				}
+			}
+			USA = {
+				add_liberty_desire = 25
+				set_capital = 956
+			}
+			colonial_louisiana = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			colonial_dakota = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			colonial_ohio = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	eng_colonize_louisiana = {
+		icon = mission_cannons_firing
+		required_missions = { eng_colonize_thirteen_colonies }
+		position = 9
+		
+		provinces_to_highlight = {
+			OR = { 
+				colonial_region = colonial_louisiana
+				
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = { 
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 20
+				colonial_region = colonial_louisiana
+			}	
+			
+		}
+	
+		effect = {
+			hidden_effect = {
+				colonial_louisiana = {
+					limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+					add_territorial_core = ROOT
+				}	
+			}
+			colonial_louisiana = {
+				limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				cede_province = ROOT
+			}
+		}
+	}
+	
+	eng_discover_hudson = {
+		icon = mission_establish_high_seas_navy
+		required_missions = {  }
+		position = 10
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_australia
+			}
+		}
+		
+		trigger = {
+			1487 = { has_discovered = ROOT }
+			5463 = { has_discovered = ROOT }
+			1488 = { has_discovered = ROOT }
+			5464 = { has_discovered = ROOT }
+			1486 = { has_discovered = ROOT }
+			1005 = { has_discovered = ROOT }
+			1003 = { has_discovered = ROOT }
+			4999 = { has_discovered = ROOT }
+			2592  = { has_discovered = ROOT }
+			has_idea_group = exploration_ideas
+		}
+		
+		effect = {
+			add_dip_power = 25
+			hidden_effect = {
+				4999 = {
+					change_culture = english
+					change_religion = ROOT
+					add_core = ROOT	
+				}
+				2592 = {
+					change_culture = english
+					change_religion = ROOT
+					add_core = ROOT	
+				}
+				1003 = {
+					change_culture = english
+					change_religion = ROOT
+					add_core = ROOT	
+				}
+				1005 = {
+					change_culture = english
+					change_religion = ROOT
+					add_core = ROOT	
+				}
+			}
+			4999 = { cede_province = ROOT }	
+			2592 = { cede_province = ROOT }	
+			1003 = { cede_province = ROOT }	
+			1005 = { cede_province = ROOT }	
+		
+		}
+	}
+	
+	eng_discover_australia = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { eng_discover_spice_islands }
+		position = 11
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_australia
+			}
+		}
+		
+		trigger = {
+			colonial_australia = {
+				type = any
+				has_discovered = ROOT
+			}
+			1090 = { has_discovered = ROOT }
+			has_idea_group = exploration_ideas
+		}
+		
+		effect = {
+			add_dip_power = 25
+			hidden_effect = {
+				1090 = {
+					change_culture = english
+					change_religion = ROOT
+					add_building = fort_15th
+					add_core = ROOT	
+				}
+			}
+			1090 = { cede_province = ROOT }	
+		
+		}
+	}
+	
+	eng_colonize_australia = {
+		icon = mission_colonial
+		required_missions = { eng_discover_australia }
+		position = 12
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_australia
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 12
+				OR = {
+					colonial_region = colonial_australia
+				}
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+				colonial_australia = {
+					limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+					add_territorial_core = ROOT
+				}	
+			}
+			colonial_australia = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				cede_province = ROOT
+			}
+			add_country_modifier = {
+				name = "eng_australian_colony"
+				duration = 18250
+			}
+			
+		}
+	}
+	
+	eng_colonize_nz = {
+		icon = mission_colonial
+		required_missions = { eng_colonize_australia }
+		position = 13
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_nz
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 15
+				OR = {
+					colonial_region = colonial_nz
+				}
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+				colonial_nz = {
+					limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+					add_territorial_core = ROOT
+				}	
+			}
+			colonial_nz = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				cede_province = ROOT
+			}
+		}
+	}
+	
+}
+#slot 3
+eng_slot_3 = {
+	
+	slot = 3
+	generic = no
+	ai = yes
+	
+	potential = {
+		OR = {
+			tag = ENG
+			tag = GBR
+			tag = AGV
+		}
+	}
+	has_country_shield = yes
+		
+	eng_finish_welsh_march = {
+		icon = mission_cannons_firing
+		required_missions = { }
+	
+		
+		provinces_to_highlight = {
+			OR = {
+				area = wales_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			wales_area = {
+				type = all
+				OR = {
+					country_or_non_sovereign_subject_holds = WMC
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+		}
+		
+		effect = {
+			inherit = WMC
+			add_country_modifier = {
+				name = "extra_culture"
+				duration = -1
+			}
+			add_accepted_culture = welsh
+			add_casus_belli = {
+				type = cb_restore_personal_union
+				months = 1200
+				target = SCO
+			}
+			ireland_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}	
+		
+	eng_conquer_ireland = {
+		icon = mission_cannons_firing
+		required_missions = { eng_finish_welsh_march }
+		position = 2
+	
+		provinces_to_highlight = {
+			OR = {
+				region = ireland_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			ireland_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_stability = 1
+			add_country_modifier = {
+				name = "eng_culture_mission"
+				duration = -1
+			}
+			add_accepted_culture = irish
+		}
+	}
+	
+	eng_ireland_plantation = {
+		icon = mission_cannons_firing
+		required_missions = { eng_conquer_ireland  eng_rb_control_state_religion }
+		position = 3
+	
+		provinces_to_highlight = {
+			OR = {
+				area = ulster_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			ulster_area = {
+				type = all
+				OR = {
+					religion = protestant
+					religion = reformed
+					religion = anglican
+				}
+			}
+		}
+		
+		effect = {
+			ulster_area = {
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_province_modifier = {
+					name = "plantation_of_ireland"
+					duration = 18250
+				}
+			}
+		}
+	}
+	
+	eng_discover_america = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { }
+		position = 4
+		
+		provinces_to_highlight = {
+			OR = { 
+				province_id = 2547
+				province_id = 950
+				province_id = 952
+			}
+		}
+		
+		trigger = {
+			2547 = { has_discovered = ROOT }
+			950 = { has_discovered = ROOT }
+			952 = { has_discovered = ROOT }
+			has_idea_group = exploration_ideas
+		}
+		
+		effect = {
+			add_dip_power = 25
+			hidden_effect = {
+				2547 = {
+					change_religion = ROOT	
+					change_culture = english
+					add_building = fort_15th
+					add_core = ROOT	
+				}
+				952 = {
+					change_religion = ROOT	
+					change_culture = english
+					add_core = ROOT	
+				}
+			}
+			2547 = { cede_province = ROOT }	
+			952 = { cede_province = ROOT }	
+			add_country_modifier = {
+				name = "the_unknown_frontier"
+				duration = 7300
+			}
+		}
+	}
+	
+	eng_discover_new_england = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { eng_discover_america }
+		position = 5
+		
+		provinces_to_highlight = {
+			OR = { 
+				province_id = 2561
+				province_id = 968
+				province_id = 2010
+				province_id = 967
+			}
+		}
+		
+		trigger = {
+			2561 = { has_discovered = ROOT }
+			968 = { has_discovered = ROOT }
+			2010 = { has_discovered = ROOT }
+			967 = { has_discovered = ROOT }
+			has_idea_group = exploration_ideas
+			
+		}
+		
+		effect = {
+			add_dip_power = 25
+			hidden_effect = {
+				2561 = {
+					change_religion = ROOT	
+					change_culture = english
+					add_building = fort_15th
+					add_core = ROOT	
+				}
+				967 = {
+					change_religion = ROOT	
+					change_culture = english
+					add_core = ROOT	
+				}
+				2010 = {
+					change_religion = ROOT	
+					change_culture = english
+					add_core = ROOT	
+				}
+			}
+			2561 = { cede_province = ROOT }	
+			967 = { cede_province = ROOT }	
+			2010 = { cede_province = ROOT }
+		}
+	}
+	
+	eng_colonize_new_england = {
+		icon = mission_colonial
+		required_missions = { eng_discover_new_england }
+		position = 5
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_new_england
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 8
+				OR = {
+					colonial_region = colonial_new_england
+				}
+			}
+		}
+		
+		effect = {
+			hidden_effect = {	
+				colonial_new_england = {
+					limit = { colonial_region = colonial_new_england is_empty = yes NOT = {  province_id = 2567 }}
+					add_territorial_core = ROOT	
+				}
+				934 = {
+					change_culture = cherokee
+					add_core = CHE 
+					cede_province = CHE
+				}
+				935 = {
+					change_culture = cherokee
+					add_core = CHE 
+					cede_province = CHE
+				}
+				2527 = {
+					change_culture = cherokee
+					add_core = CHE 
+					cede_province = CHE
+				}
+			}
+			colonial_new_england = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT }  is_empty = yes NOT = {  province_id = 2567 }}
+				cede_province = ROOT	
+			}
+			colonial_new_york = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_discover_caribbean = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { }
+		position = 7
+		
+		provinces_to_highlight = {
+			OR = { 
+				region = carribeans_region
+			}
+		}
+		
+		trigger = {
+			#493 = { has_discovered = ROOT }
+			487 = { has_discovered = ROOT }
+			481 = { has_discovered = ROOT }
+			1881 = { has_discovered = ROOT }
+			5583 = { has_discovered = ROOT }
+			489 = { has_discovered = ROOT }
+			5577 = { has_discovered = ROOT }
+			has_idea_group = exploration_ideas
+		}
+		
+		effect = {
+			add_dip_power = 25
+			hidden_effect = {
+				#493 = {
+				#	change_religion = ROOT	
+				#	change_culture = english
+				#	add_building = fort_15th
+				#	add_core = ROOT	
+				#}
+				481 = {
+					change_religion = ROOT	
+					change_culture = english
+				#	add_building = fort_15th
+					add_core = ROOT	
+				}
+				487 = {
+					change_religion = ROOT	
+					change_culture = english
+					add_core = ROOT	
+				}
+				1881 = {
+					change_religion = ROOT	
+					change_culture = english
+					#add_building = fort_15th
+					add_core = ROOT	
+				}
+				5583 = {
+					change_religion = ROOT	
+					change_culture = irish
+					add_core = ROOT	
+				}
+				483 = {
+					change_religion = ROOT	
+					change_culture = english
+					#add_building = fort_15th
+					add_core = ROOT	
+				}
+				5577 = {
+					change_religion = ROOT	
+					change_culture = english
+					add_core = ROOT	
+				}
+			}
+			#493 = { cede_province = ROOT }	
+			487 = { cede_province = ROOT }
+			481 = { cede_province = ROOT }	
+			1881 = { cede_province = ROOT }
+			5583 = { cede_province = ROOT }
+			483 = { cede_province = ROOT }
+			5577 = { cede_province = ROOT }
+		}
+	}
+	eng_conquer_antilles = {
+		icon = mission_cannons_firing
+		required_missions = { eng_discover_caribbean }
+		position = 8
+		
+		provinces_to_highlight = {
+			OR = { 
+				colonial_region = colonial_cuba
+				colonial_region = colonial_hispaniola
+				area = lucayan_area
+				area = virgin_islands_area
+			}
+		}
+		
+		trigger = { 
+			colonial_cuba = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT 
+				is_city = yes
+			}
+			colonial_hispaniola = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT 
+				is_city = yes
+			}
+			lucayan_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+				is_city = yes
+			}
+			virgin_islands_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT 
+				is_city = yes
+			}
+		}
+	
+		effect = {
+			add_adm_power = 200
+			add_mil_power = 200
+			carribeans_region = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } } 
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_west_indies = {
+		icon = mission_empire
+		required_missions = { eng_conquer_antilles }
+		position = 9
+		
+		provinces_to_highlight = {
+			OR = {
+				region = carribeans_region
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			carribeans_region = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+				is_city = yes
+			}
+		}
+		
+		effect = {
+			add_prestige = 50
+			add_years_of_income = 5	
+		}
+	}
+	
+	eng_discover_spice_islands = {
+		icon = mission_rb_colonise_spice_islands
+		required_missions = { }
+		position = 10
+		
+		provinces_to_highlight = {
+			OR = {
+				trade_company_region = trade_company_moluccas
+				#trade_company_region = trade_company_indonesia
+			}
+		}
+		
+		trigger = {
+			spice_isles_area = {
+				type = all
+				has_discovered = ROOT
+			}
+			642 = { has_discovered = ROOT }
+			has_idea_group = exploration_ideas
+		}
+		
+		effect = {
+			add_dip_power = 25
+			hidden_effect = {
+				624 = {
+					add_building = fort_15th
+					add_core = ROOT	
+				}
+			}
+			624 = { cede_province = ROOT }	
+		
+			east_java_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_claim = ROOT
+			}
+			central_java_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_claim = ROOT
+			}
+			west_java_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_claim = ROOT
+			}
+		}
+		596 = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_claim = ROOT
+			}
+	}
+	
+	eng_sieze_malacca = {
+		icon = mission_unite_home_region
+		required_missions = { eng_discover_spice_islands }
+		position = 11
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 596
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			#has_discovered = ROOT
+		}
+		
+		trigger = {
+			OR = {
+				ROOT = { controls = 596 }
+				596 = { country_or_non_sovereign_subject_holds = ROOT }
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+				596 = {
+					#change_trade_goods = slaves
+					#change_religion = ROOT	
+					change_culture = english
+					add_territorial_core = ROOT	
+				}
+			}
+			596 = { cede_province = ROOT add_base_production = 3 }	
+			malacca_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT 
+			}
+			malaya_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT 
+			}
+		}
+	}
+	
+	 eng_conquer_malaysia = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { eng_sieze_malacca }
+		position = 12
+		
+		provinces_to_highlight = {
+			OR = {
+				area = malacca_area
+				area = malaya_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			#has_discovered = ROOT
+		}
+		
+		trigger = {
+			malacca_area = {
+				type = all
+			    country_or_non_sovereign_subject_holds = ROOT 
+			}
+			malaya_area = {
+				type = all
+			    country_or_non_sovereign_subject_holds = ROOT 
+			}
+		}
+		
+		effect = {
+			1361 = {
+				add_trade_modifier = {
+					who = ROOT
+					duration = 7300
+					power = 25
+					key = malay_ambition
+				}
+			}
+		}
+	}
+	
+	eng_conquer_ceylon = {
+		icon = mission_cannons_firing
+		required_missions = { gbr_rb_india_coast }
+		position = 13
+		
+		provinces_to_highlight = {
+			OR = {
+				area = lanka_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			lanka_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_mil_power = 50
+			add_country_modifier = {
+				name = "ceylon_conquered"
+				duration = 7300
+			}
+			
+		}
+	}
+}
+
+#slot 4
+eng_slot_4 = {
+	
+	slot = 4
+	generic = no
+	ai = yes
+	
+	potential = {
+		OR = {
+			tag = ENG
+			tag = GBR
+			tag = AGV
+		}
+	}
+	has_country_shield = yes
+	
+	
+	eng_own_britain = {
+		icon = mission_empire
+		required_missions = { eng_union_sco eng_finish_welsh_march }
+		position = 2
+		
+		provinces_to_highlight = {
+			OR = {
+				region = british_isles_region
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			british_isles_region = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "britain_united"
+				duration = 18250
+			}
+		}
+	}
+			
+	
+	
+	british_union = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { eng_conquer_ireland eng_own_britain }
+		position = 3
+	
+		
+		trigger = {
+			OR = {
+				tag = GBR
+				tag = AGV
+			}
+		}
+		
+		effect = {
+			inherit = JER
+			inherit = KOI
+			226 = { add_permanent_claim = ROOT }
+		}
+	}
+	
+	eng_colonize_carlonias = {
+		icon = mission_colonial
+		required_missions = { eng_discover_america }
+		position = 5
+		
+		provinces_to_highlight = {
+			OR = {
+				#colonial_region = colonial_virginia
+				colonial_region = colonial_carolina
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 10
+				OR = {
+					#colonial_region = colonial_virginia
+					colonial_region = colonial_carolina
+				}
+			}
+		}
+		
+		effect = {
+			hidden_effect = {	
+				colonial_carolina = {
+					limit = { is_empty = yes NOT = { OR = { province_id = 934 province_id = 935 province_id = 918 province_id = 2527 province_id = 2538 province_id = 2537 }}}
+					add_territorial_core = ROOT	
+				}
+				934 = {
+					change_culture = cherokee
+					add_core = CHE 
+					cede_province = CHE
+				}
+				935 = {
+					change_culture = cherokee
+					add_core = CHE 
+					cede_province = CHE
+				}
+				2527 = {
+					change_culture = cherokee
+					add_core = CHE 
+					cede_province = CHE
+				}
+				2537 = {
+					add_core = CRE 
+					cede_province = CRE
+				}
+				2538 = {
+					add_core = CRE 
+					cede_province = CRE
+				}
+			}
+			#custom_tooltip = eng_colonize_carlonias.tooltip
+			colonial_carolina = {
+				limit = { is_empty = yes NOT = { OR = { province_id = 934 province_id = 935 province_id = 918 province_id = 2527 province_id = 2538 province_id = 2537 }}}
+				cede_province = ROOT	
+			}
+		}
+	}
+	
+	eng_colonize_georgia = {
+		icon = mission_colonial
+		required_missions = { eng_colonize_carlonias }
+		position = 6
+		
+		provinces_to_highlight = {
+			OR = {
+				#colonial_region = colonial_virginia
+				colonial_region = colonial_carolina
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 5
+				OR = {
+					colonial_region = colonial_georgia
+				}
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+				colonial_georgia = {
+					limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } is_empty = yes }
+					add_territorial_core = ROOT
+				}
+			}
+			colonial_georgia = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } is_empty = yes }
+				cede_province = ROOT
+			}
+			colonial_georgia = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			colonial_florida = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_colonize_florida = {
+		icon = mission_cannons_firing
+		required_missions = { eng_colonize_georgia }
+		position = 7
+		
+		provinces_to_highlight = {
+			OR = {
+				#colonial_region = colonial_virginia
+				colonial_region = colonial_florida
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 5
+				OR = {
+					colonial_region = colonial_florida
+				}
+				NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+				lucayan_area = {
+					limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT }}
+					change_culture = english
+					change_religion = ROOT
+					add_territorial_core = ROOT 
+					
+				}
+			}
+			lucayan_area = {
+				limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT }}
+				cede_province = ROOT 
+			}
+		}
+	}
+	
+	eng_discover_yucatan = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { eng_discover_caribbean }
+		position = 8
+		
+		provinces_to_highlight = {
+			OR = { 
+				colonial_region = colonial_yucatan
+				province_id = 838
+				province_id = 843
+			}
+		}
+		
+		trigger = {
+			colonial_yucatan = { type = all has_discovered = ROOT }
+			838 = { has_discovered = ROOT }
+			843 = { has_discovered = ROOT }
+			has_idea_group = exploration_ideas
+		}
+		
+		effect = {
+			add_dip_power = 25
+			hidden_effect = {
+				843 = {
+					change_religion = ROOT	
+					change_culture = english
+					add_building = fort_15th
+					add_core = ROOT	
+				}
+				838 = {
+					change_religion = ROOT	
+					change_culture = english
+					add_building = fort_15th
+					add_core = ROOT	
+				}
+			}
+			843 = { cede_province = ROOT }	
+			838 = { cede_province = ROOT }
+		}
+	}
+	
+	eng_conquer_yucatan = {
+		icon = mission_cannons_firing
+		required_missions = { eng_discover_yucatan }
+		position = 9
+		
+		provinces_to_highlight = {
+			OR = { 
+				colonial_region = colonial_yucatan
+				colonial_region = colonial_guatemala
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			is_city = yes
+		}
+		
+		trigger = { 
+			colonial_yucatan = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}	
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 8
+				colonial_region = colonial_guatemala
+			}
+		}
+	
+		effect = {
+			hidden_effect = {
+				honduras_area = {
+					limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+					add_territorial_core = ROOT
+				}
+				nicaragua_area = {
+					limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+					add_territorial_core = ROOT
+				}
+			}
+			honduras_area = {
+				limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				cede_province = ROOT
+			}
+			nicaragua_area = {
+				limit = { is_empty = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				cede_province = ROOT
+			}
+		}
+	}
+	
+	eng_colonize_java = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { eng_discover_spice_islands }
+		position = 11
+		
+		provinces_to_highlight = {
+			OR = {
+				area = east_java_area
+				area = central_java_area
+				area = west_java_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			east_java_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			central_java_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			west_java_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+			#	every_province = {
+			#		limit = { colonial_region = colonial_australia NOT = { country_or_non_sovereign_subject_holds = ROOT }}
+			#		add_core = ROOT
+			#		cede_province = ROOT
+			#	}	
+			}
+			colonial_australia = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } is_empty = yes }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	gbr_rb_india_coast = {
+		icon = mission_rb_take_indian_coast
+		required_missions = { gbr_rb_india_landfall }
+		position = 12
+		
+		provinces_to_highlight = {
+			OR = {
+				area = orissa_area
+				area = andhra_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			has_discovered = ROOT
+		}
+		
+		trigger = {
+			orissa_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			andhra_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			jharkhand_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			bihar_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			purvanchal_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			oudh_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	
+	}
+	
+	gbr_rb_india_princedoms = {
+		icon = mission_rb_inland_india
+		required_missions = { gbr_rb_india_coast }
+		position = 13
+		
+		provinces_to_highlight = {
+			OR = {
+				area = telingana_area
+				area = maharashtra_area
+				area = gondwana_area
+				area = garjat_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			has_discovered = ROOT
+		}
+		
+		trigger = {
+			telingana_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			maharashtra_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			gondwana_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			garjat_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			
+		}
+	
+	}
+}
+
+#slot 5
+eng_slot_5 = {
+	
+	slot = 5
+	generic = no
+	ai = yes
+	
+	potential = {
+		OR = {
+			tag = ENG
+			tag = GBR
+			tag = AGV
+		}
+	}
+	has_country_shield = yes
+	
+	eng_union_sco = {
+		icon = mission_cannons_firing
+		required_missions = { }
+	
+		provinces_to_highlight = {
+			OR = {
+				area = lowlands_area
+				area = highlands_area
+				area = western_lowlands_area
+				area = southern_isles_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+	
+		
+		trigger = {
+			OR = {
+				ROOT = { overlord_of = SCO }
+				AND = {
+					lowlands_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+					highlands_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+					western_lowlands_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+					southern_isles_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+				}
+			}
+		}
+		
+		effect = {
+			369 = { add_permanent_claim = ROOT }
+			1978 = { add_permanent_claim = ROOT }
+			#1979 = { add_permanent_claim = ROOT }
+		}
+	}
+	
+	eng_rb_take_shetland_and_faro_isles = {
+		icon = mission_rb_conquer_the_isles
+		required_missions = { eng_union_sco }
+		position = 2
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 369
+				province_id = 1978
+			#	province_id = 1979
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		ai_priority = {
+			factor = 2
+		}
+		
+		trigger = {
+			369 = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			1978 = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		#	1979 = {
+			#	country_or_non_sovereign_subject_holds = ROOT
+			#}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "eng_rb_faro_coast"
+				duration = 7300
+			}
+			greenland_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			east_greenland_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_rb_greenland = {
+		icon = mission_rb_settle_the_north
+		required_missions = { eng_rb_take_shetland_and_faro_isles }
+		position = 3
+		
+		provinces_to_highlight = {
+			OR = {
+				area = greenland_area
+				area = east_greenland_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		ai_priority = {
+			factor = 2
+		}
+		
+		trigger = {
+			greenland_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			east_greenland_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "eng_rb_colony_chance"
+				duration = 7300
+			}
+			1104 = {
+				add_base_production = 3
+				add_base_manpower = 3
+				custom_tooltip = eng_rb_greenland.tooltip
+				hidden_effect = {
+					random_list = {
+						10 = {
+							change_province_name = "Novum Novum Eboracum"
+						}
+						10 = {
+							change_province_name = "Little London"
+						}
+						10 = {
+							change_province_name = "New Omagh"
+						}
+						10 = {
+							change_province_name = "New Burnley"
+						}
+						10 = {
+							change_province_name = "New Durham"
+						}
+						10 = {
+							change_province_name = "New Harrogate"
+						}
+						10 = {
+							change_province_name = "New Cornwall"
+						}
+						10 = {
+							change_province_name = "Liverpool Secundum"
+						}
+						10 = {
+							change_province_name = "Pieter's Haven"
+						}
+						9 = {
+							change_province_name = "New Dublin"
+						}
+						1 = {
+							change_province_name = "Winterfell"
+						}
+					}
+				}
+			}
+			1105 = {
+				add_base_production = 2
+				add_base_manpower = 2
+			}
+		}
+	
+	}
+	
+	eng_rb_take_gibraltar = {
+		icon = mission_rb_take_gibraltar
+		required_missions = { british_union }
+		position = 4
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 226
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		ai_weight = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					is_year = 1700
+				}
+			}
+		}
+		ai_priority = {
+			factor = 1
+		}
+		
+		trigger = {
+			226 = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "eng_rb_gibraltar_mod"
+				duration = 7300
+			}
+			balearic_islands_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	eng_rb_take_baleares = {
+		icon = mission_rb_increase_our_reach
+		required_missions = { eng_rb_take_gibraltar }
+		position = 5
+		
+		provinces_to_highlight = {
+			OR = {
+				area = balearic_islands_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			balearic_islands_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			126 = {
+				add_permanent_claim = ROOT
+			}
+			eastern_mediterrenean_islands_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			cyprus_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			corsica_sardinia_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			sardinia_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_rb_take_mediterranean_islands = {
+		icon = mission_rb_mediterranean_authority
+		required_missions = { eng_rb_take_baleares }
+		position = 6
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 126
+				area = eastern_mediterrenean_islands_area
+				area = cyprus_area
+				area = corsica_sardinia_area
+				area = sardinia_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			126 = { 
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			eastern_mediterrenean_islands_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			cyprus_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			corsica_sardinia_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			sardinia_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			#add_dip_power = 100
+			delta_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_claim = ROOT
+			}
+			1310 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_claim = ROOT
+			}
+			3176 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_claim = ROOT
+			}
+			add_country_modifier = {
+				name = "mare_nostrum"
+				duration = 18250
+			}
+		}
+	}
+	
+	eng_rb_take_delta = {
+		icon = mission_rb_seize_alexandria
+		required_missions = { 
+			eng_rb_take_mediterranean_islands
+		}
+		position = 7
+		
+		provinces_to_highlight = {
+			area = delta_area
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			delta_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			gulf_of_arabia_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			bahari_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_rb_take_bahari = {
+		icon = mission_rb_egyptian_authority
+		required_missions = { eng_rb_take_delta }
+		position = 8
+		
+		provinces_to_highlight = {
+			OR = {
+				area = bahari_area
+				area = gulf_of_arabia_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			bahari_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			gulf_of_arabia_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			358 = {
+				add_trade_modifier = {
+					who = root
+					duration = 7300
+					power = 50
+					key = alexandria_ambition
+				}
+			}
+			egypt_region = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			white_nile_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			sennar_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			butana_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			damot_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			central_ethiopia_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_take_nile_source = {
+		icon = mission_empire
+		required_missions = { eng_rb_take_bahari }
+		position = 9
+		
+		provinces_to_highlight = {
+			OR = {
+				area = white_nile_area
+				area = sennar_area
+				area = butana_area
+				area = damot_area
+				area = central_ethiopia_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			white_nile_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			sennar_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			butana_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			damot_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			central_ethiopia_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			horn_of_africa_region = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	eng_discover_india = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { }
+		position = 10
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 517
+				province_id = 539
+				province_id = 561
+			}
+		}
+		
+		trigger = {
+			517 = {
+				has_discovered = ROOT
+			}
+			539 = {
+				has_discovered = ROOT
+			}
+			561 = {
+				has_discovered = ROOT
+			}
+			has_idea_group = exploration_ideas
+		}
+		
+		effect = {
+			add_dip_power = 25
+			hidden_effect = {
+				517 = {
+					#add_building = fort_15th
+					add_core = ROOT	
+				}
+				539 = {
+					#add_building = fort_15th
+					add_core = ROOT	
+				}
+				561 = {
+					#add_building = fort_15th
+					add_core = ROOT	
+				}
+			}
+			517 = { cede_province = ROOT }
+			539 = { cede_province = ROOT }	
+			561 = { cede_province = ROOT }	
+		
+			west_bengal_area = {
+				limit = {
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+					NOT = { is_core = ROOT }	
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	gbr_rb_india_landfall = {
+		icon = mission_rb_conquer_bengal
+		required_missions = { eng_discover_india }
+		position = 11
+		
+		provinces_to_highlight = {
+			area = west_bengal_area
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			has_discovered = ROOT
+		}
+		
+		ai_priority = {
+			factor = 3
+		}
+		
+		trigger = {
+			west_bengal_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			telingana_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			maharashtra_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			gondwana_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			garjat_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			orissa_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			andhra_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	
+	}
+	
+	gbr_rb_india_landgrab = {
+		icon = mission_rb_take_north_india
+		required_missions = { gbr_rb_india_landfall }
+		position = 12
+		
+		provinces_to_highlight = {
+			OR = {
+				area = jharkhand_area
+				area = bihar_area
+				area = purvanchal_area
+				area = oudh_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			has_discovered = ROOT
+		}
+		
+		trigger = {
+			jharkhand_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			bihar_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			purvanchal_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			oudh_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {	
+				name = "gbr_rb_indian_integration"
+				duration = 7300
+			}
+		}
+	
+	}
+	
+	eng_conquer_gujarat = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { gbr_rb_india_landgrab }
+		position = 13
+		
+		provinces_to_highlight = {
+			OR = {
+				region = west_india_region
+				region = deccan_region
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			has_discovered = ROOT
+		}
+		
+		trigger = {
+			west_india_region = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			deccan_region = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "gbr_rb_indian_integration"
+				duration = -1
+			}
+		}
+	
+	}
+	
+	
+	british_india = {
+		icon = mission_empire
+		required_missions = { gbr_rb_india_princedoms eng_conquer_ceylon  eng_conquer_gujarat }
+		position = 14
+		
+		provinces_to_highlight = {
+			OR = {
+				region = coromandel_region
+				region = west_india_region
+				region = hindusthan_region
+				region = deccan_region
+				region = bengal_region
+			}
+			has_discovered = ROOT
+		}
+		
+		
+		trigger = {
+			coromandel_region = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			west_india_region = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			hindusthan_region = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			deccan_region = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			bengal_region = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			
+		}
+		
+		effect = {
+			coromandel_region = {
+				limit = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+				add_province_modifier = {
+					name = "gbr_inland_trade"
+					duration = 7300
+				}
+			}
+			west_india_region = {
+				limit = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+				add_province_modifier = {
+					name = "gbr_inland_trade"
+					duration = 7300
+				}
+			}
+			deccan_region = {
+				limit = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+				add_province_modifier = {
+					name = "gbr_inland_trade"
+					duration = 7300
+				}
+			}
+			hindusthan_region = {
+				limit = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+				add_province_modifier = {
+					name = "gbr_inland_trade"
+					duration = 7300
+				}
+			}
+			bengal_region = {
+				limit = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+				add_province_modifier = {
+					name = "gbr_inland_trade"
+					duration = 7300
+				}
+			}
+		}
+	}
+	
+}

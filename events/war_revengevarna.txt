@@ -1,0 +1,226 @@
+#Revenge for Varna -- the adaptation of 1448 battle at kosovo field
+# Amyzonis
+
+namespace = revenge_varna
+
+
+
+#Hungary
+country_event = {
+	id = revenge_varna.1
+	title = "revenge_varna.1.t"
+	desc = "revenge_varna.1.d"
+	picture = {
+		picture = PEASANTS_ON_STEPPES_eventPicture
+	}
+	
+	trigger = {
+		tag = HUN
+		is_year = 1448
+		NOT = { has_leader = "(Regency Council)" }
+		TUR = { is_at_war = no }
+		POL = { is_at_war = no }
+		is_at_war = no
+		NOT = { has_global_flag = rv_activate }
+		NOT = { has_country_modifier = rv_participant }
+	}
+	
+	fire_only_once = yes
+	
+	mean_time_to_happen = {
+		days = 30
+		modifier = { 
+			factor = 0
+			is_year = 1450	
+		}
+	}
+	
+	immediate = {
+		set_global_flag = rv_activate
+	}
+	option = { #historical, push the infidel out of europe
+		name = "revenge_varna.1.a"
+		ai_chance = {
+			factor = 99
+		}
+		#create_alliance = POL
+		TUR = {
+			country_event = {
+				id = revenge_varna.2
+				days = 15
+			}
+		}
+	}
+	option = { #divide the danube/deal with the devil
+		name = "revenge_varna.1.b"
+		ai_chance = {
+			factor = 1
+		}
+		create_alliance = TUR
+		TUR = {
+			country_event = {
+				id = revenge_varna.3
+				days = 15
+			}
+		}
+	}
+}
+
+#turkish reaction to demand
+country_event = {
+	id = revenge_varna.2
+	title = "revenge_varna.2.t"
+	desc = "revenge_varna.2.d"
+	picture = BORDER_TENSION_eventPicture
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	major = yes
+	
+	trigger = {
+		has_global_flag = rv_activate
+		tag = TUR
+	}
+	
+	
+	option = {
+		ai_chance = {
+			factor = 99
+		}
+		name = "revenge_varna.2.a"
+		HUN = { country_event = { id = revenge_varna.4 days = 15 } }
+		POL = { country_event = { id = revenge_varna.4 days = 15 } }
+		TUR = { 
+			set_country_flag = turkish_rv_refusal
+		}
+		add_country_modifier = {
+			name = "rv_participant"
+			duration = -1
+		}
+		hidden_effect = {
+			HUN = { 
+				add_country_modifier = {
+					name = "rv_participant"
+					duration = -1
+				}
+			}
+			POL = { 
+				add_country_modifier = {
+					name = "rv_participant"
+					duration = -1
+				}
+			}
+		}
+	}
+	option = {
+		ai_chance = {
+			factor = 1
+		}
+		name = "revenge_varna.2.b"
+		TUR = {
+			release_vassal = WAL
+			release_vassal = SER
+			set_country_flag = turkish_rv_acceptance
+		}
+		add_country_modifier = {
+			name = "rv_participant"
+			duration = -1
+		}
+		hidden_effect = {
+			HUN = { 
+				add_country_modifier = {
+					name = "rv_participant"
+					duration = -1
+				}
+			}
+			POL = { 
+				add_country_modifier = {
+					name = "rv_participant"
+					duration = -1
+				}
+			}
+		}
+	}
+}
+
+
+#divide along danube
+country_event = {
+	id = revenge_varna.3
+	title = "revenge_varna.3.t"
+	desc = "revenge_varna.3.d"
+	picture = DIPLOMACY_eventPicture
+	
+	trigger = {
+		tag = TUR
+		has_global_flag = rv_activate
+	}
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = {
+		name = "revenge_varna.3.a"
+		ai_chance = {
+			factor = 50
+		}
+		HUN = { inherit = WAL release = CRO }
+		TUR = { inherit = SER inherit = BOS inherit = CRO set_country_flag = turkish_rv_acceptance }
+	}
+	option = {
+		name = "revenge_varna.3.b"
+		ai_chance = {
+			factor = 50
+		}
+		HUN = { country_event = { id = revenge_varna.4 days = 1 } }
+		POL = { country_event = { id = revenge_varna.4 days = 1 } }
+		TUR = { 
+			set_country_flag = turkish_rv_refusal
+		}
+	}
+}
+
+#attack ottomans
+country_event = {
+	id = revenge_varna.4
+	title = "revenge_varna.4.t"
+	desc = "revenge_varna.4.d"
+	picture = HORDE_ON_HORSEBACK_eventPicture
+	
+	trigger = {
+		TUR = { has_country_flag = turkish_rv_refusal }
+		has_global_flag = rv_activate
+		OR = {
+			tag = HUN 
+			tag = POL
+		}
+	}
+	
+	is_triggered_only = yes
+	#fire_only_once = yes
+	
+	option = {
+		name = "revenge_varna.4.a"
+		if = { 
+			limit = { tag = POL }
+			3163 = { add_core = MOL }
+			MOL = { declare_war_with_cb = {
+				who = TUR
+				casus_belli = cb_core
+				war_goal_province = 3163
+			} }
+		}
+		if = { 
+			limit = { tag = HUN }
+			4176 = { add_core = HUN }
+			3187 = { add_core = HUN }
+			141 = { add_core = HUN }
+			declare_war_with_cb = {
+				who = SER
+				casus_belli = cb_core
+				war_goal_province = 4176
+			}
+		}
+	}
+}

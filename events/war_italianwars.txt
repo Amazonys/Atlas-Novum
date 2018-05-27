@@ -1,0 +1,635 @@
+#Complete Overhaul of the Italian Wars as a major European conflict in the age of Discovery
+# Amyzonis
+
+namespace = italian_wars
+
+#manpower bonus and event notification for joining league
+country_event = {
+	id = italian_wars.0
+	title = "italian_wars.0.t"
+	desc = "italian_wars.0.d"
+	picture = DIPLOMACY_eventPicture
+	
+	#fire_only_once = yes
+	is_triggered_only = yes
+	major = yes
+	
+	
+	option = {
+		name = "italian_wars.0.a"
+		add_manpower = 10
+		add_years_of_income = 0.5
+		#FROM = { set_country_flag = select_league_1 }
+	}
+}
+
+
+country_event = {
+	id = italian_wars.1
+	title = "italian_wars.1.t"
+	desc = "italian_wars.1.d"
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = ARA
+		is_lesser_in_union = no
+		NAP = { is_subject_of = ROOT }
+		#is_year = 1450
+		#NOT = { is_year = 1550 }
+		ARA = { NOT = { has_ruler = "Alfons V" } }
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 0.01
+			ARA = { NOT = { has_ruler = "Alfons V" } }
+		}
+	}
+	
+	option = {
+		name = "italian_wars.1.a"
+		ai_chance = { factor = 50 }
+		NAP = { grant_independence = yes }
+		create_alliance = NAP
+		add_prestige = -5
+		set_country_flag = lost_naples
+		if = { 
+			limit = { NAV = { has_ruler = "Joan II" } }
+			create_union = NAV
+		}
+				
+	}
+	option = {
+		name = "italian_wars.1.b"
+		ai_chance = { factor = 50 }
+		NAP = { grant_independence = yes }
+		add_casus_belli = {
+			target = NAP
+			type = cb_restore_personal_union
+		 	months = 60
+		}
+		add_prestige = 5
+		set_country_flag = lost_naples
+		if = { 
+			limit = { NAV = { has_ruler = "Joan II" } }
+			create_union = NAV
+		}
+	}
+}
+
+
+country_event = {
+	id = italian_wars.2
+	title = "italian_wars.2.t"
+	desc = "italian_wars.2.d"
+	picture = DIPLOMACY_eventPicture
+	
+	#major = yes
+	fire_only_once = yes
+	
+	trigger = {
+		OR = {
+			AND = {
+				tag = MLO
+				is_year = 1490
+			}	
+			AND = { 
+				capital_scope = { region = italy_region }
+				is_year = 1494
+			}
+		}
+		OR = {
+			is_rival = VEN
+			VEN = { is_rival = ROOT }
+		}
+		is_at_war = no
+		is_subject = no
+		NAP = { is_subject = no }
+		VEN = { is_at_war = no }
+		FRA = { is_at_war = no }
+		NOT = { is_year = 1560 }
+		NOT = { has_country_flag = IW_trigger }
+		NOT = { has_global_flag = IW_activate_1 }
+	}
+	
+	mean_time_to_happen = {
+		months = 18
+	}
+	
+	option = {
+		name = "italian_wars.2.a"
+		ai_chance = { factor = 95 }
+		set_country_flag = IW_trigger
+		FRA = { country_event = { id = italian_wars.3 days = 15 } }
+		
+	}
+	option = {
+		name = "italian_wars.2.b"
+		ai_chance = { factor = 5 }
+		add_prestige = -10
+	}
+}
+
+country_event = {
+	id = italian_wars.3
+	title = "italian_wars.3.t"
+	desc = "italian_wars.3.d"
+	picture = BATTLE_eventPicture
+	
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+	major = yes
+	
+	option = {
+		name = "italian_wars.3.a"
+		hidden_effect = {
+			add_casus_belli = {
+				target = NAP
+				type = cb_restore_personal_union
+		 		months = 60
+		 	}
+		 	FROM = {
+				add_country_modifier = {
+					name = "IW_participant_1"
+					duration = -1
+				}
+			}
+			NAP = {
+				add_country_modifier = {
+					name = "IW_participant_1"
+					duration = -1
+				}
+			}
+		}
+		declare_war_with_cb = {
+			who = NAP			
+			casus_belli = cb_restore_personal_union
+		}
+		create_subject = {
+			subject_type = league
+			subject = FROM
+		}
+		add_country_modifier = {
+			name = "IW_participant_1"
+			duration = -1
+		}
+		#FROM = { set_country_flag = select_league_1 }
+		set_global_flag = IW_activate_1
+		ai_chance = { factor = 100 }
+	}
+	option = {
+		name = "italian_wars.3.b"
+		add_prestige = -10
+		ai_chance = { factor = 0 }
+	}
+}
+
+country_event = {
+	id = italian_wars.4
+	title = "italian_wars.4.t"
+	desc = "italian_wars.4.d"
+	picture = BATTLE_eventPicture
+	
+	major = yes
+	#is_triggered_only = yes
+	trigger = {
+		tag = FRA
+		war_with = NAP
+		121 = {
+			OR = {
+				controlled_by = ROOT
+				sieged_by = ROOT
+				sieged_by = MLO
+			}
+		}
+		has_global_flag = IW_activate_1
+	}
+	
+	mean_time_to_happen = {
+		days = 20
+		modifier = {
+			factor = 0.01
+			sieged_by = FRA
+		}
+	}
+	
+	option = {
+		name = "italian_wars.4.a"
+		FRA = { create_union = NAP }
+		VEN = { country_event = { id = italian_wars.5 days = 60 } }
+	}
+
+}
+
+
+
+#treaty of lodi
+country_event = {
+	id = italian_wars.5
+	title = "italian_wars.5.t"
+	desc = "italian_wars.5.d"
+	picture = DIPLOMACY_eventPicture
+	
+	major = yes
+	is_triggered_only = yes
+	
+	option = {
+		name = "italian_wars.5.a"
+		ai_chance = { factor = 100 }
+		hidden_effect = {
+			MLO = { 
+				grant_independence = yes
+			}
+			NAP = {
+				grant_independence = yes
+			}
+			remove_historical_rival = MLO
+			remove_historical_rival = NAP
+			MLO = {
+				remove_historical_rival = VEN
+				remove_historical_rival = NAP
+				
+			}
+			NAP = {
+				remove_historical_rival = VEN	
+				remove_historical_rival = MLO
+				
+			}
+		}
+		create_subject = {
+			subject_type = league
+			subject = MLO
+		}
+		create_subject = {
+			subject_type = league
+			subject = NAP
+		}
+		add_country_modifier = {
+			name = "IW_participant_1"
+			duration = -1
+		}
+		hidden_effect = {
+			MLO = {
+				add_opinion = {
+    				who = VEN
+   					modifier = league_of_ven
+				}
+			}
+			NAP = {
+				add_opinion = {
+    				who = VEN
+   					modifier = league_of_ven
+				}
+			}
+			PAP = {
+				add_opinion = {
+    				who = VEN
+   					modifier = league_of_ven
+				}
+			}
+			LAN = {
+				add_opinion = {
+    				who = VEN
+   					modifier = league_of_ven
+				}
+			}
+		}
+		FRA = { country_event = { id = italian_wars.6 days = 30 } }
+	}
+	option = {
+		name = "italian_wars.5.b"
+		add_prestige = -25
+		ai_chance = { factor = 0 }
+	}
+}
+
+country_event = {
+	id = italian_wars.6
+	title = "italian_wars.6.t"
+	desc = "italian_wars.6.d"
+	picture = BATTLE_eventPicture
+	
+	#major = yes
+	is_triggered_only = yes
+	
+	option = {
+		name = "italian_wars.6.a"
+		ai_chance = { factor = 100 }
+		hidden_effect = {
+		#	add_casus_belli = {
+		#		target = NAP
+		#		type = cb_restore_personal_union
+		 #		months = 60
+		# 	}
+		}
+		VEN = {
+			declare_war_with_cb = {
+				who = FRA			
+				casus_belli = cb_insult
+			}
+		}
+		naples_area = {
+			limit = { is_core = NAP owned_by = NAP }
+			change_controller = FRA
+		}
+		
+		#CAS = { country_event = { id = italian_wars.7 days = 600 } }
+	}
+	option = {
+		name = "italian_wars.6.b"
+		add_prestige = -25
+		ai_chance = { factor = 0 }
+	}
+}
+
+country_event = {
+	id = italian_wars.7
+	title = "italian_wars.7.t"
+	desc = "italian_wars.7.d"
+	picture = DIPLOMACY_eventPicture
+	
+	major = yes
+	is_triggered_only = yes
+	
+	trigger = {
+		MLO = { has_country_flag = IW_trigger_2 }
+	}
+	
+	mean_time_to_happen = {
+		months = 24
+	}
+	
+	
+	option = {
+		name = "italian_wars.7.a"
+		ai_chance = { factor = 100 }
+		MLO = { grant_independence = yes }
+		hidden_effect = {
+			define_ruler = {
+   				name = "Ludovico"
+    			dynasty = "Sforza"
+    			adm = 4
+   				dip = 4
+    			mil = 4
+    			age = 45
+    			claim = 95
+    			culture = ROOT
+    			religion = ROOT
+    		}
+			
+		}
+		set_global_flag = IW_activate_2
+		
+	}
+}
+country_event = {
+	id = italian_wars.8
+	title = "italian_wars.8.t"
+	desc = "italian_wars.8.d"
+	picture = DIPLOMACY_eventPicture
+	
+	major = yes
+	is_triggered_only = yes
+	
+	trigger = {
+		tag = FRA
+		has_global_flag = IW_activate_2
+	}
+	
+	
+	mean_time_to_happen = {
+		months = 24
+	}
+	
+	
+	option = {
+		name = "italian_wars.8.a"
+		ai_chance = { factor = 100 }
+		create_subject = {
+			subject_type = league
+			subject = VEN
+		}
+	 	hidden_effect = {
+		 	MLO = {
+				add_country_modifier = {
+					name = "IW_participant_2"
+					duration = -1
+				}
+			}
+			VEN = {
+				add_country_modifier = {
+					name = "IW_participant_2"
+					duration = -1
+				}
+			}
+		}
+		declare_war_with_cb = {
+			who = MLO			
+			casus_belli = cb_restore_personal_union
+		}
+		add_country_modifier = {
+			name = "IW_participant_2"
+			duration = -1
+		}
+	}
+}
+
+country_event = {
+	id = italian_wars.9
+	title = "italian_wars.9.t"
+	desc = "italian_wars.9.d"
+	picture = BATTLE_eventPicture
+	
+	major = yes
+	#is_triggered_only = yes
+	trigger = {
+		tag = FRA
+		war_with = MLO
+		104 = {
+			OR = {
+				controlled_by = ROOT
+				controlled_by = VEN
+			}
+		}
+		has_global_flag = IW_activate_2
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 0.01
+			104 = { OR = { controlled_by = FRA controlled_by = VEN } }
+		}
+	}
+	
+	option = {
+		name = "italian_wars.9.a"
+		hidden_effect = {
+			VEN = { white_peace = MLO }
+			FRA = { white_peace = MLO }
+		}
+		FRA = {
+			create_subject = {
+				subject_type = fief
+				subject = MLO
+			}
+		}
+		MLO = { release = PAR }
+		if = {
+			limit = { 2979 = { owned_by = MLO } }
+			2979 = { cede_province = SAV }
+		}
+		if = {
+			limit = { 3054 = { owned_by = MLO } }
+			3054 = { cede_province = SWI }
+		}
+		if = {
+			limit = { 1862 = { owned_by = MLO } }
+			1862 = { cede_province = VEN }
+		}
+		if = {
+			limit = { 3294 = { owned_by = MLO } }
+			3294 = { cede_province = VEN }
+		}
+		hidden_effect = {
+			if = { 
+				limit = { FRA = { overlord_of = NAP } }
+				CAS = { country_event = { id = italian_wars.10 days = 45 } }
+			}
+			if = { 
+				limit = { CAS = { overlord_of = NAP } }
+				FRA = { country_event = { id = italian_wars.10 days = 45 } }
+			}
+		}
+	}
+
+}
+
+country_event = {
+	id = italian_wars.10
+	title = "italian_wars.10.t"
+	desc = "italian_wars.10.d"
+	picture = DIPLOMACY_eventPicture
+	
+	#major = yes
+	is_triggered_only = yes
+	trigger = {
+		OR = {
+			AND = { 
+				tag = CAS
+				FRA = { overlord_of = NAP }
+			}
+			AND = { 
+				tag = FRA
+				CAS = { overlord_of = NAP }
+			}
+		}
+		FRA = { overlord_of = MLO }
+		has_global_flag = IW_activate_2
+	}
+	
+	option = {
+		name = "italian_wars.10.a" 
+		ai_chance = { factor = 100 }
+		if = { 
+			limit = { tag = CAS }
+			FRA = { country_event = { id = italian_wars.11 days = 45 } }
+		}
+		if = { 
+			limit = { tag = FRA }
+			CAS = { country_event = { id = italian_wars.11 days = 45 } }
+		}
+	}
+	
+	option = {
+		name = "italian_wars.10.b" 
+		ai_chance = { factor = 0 }
+		add_prestige = -5
+	}
+
+}
+
+country_event = {
+	id = italian_wars.11
+	title = "italian_wars.11.t"
+	desc = "italian_wars.11.d"
+	picture = DIPLOMACY_eventPicture
+	
+	#major = yes
+	is_triggered_only = yes
+	trigger = {
+		has_global_flag = IW_activate_2
+		overlord_of = NAP
+	}
+	
+	
+	option = {
+		name = "italian_wars.11.a" 
+		ai_chance = { factor = 100 }
+		NAP = { release = CLB }
+		add_prestige = -3
+		FROM = { country_event = { id = italian_wars.12 days = 15 } }
+	}
+	
+	option = {
+		name = "italian_wars.11.b" 
+		ai_chance = { factor = 0 }
+		add_prestige = 3
+	}
+
+}
+
+country_event = {
+	id = italian_wars.12
+	title = "italian_wars.12.t"
+	desc = "italian_wars.12.d"
+	picture = DIPLOMACY_eventPicture
+	
+	#major = yes
+	is_triggered_only = yes
+	trigger = {
+		tag = CAS
+		FRA = { overlord_of = MLO }
+		has_global_flag = IW_activate_2
+	}
+	
+	
+	option = {
+		name = "italian_wars.12.a" 
+		ai_chance = { factor = 100 }
+		create_union = CLB
+		add_prestige = 5
+		hidden_effect = {
+			NAP = {
+				add_country_modifier = { 
+					name = "IW_participant_2"
+					duration = -1
+				}
+			}
+			CLB = {
+				add_country_modifier = { 
+					name = "IW_participant_2"
+					duration = -1
+				}
+			}
+			ARA = {
+				add_country_modifier = { 
+					name = "IW_participant_2"
+					duration = -1
+				}
+			}
+			CAS = {
+				add_country_modifier = { 
+					name = "IW_participant_2"
+					duration = -1
+				}
+			}
+		}
+		FROM = { country_event = { id = italian_wars.12 days = 15 } }
+	}
+	
+}

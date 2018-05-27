@@ -1,0 +1,18 @@
+name="Imperialism Reinvigorated: Unstable Development"
+path="mod/improvedhistory_dev"
+replace_path="missions"
+replace_path="common/countries"
+replace_path="history/countries"
+tags={
+	"Missions and Decisions"
+	"Historical"
+	"Map"
+	"National Ideas"
+	"Events"
+	"Expansion"
+	"New Nations"
+	"Trade"
+	"Graphics"
+}
+picture="reinvigorationpic.jpeg"
+supported_version="1.25.*.*"

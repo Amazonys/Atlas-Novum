@@ -1,0 +1,366 @@
+pol_slot_1 = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = POL
+			tag = PLC
+		}
+	}
+	has_country_shield = yes
+	
+	# a mission before this. alliance/pu with LIT OR Lit is dead
+	lithuanian_alliance = {
+		icon = mission_alliances
+		required_missions = { }
+		trigger = {
+			if = {
+				limit = {
+					exists = LIT
+					NOT = { is_rival = LIT }
+				}
+				OR = {
+					alliance_with = LIT
+					LIT = {
+						is_subject_of = ROOT
+					}
+				}
+			}
+			else = {
+				samogitia_area = {
+					type = all
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+		}
+		effect = {
+			west_prussia_area = {
+				limit = {
+					NOT = { owned_by = ROOT	}
+					NOT = { is_core = ROOT	}
+				}
+				add_permanent_claim = ROOT
+			}
+			pomerelia_area = {
+				limit = {
+					NOT = { owned_by = ROOT	}
+					NOT = { is_core = ROOT	}
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	conquer_warmia = { #Conquer Western Prussia
+		icon = mission_unite_home_region
+		required_missions = { lithuanian_alliance }
+		provinces_to_highlight = {
+			OR = {
+				area = west_prussia_area
+				area = pomerelia_area
+			}
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			OR = {
+				west_prussia_area = {
+					type = all
+					country_or_non_sovereign_subject_holds = ROOT	
+				}
+				west_prussia_area = {
+					type = all
+					controlled_by = ROOT	
+				}
+			}
+			OR = {
+				pomerelia_area = {
+					type = all
+					country_or_non_sovereign_subject_holds = ROOT	
+				}
+				pomerelia_area = {
+					type = all
+					controlled_by = ROOT	
+				}
+			}
+		}
+		effect = {
+			west_prussia_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				cede_province = ROOT 
+			}
+			pomerelia_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				cede_province = ROOT 
+			}
+			create_subject = {
+				subject_type = fief
+				subject = TEU
+			}
+			hidden_effect = {
+				TEU = {
+					release_all_subjects = yes
+				}
+			}
+			add_country_modifier = {
+				name = "teutons_pacified"
+				duration = 7300
+			}
+		}
+	}
+	annex_mazovia = {
+		icon = mission_have_two_subjects
+		required_missions = { conquer_warmia }
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 257
+				province_id = 1938
+				province_id = 256
+			}
+			NOT = {
+				owned_by = ROOT
+			}
+		}
+		trigger = {
+			owns_core_province = 257
+			owns_core_province = 1938
+			owns_core_province = 256
+		}
+		effect = {
+			# a strong modifier
+			add_country_modifier = {
+				name = "integrating_mazovia"
+				duration = 7300
+			}
+			
+			# permaclaims on a big chunk of lithuania if not under PU
+			if = {
+				limit = {
+					LIT = {
+						junior_union_with = ROOT
+						lithuania_area = {
+							type = all
+							owned_by = LIT
+						}
+						minsk_area = {
+							type = all
+							owned_by = LIT
+						}
+						west_dniepr_area = {
+							type = all
+							owned_by = LIT
+						}
+						pripyat_area = {
+							type = all
+							owned_by = LIT
+						}
+						smolensk_area = {
+							type = all
+							owned_by = LIT
+						}
+					}
+				}
+			}
+			else = {
+				lithuania_area = {
+					limit = {
+						NOT = { owned_by = ROOT	}
+						NOT = { is_core = ROOT	}
+					}
+					add_permanent_claim = ROOT
+				}
+				minsk_area = {
+					limit = {
+						NOT = { owned_by = ROOT	}
+						NOT = { is_core = ROOT	}
+					}
+					add_permanent_claim = ROOT
+				}
+				west_dniepr_area = {
+					limit = {
+						NOT = { owned_by = ROOT	}
+						NOT = { is_core = ROOT	}
+					}
+					add_permanent_claim = ROOT
+				}
+				pripyat_area = {
+					limit = {
+						NOT = { owned_by = ROOT	}
+						NOT = { is_core = ROOT	}
+					}
+					add_permanent_claim = ROOT
+				}
+				smolensk_area = {
+					limit = {
+						NOT = { owned_by = ROOT	}
+						NOT = { is_core = ROOT	}
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+		}
+	}
+	vassalize_lithuania = { # INTEGRATE lithuania
+		icon = mission_monarch_in_throne_room
+		required_missions = { annex_mazovia }
+		position = 4
+		
+		provinces_to_highlight = {
+			OR = {
+				area = lithuania_area
+				area = minsk_area
+				area = west_dniepr_area
+				area = pripyat_area
+				area = smolensk_area
+			}
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			lithuania_area = {
+				type = all
+				owned_by = ROOT
+			}
+			minsk_area = {
+				type = all
+				owned_by = ROOT
+			}
+			west_dniepr_area = {
+				type = all
+				owned_by = ROOT
+			}
+			pripyat_area = {
+				type = all
+				owned_by = ROOT
+			}
+			smolensk_area = {
+				type = all
+				owned_by = ROOT
+			}
+		}
+		effect = {
+			add_country_modifier = { # autonomy reduction speed
+				name = "integration_of_lithuania"
+				duration = 7300
+			}
+			if = {
+				limit = {
+					exists = TEU
+					TEU = {
+						is_subject = no
+						east_prussia_area = {
+							type = all
+							country_or_non_sovereign_subject_holds = ROOT	
+						}
+					}
+				}
+				add_casus_belli = {
+					type = cb_vassalize_mission
+					months = 300
+					target = TEU
+				}
+			}
+			else = {
+				east_prussia_area = {
+					limit = {
+						NOT = { owned_by = ROOT	}
+						NOT = { is_core = ROOT	}
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+			silesia_area = {
+				limit = {
+					NOT = { owned_by = ROOT	}
+					NOT = { is_core = ROOT	}
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+}
+
+pol_slot_2 = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = POL
+			tag = PLC
+		}
+	}
+	has_country_shield = yes
+	
+	conquer_silesia = {
+		icon = mission_conquer_5_states
+		required_missions = { vassalize_lithuania }
+		position = 5
+		provinces_to_highlight = {
+			area = silesia_area
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			silesia_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "silesia_conquered"
+				duration = 7300
+			}
+		}
+	}
+}
+
+pol_slot_3 = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = POL
+			tag = PLC
+		}
+	}
+	has_country_shield = yes
+	
+}
+
+pol_slot_4 = {
+	slot = 4
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = POL
+			tag = PLC
+		}
+	}
+	has_country_shield = yes
+	
+
+}
+
+pol_slot_5 = {
+	slot = 5
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = POL
+			tag = PLC
+		}
+	}
+	has_country_shield = yes
+	
+	
+}

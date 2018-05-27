@@ -1,0 +1,436 @@
+########################################
+# War of Castilian Succession
+# Always starts by around 1475
+########################################
+
+namespace = castilian_succession
+
+# Civil War in Castile
+country_event = {
+	id = castilian_succession.1
+	title = "castilian_succession.1.t"
+	desc = "castilian_succession.1.d"
+	picture = CIVIL_WAR_eventPicture
+
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		set_country_flag = had_cas_civil_war
+		add_stability = -1
+		hidden_effect = {
+			206 = { add_core = LON }
+			3102 = { add_core = LON }
+			3103 = { add_core = LON }
+			1749 = { add_core = LON }
+			1745 = { add_core = LON }
+			226 = { add_core = LON }
+			#1750 = { add_core = LON }
+			1747 = { remove_core = LON }
+			3100 = { remove_core = LON }
+			218 = { remove_core = LON }
+			3099 = { remove_core = LON }
+			CAS = { release = LON }
+			#1750 = { cede_province = LON }
+			LON = {
+				define_ruler = {
+					name = "Joanna"
+ 					dynasty = "de Trastámara" 
+					age = 15
+					claim = 70
+					female = yes
+					adm = 2
+					dip = 5
+					mil = 2
+				}
+				set_capital = 1745
+				build_to_forcelimit = {
+					infantry = 0.8
+ 			 		cavalry = 0.2
+				}
+			}
+			
+			1750 = { set_province_flag = cas_civil_war_start }
+			1746 = { set_province_flag = cas_civil_war_2 }
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					NOT = { has_province_flag = cas_civil_war_start } 
+					NOT = { has_province_flag = cas_civil_war_2 } 
+				}
+				set_province_flag = cas_civil_war_3
+			}
+		}
+	}
+	
+	
+	option = {		# Support Aragonese Candidate
+		name = "castilian_succession.1.a"
+		set_country_flag = cas_aragon_candidate
+		set_country_flag = civil_war_in_castile
+		define_heir = {
+			name = "Isabella II"
+ 			dynasty = "de Trastámara" 
+			age = 0
+			claim = 80
+			female = yes
+			adm = 4
+			dip = 4
+			mil = 4
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = cas_civil_war_start
+			}
+			spawn_rebels = {
+				type = noble_rebels
+				friend = POR
+				friend = LON
+				size = 1
+				win = yes
+			}
+			clr_province_flag = cas_civil_war_start
+		}
+		every_owned_province = {
+			limit = {
+				OR = {
+					has_province_flag = cas_civil_war_2
+					has_province_flag = cas_civil_war_3
+				}
+			}
+			spawn_rebels = {
+				friend = POR
+				friend = LON
+				type = noble_rebels
+				size = 1
+				win = yes
+			}
+			clr_province_flag = cas_civil_war_2
+			clr_province_flag = cas_civil_war_3
+		}
+		
+	}
+}
+
+# The Civil War Spreads to PROVINCE
+country_event = {
+	id = castilian_succession.2
+	title = "castilian_succession.2.t"
+	desc = "castilian_succession.2.d"
+	picture = BORDER_TENSION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		any_owned_province = {
+			continent = europe
+			is_capital = no
+			controlled_by = owner
+			NOT = { has_province_flag = civil_war_spreads }
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					continent = europe
+					is_capital = no
+					controlled_by = owner
+					NOT = { has_province_flag = civil_war_spreads }
+				}
+				random_list = {
+					85 = { set_province_flag = revolt_1 }
+					15 = { set_province_flag = revolt_2 }
+				}
+				area = { set_province_flag = civil_war_spreads }
+			}
+		}
+	}
+	
+	option = {		# Where is the loyalty...
+		name = "flavor_spa.EVTOPTA3560"
+		random_owned_province = {
+			limit = { has_province_flag = revolt_2 }
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 2
+			}
+			clr_province_flag = revolt_2
+		}
+		random_owned_province = {
+			limit = { has_province_flag = revolt_1 }
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 1
+			}
+			clr_province_flag = revolt_1
+		}
+	}
+}
+
+# declare once portugal takes leon as pu
+country_event = {
+	id = castilian_succession.3
+	title = "castilian_succession.3.t"
+	desc = "castilian_succession.3.d"
+	picture = BORDER_TENSION_eventPicture
+	
+	
+	
+	trigger = {
+		tag = CAS
+		POR = { overlord_of = LON }
+		NOT = { OR = { war_with = LON war_with = POR } }
+		NOT = { has_country_flag = declared_war_por_lon }
+		
+	}
+
+	mean_time_to_happen = {
+		days = 2
+	}
+	
+	
+	option = {		# Where is the loyalty...
+		name = "castilian_succession.3.a"
+		declare_war_with_cb = {
+			who = LON
+			casus_belli = cb_restore_personal_union
+		}
+		set_country_flag = declared_war_por_lon
+	}
+}
+
+		
+
+# Castilian Civil War - France
+country_event = {
+	id = castilian_succession.5
+	title = "castilian_succession.5.t"
+	desc = "castilian_succession.5.d"
+	picture = ACCUSATION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		CAS = {
+			has_disaster = castilian_succession
+		}
+	}
+	
+	
+	option = { #Support this claimant
+		name = "castilian_succession.5.a"
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0
+				alliance_with = CAS
+			}
+			modifier = {
+				factor = 0
+				owns = 197
+			}
+		}
+		create_alliance = POR
+		197 = { add_claim = FRA }
+		declare_war_with_cb = {
+			who = ARA
+			casus_belli = cb_conquest
+		}
+		CAS = {
+			country_event = {
+				id = castilian_succession.6
+				days = 15
+			}
+			add_opinion = {
+				who = FRA
+				modifier = cas_civil_war_interferance
+			}
+		}
+	}
+	option = { #Let the Castilians handle their own conflicts.
+		name = "castilian_succession.5.b"
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0
+				is_rival = CAS
+			}
+		}
+		add_opinion = {
+			who = CAS
+			modifier = cas_non_interferance
+		}
+	}
+}
+
+# French Meddling
+country_event = {
+	id = castilian_succession.6
+	title = "castilian_succession.6.t"
+	desc = "castilian_succession.6.d"
+	picture = BORDER_TENSION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_disaster = castilian_succession
+	}
+	
+	option = { #Despicable!
+		name = "castilian_succession.6.a"
+		random_owned_province = {
+			limit = {
+				is_capital = no
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 1
+				friend = POR
+			}
+		}
+		add_mil_power = 50
+		add_manpower = 3
+	}
+}
+
+# End of Castilian Civil War
+country_event = {
+	id = castilian_succession.100
+	title = "castilian_succession.100.t"
+	desc = "castilian_succession.100.d"
+	picture = CIVIL_WAR_eventPicture
+
+	major = yes
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = "castilian_succession.100.a" # hist
+		trigger = {
+			OR = {
+				AND = {
+					has_country_flag = cas_aragon_candidate
+					is_year = 1480
+					is_at_war = no
+				}
+			}
+		}
+		white_peace = POR
+		white_peace = LON
+		white_peace = FRA
+		CAS = { inherit = LON }
+		197 = { cede_province = FRA }
+		add_opinion = {
+			who = ARA
+			modifier = cas_civil_war_winner
+		}
+		ARA = {
+			add_opinion = {
+				who = CAS
+				modifier = cas_civil_war_winner
+			}
+		}
+	}
+	option = {
+		name = "castilian_succession.100.b" # Portugal Triumphs
+		trigger = {
+			POR = { 
+				overlord_of = LON 
+			}
+			CAS = { NOT = { controls = 219 } }
+			ARA = { NOT = { controls = 220 } }
+			POR = { controls = 227 }
+			LON = { controls = 1745 }
+		}
+		white_peace = POR
+		white_peace = LON
+		white_peace = FRA
+		197 = { cede_province = FRA }
+		5096 = { cede_province = POR }
+		366 = { cede_province = POR }
+		#POR = { create_union = CAS }
+		hidden_effect = {
+			 every_province = {
+				limit = { owned_by = LON }
+				remove_core = ROOT
+			}
+		}
+		if = {
+			limit = {
+				has_opinion_modifier = {
+					modifier = cas_civil_war_interferance
+					who = POR
+				}
+			}
+			remove_opinion = {
+				who = POR
+				modifier = cas_civil_war_interferance
+			}
+		}
+		add_opinion = {
+			who = POR
+			modifier = cas_civil_war_winner
+		}
+		POR = {
+			add_opinion = {
+				who = CAS
+				modifier = cas_civil_war_winner
+			}
+		}
+	}
+	option = {
+		name = "castilian_succession.100.c" # Castile Triumphs
+		trigger = {
+			OR = {
+				CAS = { 
+					overlord_of = LON 
+					is_at_war = no 
+				}
+				AND = {
+					POR = { NOT = { controls = 227 } }
+					LON = { NOT = { controls = 1745 } }
+					CAS = { controls = 219 }
+					ARA = { controls = 220 }
+				}
+			}
+		}
+		white_peace = POR
+		white_peace = LON
+		white_peace = FRA
+		CAS = { create_union = LON }
+		POR = { release = CAS }
+		if = {
+			limit = { POR = { owns = 368 } }
+			368 = { cede_province = CAS }
+		}
+		if = {
+			limit = { POR = { owns = 334 } }
+			334 = { cede_province = CAS }
+		}
+		if = {
+			limit = { POR = { owns = 1751 } }
+			1751 = { cede_province = CAS }
+		}
+		if = {
+			limit = { POR = { owns = 5210 } }
+			5210 = { cede_province = CAS }
+		}
+		if = {
+			limit = { POR = { owns = 5218 } }
+			5218 = { cede_province = CAS }
+		}
+	}
+}
