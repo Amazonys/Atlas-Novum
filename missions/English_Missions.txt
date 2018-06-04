@@ -15,102 +15,144 @@ eng_slot_1 = {
 	}
 	has_country_shield = yes
 	
-	occupy_paris = {
+	treaty_bretigny = {
 		icon = mission_unite_home_region
 		required_missions = { }
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 177
+				province_id = 195
+				area = pyrenees_area
+				area = poitou_area
+				area = guyenne_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			177 = { 
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					controlled_by = ROOT 
+				}
+			}
+			195 = { 
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					controlled_by = ROOT 
+				}
+			}
+			pyrenees_area = { 
+				type = all
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					controlled_by = ROOT 
+				}
+			}
+			poitou_area = { 
+				type = all
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					controlled_by = ROOT 
+				}
+			}
+			guyenne_area = { 
+				type = all
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					controlled_by = ROOT 
+				}
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+				AMG = { inherit = FOI }
+				4386 = { add_core = LIM }
+				4111 = { add_core = ENG }
+				4112 = { add_core = AMG }
+				3077 = { add_core = PRI }
+				180 = { add_core = AGU }
+				3083 = { remove_core = ENG }
+				175 = { remove_core = ENG }
+				
+			}
+			4111 = { cede_province = ENG }
+			create_subject = {
+				subject_type = fief
+				subject = AMG 
+			}
+			4112 = { cede_province = AMG }
+			create_subject = {
+				subject_type = fief
+				subject = AGU 
+			}
+			180 = { cede_province = AGU }
+			create_subject = {
+				subject_type = fief
+				subject = LIM 
+			}
+			4386 = { cede_province = LIM }
+			create_subject = {
+				subject_type = fief
+				subject = PRI 
+			}
+			3077 = { cede_province = PRI }
+			
+		}
+	}
+	
+	occupy_paris = {
+		icon = mission_unite_home_region
+		required_missions = { treaty_bretigny }
+		position = 2
 		
 		trigger = {
 			183 = { controlled_by = ROOT }
 			184 = { controlled_by = ROOT }
+			4390 = { controlled_by = ROOT }
 			186 = { controlled_by = ROOT }
-			179 = { controlled_by = ROOT }
 			177 = { controlled_by = ROOT }
 		}
 		
 		effect = {
 			white_peace = FRA
-			183 = { cede_province = ENG }
+			183 = { cede_province = ROOT }
 			create_union = FRA
-			add_years_of_income = 1
+			create_subject = {
+				subject_type = fief
+				subject = ORL 
+			}
+			create_subject = {
+				subject_type = fief
+				subject = PIC 
+			}
+			add_years_of_income = 0.5
+			add_prestige = 10
+			flanders_area = { 
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			hidden_effect = {
+				every_subject_country = { 
+					limit = { is_subject_of_type = league }
+					grant_independence = yes
+				}
+			}
 		}
 	}
-	
-	eng_end_hyw = {
-		icon = mission_alliances
+	eng_conquer_picardy = {
+		icon = mission_cannons_firing
 		required_missions = { occupy_paris }
-		position = 2
-		
-		trigger = {
-			overlord_of = FRA
-		}
-		
-		effect = {
-			add_prestige = 25
-			every_province = {
-				limit = { NOT = { owned_by = ROOT } country_or_non_sovereign_subject_holds = ROOT region = france_region }
-				add_core = ROOT 
-			}
-		}
-	}
-	
-	eng_angevin_kingdom = {
-		icon = mission_rb_monopolize_the_channel
-		required_missions = { eng_end_hyw }
 		position = 3
-		
-		
-		trigger = {
-			NOT = { OR = { tag = ENG tag = GBR } }
-			tag = AGV
-		}
-		
-		effect = {
-			brittany_area = {
-				limit = {
-					NOT = { is_core = ROOT }
-					NOT = { country_or_non_sovereign_subject_holds = ROOT }
-				}
-				add_permanent_claim = ROOT
-			}
-			picardy_area = {
-				limit = {
-					NOT = { is_core = ROOT }
-					NOT = { country_or_non_sovereign_subject_holds = ROOT }
-				}
-				add_permanent_claim = ROOT
-			}
-			bourgogne_area = {
-				limit = {
-					NOT = { is_core = ROOT }
-					NOT = { country_or_non_sovereign_subject_holds = ROOT }
-				}
-				add_permanent_claim = ROOT
-			}
-		}
-	}
-	
-	eng_sieze_burgundy = {
-		icon = mission_rb_repatriate_burgundy
-		required_missions = { eng_angevin_kingdom }
-		position = 4
 		
 		provinces_to_highlight = {
 			OR = {
 				area = picardy_area
-				area = bourgogne_area
+				area = flanders_area
 			}
 			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		
-		ai_weight = {
-			factor = 2
-			modifier = {
-				factor = 0
-				exists = BUR
-				BUR = {
-					alliance_with = ROOT
-				}
-			}
 		}
 		
 		trigger = {
@@ -118,31 +160,28 @@ eng_slot_1 = {
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT
 			}
-			bourgogne_area = {
+			flanders_area = {
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT
 			}
 		}
 		
 		effect = {
-			picardy_area = {
-				add_province_modifier = {
-					name = "eng_rb_local_conv"
-					duration = 7300
-				}
+			add_years_of_income = 0.25
+			if = {
+				limit = { PIC = { exists = yes is_subject_of = ROOT } }
+				inherit = PIC
 			}
-			bourgogne_area = {
-				add_province_modifier = {
-					name = "eng_rb_local_conv"
-					duration = 7300
-				}
+			if = {
+				limit = { FLA = { exists = yes is_subject_of = ROOT } }
+				inherit = FLA
 			}
 		}
 	}
-	
+
 	eng_rb_hre_electors = {
 		icon = mission_rb_control_electors
-		required_missions = { eng_sieze_burgundy eng_conquer_brittany }
+		required_missions = {  }
 		position = 5
 		
 		trigger = {
@@ -499,8 +538,8 @@ eng_slot_2 = {
 	}
 	eng_conquer_brittany = {
 		icon = mission_cannons_firing
-		required_missions = { eng_angevin_kingdom }
-		position = 4
+		required_missions = { occupy_paris }
+		position = 3
 		
 		provinces_to_highlight = {
 			OR = {
@@ -517,7 +556,15 @@ eng_slot_2 = {
 		}
 		
 		effect = {
-			
+			add_years_of_income = 0.25
+			if = {
+				limit = { AGU = { exists = yes is_subject_of = ROOT } }
+				inherit = AGU
+			}
+			178 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
 		}
 	}
 	
@@ -1014,47 +1061,7 @@ eng_slot_3 = {
 	}
 	has_country_shield = yes
 		
-	eng_finish_welsh_march = {
-		icon = mission_cannons_firing
-		required_missions = { }
-	
-		
-		provinces_to_highlight = {
-			OR = {
-				area = wales_area
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		
-		trigger = {
-			wales_area = {
-				type = all
-				OR = {
-					country_or_non_sovereign_subject_holds = WMC
-					country_or_non_sovereign_subject_holds = ROOT
-				}
-			}
-		}
-		
-		effect = {
-			inherit = WMC
-			add_country_modifier = {
-				name = "extra_culture"
-				duration = -1
-			}
-			add_accepted_culture = welsh
-			add_casus_belli = {
-				type = cb_restore_personal_union
-				months = 1200
-				target = SCO
-			}
-			ireland_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-		}
-	}	
-		
+
 	eng_conquer_ireland = {
 		icon = mission_cannons_firing
 		required_missions = { eng_finish_welsh_march }
@@ -1598,23 +1605,85 @@ eng_slot_4 = {
 	}
 	has_country_shield = yes
 	
+	eng_finish_welsh_march = {
+		icon = mission_cannons_firing
+		required_missions = { }
 	
-	eng_own_britain = {
-		icon = mission_empire
-		required_missions = { eng_union_sco eng_finish_welsh_march }
-		position = 2
 		
 		provinces_to_highlight = {
 			OR = {
-				region = british_isles_region
+				area = wales_area
 			}
 			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
 		
 		trigger = {
-			british_isles_region = {
+			wales_area = {
 				type = all
-				country_or_non_sovereign_subject_holds = ROOT
+				OR = {
+					country_or_non_sovereign_subject_holds = WMC
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+		}
+		
+		effect = {
+			inherit = WMC
+			add_country_modifier = {
+				name = "extra_culture"
+				duration = -1
+			}
+			add_accepted_culture = welsh
+			add_casus_belli = {
+				type = cb_restore_personal_union
+				months = 1200
+				target = SCO
+			}
+			ireland_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}	
+		
+	
+	eng_union_sco = {
+		icon = mission_cannons_firing
+		required_missions = { eng_finish_welsh_march }
+		position = 2
+	
+		provinces_to_highlight = {
+			OR = {
+				area = lowlands_area
+				area = highlands_area
+				area = western_lowlands_area
+				area = southern_isles_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+	
+		
+		trigger = {
+			OR = {
+				ROOT = { overlord_of = SCO }
+				AND = {
+					lowlands_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+					highlands_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+					western_lowlands_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+					southern_isles_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+				}
 			}
 		}
 		
@@ -1623,6 +1692,9 @@ eng_slot_4 = {
 				name = "britain_united"
 				duration = 18250
 			}
+			369 = { add_permanent_claim = ROOT }
+			1978 = { add_permanent_claim = ROOT }
+			#1979 = { add_permanent_claim = ROOT }
 		}
 	}
 			
@@ -1630,7 +1702,7 @@ eng_slot_4 = {
 	
 	british_union = {
 		icon = mission_rb_monopolize_the_channel
-		required_missions = { eng_conquer_ireland eng_own_britain }
+		required_missions = { eng_conquer_ireland eng_union_sco }
 		position = 3
 	
 		
@@ -1645,6 +1717,48 @@ eng_slot_4 = {
 			inherit = JER
 			inherit = KOI
 			226 = { add_permanent_claim = ROOT }
+		}
+	}
+	eng_rb_take_gibraltar = {
+		icon = mission_rb_take_gibraltar
+		required_missions = { british_union }
+		position = 4
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 226
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		ai_weight = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					is_year = 1700
+				}
+			}
+		}
+		ai_priority = {
+			factor = 1
+		}
+		
+		trigger = {
+			226 = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "eng_rb_gibraltar_mod"
+				duration = 7300
+			}
+			balearic_islands_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
 		}
 	}
 	
@@ -2041,56 +2155,12 @@ eng_slot_5 = {
 	}
 	has_country_shield = yes
 	
-	eng_union_sco = {
-		icon = mission_cannons_firing
-		required_missions = { }
 	
-		provinces_to_highlight = {
-			OR = {
-				area = lowlands_area
-				area = highlands_area
-				area = western_lowlands_area
-				area = southern_isles_area
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-	
-		
-		trigger = {
-			OR = {
-				ROOT = { overlord_of = SCO }
-				AND = {
-					lowlands_area = {
-						type = all
-						country_or_non_sovereign_subject_holds = ROOT
-					}
-					highlands_area = {
-						type = all
-						country_or_non_sovereign_subject_holds = ROOT
-					}
-					western_lowlands_area = {
-						type = all
-						country_or_non_sovereign_subject_holds = ROOT
-					}
-					southern_isles_area = {
-						type = all
-						country_or_non_sovereign_subject_holds = ROOT
-					}
-				}
-			}
-		}
-		
-		effect = {
-			369 = { add_permanent_claim = ROOT }
-			1978 = { add_permanent_claim = ROOT }
-			#1979 = { add_permanent_claim = ROOT }
-		}
-	}
 	
 	eng_rb_take_shetland_and_faro_isles = {
 		icon = mission_rb_conquer_the_isles
 		required_missions = { eng_union_sco }
-		position = 2
+		position = 3
 		
 		provinces_to_highlight = {
 			OR = {
@@ -2136,7 +2206,7 @@ eng_slot_5 = {
 	eng_rb_greenland = {
 		icon = mission_rb_settle_the_north
 		required_missions = { eng_rb_take_shetland_and_faro_isles }
-		position = 3
+		position = 4
 		
 		provinces_to_highlight = {
 			OR = {
@@ -2216,48 +2286,6 @@ eng_slot_5 = {
 	
 	}
 	
-	eng_rb_take_gibraltar = {
-		icon = mission_rb_take_gibraltar
-		required_missions = { british_union }
-		position = 4
-		
-		provinces_to_highlight = {
-			OR = {
-				province_id = 226
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		
-		ai_weight = {
-			factor = 1
-			modifier = {
-				factor = 0
-				NOT = {
-					is_year = 1700
-				}
-			}
-		}
-		ai_priority = {
-			factor = 1
-		}
-		
-		trigger = {
-			226 = {
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-		}
-		
-		effect = {
-			add_country_modifier = {
-				name = "eng_rb_gibraltar_mod"
-				duration = 7300
-			}
-			balearic_islands_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-		}
-	}
 	eng_rb_take_baleares = {
 		icon = mission_rb_increase_our_reach
 		required_missions = { eng_rb_take_gibraltar }

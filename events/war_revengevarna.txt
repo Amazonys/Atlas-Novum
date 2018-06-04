@@ -3,8 +3,6 @@
 
 namespace = revenge_varna
 
-
-
 #Hungary
 country_event = {
 	id = revenge_varna.1
@@ -35,9 +33,6 @@ country_event = {
 		}
 	}
 	
-	immediate = {
-		set_global_flag = rv_activate
-	}
 	option = { #historical, push the infidel out of europe
 		name = "revenge_varna.1.a"
 		ai_chance = {
@@ -50,17 +45,20 @@ country_event = {
 				days = 15
 			}
 		}
+		set_global_flag = rv_activate
 	}
-	option = { #divide the danube/deal with the devil
+	option = { #
 		name = "revenge_varna.1.b"
 		ai_chance = {
 			factor = 1
 		}
-		create_alliance = TUR
-		TUR = {
-			country_event = {
-				id = revenge_varna.3
-				days = 15
+		add_prestige = -10
+		hidden_effect = {
+			TUR = { 
+				add_country_modifier = {
+					name = "rv_win"
+					duration = -1 
+				}
 			}
 		}
 	}
@@ -89,63 +87,24 @@ country_event = {
 			factor = 99
 		}
 		name = "revenge_varna.2.a"
+		POL = { country_event = { id = revenge_varna.3 days = 13 } }
 		HUN = { country_event = { id = revenge_varna.4 days = 15 } }
-		POL = { country_event = { id = revenge_varna.4 days = 15 } }
-		TUR = { 
-			set_country_flag = turkish_rv_refusal
-		}
-		add_country_modifier = {
-			name = "rv_participant"
-			duration = -1
-		}
-		hidden_effect = {
-			HUN = { 
-				add_country_modifier = {
-					name = "rv_participant"
-					duration = -1
-				}
-			}
-			POL = { 
-				add_country_modifier = {
-					name = "rv_participant"
-					duration = -1
-				}
-			}
-		}
+		TUR = { set_country_flag = turkish_rv_refusal }
 	}
 	option = {
 		ai_chance = {
 			factor = 1
 		}
 		name = "revenge_varna.2.b"
-		TUR = {
-			release_vassal = WAL
-			release_vassal = SER
-			set_country_flag = turkish_rv_acceptance
-		}
-		add_country_modifier = {
-			name = "rv_participant"
-			duration = -1
-		}
-		hidden_effect = {
-			HUN = { 
-				add_country_modifier = {
-					name = "rv_participant"
-					duration = -1
-				}
-			}
-			POL = { 
-				add_country_modifier = {
-					name = "rv_participant"
-					duration = -1
-				}
-			}
-		}
+		add_prestige = -20
+		WAL = { grant_independence = yes }
+		SER = { grant_independence = yes }
+		TUR = { set_country_flag = turkish_rv_acceptance }
 	}
 }
 
 
-#divide along danube
+#Poland joins hungary
 country_event = {
 	id = revenge_varna.3
 	title = "revenge_varna.3.t"
@@ -153,31 +112,36 @@ country_event = {
 	picture = DIPLOMACY_eventPicture
 	
 	trigger = {
-		tag = TUR
+		TUR = { has_country_flag = turkish_rv_refusal }
 		has_global_flag = rv_activate
+		tag = POL
 	}
 	
 	is_triggered_only = yes
-	fire_only_once = yes
+	#fire_only_once = yes
 	
 	option = {
 		name = "revenge_varna.3.a"
 		ai_chance = {
-			factor = 50
+			factor = 90
 		}
-		HUN = { inherit = WAL release = CRO }
-		TUR = { inherit = SER inherit = BOS inherit = CRO set_country_flag = turkish_rv_acceptance }
+		HUN = {
+			create_subject = {
+				subject_type = league
+				subject = POL
+			}
+		}
+		add_country_modifier = {
+			name = "rv_participant"
+			duration = -1
+		}
 	}
 	option = {
-		name = "revenge_varna.3.b"
 		ai_chance = {
-			factor = 50
+			factor = 10
 		}
-		HUN = { country_event = { id = revenge_varna.4 days = 1 } }
-		POL = { country_event = { id = revenge_varna.4 days = 1 } }
-		TUR = { 
-			set_country_flag = turkish_rv_refusal
-		}
+		name = "revenge_varna.3.b"
+		add_prestige = -5
 	}
 }
 
@@ -191,36 +155,205 @@ country_event = {
 	trigger = {
 		TUR = { has_country_flag = turkish_rv_refusal }
 		has_global_flag = rv_activate
-		OR = {
-			tag = HUN 
-			tag = POL
-		}
+		tag = HUN 
 	}
-	
+	major = yes
 	is_triggered_only = yes
 	#fire_only_once = yes
 	
 	option = {
 		name = "revenge_varna.4.a"
-		if = { 
-			limit = { tag = POL }
-			3163 = { add_core = MOL }
-			MOL = { declare_war_with_cb = {
-				who = TUR
-				casus_belli = cb_core
-				war_goal_province = 3163
-			} }
+		declare_war_with_cb = {
+			who = TUR
+			casus_belli = cb_insult
 		}
-		if = { 
-			limit = { tag = HUN }
-			4176 = { add_core = HUN }
-			3187 = { add_core = HUN }
-			141 = { add_core = HUN }
-			declare_war_with_cb = {
-				who = SER
-				casus_belli = cb_core
-				war_goal_province = 4176
+	#	hidden_effect = {
+			HUN = { 
+				add_country_modifier = {
+					name = "rv_participant"
+					duration = -1
+				}
+			}
+			TUR = {
+				add_country_modifier = {
+					name = "rv_participant"
+					duration = -1
+				}
+			}
+	#	}
+	}
+}
+
+#end war
+country_event = {
+	id = revenge_varna.100
+	title = "revenge_varna.100.t"
+	desc = "revenge_varna.100.d"
+	picture = DIPLOMACY_eventPicture
+	
+	major = yes
+	trigger = {
+		has_global_flag = rv_activate
+		has_country_modifier = rv_participant
+		OR = {
+			AND = {
+				tag = TUR
+				war_score_against = {
+					who = HUN
+					value = 10
+				}
+			}
+			AND = {
+				tag = HUN
+				war_score_against = {
+					who = TUR
+					value = 10
+				}
+			}
+		}
+		NOT = { has_country_modifier = rv_win }
+	}
+	
+	mean_time_to_happen = {
+		months = 24
+		modifier = {
+			factor = 0.25
+			OR = {
+				4239 = { OR = { controlled_by = ROOT controlled_by = WAL controlled_by = SER } }
+				1951 = { OR = { controlled_by = ROOT controlled_by = WAL controlled_by = SER } }
+			}
+		}
+		modifier = {
+			factor = 0.5
+			OR = {
+				AND = {
+					tag = TUR
+					war_score_against = {
+						who = HUN
+						value = 25
+					}
+				}
+				AND = {
+					tag = HUN
+					war_score_against = {
+						who = TUR
+						value = 25
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 0.5
+			OR = {
+				AND = {
+					tag = TUR
+					war_score_against = {
+						who = HUN
+						value = 50
+					}
+				}
+				AND = {
+					tag = HUN
+					war_score_against = {
+						who = TUR
+						value = 50
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 0.5
+			OR = {
+				AND = {
+					tag = TUR
+					war_score_against = {
+						who = HUN
+						value = 75
+					}
+				}
+				AND = {
+					tag = HUN
+					war_score_against = {
+						who = TUR
+						value = 75
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 0.5
+			OR = {
+				AND = {
+					tag = TUR
+					war_score_against = {
+						who = HUN
+						value = 90
+					}
+				}
+				AND = {
+					tag = HUN
+					war_score_against = {
+						who = TUR
+						value = 90
+					}
+				}
+			}
+		}
+	}
+	
+	fire_only_once = yes
+	
+	option = {
+		name = "revenge_varna.100.a"
+		trigger = {
+			tag = TUR
+			war_score_against = {
+				who = HUN
+				value = 10
+			}
+		}
+		white_peace = HUN
+		add_country_modifier = {
+			name = "rv_win"
+			duration = -1
+		}
+		hidden_effect = {
+			every_country = { 
+				limit = { has_country_modifier = rv_participant is_subject_of_type = league }
+				grant_independence = yes
+			}
+			every_country = { 
+				limit = { has_country_modifier = rv_participant }
+				remove_country_modifier = rv_participant
+			}
+		}
+	}
+	option = {
+		name = "revenge_varna.100.a"
+		trigger = {
+			tag = HUN
+			war_score_against = {
+				who = TUR
+				value = 10
+			}
+		}
+		white_peace = TUR
+		add_country_modifier = {
+			name = "rv_win"
+			duration = -1
+		}
+		hidden_effect = {
+			every_country = { 
+				limit = { has_country_modifier = rv_participant is_subject_of_type = league }
+				grant_independence = yes
+			}
+			every_country = { 
+				limit = { has_country_modifier = rv_participant }
+				remove_country_modifier = rv_participant
 			}
 		}
 	}
 }
+
+
+
