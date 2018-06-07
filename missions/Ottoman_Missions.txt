@@ -7,22 +7,92 @@ tur_slot_1 = {
 	}
 	has_country_shield = yes
 	
-	conquer_bosnia = {
-		icon = mission_cannons_firing
+	tur_subjugate_serbia = {
+		icon = mission_unite_home_region
 		required_missions = { tur_varna }
 		position = 2
 		
 		provinces_to_highlight = {
-			area = bosnia_area
+			OR = {
+				province_id = 141
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			141 = {
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					controlled_by = ROOT
+				}	
+			}	
+		}
+		effect = {
+			create_subject = {
+				subject_type = fief
+				subject = SER	
+			}
+			hidden_effect = {
+				SER = { 
+					release = MON
+				}
+			}
+			create_subject = {
+				subject_type = fief
+				who = MON
+			}
+			add_country_modifier = {
+				name = "at_the_gates_of_europe"
+				duration = 3650
+			}
+			bosnia_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT }}
+				add_permanent_claim = ROOT
+			}
+			1831 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT }}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	tur_conquer_bosnia = {
+		icon = mission_cannons_firing
+		required_missions = { tur_subjugate_serbia }
+		position = 3
+		
+		provinces_to_highlight = {
+			OR = {
+				area = bosnia_area
+				province_id = 1831
+			}
 			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
 		trigger = {
 			bosnia_area = {
 				type = all
-				country_or_non_sovereign_subject_holds = ROOT
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					controlled_by = ROOT	
+				}	
+			}
+			1831 = { 
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					controlled_by = ROOT	
+				}
 			}
 		}
 		effect = {
+			bosnia_area = {
+				limit = { controlled_by = ROOT }
+				cede_province = ROOT 
+			}
+			1831 = {
+				limit = { controlled_by = ROOT }
+				cede_province = ROOT	
+			}
+			inherit = SER
 			153 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT }}
 				add_permanent_claim = ROOT
@@ -47,7 +117,7 @@ tur_slot_1 = {
 	}
 	tur_control_alfold = {
 		icon = mission_unite_home_region
-		required_missions = { conquer_bosnia }
+		required_missions = { tur_conquer_bosnia }
 		ai_weight = {
 			factor = 2
 		}
@@ -102,7 +172,9 @@ tur_slot_1 = {
 				name = "ottoman_hungary"
 				duration = 7300
 			}
-			hidden_effect = {
+			add_country_modifier = {
+				name = "principality_of_transylvania"
+				duration = 7300
 			}
 			white_peace = HUN
 			create_subject = {
@@ -118,7 +190,7 @@ tur_slot_1 = {
 				cede_province = ROOT 
 			}
 			slavonia_area = {
-				limit = { OR = { owned_by = CRO owned_by HUN } }
+				limit = { OR = { owned_by = CRO owned_by = HUN } }
 				cede_province = ROOT 
 			}
 			southern_transylvania_area = {
@@ -136,7 +208,13 @@ tur_slot_1 = {
 					subject = CRO
 				}
 			}
-			
+			slovakia_area = {
+				limit = {
+					NOT = { owned_by = ROOT	}
+					NOT = { is_core = ROOT	}
+				}
+				add_claim = ROOT
+			}
 		}
 	}
 }
@@ -152,47 +230,38 @@ tur_slot_2 = {
 	has_country_shield = yes
 	
 	tur_varna = {
-		icon = mission_assemble_an_army
+		icon = mission_unite_home_region
 		required_missions = { }
 		
+		provinces_to_highlight = {
+			OR = {
+				area = wallachia_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		
 		trigger = {
-			has_country_modifier = rv_win		
+			wallachia_area = {
+				type = all
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					controlled_by = ROOT
+				}	
+			}	
 		}
 		effect = {
+			create_subject = {
+				subject_type = fief
+				subject = WAL
+			}
 			hidden_effect = {
-				HAB = { white_peace = TUR }
-			}
-			white_peace = HUN
-			HUN = { 
-				release = TRA
-				create_subject = {
-					subject_type = fief
-					who = TRA
-				}
-				release = CRO
-				create_subject = {
-					subject_type = fief
-					who = CRO
-				}
-			}
-			TUR = {
-				inherit = SER
-				release = MON
-				create_subject = {
-					subject_type = fief
-					who = MON
-				}
-				#create_subject = {
-				#	subject_type = fief
-				#	who = MOL
-				#}
-				hidden_effect = {
-					138 = { remove_core = ROOT }
-				}
-			}
-			add_country_modifier = {
-				name = "at_the_gates_of_europe"
-				duration = 3650
+				HUN = {
+					every_subject_country = {
+						limit = { is_of_subject_type = league }
+						grant_independence = yes
+					}
+				}	
 			}
 			karaman_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
@@ -202,11 +271,11 @@ tur_slot_2 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
-			karadeniz_area = {
+			dulkadir_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
-			pontus_area = {
+			karadeniz_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
@@ -218,6 +287,12 @@ tur_slot_2 = {
 		required_missions = { tur_conquer_karaman }
 		position = 3
 		
+		provinces_to_highlight = {
+			OR = {
+				area = karadeniz_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
 		
 		provinces_to_highlight = {
 			OR = {
@@ -474,50 +549,6 @@ tur_slot_2 = {
 			}
 		}
 	}
-	vassalize_transylvania = {
-		icon = mission_alliances
-		required_missions = { conquer_hungary }
-		ai_weight = {
-			factor = 3
-		}
-		ai_priority = {
-			factor = 2
-		}
-	
-		provinces_to_highlight = {
-			OR = {
-				area = transylvania_area
-				area = southern_transylvania_area
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		trigger = {
-			transylvania_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			southern_transylvania_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-		}
-		effect = {
-			add_country_modifier = {
-				name = "principality_of_transylvania"
-				duration = 7300
-			}
-			slovakia_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_claim = ROOT
-			}
-		}
-	}
-	
-	
-	
 	
 }
 tur_slot_3 = {
@@ -529,7 +560,6 @@ tur_slot_3 = {
 	}
 	
 	has_country_shield = yes
-	
 	
 	
 	tur_conquer_karaman = {
@@ -909,7 +939,6 @@ tur_slot_3 = {
 			}
 		}
 	}
-	
 }
 
 tur_slot_4 = {
@@ -1255,6 +1284,10 @@ tur_slot_5 = {
 			5094 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT 
+			}
+			pontus_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
 			}
 		}
 	}
