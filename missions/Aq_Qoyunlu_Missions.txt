@@ -19,6 +19,29 @@ akk_slot_2 = {
 	}
 	has_country_shield = yes
 	
+	akk_conquer_lake_van = {
+		icon = mission_cannons_firing
+		required_missions = { akk_army }
+		position = 2
+		
+		provinces_to_highlight = {
+			OR = {
+				area = north_kurdistan_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			north_kurdistan_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_mil_power = 50
+		}
+	}
 
 }
 
@@ -31,66 +54,100 @@ akk_slot_3 = {
 		tag = AKK
 	}
 	has_country_shield = yes
-
-	destroy_ayyubids = {
-		icon = mission_arabian_fort
+	
+	akk_army = {
+		icon = mission_non-western_soldiers
 		required_missions = {  }
-		provinces_to_highlight = {
-			OR = {
-				province_id = 4295
-				province_id = 5331
-			}
-			NOT = {
-				country_or_non_sovereign_subject_holds = ROOT
-			}
+		
+		ai_weight = {
+			factor = 5
 		}
 		trigger = {
-			4295 = { country_or_non_sovereign_subject_holds = ROOT }
-			5331 = { country_or_non_sovereign_subject_holds = ROOT }
+			army_size_percentage = 0.8
 		}
 		effect = {
-			add_prestige = 10
+			add_treasury = 100
+			add_country_modifier = {
+				name = "akk_army"
+				duration = 7300
+			}
 			north_kurdistan_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
-			armenia_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
+			5331 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
-			tabriz_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
+			4295 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
-			shahrizor_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			al_jazira_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
+			
 		}
 	}
-	defeat_black_sheep = {
+	
+	akk_uzan_hasan = {
 		icon = mission_non-western_cavalry_raid
-		required_missions = { destroy_ayyubids }
-		position = 2
+		required_missions = { akk_conquer_lake_van destroy_ayyubids }
+		position = 3
+		
+		trigger = {
+			OR = {
+				has_ruler = "Uzan Hasan"
+				AND = {
+					adm = 4
+					dip = 4
+					mil = 4
+				}
+			}
+		}
+		
+		effect = {
+			hidden_effect = {
+				every_province = {
+					limit = { owned_by = QAR is_core = BHT }
+					cede_province = BHT
+				}
+			}
+			vassalize = BHT
+			QAR = {
+				add_country_modifier = {
+					name = "qar_lose_army"
+					duration = 7300	
+			}
+			3254 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = QAR }
+				cede_province = ROOT
+			}
+			al_jazira_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = QAR }
+				add_territorial_core = ROOT
+			}
+			iraq_arabi_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = QAR }
+				add_territorial_core = ROOT
+			}
+			rakka_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = QAR }
+				add_territorial_core = ROOT
+			}
+			basra_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = QAR }
+				add_territorial_core = ROOT
+			}
+			khuzestan_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = QAR }
+				add_territorial_core = ROOT
+			}
+		}
+	
+	}
+	
+	defeat_black_sheep = {
+		icon = mission_unite_home_region
+		required_missions = { akk_uzan_hasan }
+		position = 4
 		provinces_to_highlight = {
 			OR = {
 				area = north_kurdistan_area
@@ -104,25 +161,16 @@ akk_slot_3 = {
 			}
 		}
 		trigger = {
-			north_kurdistan_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			armenia_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			tabriz_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			shahrizor_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			al_jazira_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
+			QAR = {
+				num_of_owned_provinces_with = {
+					value = 12
+					controller = {
+						OR = {
+							tag = AKK
+							AKK = { any_subject_country = { } }
+						}
+					}
+				}
 			}
 		}
 		effect = {
@@ -130,134 +178,13 @@ akk_slot_3 = {
 				name = "white_sheep_ascendant"
 				duration = 7300
 			}
-			shirvan_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			imereti_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			samtskhe_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			kartli_kakheti_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			iraq_arabi_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			basra_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			khuzestan_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			luristan_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
+			inherit = QAR
 		}
 	}
-	conquer_the_caucasus_akk = {
-		icon = mission_conquer_50_development
-		required_missions = { defeat_black_sheep }
-		provinces_to_highlight = {
-			OR = {
-				area = shirvan_area
-				area = imereti_area
-				area = samtskhe_area
-				area = kartli_kakheti_area
-			}
-			NOT = {
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-		}
-		trigger = {
-			shirvan_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			imereti_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			samtskhe_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			kartli_kakheti_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-		}
-		effect = {
-			add_country_modifier = {
-				name = "akk_caucasus"
-				duration = 7300
-			}
-			azerbaijan_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			tabarestan_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			iraq_e_ajam_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-			isfahan_area = {
-				limit = {
-					NOT = { owned_by = ROOT	}
-					NOT = { is_core = ROOT	}
-				}
-				add_permanent_claim = ROOT
-			}
-		}
-	}
+	
 	invade_persia_akk = {
 		icon = mission_unite_home_region
-		required_missions = { conquer_the_caucasus_akk conquer_iraq_akk }
+		required_missions = { }
 		provinces_to_highlight = {
 			region = persia_region
 			NOT = {
@@ -288,6 +215,29 @@ akk_slot_4 = {
 		tag = AKK
 	}
 	has_country_shield = yes
+
+	destroy_ayyubids = {
+		icon = mission_arabian_fort
+		required_missions = { akk_army }
+		position = 2
+		provinces_to_highlight = {
+			OR = {
+				province_id = 4295
+				province_id = 5331
+			}
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			4295 = { country_or_non_sovereign_subject_holds = ROOT }
+			5331 = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		effect = {
+			add_prestige = 10
+			add_manpower = 10
+		}
+	}
 
 	conquer_iraq_akk = {
 		icon = mission_arabian_fort
