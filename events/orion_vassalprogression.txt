@@ -1,0 +1,910 @@
+# Vassal Progression
+#
+# Originally written for VeF
+# Rewritten by Amyzonis for Imperialism Reinvigorated
+
+#  orion_vassal.1 : Calculate vassal progress
+#  orion_vassal.2 : Count vassals
+#  orion_vassal.3 : Initialize a vassal
+#  orion_vassal.4 : Stage 4 - Vassal
+#  orion_vassal.5 : Stage 3 - Vassal
+#  orion_vassal.6 : Stage 2 - Vassal
+#  orion_vassal.7 : Stage 1 - Vassal
+#  orion_vassal.9 : Initialize an overlord
+# orion_vassal.10 : Stage 2 - Overlord
+# orion_vassal.11 : Stage 3 - Overlord
+# orion_vassal.12 : Stage 4 - Overlord
+# orion_vassal.13 : Stage 5 - Overlord
+# orion_vassal.14 : Complete - Overlord
+# orion_vassal.15 : Cleanup for country no longer a vassal
+# orion_vassal.16 : Vassal Bonus Notification 0 - Vassal
+# orion_vassal.17 : Vassal Bonus Notification 1 - Vassal
+# orion_vassal.18 : Vassal Bonus Notification 2 - Vassal
+# orion_vassal.19 : Vassal Bonus Notification 3 - Vassal
+# orion_vassal.20 : Vassal Bonus Notification 3 - Overlord
+# orion_vassal.21 : Vassal Bonus Notification 3 - Overlord
+# orion_vassal.22 : Vassal Bonus Notification 3 - Overlord
+# orion_vassal.23 : Vassal Bonus Notification 3 - Overlord
+
+
+namespace = orion_vassal
+
+# Vassal progress
+country_event = {
+	id = orion_vassal.1
+	title = "orion_vassal.1.t"
+	desc = "orion_vassal.1.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	hidden = yes
+
+	trigger = {
+		is_subject = yes
+	}
+
+	immediate = {
+		if = {
+			limit = { NOT = { liberty_desire = 25 }}
+			set_variable = { which = subject_libdesire value = 0 }
+		}
+		if = {
+			limit = { liberty_desire = 25 }
+			set_variable = { which = subject_libdesire value = 1 }
+			if = {
+				limit = { liberty_desire = 50 }
+				set_variable = { which = subject_libdesire value = 2 }
+				if = {
+					limit = { liberty_desire = 75 }	
+					set_variable = { which = subject_libdesire value = 3 }
+				}
+			}
+		}
+		if = {
+			limit = { 
+				NOT = { is_subject_of_type = daimyo_vassal }
+				NOT = { is_subject_of_type = tributary_state }
+				NOT = { overlord = { ROOT = { is_client_nation_of = PREV }}}
+				is_lesser_in_union = no
+				is_colonial_nation = no
+				is_march = no
+				OR = {
+					NOT = { overlord = { is_emperor = yes }}
+					NOT = { hre_reform_level = 7 }
+					NOT = { is_part_of_hre = yes }
+				}
+			}
+			if = { 
+				limit = { NOT = { overlord = { has_country_flag = overlord_flag_@ROOT }}}
+				clr_country_flag = vassal_flag
+				clr_country_flag = starting_vassal
+				clr_country_flag = intransigent_vassal
+				clr_country_flag = allowed_to_annex
+				clr_country_flag = long_term_vassal
+				clr_country_flag = overlord_notified_0
+				clr_country_flag = overlord_notified_1
+				clr_country_flag = overlord_notified_2
+				clr_country_flag = overlord_notified_3
+				every_known_country = { clr_country_flag = overlord_flag_@ROOT }	#clear previous overlord if changed hands in peace
+				set_variable = { which = vassal_progress value = 0 }
+				set_variable = { which = vassal_boost value = 0 }
+				overlord = { set_country_flag = overlord_flag_@ROOT }
+			}
+			# Run the 'new vassal' events if needed
+			if = {
+				limit = { 
+					NOT = { has_country_flag = vassal_flag }
+					NOT = { has_country_flag = allowed_to_annex }
+					NOT = { has_country_flag = long_term_vassal }
+					NOT = { any_known_country = { war_with = PREV }}
+				}
+				set_country_flag = vassal_flag
+				set_country_flag = vassal_initialising
+				export_to_variable = { which = prevvassal_prov value = num_of_cities }
+				export_to_variable = { which = province_count value = num_of_cities }	#To account for vassal having lost provinces in the same war they lost freedom
+				set_variable = { which = vassal_progress value = 20 }
+				country_event = { id = orion_vassal.3 }
+			}
+			if = {
+				limit = {
+					is_nomad = no	#Can't progress with no administration
+					NOT = { has_country_flag = vassal_initialising }
+					NOT = { has_country_flag = long_term_vassal }
+				}
+				# Default progress - roughly 50 years with no boosts. Add the overlord's boost  
+				# orion_vassal.2
+				change_variable = { which = vassal_progress value = 0.5 }
+				change_variable = { which = vassal_progress which = vassal_boost }
+		
+				#LD Modifiers 
+				if = {
+					limit = { liberty_desire = 40 }
+					change_variable = { which = vassal_progress value = -0.2 }
+					if = {
+						limit = { liberty_desire = 50 }
+						change_variable = { which = vassal_progress value = -0.2 }
+						if = {
+							limit = { liberty_desire = 60 }
+							change_variable = { which = vassal_progress value = -0.2 }
+							if = {
+								limit = { liberty_desire = 80 }
+								change_variable = { which = vassal_progress value = -0.5 }
+							}
+						}
+					}
+				}
+				# Bonus for ideas
+				if = {
+					limit = { diplomatic_ideas = 3 }
+					change_variable = { which = vassal_progress value = 0.06 }
+				}
+				if = {
+					limit = { influence_ideas = 3 }
+					change_variable = { which = vassal_progress value = 0.06 }
+				}
+				# Neighbor bonus
+				if = {
+					limit = { overlord = { is_neighbor_of = ROOT } }
+					change_variable = { which = vassal_progress value = 0.06 }
+				}
+	
+				# Religion effects (bonus/malus)
+				if = {
+					limit = { overlord = { has_matching_religion = ROOT } }
+					change_variable = { which = vassal_progress value = 0.03 }
+				}
+				if = {
+					limit = { NOT = { overlord = { has_matching_religion = ROOT } } }
+					change_variable = { which = vassal_progress value = -0.04 }
+				}
+
+				# Culture bonus/malus
+				if = {
+					limit = { overlord = { primary_culture = ROOT } }
+					change_variable = { which = vassal_progress value = 0.03 }
+				}
+				if = {
+					limit = { NOT = { overlord = { culture_group = ROOT }}}
+					change_variable = { which = vassal_progress value = -0.02 }
+				}
+
+				# Bonus for major institution disparity
+				if = {
+					limit = {
+						overlord = { institution_difference = { who = ROOT value = 2 }}
+					}
+					change_variable = { which = vassal_progress value = 0.06 }
+				}
+			
+				# Bonus for major size disparity
+				if = {
+					limit = {
+						overlord = { military_strength = { who = ROOT value = 5 }}
+					}
+					change_variable = { which = vassal_progress value = 0.06 }
+				}
+				# Malus if vassal is 5 or more provinces
+				if = {
+					limit = { num_of_cities = 5 }
+					change_variable = { which = vassal_progress value = -0.05 }
+				}
+				# Malus if vassal is 50% size of overlord
+				if = {
+					limit = {
+						NOT = { overlord = { military_strength = { who = ROOT value = 2 }}}
+					}
+					change_variable = { which = vassal_progress value = -0.05 }
+				}
+				# Malus for any negative institution disparity
+				if = {
+					limit = {
+						NOT = { overlord = { institution_difference = { who = ROOT value = 0 }}}
+					}
+					change_variable = { which = vassal_progress value = -0.1 }
+				}
+				if = {
+					limit = { has_ruler_flag = ambitious_vassal }
+					change_variable = { which = vassal_progress value = -0.1 }
+				}
+				# Bureaucrat gives a boost
+				if = {
+					limit = { overlord = { advisor = bureaucrat } }
+					change_variable = { which = vassal_progress value = 0.06 }
+				}
+			}
+			if = {
+				limit = {
+					NOT = { has_country_flag = vassal_initialising }
+					NOT = { check_variable = { which = prevvassal_prov which = province_count }}
+					check_variable = { which = vassal_progress value = 0 }
+				}
+				change_variable = { which = prevvassal_prov value = 1 }
+				change_variable = { which = vassal_progress value = -50 }
+				if = {
+					limit = {
+						NOT = { check_variable = { which = prevvassal_prov which = province_count }}
+						check_variable = { which = vassal_progress value = 0 }
+					}
+					change_variable = { which = prevvassal_prov value = 1 }
+					change_variable = { which = vassal_progress value = -50 }
+				}
+			}
+		
+		
+			if = {
+				limit = { check_variable = { which = vassal_progress value = 100 } NOT = { any_known_country = { war_with = PREV }}}
+				set_variable = { which = vassal_progress value = 25 }
+				trigger_switch = {
+					on_trigger = is_subject_of_type
+					suzerainty = {
+						overlord = {
+							create_subject = { who = ROOT subject_type = fief }
+							country_event = { id = orion_vassal.11 }
+						}
+					}
+					fief = {
+						overlord = {
+							create_subject = { who = ROOT subject_type = dominion }
+							country_event = { id = orion_vassal.12 }
+						}
+					}
+					dominion = {
+						overlord = {
+							create_subject = { who = ROOT subject_type = vassal }
+							country_event = { id = orion_vassal.13 }
+						}
+					}
+					vassal = {
+						add_country_modifier = { name = vassal_integrated duration = -1 }
+						set_country_flag = allowed_to_annex
+						clr_country_flag = long_term_vassal # To be sure it's set to 0 days
+						set_variable = { which = vassal_progress value = 75 }
+						clr_country_flag  = vassal_flag
+						set_country_flag = long_term_vassal
+						overlord = { country_event = { id = orion_vassal.14 }}
+					}
+				}
+			}
+			if = {
+				limit = { NOT = { check_variable = { which = vassal_progress value = 0 }} NOT = { any_known_country = { war_with = PREV }}}
+				set_variable = { which = vassal_progress value = 80 }
+				if = {
+					limit = { has_country_modifier = vassal_integrated }
+					remove_country_modifier = vassal_integrated
+					set_country_flag  = vassal_flag
+					clr_country_flag = long_term_vassal
+					clr_country_flag = allowed_to_annex
+					overlord = { country_event = { id = orion_vassal.8 }}
+					else = {
+						trigger_switch = {
+							on_trigger = is_subject_of_type
+							vassal= {
+								overlord = {
+									create_subject = { who = ROOT subject_type = dominion }
+									country_event = { id = orion_vassal.4 }
+								}
+							}
+							dominion = {
+								overlord = {
+									create_subject = { who = ROOT subject_type = fief }
+									country_event = { id = orion_vassal.5 }
+								}
+							}
+							fief = {
+								overlord = {
+									create_subject = { who = ROOT subject_type = suzerainty }
+									country_event = { id = orion_vassal.6 }
+								}
+							}
+							suzerainty = {
+								set_variable = { which = vassal_progress value = 5 }
+								if = {
+									limit = { NOT = { has_country_modifier = vassal_rebellious }}
+									add_country_modifier = { name = vassal_rebellious duration = 3650 }
+									overlord = { reverse_add_opinion = { who = ROOT modifier = angry_vassal }}
+								}
+							}
+						}
+					}
+				}
+			}
+			else = {
+				if = { 
+					limit = { NOT = { overlord = { has_country_flag = overlord_flag_@ROOT }}}
+					clr_country_flag = vassal_flag
+					clr_country_flag = starting_vassal
+					clr_country_flag = intransigent_vassal
+					clr_country_flag = allowed_to_annex
+					clr_country_flag = long_term_vassal
+					clr_country_flag = overlord_notified_0
+					clr_country_flag = overlord_notified_1
+					clr_country_flag = overlord_notified_2
+					clr_country_flag = overlord_notified_3
+					every_known_country = { clr_country_flag = overlord_flag_@ROOT }	#clear previous overlord if changed hands in peace
+					set_variable = { which = vassal_progress value = 0 }
+					set_variable = { which = vassal_boost value = 0 }
+					overlord = { set_country_flag = overlord_flag_@ROOT }
+				}
+			}
+		}
+	}
+
+	option = {
+		name = "orion_vassal.1.opta"
+	}
+}
+
+# Count the vassals and transfer the boost value
+country_event = {
+	id = orion_vassal.2
+	title = "orion_vassal.2.t"
+	desc = "orion_vassal.2.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	hidden = yes
+
+	trigger = {
+	}
+
+	immediate = {
+		set_variable = { which = long_term_vassal_count value = 0 }
+		every_subject_country = {
+			limit = { 
+				OR = {
+					junior_union_with = ROOT
+					vassal_of = ROOT
+					march_of = ROOT
+				}
+			}
+			if = {
+				limit = { is_vassal = yes }
+				set_variable = { which = vassal_boost which = ROOT }
+			}
+			# Bonus for long-term vassal
+			if = {
+				limit = {
+					OR = {
+						is_lesser_in_union = yes
+						is_march = yes
+						has_country_flag = long_term_vassal 
+					}
+				}
+				ROOT = { 
+					change_variable = { which = national_stability value = 0.5 }
+					change_variable = { which = long_term_vassal_count value = 1 }
+				}
+			}
+		}
+	}
+
+	option = {
+		name = "orion_vassal.2.opta"
+	}
+}
+
+# Initialize
+country_event = {
+	id = orion_vassal.3
+	title = "orion_vassal.3.t"
+	desc = "orion_vassal.3.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	hidden = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+		release_all_subjects = yes
+		if = {
+			limit = {
+				NOT = { has_country_flag = starting_vassal }
+				NOT = { has_country_flag = priveleges_revoked } # Emperor doesn't force change
+			}
+			overlord = {
+				set_country_flag = overlord_flag_@ROOT
+				create_subject = { who = ROOT subject_type = suzerainty }
+				country_event = { id = orion_vassal.9 }
+			}
+		}
+		clr_country_flag = vassal_initialising
+	}
+
+	option = {
+		name = "orion_vassal.3.opta"
+	}
+}
+
+# Vassal Regress
+country_event = {
+	id = orion_vassal.4
+	title = "orion_vassal.4.t"
+	desc = "orion_vassal.4.d"
+	picture = BIG_BOOK_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+	}
+
+	option = {
+		name = "orion_vassal.4.opta"
+	}
+}
+
+country_event = {
+	id = orion_vassal.5
+	title = "orion_vassal.5.t"
+	desc = "orion_vassal.5.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "orion_vassal.5.opta"
+	}
+}
+
+country_event = {
+	id = orion_vassal.6
+	title = "orion_vassal.6.t"
+	desc = "orion_vassal.6.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+	
+	option = {
+		name = "orion_vassal.6.opta"
+	}
+}
+
+country_event = {
+	id = orion_vassal.7
+	title = "orion_vassal.7.t"
+	desc = "orion_vassal.7.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "orion_vassal.7.opta"
+	}
+}
+
+country_event = {
+	id = orion_vassal.8
+	title = "orion_vassal.8.t"
+	desc = "orion_vassal.8.d"
+	picture = BIG_BOOK_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = { reverse_remove_opinion = { who = FROM modifier = long_term_vassal }}
+	}
+
+	option = {
+		name = "orion_vassal.8.opta"
+	}
+}
+
+# Overlord events (9 through 14).
+# Initial Setup
+country_event = {
+	id = orion_vassal.9
+	title = "orion_vassal.9.t"
+	desc = "orion_vassal.9.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+	
+	immediate = {
+	}
+
+	option = {
+		name = "orion_vassal.9.opta"
+	}
+}
+
+country_event = {
+	id = orion_vassal.10
+	title = "orion_vassal.10.t"
+	desc = "orion_vassal.10.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "orion_vassal.10.opta"
+		trigger = { ai = yes }
+	}
+
+	option = {
+		name = "orion_vassal.10.optb"
+		trigger = { ai = no }
+		add_adm_power = -10
+	}
+
+	option = {
+		name = "orion_vassal.10.optc"
+		trigger = { ai = no NOT = { has_country_modifier = inefficient_bureaucracy } NOT = { corruption = 90 }}
+		add_adm_power = -10
+		add_years_of_income = -0.125
+		add_corruption = 2
+		FROM = { add_corruption = 5 }
+		random_list = {
+			50 = { FROM = { change_variable = { which = vassal_progress value = 20 } } }
+			40 = { FROM = { change_variable = { which = vassal_progress value = 30 } } }
+			10 = { FROM = { change_variable = { which = vassal_progress value = 40 } } }
+		}
+	}
+}
+
+country_event = {
+	id = orion_vassal.11
+	title = "orion_vassal.11.t"
+	desc = "orion_vassal.11.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "orion_vassal.11.opta"
+		trigger = { ai = yes }
+	}
+
+	option = {
+		name = "orion_vassal.11.optb"
+		trigger = { ai = no }
+		add_adm_power = -10
+	}
+
+	option = {
+		name = "orion_vassal.11.optc"
+		trigger = { ai = no NOT = { has_country_modifier = inefficient_bureaucracy } NOT = { corruption = 90 }}
+		add_adm_power = -10
+		add_years_of_income = -0.15
+		add_corruption = 2
+		FROM = { add_corruption = 5 }
+		random_list = {
+			50 = { FROM = { change_variable = { which = vassal_progress value = 20 } } }
+			40 = { FROM = { change_variable = { which = vassal_progress value = 30 } } }
+			10 = { FROM = { change_variable = { which = vassal_progress value = 40 } } }
+		}
+	}
+}
+
+country_event = {
+	id = orion_vassal.12
+	title = "orion_vassal.12.t"
+	desc = "orion_vassal.12.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "orion_vassal.12.opta"
+		trigger = { ai = yes }
+	}
+
+	option = {
+		name = "orion_vassal.12.optb"
+		trigger = { ai = no }
+		add_mil_power = -10
+	}
+
+	option = {
+		name = "orion_vassal.12.optc"
+		trigger = { ai = no NOT = { has_country_modifier = inefficient_bureaucracy } NOT = { corruption = 90 }}
+		add_mil_power = -10
+		add_years_of_income = -0.15
+		add_corruption = 2
+		FROM = { add_corruption = 5 }
+		random_list = {
+			50 = { FROM = { change_variable = { which = vassal_progress value = 20 } } }
+			40 = { FROM = { change_variable = { which = vassal_progress value = 30 } } }
+			10 = { FROM = { change_variable = { which = vassal_progress value = 40 } } }
+		}
+	}
+}
+
+country_event = {
+	id = orion_vassal.13
+	title = "orion_vassal.13.t"
+	desc = "orion_vassal.13.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+	
+	option = {
+		name = "orion_vassal.13.opta"
+		trigger = { ai = yes }
+	}
+
+	option = {
+		name = "orion_vassal.13.optb"
+		trigger = { ai = no }
+		add_adm_power = -10
+	}
+
+	option = {
+		name = "orion_vassal.13.optc"
+		trigger = { ai = no NOT = { has_country_modifier = inefficient_bureaucracy } NOT = { corruption = 90 }}
+		add_adm_power = -10
+		add_years_of_income = -0.15
+		add_corruption = 2
+		FROM = { add_corruption = 5 }
+		random_list = {
+			50 = { FROM = { change_variable = { which = vassal_progress value = 20 } } }
+			40 = { FROM = { change_variable = { which = vassal_progress value = 30 } } }
+			10 = { FROM = { change_variable = { which = vassal_progress value = 40 } } }
+		}
+	}
+}
+
+country_event = {
+	id = orion_vassal.14
+	title = "orion_vassal.14.t"
+	desc = "orion_vassal.14.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = { reverse_add_opinion = { who = FROM modifier = long_term_vassal }}
+	}
+
+	option = {
+		name = "orion_vassal.14.opta"
+	}
+}
+
+# Cleanup event for vassal that is freed from the previous overlord
+country_event = {
+	id = orion_vassal.15
+	title = "orion_vassal.15.t"
+	desc = "orion_vassal.15.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	trigger = {
+		OR = { 
+			has_country_flag = vassal_flag
+			has_country_flag = long_term_vassal
+			check_variable = { which = vassal_progress value = 1 }
+		}
+		is_subject = no
+	}
+
+	immediate = {
+		hidden_effect = {
+#			if = {
+#				limit = { any_known_country =  { war_with = ROOT has_country_flag = overlord_flag_@ROOT NOT = { is_in_war = { participants = ROOT casus_belli = cb_independence_war }}}}
+#				set_country_flag = suzerainty_war_overlord
+#				set_variable = { which = vassal_save which = vassal_progress }
+#				random_country = { limit = { has_country_flag = overlord_flag_@ROOT } set_country_flag = restore_suzerainty_@ROOT }
+#			}
+			clr_country_flag = vassal_flag
+			clr_country_flag = starting_vassal
+			clr_country_flag = intransigent_vassal
+			clr_country_flag = allowed_to_annex
+			clr_country_flag = long_term_vassal
+			clr_country_flag = overlord_notified_0
+			clr_country_flag = overlord_notified_1
+			clr_country_flag = overlord_notified_2
+			clr_country_flag = overlord_notified_3
+			# Clear overlord's vassal boost
+			set_variable = { which = vassal_boost value = 0 }
+			set_variable = { which = vassal_progress value = 0 }
+			every_known_country = {
+				reverse_remove_opinion = { who = ROOT modifier = long_term_vassal }
+				remove_opinion = { who = ROOT modifier = intransigent_vassal }
+				clr_country_flag = overlord_flag_@ROOT
+			}
+		}
+	}
+
+	option = {
+		name = "orion_vassal.15.opta"
+		add_prestige = 20
+		add_years_of_income = .25
+	}
+}
+
+# Notify Overlord of bonuses when acquired
+country_event = {
+	id = orion_vassal.16
+	title = "orion_vassal.16.t"
+	desc = "orion_vassal.16.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	hidden = yes
+
+	trigger = {
+		is_vassal = yes
+		has_country_modifier = long_term_vassal_0
+		NOT = { has_country_flag = overlord_notified_0 }
+	}
+
+	option = {
+		name = "orion_vassal.16.opta"
+		overlord = { country_event = { id = orion_vassal.20 days = 3 } }
+		set_country_flag = overlord_notified_0
+	}
+}
+
+country_event = {
+	id = orion_vassal.17
+	title = "orion_vassal.17.t"
+	desc = "orion_vassal.17.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	hidden = yes
+
+	trigger = {
+		is_vassal = yes
+		NOT = { has_country_flag = overlord_notified_1 }
+		has_country_modifier = long_term_vassal_1
+	}
+
+	option = {
+		name = "orion_vassal.17.opta"
+		overlord = { country_event = { id = orion_vassal.21 days = 3 } }
+		set_country_flag = overlord_notified_1
+	}
+}
+
+country_event = {
+	id = orion_vassal.18
+	title = "orion_vassal.18.t"
+	desc = "orion_vassal.18.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	hidden = yes
+
+	trigger = {
+		is_vassal = yes
+		NOT = { has_country_flag = overlord_notified_2 }
+		has_country_modifier = long_term_vassal_2
+	}
+
+	option = {
+		name = "orion_vassal.18.opta"
+		overlord = { country_event = { id = orion_vassal.22 days = 3 } }
+		set_country_flag = overlord_notified_2
+	}
+}
+
+country_event = {
+	id = orion_vassal.19
+	title = "orion_vassal.19.t"
+	desc = "orion_vassal.19.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	hidden = yes
+
+	trigger = {
+		is_vassal = yes
+		NOT = { has_country_flag = overlord_notified_3 }
+		has_country_modifier = long_term_vassal_3
+	}
+
+	option = {
+		name = "orion_vassal.19.opta"
+		overlord = { country_event = { id = orion_vassal.23 days = 3 } }
+		set_country_flag = overlord_notified_3
+	}
+}
+
+# Overlord Events
+country_event = {
+	id = orion_vassal.20
+	title = "orion_vassal.20.t"
+	desc = "orion_vassal.20.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "orion_vassal.20.opta"
+		custom_tooltip = "vassal_bonus_0"
+	}
+}
+
+country_event = {
+	id = orion_vassal.21
+	title = "orion_vassal.21.t"
+	desc = "orion_vassal.21.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "orion_vassal.21.opta"
+		custom_tooltip = "vassal_bonus_1"
+	}
+}
+
+country_event = {
+	id = orion_vassal.22
+	title = "orion_vassal.22.t"
+	desc = "orion_vassal.22.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "orion_vassal.22.opta"
+		custom_tooltip = "vassal_bonus_2"
+	}
+}
+
+country_event = {
+	id = orion_vassal.23
+	title = "orion_vassal.23.t"
+	desc = "orion_vassal.23.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "orion_vassal.23.opta"
+		custom_tooltip = "vassal_bonus_3"
+	}
+}
+
+# AI is having issues diplo-annexing.
+country_event = {
+	id = orion_vassal.24
+	title = "orion_vassal.24.t"
+	desc = "orion_vassal.24.d"
+
+	picture = BIG_BOOK_eventPicture
+
+	hidden = yes
+
+	trigger = {
+		has_country_flag = long_term_vassal
+		ai = yes
+		overlord = { 
+			ai = yes 
+			NOT = { is_nomad = yes } # The hordes should not integrate their vassals
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 60
+	}
+
+	immediate = {
+		clr_country_flag = long_term_vassal
+		overlord = { inherit = ROOT }
+	}
+
+	option = {
+		name = "orion_vassal.24.opta"
+		custom_tooltip = "vassal_bonus_3"
+	}
+}
+
+
+
+
