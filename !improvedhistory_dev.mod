@@ -6,6 +6,7 @@ replace_path="common/colonial_regions"
 replace_path="common/trade_companies"
 replace_path="history/countries"
 replace_path="history/diplomacy"
+replace_path="common/bookmarks"
 dependencies={
 	"Beyond Typus 9.0"
 }	
