@@ -21,9 +21,9 @@
 # orion_vassal.17 : Vassal Bonus Notification 1 - Vassal
 # orion_vassal.18 : Vassal Bonus Notification 2 - Vassal
 # orion_vassal.19 : Vassal Bonus Notification 3 - Vassal
-# orion_vassal.20 : Vassal Bonus Notification 3 - Overlord
-# orion_vassal.21 : Vassal Bonus Notification 3 - Overlord
-# orion_vassal.22 : Vassal Bonus Notification 3 - Overlord
+# orion_vassal.20 : Vassal Bonus Notification 0 - Overlord
+# orion_vassal.21 : Vassal Bonus Notification 1 - Overlord
+# orion_vassal.22 : Vassal Bonus Notification 2 - Overlord
 # orion_vassal.23 : Vassal Bonus Notification 3 - Overlord
 
 
@@ -38,36 +38,31 @@ country_event = {
 	picture = BIG_BOOK_eventPicture
 
 	hidden = yes
+	is_triggered_only = yes
 
 	trigger = {
 		is_subject = yes
+		OR = {
+			#NOT = { has_country_flag = starting_vassal }
+			check_variable = { which = vassal_progress value = 100 }
+			check_variable = { which = vassal_progress value = 0 } 
+		}
 	}
 
 	immediate = {
 		if = {
-			limit = { NOT = { liberty_desire = 25 }}
-			set_variable = { which = subject_libdesire value = 0 }
-		}
-		if = {
-			limit = { liberty_desire = 25 }
-			set_variable = { which = subject_libdesire value = 1 }
-			if = {
-				limit = { liberty_desire = 50 }
-				set_variable = { which = subject_libdesire value = 2 }
-				if = {
-					limit = { liberty_desire = 75 }	
-					set_variable = { which = subject_libdesire value = 3 }
-				}
-			}
-		}
-		if = {
 			limit = { 
 				NOT = { is_subject_of_type = daimyo_vassal }
 				NOT = { is_subject_of_type = tributary_state }
-				NOT = { overlord = { ROOT = { is_client_nation_of = PREV }}}
+				NOT = { is_subject_of_type = client_vassal }
 				is_lesser_in_union = no
 				is_colonial_nation = no
 				is_march = no
+				OR = {
+					is_subject_of_type = suzerainty
+					is_subject_of_type = fief
+					is_subject_of_type = dominion
+				}
 				OR = {
 					NOT = { overlord = { is_emperor = yes }}
 					NOT = { hre_reform_level = 7 }
@@ -113,104 +108,9 @@ country_event = {
 				}
 				# Default progress - roughly 50+ years with no boosts. Add the overlord's boost  
 				# orion_vassal.2
-				change_variable = { which = vassal_progress value = 0.4 }
+				change_variable = { which = vassal_progress value = 0 }
 				change_variable = { which = vassal_progress which = vassal_boost }
 		
-				#LD Modifiers 
-				if = {
-					limit = { liberty_desire = 40 }
-					change_variable = { which = vassal_progress value = -0.2 }
-					if = {
-						limit = { liberty_desire = 50 }
-						change_variable = { which = vassal_progress value = -0.2 }
-						if = {
-							limit = { liberty_desire = 60 }
-							change_variable = { which = vassal_progress value = -0.2 }
-							if = {
-								limit = { liberty_desire = 80 }
-								change_variable = { which = vassal_progress value = -0.5 }
-							}
-						}
-					}
-				}
-				# Bonus for ideas
-				if = {
-					limit = { diplomatic_ideas = 3 }
-					change_variable = { which = vassal_progress value = 0.06 }
-				}
-				if = {
-					limit = { influence_ideas = 3 }
-					change_variable = { which = vassal_progress value = 0.06 }
-				}
-				# Neighbor bonus
-				if = {
-					limit = { overlord = { is_neighbor_of = ROOT } }
-					change_variable = { which = vassal_progress value = 0.06 }
-				}
-	
-				# Religion effects (bonus/malus)
-				if = {
-					limit = { overlord = { has_matching_religion = ROOT } }
-					change_variable = { which = vassal_progress value = 0.03 }
-				}
-				if = {
-					limit = { NOT = { overlord = { has_matching_religion = ROOT } } }
-					change_variable = { which = vassal_progress value = -0.04 }
-				}
-
-				# Culture bonus/malus
-				if = {
-					limit = { overlord = { primary_culture = ROOT } }
-					change_variable = { which = vassal_progress value = 0.03 }
-				}
-				if = {
-					limit = { NOT = { overlord = { culture_group = ROOT }}}
-					change_variable = { which = vassal_progress value = -0.02 }
-				}
-
-				# Bonus for major institution disparity
-				if = {
-					limit = {
-						overlord = { institution_difference = { who = ROOT value = 2 }}
-					}
-					change_variable = { which = vassal_progress value = 0.06 }
-				}
-			
-				# Bonus for major size disparity
-				if = {
-					limit = {
-						overlord = { military_strength = { who = ROOT value = 5 }}
-					}
-					change_variable = { which = vassal_progress value = 0.06 }
-				}
-				# Malus if vassal is 5 or more provinces
-				if = {
-					limit = { num_of_cities = 5 }
-					change_variable = { which = vassal_progress value = -0.05 }
-				}
-				# Malus if vassal is 50% size of overlord
-				if = {
-					limit = {
-						NOT = { overlord = { military_strength = { who = ROOT value = 2 }}}
-					}
-					change_variable = { which = vassal_progress value = -0.05 }
-				}
-				# Malus for any negative institution disparity
-				if = {
-					limit = {
-						NOT = { overlord = { institution_difference = { who = ROOT value = 0 }}}
-					}
-					change_variable = { which = vassal_progress value = -0.1 }
-				}
-				if = {
-					limit = { has_ruler_flag = ambitious_vassal }
-					change_variable = { which = vassal_progress value = -0.1 }
-				}
-				# Bureaucrat gives a boost
-				if = {
-					limit = { overlord = { advisor = bureaucrat } }
-					change_variable = { which = vassal_progress value = 0.06 }
-				}
 			}
 			if = {
 				limit = {
@@ -249,6 +149,7 @@ country_event = {
 						}
 					}
 					dominion = {
+						set_country_flag = vassal_flag
 						overlord = {
 							create_subject = { who = ROOT subject_type = vassal }
 							country_event = { id = orion_vassal.13 }
@@ -272,12 +173,6 @@ country_event = {
 					limit = { NOT = { has_country_modifier = vassal_flag }}
 					trigger_switch = {
 						on_trigger = is_subject_of_type
-						vassal= {
-							overlord = {
-								create_subject = { who = ROOT subject_type = dominion }
-								country_event = { id = orion_vassal.4 }
-							}
-						}
 						dominion = {
 							overlord = {
 								create_subject = { who = ROOT subject_type = fief }
@@ -360,7 +255,6 @@ country_event = {
 					OR = {
 						is_lesser_in_union = yes
 						is_march = yes
-						has_country_flag = long_term_vassal 
 					}
 				}
 				ROOT = {
@@ -388,7 +282,6 @@ country_event = {
 	is_triggered_only = yes
 
 	immediate = {
-		#release_all_subjects = yes
 		if = {
 			limit = {
 				NOT = { has_country_flag = starting_vassal }
@@ -396,8 +289,6 @@ country_event = {
 			}
 			overlord = {
 				set_country_flag = overlord_flag_@ROOT
-	#			create_subject = { who = ROOT subject_type = suzerainty }
-	#			country_event = { id = orion_vassal.9 }
 			}
 		}
 		clr_country_flag = vassal_initialising
