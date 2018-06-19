@@ -58,6 +58,25 @@ NDefines.NDiplomacy.IMPERIAL_AUTHORITY_FROM_PRINCES = 0.075
 
 NDefines.NCountry.MERCHANT_REPUBLIC_SIZE_LIMIT = 40
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 30
+NDefines.NMilitary.INFANTRY_SPEED = 0.6					-- _MDEF_INFANTRY_SPEED = 10,
+NDefines.NMilitary.CAVALRY_SPEED = 0.9							-- _MDEF_CAVALRY_SPEED = 10,
+NDefines.NMilitary.ARTILLERY_SPEED = 0.3				-- 
+NDefines.NMilitary.LOOT_DEVASTATION_IMPACT = 50						-- how much devastation full loot impacts
+NDefines.NMilitary.SCORCHED_DEVASTATION_IMPACT = 50
+NDefines.NMilitary.SCORCHED_DURATION = 36				-- months
+NDefines.NMilitary.LOOTED_DAYS = 730								-- Time the "Looted" static modifier lasts.
+NDefines.NMilitary.LOOTED_SCALE = 2								-- Scaling value from province development to number of ducats it contains.									-- Maximum amount of ducats (total) a province can be looted for each month.
+NDefines.NMilitary.LOOTED_RECOVERY = 0.2
+NDefines.NMilitary.RIVER_CROSSING_PENALTY = -1						-- Dice roll penalty from river crossing
+NDefines.NMilitary.STRAIT_CROSSING_PENALTY = -1					-- Dice roll penalty from strait crossing
+NDefines.NMilitary.SEA_LANDING_PENALTY = -1
+
+NDefines.NMilitary.MAX_REBEL_SUPPRESSION = 10.0				-- Maximum amount of rebel suppression by troops in a province
+NDefines.NMilitary.INF_SUPPRESSION = 0.5					-- The amount of reduction to unrest for each friendly infantry regiment in a province
+NDefines.NMilitary.CAV_SUPPRESSION = 0.75						-- The amount of reduction to unrest for each friendly cavalry regiment in a province
+NDefines.NMilitary.ART_SUPPRESSION = 0.25					-- The amount of reduction to unrest for each friendly artillery regiment in a province
+
+
 
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
 NDefines.NEconomy.GOLD_MINE_DEPLETION_THRESHOLD = 5				-- Gold mines above production level or above can be depleted
@@ -73,7 +92,7 @@ NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_PARTICIPATION_FROM_CASUALTIES =
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_MILITARY_RULERS = 1 --If set to 1, AI will only send Condottieri while having a miliaristic ruler.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_NEIGHBORS = 0 --If set to 1, AI will only send Condottieri to neighbors, regardless of access.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_DISABLE_VERSUS_PLAYER_ENEMIES = 0 --If set to 1, AI will try avoid sending Condottieri having to fight against human player enemies.
-	
+NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 25
 	
 NDefines.NCountry.CORE_COLONY = 0.25								-- Multiplied with development, colonized by country or overseas
 NDefines.NCountry.CORE_OVERSEAS = 0.5						-- Multiplied with development, colonized by country or overseas

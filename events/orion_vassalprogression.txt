@@ -42,11 +42,6 @@ country_event = {
 
 	trigger = {
 		is_subject = yes
-		OR = {
-			#NOT = { has_country_flag = starting_vassal }
-			check_variable = { which = vassal_progress value = 100 }
-			check_variable = { which = vassal_progress value = 0 } 
-		}
 	}
 
 	immediate = {
@@ -75,7 +70,6 @@ country_event = {
 				clr_country_flag = starting_vassal
 				clr_country_flag = intransigent_vassal
 				clr_country_flag = allowed_to_annex
-				clr_country_flag = long_term_vassal
 				clr_country_flag = overlord_notified_0
 				clr_country_flag = overlord_notified_1
 				clr_country_flag = overlord_notified_2
@@ -90,21 +84,19 @@ country_event = {
 				limit = { 
 					NOT = { has_country_flag = vassal_flag }
 					NOT = { has_country_flag = allowed_to_annex }
-					NOT = { has_country_flag = long_term_vassal }
 					NOT = { any_known_country = { war_with = PREV }}
 				}
 				set_country_flag = vassal_flag
 				set_country_flag = vassal_initialising
 				export_to_variable = { which = prevvassal_prov value = num_of_cities }
 				export_to_variable = { which = province_count value = num_of_cities }	#To account for vassal having lost provinces in the same war they lost freedom
-				set_variable = { which = vassal_progress value = 20 }
 				country_event = { id = orion_vassal.3 }
+				set_variable = { which = vassal_progress value = 20 }
 			}
 			if = {
 				limit = {
 					is_nomad = no	#Can't progress with no administration
 					NOT = { has_country_flag = vassal_initialising }
-					NOT = { has_country_flag = long_term_vassal }
 				}
 				# Default progress - roughly 50+ years with no boosts. Add the overlord's boost  
 				# orion_vassal.2
@@ -249,18 +241,6 @@ country_event = {
 				limit = { is_vassal = yes }
 				set_variable = { which = vassal_boost which = ROOT }
 			}
-			# Bonus for long-term vassal
-			if = {
-				limit = {
-					OR = {
-						is_lesser_in_union = yes
-						is_march = yes
-					}
-				}
-				ROOT = {
-					change_variable = { which = long_term_vassal_count value = 1 }
-				}
-			}
 		}
 	}
 
@@ -289,6 +269,34 @@ country_event = {
 			}
 			overlord = {
 				set_country_flag = overlord_flag_@ROOT
+			}
+			if = {
+				limit = { NOT = { OR = { is_subject_of_type = suzerainty is_subject_of_type = fief is_subject_of_type = dominion }}}
+				if = { 
+					limit = { current_age = age_of_discovery }
+					create_subject = { 
+						subject_type = suzerainty 
+						subject = FROM 
+					}
+				}
+				if = { 
+					limit = { current_age = age_of_reformation }
+					create_subject = { 
+						subject_type = fief 
+						subject = FROM 
+					}
+				}
+				if = { 
+					limit = { current_age = age_of_absolutism }
+					create_subject = { 
+						subject_type = dominion 
+						subject = FROM 
+					}
+				}
+				if = { 
+					limit = { current_age = age_of_revolutions }
+					create_vassal = FROM
+				}
 			}
 		}
 		clr_country_flag = vassal_initialising
@@ -400,32 +408,54 @@ country_event = {
 	desc = "orion_vassal.10.d"
 
 	picture = BIG_BOOK_eventPicture
+	
+	trigger = { 
+		any_subject_country = { 
+			OR = {
+				is_subject_of_type = suzerainty
+				is_subject_of_type = fief
+				is_subject_of_type = dominion
+			}
+		}
+		NOT = { check_variable = { which = vassal_progress value = 100 } }
+	}
+	
+	
 
-	is_triggered_only = yes
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = { OR = { is_subject_of_type = suzerainty is_subject_of_type = fief is_subject_of_type = dominion } }
+				save_event_target_as = vassal_int_10
+			}
+		} 
+	}
 
 	option = {
 		name = "orion_vassal.10.opta"
-		trigger = { ai = yes }
+		ai_chance = { factor = 10 }
+		event_target:vassal_int_10 = { change_variable = { which = vassal_progress value = -20 } }
+		add_dip_power = 50
 	}
 
 	option = {
 		name = "orion_vassal.10.optb"
-		trigger = { ai = no }
-		add_adm_power = -10
+		ai_chance = { factor = 50 }
+		event_target:vassal_int_10 = { change_variable = { which = vassal_progress value = 20 } }
+		add_dip_power = -50
 	}
 
 	option = {
 		name = "orion_vassal.10.optc"
-		trigger = { ai = no  NOT = { corruption = 90 }}
-		add_adm_power = -10
-		add_years_of_income = -0.125
-		add_corruption = 2
-		FROM = { add_corruption = 5 }
-		random_list = {
-			50 = { FROM = { change_variable = { which = vassal_progress value = 20 } } }
-			40 = { FROM = { change_variable = { which = vassal_progress value = 30 } } }
-			10 = { FROM = { change_variable = { which = vassal_progress value = 40 } } }
-		}
+		ai_chance = { factor = 40 }
+		event_target:vassal_int_10 = { change_variable = { which = vassal_progress value = 40 } }
+		add_dip_power = -100
+		add_corruption = 1
+		
 	}
 }
 
@@ -436,31 +466,53 @@ country_event = {
 
 	picture = BIG_BOOK_eventPicture
 
-	is_triggered_only = yes
+	trigger = { 
+		any_subject_country = { 
+			OR = {
+				is_subject_of_type = suzerainty
+				is_subject_of_type = fief
+				is_subject_of_type = dominion
+			}
+		}
+		NOT = { check_variable = { which = vassal_progress value = 100 } }
+	}
+	
+	
+
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = { OR = { is_subject_of_type = suzerainty is_subject_of_type = fief is_subject_of_type = dominion } }
+				save_event_target_as = vassal_int_11
+			}
+		} 
+	}
 
 	option = {
 		name = "orion_vassal.11.opta"
-		trigger = { ai = yes }
+		ai_chance = { factor = 10 }
+		event_target:vassal_int_11 = { change_variable = { which = vassal_progress value = -20 } }
+		add_adm_power = 50
 	}
 
 	option = {
 		name = "orion_vassal.11.optb"
-		trigger = { ai = no }
-		add_adm_power = -10
+		ai_chance = { factor = 50 }
+		event_target:vassal_int_10 = { change_variable = { which = vassal_progress value = 20 } }
+		add_adm_power = -50
 	}
 
 	option = {
 		name = "orion_vassal.11.optc"
-		trigger = { ai = no NOT = { corruption = 90 }}
-		add_adm_power = -10
-		add_years_of_income = -0.15
-		add_corruption = 2
-		FROM = { add_corruption = 5 }
-		random_list = {
-			50 = { FROM = { change_variable = { which = vassal_progress value = 20 } } }
-			40 = { FROM = { change_variable = { which = vassal_progress value = 30 } } }
-			10 = { FROM = { change_variable = { which = vassal_progress value = 40 } } }
-		}
+		ai_chance = { factor = 40 }
+		event_target:vassal_int_10 = { change_variable = { which = vassal_progress value = 40 } }
+		add_adm_power = -100
+		add_corruption = 1
+		
 	}
 }
 
@@ -471,31 +523,53 @@ country_event = {
 
 	picture = BIG_BOOK_eventPicture
 
-	is_triggered_only = yes
+	trigger = { 
+		any_subject_country = { 
+			OR = {
+				is_subject_of_type = suzerainty
+				is_subject_of_type = fief
+				is_subject_of_type = dominion
+			}
+		}
+		NOT = { check_variable = { which = vassal_progress value = 100 } }
+	}
+	
+	
+
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = { OR = { is_subject_of_type = suzerainty is_subject_of_type = fief is_subject_of_type = dominion } }
+				save_event_target_as = vassal_int_12
+			}
+		} 
+	}
 
 	option = {
 		name = "orion_vassal.12.opta"
-		trigger = { ai = yes }
+		ai_chance = { factor = 10 }
+		event_target:vassal_int_12 = { change_variable = { which = vassal_progress value = -20 } }
+		add_mil_power = 50
 	}
 
 	option = {
 		name = "orion_vassal.12.optb"
-		trigger = { ai = no }
-		add_mil_power = -10
+		ai_chance = { factor = 50 }
+		event_target:vassal_int_12 = { change_variable = { which = vassal_progress value = 20 } }
+		add_mil_power = -50
 	}
 
 	option = {
 		name = "orion_vassal.12.optc"
-		trigger = { ai = no NOT = { has_country_modifier = inefficient_bureaucracy } NOT = { corruption = 90 }}
-		add_mil_power = -10
-		add_years_of_income = -0.15
-		add_corruption = 2
-		FROM = { add_corruption = 5 }
-		random_list = {
-			50 = { FROM = { change_variable = { which = vassal_progress value = 20 } } }
-			40 = { FROM = { change_variable = { which = vassal_progress value = 30 } } }
-			10 = { FROM = { change_variable = { which = vassal_progress value = 40 } } }
-		}
+		ai_chance = { factor = 40 }
+		event_target:vassal_int_12 = { change_variable = { which = vassal_progress value = 40 } }
+		add_mil_power = -100
+		add_corruption = 1
+		
 	}
 }
 
@@ -506,49 +580,53 @@ country_event = {
 
 	picture = BIG_BOOK_eventPicture
 
-	is_triggered_only = yes
+	trigger = { 
+		any_subject_country = { 
+			OR = {
+				is_subject_of_type = suzerainty
+				is_subject_of_type = fief
+				is_subject_of_type = dominion
+			}
+		}
+		NOT = { check_variable = { which = vassal_progress value = 100 } }
+	}
 	
+	
+
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = { OR = { is_subject_of_type = suzerainty is_subject_of_type = fief is_subject_of_type = dominion } }
+				save_event_target_as = vassal_int_13
+			}
+		} 
+	}
+
 	option = {
 		name = "orion_vassal.13.opta"
-		trigger = { ai = yes }
+		ai_chance = { factor = 10 }
+		event_target:vassal_int_13 = { change_variable = { which = vassal_progress value = -20 } }
+		add_adm_power = 50
 	}
 
 	option = {
 		name = "orion_vassal.13.optb"
-		trigger = { ai = no }
-		add_adm_power = -10
+		ai_chance = { factor = 50 }
+		event_target:vassal_int_13 = { change_variable = { which = vassal_progress value = 20 } }
+		add_adm_power = -50
 	}
 
 	option = {
 		name = "orion_vassal.13.optc"
-		trigger = { ai = no NOT = { corruption = 90 }}
-		add_adm_power = -10
-		add_years_of_income = -0.15
-		add_corruption = 2
-		FROM = { add_corruption = 5 }
-		random_list = {
-			50 = { FROM = { change_variable = { which = vassal_progress value = 20 } } }
-			40 = { FROM = { change_variable = { which = vassal_progress value = 30 } } }
-			10 = { FROM = { change_variable = { which = vassal_progress value = 40 } } }
-		}
-	}
-}
-
-country_event = {
-	id = orion_vassal.14
-	title = "orion_vassal.14.t"
-	desc = "orion_vassal.14.d"
-
-	picture = BIG_BOOK_eventPicture
-
-	is_triggered_only = yes
-	
-	immediate = {
-		hidden_effect = { reverse_add_opinion = { who = FROM modifier = long_term_vassal }}
-	}
-
-	option = {
-		name = "orion_vassal.14.opta"
+		ai_chance = { factor = 40 }
+		event_target:vassal_int_13 = { change_variable = { which = vassal_progress value = 40 } }
+		add_adm_power = -100
+		add_corruption = 1
+		
 	}
 }
 
@@ -581,7 +659,6 @@ country_event = {
 			clr_country_flag = starting_vassal
 			clr_country_flag = intransigent_vassal
 			clr_country_flag = allowed_to_annex
-			clr_country_flag = long_term_vassal
 			clr_country_flag = overlord_notified_0
 			clr_country_flag = overlord_notified_1
 			clr_country_flag = overlord_notified_2
@@ -671,28 +748,6 @@ country_event = {
 	}
 }
 
-country_event = {
-	id = orion_vassal.19
-	title = "orion_vassal.19.t"
-	desc = "orion_vassal.19.d"
-
-	picture = BIG_BOOK_eventPicture
-
-	hidden = yes
-
-	trigger = {
-		is_vassal = yes
-		NOT = { has_country_flag = overlord_notified_3 }
-		has_country_modifier = long_term_vassal_3
-	}
-
-	option = {
-		name = "orion_vassal.19.opta"
-		overlord = { country_event = { id = orion_vassal.23 days = 3 } }
-		set_country_flag = overlord_notified_3
-	}
-}
-
 # Overlord Events
 country_event = {
 	id = orion_vassal.20
@@ -754,39 +809,133 @@ country_event = {
 	}
 }
 
-# AI is having issues diplo-annexing.
 country_event = {
 	id = orion_vassal.24
 	title = "orion_vassal.24.t"
 	desc = "orion_vassal.24.d"
 
 	picture = BIG_BOOK_eventPicture
-
 	hidden = yes
 
+
 	trigger = {
-		has_country_flag = long_term_vassal
-		ai = yes
-		overlord = { 
-			ai = yes 
-			NOT = { is_nomad = yes } # The hordes should not integrate their vassals
-		}
+	 	
+	 	is_subject = yes
 	}
-
+	
 	mean_time_to_happen = {
-		months = 60
-	}
-
-	immediate = {
-		clr_country_flag = long_term_vassal
-		overlord = { inherit = ROOT }
+		days = 0
 	}
 
 	option = {
 		name = "orion_vassal.24.opta"
-		custom_tooltip = "vassal_bonus_3"
+		clr_country_flag = vassal_flag
+		clr_country_flag = starting_vassal
+		clr_country_flag = intransigent_vassal
+		clr_country_flag = allowed_to_annex
+		clr_country_flag = overlord_notified_0
+		clr_country_flag = overlord_notified_1
+		clr_country_flag = overlord_notified_2
+		clr_country_flag = overlord_notified_3
+		every_known_country = { clr_country_flag = overlord_flag_@ROOT }	#clear previous overlord if changed hands in peace
+		change_variable = { which = vassal_progress value = 0 }
+		change_variable = { which = vassal_boost value = 0 }
+		overlord = { set_country_flag = overlord_flag_@ROOT }
 	}
 }
+
+country_event = {
+	id = orion_vassal.25
+	title = "orion_vassal.25.t"
+	desc = "orion_vassal.25.d"
+
+	picture = BIG_BOOK_eventPicture
+	hidden = yes
+
+
+	trigger = {
+	 	is_subject = yes
+	 	OR = {
+	 		AND = {
+	 			check_variable = { which = vassal_progress value = 100 } 
+	 			NOT = { any_known_country = { war_with = PREV }}
+	 		}
+	 		AND = {
+	 			NOT = { check_variable = { which = vassal_progress value = 1 } }  
+	 			NOT = { any_known_country = { war_with = PREV }}
+	 		}
+	 	}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = "orion_vassal.25.opta"
+		trigger = {
+			check_variable = { which = vassal_progress value = 100 } 
+			NOT = { any_known_country = { war_with = PREV }}
+		}
+		set_variable = { which = vassal_progress value = 10 }
+		trigger_switch = {
+			on_trigger = is_subject_of_type
+			suzerainty = {
+				overlord = {
+					create_subject = { who = ROOT subject_type = fief }
+					country_event = { id = orion_vassal.11 }
+				}
+			}
+			fief = {
+				overlord = {
+					create_subject = { who = ROOT subject_type = dominion }
+					country_event = { id = orion_vassal.12 }
+				}
+			}
+			dominion = {
+				set_country_flag = vassal_flag
+				overlord = {
+					create_subject = { who = ROOT subject_type = vassal }
+					country_event = { id = orion_vassal.13 }
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = "orion_vassal.25.optb"
+		trigger = {
+			NOT = { check_variable = { which = vassal_progress value = 1 } } 
+			NOT = { any_known_country = { war_with = PREV }}
+		}
+		set_variable = { which = vassal_progress value = 90 }
+		trigger_switch = {
+			on_trigger = is_subject_of_type
+			dominion = {
+				overlord = {
+					create_subject = { who = ROOT subject_type = fief }
+					country_event = { id = orion_vassal.5 }
+				}
+			}
+			fief = {
+				overlord = {
+					create_subject = { who = ROOT subject_type = suzerainty }
+					country_event = { id = orion_vassal.6 }
+				}
+			}
+			suzerainty = {
+				set_variable = { which = vassal_progress value = 5 }
+				if = {
+					limit = { NOT = { has_country_modifier = vassal_rebellious }}
+					add_country_modifier = { name = vassal_rebellious duration = 3650 }
+					overlord = { reverse_add_opinion = { who = ROOT modifier = angry_vassal }}
+				}
+			}
+		}
+	}	
+}
+
+
 
 
 

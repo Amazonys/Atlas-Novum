@@ -1,0 +1,288 @@
+# INSTRUCTIONS:
+#
+# condition				A diplomatic action can have any number of condition blocks, each with its own
+#						tooltip, potential and allow section
+#
+# 	tooltip					Sets a custom text string similar to the hardcoded limits
+# 							If no tooltip is scripted, the tooltip for the actual trigger will be shown
+#							Note that the custom tooltip is only shown if the allow trigger is NOT met
+#
+# 	potential				Determines if the trigger is applicable or not
+# 	allow					Determines if the action is valid or not
+#
+# effect				A diplomatic action can only have one effect block
+
+# ROOT					actor
+# FROM					target
+
+########################################
+# DIPLOMATIC ACTIONS
+########################################
+# royal_marriage
+# declarewar
+# requestpeace
+# support_independence_action
+# allianceaction
+# embargoaction
+# annexationaction
+# integrationaction
+# vassalaction
+# guaranteeaction
+# warningaction
+# threaten_war
+# milaccess
+# fleet_access
+# offer_fleet_access
+# offermilaccess
+# insultaction
+# giftaction
+# claimaction
+# callaction
+# offerloan
+# warsubsidy
+# sellprov
+# imperial_relations_action
+# religious_unity_action
+# grant_electorate
+# remove_electorate
+# grant_freecity
+# remove_freecity
+# demand_unlawful_territory_action
+# call_crusade_action
+# excommunicate_action
+# enforce_peace
+# improve_relation
+# fabricate_claim
+# justify_trade_conflict
+# transfer_trade_power
+# infiltrate_administration
+# sabotage_reputation
+# support_rebels
+# sow_discontent
+# study_technology
+# agitate_for_liberty
+# form_coalition
+# request_to_join_federation
+# invite_to_federation
+# support_heir
+# break_marriage
+# designate_march
+# ask_for_march
+# sell_ships_action
+# counterespionage
+# abandon_union_action
+
+royal_marriage = {
+	condition = {
+		tooltip = MARWAR
+		potential = {
+		}
+		allow = {
+			NOT = { war_with = FROM }
+		}
+	}
+}
+
+annexationaction = {
+	condition = {
+		tooltip = ANNEX_TOO_LOW
+		potential = {
+			FROM = {
+				vassal_of = ROOT
+			}
+		}
+		allow = {
+			FROM = {
+				has_opinion = {
+					who = ROOT
+					value = 190
+				}
+			}
+		}
+	}
+	
+	
+	
+	#condition = {
+	#	tooltip = ANNEXINVALID
+	#	potential = {
+	#		FROM = {
+	#			vassal_of = ROOT
+	#		}
+	#	}
+	#	allow = {
+	#		FROM = {
+	#			years_in_vassalage_under = {
+	#				who = ROOT
+	#				years = 10
+	#			}
+	#		}
+	#	}
+	#}
+}
+
+declare_war = {
+	
+	#Vassal cannot war against overlord's interests
+	condition = {
+		tooltip = VASSAL_LIMITS_FRIEND
+		potential = {
+			is_subject_of_type = suzerainty
+		}
+		allow = {
+			OR = {
+				AND = {
+					NOT = { overlord = { alliance_with = FROM }}
+					NOT = { overlord = { has_guaranteed = FROM }}
+					NOT = { overlord = { overlord_of = FROM }}
+				}
+				liberty_desire = 50
+			}
+		}
+	}
+
+}
+
+integrationaction = {
+	condition = {
+		tooltip = INTEGRATETOOLOWDESC
+		potential = {
+			senior_union_with = FROM
+		}
+		allow = {
+			FROM = {
+				has_opinion = {
+					who = ROOT
+					value = 190
+				}
+			}
+		}
+	}
+	#condition = {
+	#	tooltip = INTEGRATEINVALID
+	#	potential = {
+	#		senior_union_with = FROM
+	#	}
+	#	allow = {
+	#		FROM = {
+	#			years_in_union_under = {
+	#				who = ROOT
+	#				years = 50
+	#			}
+	#		}
+	#	}
+	#}
+}
+
+vassalaction = {
+	condition = {
+		tooltip = VASSALINVALID
+		potential = {
+		}
+		allow = {
+			alliance_with = FROM
+			FROM = {
+				has_opinion = {
+					who = ROOT
+					value = 190
+				}
+			}
+			FROM = { is_at_war = no }
+		}
+		
+		effect = {
+			if = {
+				limit = {
+					FROM = {
+						has_opinion_modifier = {
+							modifier = had_war_with_us
+							who = ROOT
+						}
+					}
+				}
+				reverse_remove_opinion = { modifier = had_war_with_us who = FROM }
+			}
+			hidden_effect = {
+				if = { 
+					limit = { current_age = age_of_discovery }
+					create_subject = { who = FROM subject_type = suzerainty }
+				}
+				if = { 
+					limit = { current_age = age_of_reformation }
+					create_subject = { who = FROM subject_type = fief }
+				}
+				if = { 
+					limit = { current_age = age_of_absolutism }
+					create_subject = { who = FROM subject_type = dominion }
+				}
+				if = { 
+					limit = { current_age = age_of_revolutions }
+					create_vassal = FROM
+				}
+				set_country_flag = overlord_flag_@FROM
+				FROM = {
+					set_country_flag = vassal_flag
+					set_variable = { which = vassal_progress value = 20 }
+					export_to_variable = { which = prevvassal_prov value = num_of_cities }
+				}
+			}
+		}
+	}
+}
+
+abandon_union_action = {
+	condition = {
+		potential = {
+			FROM = { liberty_desire = 75 }
+		}
+		allow = {
+			ROOT = {
+				senior_union_with = FROM
+				is_at_war = no
+			}
+		}
+	}
+}
+
+
+
+
+form_coalition = {
+	condition = {
+		tooltip = MINAGGRESSIVEEXPANSION
+		potential = {	
+		}
+		allow = {
+			has_opinion_modifier = {
+				modifier = aggressive_expansion
+				who = FROM
+			}		
+			NOT = {
+				has_opinion_modifier = {
+					modifier = aggressive_expansion
+					who = FROM
+					value = -50
+				}
+			}
+		}
+	}
+}
+
+allianceaction = {
+	#Vassal cannot ally against overlord's interests
+	condition = {
+		tooltip = VASSAL_LIMITS_ENEMY
+		potential = {
+			is_subject_of_type = suzerainty
+		}
+		allow = {
+			OR = {
+				AND = {
+					NOT = { overlord = { is_rival = FROM }}
+					NOT = { overlord = { is_enemy = FROM }}
+				}
+				liberty_desire = 50
+			}
+		}
+	}
+}
