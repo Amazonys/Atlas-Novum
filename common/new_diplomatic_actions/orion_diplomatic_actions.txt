@@ -85,13 +85,7 @@ offer_fief = {
 	require_acceptance = yes
 	
 	is_visible = {
-		is_subject_of = ROOT
-		is_colony = no
-		is_lesser_in_union = no
-		NOT = { is_subject_of_type = fief }
-		NOT = { is_subject_of_type = canton }
-		NOT = { is_subject_of_type = dominion }
-		NOT = { is_subject_of_type = league }
+		current_age = age_of_discovery
 		OR = {
 			technology_group = western
 			technology_group = eastern
@@ -99,6 +93,13 @@ offer_fief = {
 			technology_group = muslim
 		}
 		FROM = {
+			is_subject_of = ROOT
+			is_colony = no
+			is_lesser_in_union = no
+			NOT = { is_subject_of_type = fief }
+			NOT = { is_subject_of_type = canton }
+			NOT = { is_subject_of_type = dominion }
+			NOT = { is_subject_of_type = league }
 			OR = {
 				technology_group = western
 				technology_group = eastern
@@ -161,44 +162,46 @@ offer_fief = {
 	ai_will_do = {
 		factor = 100
 	}
+	ai_importance = 400
 }
-#cancel_fief = {
-#	category = influence
-#	
-#	require_acceptance = no
-#	
-#	is_visible = {
-#		overlord_of = FROM
-#		FROM = {
-#			is_subject_of_type = fief
-#		}
-#	}
-#	is_allowed = {
-#		legitimacy_equivalent = 75
-#	}
-#	on_accept = {
-#		FROM = {
-#			grant_independence = yes
-#		}
-#		create_vassal = FROM
-#	}
-#	ai_will_do = {
-#		if = {
-#			limit = { FROM = { num_of_cities = 9 } }
-#			always = yes 
-#		}
-#		else = {
-#			always = no
-#		}
-#	}
-#}
+cancel_fief = {
+	category = influence
+	
+	require_acceptance = no
+	
+	is_visible = {
+		overlord_of = FROM
+		FROM = {
+			is_subject_of_type = fief
+		}
+	}
+	is_allowed = {
+		legitimacy_equivalent = 100
+	}
+	on_accept = {
+		create_vassal = FROM
+		add_legitimacy = -10
+	}
+	ai_will_do = {
+		factor = 100
+		modifier = {
+			factor = 0
+			NOT = { legitimacy_equivalent = 100 }
+		}
+		modifier = {
+			factor = 0
+			FROM = { num_of_cities = 1 NOT = { num_of_cities = 9 } }
+		}
+	}
+}
 
 seize_dominion = {
-	category = influence
+	category = great_powers
 	
 	require_acceptance = yes	
 	
 	is_visible = {
+		is_great_power = yes
 		OR = {
 			technology_group = western
 			technology_group = eastern
@@ -207,7 +210,22 @@ seize_dominion = {
 		}
 		FROM = {
 			NOT = { is_subject_of = ROOT }
-			is_subject_of_type = dominion
+			OR = {
+				is_subject_of_type = dominion
+				AND = { 
+					is_subject = no
+					has_country_flag = possible_dominion
+				}
+			}
+			overlord = { 
+				OR = {
+					AND = {
+						is_rival = ROOT
+						is_great_power = yes
+					}
+					is_great_power = no
+				}
+			}
 			OR = {
 				technology_group = western
 				technology_group = eastern
@@ -220,8 +238,14 @@ seize_dominion = {
 		custom_trigger_tooltip = {
 			tooltip = dominion.tooltip
 			FROM = {
-				is_in_war = { attacker_leader = ROOT }
-				is_subject_of_type = dominion
+				war_with = ROOT 
+				OR = {
+					is_subject_of_type = dominion
+					AND = { 
+						is_subject = no
+						has_country_flag = possible_dominion
+					}
+				}
 				capital_scope = { controlled_by = ROOT }
 				NOT = { total_development = ROOT }
 			}
@@ -230,7 +254,6 @@ seize_dominion = {
 	}
 	
 	on_accept = {
-		
 		create_subject = {
 			subject_type = dominion
 			subject = FROM
@@ -272,5 +295,4 @@ seize_dominion = {
 	ai_will_do = {
 		factor = 100
 	}
-
 }

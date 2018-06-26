@@ -46,9 +46,9 @@ NDefines.NDiplomacy.AE_THREATEN_WAR = 1.0
 
 NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.66		-- _DDEF_PO_DEMAND_PROVINCES_AE = 10, (Per development)
 NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.33			-- (Per core, only applied if returning cores to vassals of winner)
-NDefines.NDiplomacy.PO_FORM_PU_AE = 0.1 							-- _DDEF_PO_FORM_PU_AE = 10, (Per development)
+NDefines.NDiplomacy.PO_FORM_PU_AE = 0.1							-- _DDEF_PO_FORM_PU_AE = 10, (Per development)
 NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.1
-NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.5 					-- _DDEF_PO_BECOME_VASSAL_AE = 10, (Per development)
+NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.6 					-- _DDEF_PO_BECOME_VASSAL_AE = 10, (Per development)
 NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.3
 
 NDefines.NDiplomacy.IMPERIAL_CITY_IA = 0.003
@@ -92,7 +92,7 @@ NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_PARTICIPATION_FROM_CASUALTIES =
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_MILITARY_RULERS = 1 --If set to 1, AI will only send Condottieri while having a miliaristic ruler.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_NEIGHBORS = 1 --If set to 1, AI will only send Condottieri to neighbors, regardless of access.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_DISABLE_VERSUS_PLAYER_ENEMIES = 0 --If set to 1, AI will try avoid sending Condottieri having to fight against human player enemies.
-NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 25
+NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 20
 	
 NDefines.NCountry.CORE_COLONY = 0.25								-- Multiplied with development, colonized by country or overseas
 NDefines.NCountry.CORE_OVERSEAS = 0.5						-- Multiplied with development, colonized by country or overseas
