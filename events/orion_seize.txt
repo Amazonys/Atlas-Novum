@@ -9,7 +9,6 @@ country_event = {
 	desc = "orion_seize.1.d"
 	picture = BATTLE_eventPicture
 	
-	major = yes
 	fire_only_once = yes
 
 	is_triggered_only = yes
@@ -18,9 +17,9 @@ country_event = {
 		name = "orion_seize.1.a" 
 		ai_chance = { factor = 100 }
 		add_prestige = -10
-		add_adm_power = 200
-		add_dip_power = 200
-		add_mil_power = 200
+		add_adm_power = 100
+		add_dip_power = 100
+		add_mil_power = 100
     	add_country_modifier = {
 			name = "outpost_taken"
 			duration = 7300
@@ -40,6 +39,7 @@ country_event = {
 	mean_time_to_happen = { 
 		days = 1
 		modifier = {
+			factor = 0.001
 			capital_scope = { NOT = { OR = { controlled_by = ROOT controlled_by = REB } } }
 		}	
 	}
@@ -47,20 +47,25 @@ country_event = {
 	trigger = {
 		ai_chance = { factor = 100 }
 		ai = yes
-		capital_scope = { NOT = { OR = { controlled_by = ROOT controlled_by = REB } } }
-		is_at_war = yes
-		OR = { 
-			is_subject_of_type = dominion
-			AND = { 
-				is_subject = no 
-				has_country_flag = possible_dominion
-			}
+		capital_scope = { 
+			NOT = { OR = { controlled_by = ROOT controlled_by = REB } } 
+			controller = { 
+				is_great_power = yes 
+				OR = {
+					technology_group = western
+					technology_group = eastern
+					technology_group = ottoman
+					technology_group = muslim
+				}
+			} 
 		}
+		is_at_war = yes	
+		is_subject_of_type = dominion
     }
 	
 
 	option = {
-		name = "orion_seize.1.a"
+		name = "orion_seize.3.a"
 		capital_scope = { controller = { country_event = { id = orion_seize.4 days = 0 } } }
 	}
 }
@@ -76,28 +81,56 @@ country_event = {
 
 	trigger = {
 		ai = yes
-		any_country = {
-			OR = { 
-				AND = { 
-					NOT = { is_subject_of = ROOT }
-					is_subject_of_type = dominion
-					capital_scope = { controlled_by = ROOT }
-				}
-				AND = { 
-					is_subject = no 
-					has_country_flag = possible_dominion
-					capital_scope = { controlled_by = ROOT }
+		is_great_power = yes
+		OR = {
+			technology_group = western
+			technology_group = eastern
+			technology_group = ottoman
+			technology_group = muslim
+		}
+		FROM = {
+			NOT = { is_subject_of = ROOT }
+			is_subject_of_type = dominion
+			overlord = { 
+				OR = {
+					AND = {
+						is_rival = ROOT
+						is_great_power = yes
+					}
+					is_great_power = no
 				}
 			}
+			OR = {
+				technology_group = western
+				technology_group = eastern
+				technology_group = ottoman
+				technology_group = muslim
+			}
+			war_with = ROOT 
+			capital_scope = { controlled_by = ROOT }
 			NOT = { total_development = ROOT }
-			any_owned_province = { any_neighbor_province = { owned_by = ROOT } }
+			is_neighbor_of = ROOT
 		}
     }
 	
 
 	option = {
 		ai_chance = { factor = 100 }
-		name = "orion_seize.1.a"
+		name = "orion_seize.4.a"
+		hidden_effect = { 
+			FROM = { 
+				overlord = {
+					reverse_add_opinion = {
+    					who = ROOT
+    					modifier = took_dominion
+					}
+				}
+				reverse_add_opinion = {
+    				who = ROOT
+    				modifier = forced_dominion
+				}
+			}
+		}
 		create_subject = {
 			subject_type = dominion
 			subject = FROM
@@ -117,60 +150,36 @@ country_event = {
 	mean_time_to_happen = { 
 		days = 1
 		modifier = {
+			factor = 0.001
 			capital_scope = { NOT = { OR = { controlled_by = ROOT controlled_by = REB } } }
 		}	
 	}
 
 	trigger = {
 		ai_chance = { factor = 100 }
-		current_age = age_of_discovery
 		ai = yes
-		if = {
-			limit = { is_at_war = yes is_subject_of_type = fief }
-			capital_scope = { 
-				NOT = { OR = { controlled_by = ROOT controlled_by = REB } } 
-				controller = {
-					OR = {
-						culture_group = ROOT
-						is_part_of_hre = yes
-						has_ruler_modifier = regent_of_france 
-					}
-				}
-			}
-		}
-		if = { 
-			limit = {
-				is_at_war = no
-				is_vassal = yes
-				is_client_nation = no
-				is_lesser_in_union = no
-				is_colony = no
-				NOT = { is_subject_of_type = fief }
-				NOT = { is_subject_of_type = dominion }
-				NOT = { is_subject_of_type = tributary_state }
-			}
-			NOT = { num_of_cities = 9 }
-			overlord = { 
+		capital_scope = { 
+			NOT = { OR = { controlled_by = ROOT controlled_by = REB } } 
+			controller = { 
+				is_great_power = yes 
 				OR = {
-					culture_group = ROOT
-					is_part_of_hre = yes
-					has_ruler_modifier = regent_of_france 
+					technology_group = western
+					technology_group = eastern
+					technology_group = ottoman
+					technology_group = muslim
 				}
-			}
+			} 
 		}
+		
+		
+		is_at_war = yes	
+		is_subject_of_type = dominion
     }
 	
 
 	option = {
-		name = "orion_seize.5.a"
-		if = { 
-			limit = { is_at_war = yes is_subject_of_type = fief capital_scope = { NOT = { OR = { controlled_by = ROOT controlled_by = REB } } } }
-			capital_scope = { controller = { country_event = { id = orion_seize.6 days = 0 } } }
-		}
-		if = { 
-			limit = { is_at_war = no is_vassal = yes NOT = { num_of_cities = 9 } }
-			overlord = { country_event = { id = orion_seize.6 days = 0 } }
-		}
+		name = "orion_seize.3.a"
+		capital_scope = { controller = { country_event = { id = orion_seize.4 days = 0 } } }
 	}
 }
 
@@ -185,28 +194,53 @@ country_event = {
 
 	trigger = {
 		ai = yes
-		#is_subject = no
-		FROM = {
-			NOT = { total_development = ROOT }
-			any_owned_province = { any_neighbor_province = { owned_by = ROOT } }
-			OR = { 
-				AND = {
-					NOT = { is_subject_of = ROOT }
-					is_subject_of_type = fief
-					capital_scope = { controlled_by = ROOT }	
-					is_at_war = yes
+		legitimacy = 0
+		OR = {
+			technology_group = western
+			technology_group = eastern
+			technology_group = ottoman
+			technology_group = muslim
+		}
+		if = {
+			limit = { OR = { tag = ENG tag = FRA } NOT = { has_global_flag = HYW_end } }
+			FROM = {
+				NOT = { is_subject_of = ROOT }
+				OR = { 
+					culture_group = british
+					culture_group = french
 				}
-				AND = {
-					is_subject_of = ROOT
-					is_client_nation = no
-					is_lesser_in_union = no
-					is_colony = no
-					is_at_war = no
-					NOT = { is_subject_of_type = fief }
-					NOT = { is_subject_of_type = dominion }
-					NOT = { is_subject_of_type = tributary_state }
+				religion_group = ROOT
+				OR = {
+					technology_group = western
+					technology_group = eastern
+					technology_group = ottoman
+					technology_group = muslim
 				}
-			}	
+				war_with = ROOT 
+				is_subject_of_type = fief
+				capital_scope = { controlled_by = ROOT }
+				NOT = { total_development = ROOT }
+				is_neighbor_of = ROOT
+			}
+		}
+		else = { 
+			FROM = {
+				NOT = { is_subject_of = ROOT }
+				culture_group = ROOT
+				religion_group = ROOT
+				is_subject_of_type = fief
+				OR = {
+					technology_group = western
+					technology_group = eastern
+					technology_group = ottoman
+					technology_group = muslim
+				}
+				war_with = ROOT 
+				is_subject_of_type = fief
+				capital_scope = { controlled_by = ROOT }
+				NOT = { total_development = ROOT }
+				is_neighbor_of = ROOT
+			}
 		}
     }
 	
@@ -214,9 +248,133 @@ country_event = {
 	option = {
 		ai_chance = { factor = 100 }
 		name = "orion_seize.6.a"
+		add_legitimacy = -10
+		hidden_effect = { 
+			FROM = { 
+				overlord = {
+					reverse_add_opinion = {
+    					who = ROOT
+    					modifier = took_fief
+					}
+				}
+				reverse_add_opinion = {
+    				who = ROOT
+    				modifier = forced_fief
+				}
+			}
+		}
 		create_subject = {
 			subject_type = fief
 			subject = FROM
 		}
 	}
 }
+
+country_event = { 
+	id = orion_seize.7
+	title = "orion_seize.7.t"
+	desc = "orion_seize.7.d"
+	picture = FREE_CITY_eventPicture
+	
+	hidden = yes
+	mean_time_to_happen = { 
+		days = 1
+		modifier = {
+			factor = 0.001
+			any_subject_country = {
+			
+			}
+		}	
+	}
+
+	trigger = {
+		ai = yes
+		OR = {
+			technology_group = western
+			technology_group = eastern
+			technology_group = ottoman
+			technology_group = muslim
+		}
+		if = {
+			limit = { OR = { tag = ENG tag = FRA } NOT = { has_global_flag = HYW_end } }
+			is_at_war = no
+			any_subject_country = {
+				OR = { 
+					culture_group = british
+					culture_group = french
+				}
+				is_subject_of = ROOT
+				is_colony = no
+				is_lesser_in_union = no
+				NOT = { is_subject_of_type = fief }
+				NOT = { is_subject_of_type = canton }
+				NOT = { is_subject_of_type = dominion }
+				NOT = { is_subject_of_type = league }
+				religion_group = ROOT
+				OR = {
+					technology_group = western
+					technology_group = eastern
+					technology_group = ottoman
+					technology_group = muslim
+				}
+				NOT = { num_of_cities = 9 }
+			}
+		}
+		else = { 
+			is_at_war = no
+			any_subject_country = {
+				culture_group = ROOT
+				is_subject_of = ROOT
+				is_colony = no
+				is_lesser_in_union = no
+				NOT = { is_subject_of_type = fief }
+				NOT = { is_subject_of_type = canton }
+				NOT = { is_subject_of_type = dominion }
+				NOT = { is_subject_of_type = league }
+				religion_group = ROOT
+				OR = {
+					technology_group = western
+					technology_group = eastern
+					technology_group = ottoman
+					technology_group = muslim
+				}
+				NOT = { num_of_cities = 9 }
+			}
+		}
+    }
+	
+
+	option = {
+		ai_chance = { factor = 100 }
+		name = "orion_seize.7.a"
+		every_subject_country = {
+			limit = { 
+				culture_group = ROOT
+				is_subject_of = ROOT
+				is_colony = no
+				is_lesser_in_union = no
+				NOT = { is_subject_of_type = fief }
+				NOT = { is_subject_of_type = canton }
+				NOT = { is_subject_of_type = dominion }
+				NOT = { is_subject_of_type = league }
+				religion_group = ROOT
+				OR = {
+					technology_group = western
+					technology_group = eastern
+					technology_group = ottoman
+					technology_group = muslim
+				}
+				NOT = { num_of_cities = 9 }
+			}
+			ROOT = { 
+				create_subject = {
+					subject_type = fief
+					subject = PREV
+				}
+			}
+		}
+	}
+}
+
+
+

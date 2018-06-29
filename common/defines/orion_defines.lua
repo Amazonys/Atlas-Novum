@@ -48,9 +48,12 @@ NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.66		-- _DDEF_PO_DEMAND_PROVINCES_
 NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.33			-- (Per core, only applied if returning cores to vassals of winner)
 NDefines.NDiplomacy.PO_FORM_PU_AE = 0.1							-- _DDEF_PO_FORM_PU_AE = 10, (Per development)
 NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.1
-NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.6 					-- _DDEF_PO_BECOME_VASSAL_AE = 10, (Per development)
-NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.3
+NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.5					-- _DDEF_PO_BECOME_VASSAL_AE = 10, (Per development)
+NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.5
 
+NDefines.NAI.PEACE_TERMS_WAR_REPARATIONS_BASE_MULT = 0.05 -- AI desire for war reparations through peace
+NDefines.NAI.PEACE_TERMS_WAR_REPARATIONS_MIN_INCOME_RATIO = 0.5 -- AI only wants war reparations if other country has at least this % of their income
+	
 NDefines.NDiplomacy.IMPERIAL_CITY_IA = 0.003
 NDefines.NDiplomacy.HRE_FOREIGN_CONTROL_PENALTY = -0.003
 NDefines.NDiplomacy.HRE_PRINCE_AUTHORITY_THRESHOLD = 35
