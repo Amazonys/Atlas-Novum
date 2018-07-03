@@ -51,9 +51,6 @@ NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.1
 NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.5					-- _DDEF_PO_BECOME_VASSAL_AE = 10, (Per development)
 NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.5
 
-NDefines.NAI.PEACE_TERMS_WAR_REPARATIONS_BASE_MULT = 0.05 -- AI desire for war reparations through peace
-NDefines.NAI.PEACE_TERMS_WAR_REPARATIONS_MIN_INCOME_RATIO = 0.5 -- AI only wants war reparations if other country has at least this % of their income
-	
 NDefines.NDiplomacy.IMPERIAL_CITY_IA = 0.003
 NDefines.NDiplomacy.HRE_FOREIGN_CONTROL_PENALTY = -0.003
 NDefines.NDiplomacy.HRE_PRINCE_AUTHORITY_THRESHOLD = 35
@@ -96,6 +93,8 @@ NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_MILITARY_RULERS = 1 --If s
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_NEIGHBORS = 1 --If set to 1, AI will only send Condottieri to neighbors, regardless of access.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_DISABLE_VERSUS_PLAYER_ENEMIES = 0 --If set to 1, AI will try avoid sending Condottieri having to fight against human player enemies.
 NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 20
+NDefines.NAI.PEACE_TERMS_VASSAL_BASE_MULT = 2000.0 -- only applied if the AI has vassalize priority
+
 	
 NDefines.NCountry.CORE_COLONY = 0.25								-- Multiplied with development, colonized by country or overseas
 NDefines.NCountry.CORE_OVERSEAS = 0.5						-- Multiplied with development, colonized by country or overseas

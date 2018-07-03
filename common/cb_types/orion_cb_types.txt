@@ -33,51 +33,51 @@ cb_italian_wars = {
 	war_goal = italian_wars_wargoal
 }
 
-cb_hre_vassal = {
-	valid_for_subject = no
+#cb_hre_vassal = {
+#	valid_for_subject = no
+#
+#	prerequisites = {
+#		NOT = { current_age = age_of_absolutism }
+#		is_part_of_hre = yes
+#		FROM = {
+#			is_subject = no
+#			is_neighbor_of = ROOT 
+#			is_elector = no
+#			is_emperor = no
+#			is_part_of_hre = yes
+#			NOT = { num_of_cities = 9 }
+#		}
+#		is_revolution_target = no
+#	}
 
-	prerequisites = {
-		NOT = { current_age = age_of_absolutism }
-		is_part_of_hre = yes
-		FROM = {
-			is_subject = no
-			is_neighbor_of = ROOT 
-			is_elector = no
-			is_emperor = no
-			is_part_of_hre = yes
-			NOT = { num_of_cities = 9 }
-		}
-		is_revolution_target = no
-	}
-
-	attacker_disabled_po = {
-		po_demand_provinces
-		po_revoke_cores
-		po_release_vassals
-		po_release_annexed
-		po_return_cores
+#	attacker_disabled_po = {
+#		po_demand_provinces
+#		po_revoke_cores
+#		po_release_vassals
+#		po_release_annexed
+#		po_return_cores
 	#	po_become_vassal
-		po_become_tributary_state
-	#	po_form_personal_union
-	#   po_gold
-	#   po_concede_defeat
-	#   po_annul_treaties
-		po_war_reparations
-	    po_change_government
-	    po_revoke_elector
-	    po_trade_power
-	    po_steer_trade
-	    po_humiliate
-	}
+#		po_become_tributary_state
+#	 	po_form_personal_union
+#	    po_gold
+#	    po_concede_defeat
+#	    po_annul_treaties
+#		po_war_reparations
+#	    po_change_government
+#	    po_revoke_elector
+#	    po_trade_power
+#	    po_steer_trade
+#	    po_humiliate
+#	}
 	
-	war_goal = take_capital_vassalize
-}
+#	war_goal = take_capital_vassalize
+#}
 
 cb_fief_vassal = {
 	valid_for_subject = no
 
 	prerequisites = {
-		NOT = { is_in_empire = yes }
+		is_part_of_hre = no
 		current_age = age_of_discovery
 		OR = {
 			technology_group = western
@@ -86,7 +86,7 @@ cb_fief_vassal = {
 			technology_group = muslim
 		}
 		FROM = {
-			NOT = { is_in_empire = yes }
+			is_part_of_hre = no
 			OR = {
 				technology_group = western
 				technology_group = eastern
@@ -96,7 +96,8 @@ cb_fief_vassal = {
 			culture_group = ROOT
 			religion_group = ROOT
 			is_subject = no
-			is_neighbor_of = ROOT 
+			is_neighbor_of = ROOT
+			NOT = { num_of_cities = ROOT }
 			NOT = { num_of_cities = 9 }
 		}
 		is_revolution_target = no
@@ -104,13 +105,13 @@ cb_fief_vassal = {
 
 	attacker_disabled_po = {
 		po_demand_provinces
-		po_revoke_cores
-		po_release_vassals
-		po_release_annexed
-		po_return_cores
-	#	po_become_vassal
+	#	po_revoke_cores
+	#	po_release_vassals
+	#	po_release_annexed
+	#	po_return_cores
+		po_become_vassal
 		po_become_tributary_state
-	#	po_form_personal_union
+		po_form_personal_union
 	#   po_gold
 	#   po_concede_defeat
 	#   po_annul_treaties
@@ -122,5 +123,148 @@ cb_fief_vassal = {
 	    po_humiliate
 	}
 	
-	war_goal = take_capital_vassalize
+	war_goal = take_capital_fief
+}
+
+cb_make_domain = {
+	valid_for_subject = no
+	
+	#is_triggered_only = yes
+
+	prerequisites = {
+		is_great_power = yes
+		OR = {
+			technology_group = western
+			technology_group = eastern
+			technology_group = ottoman
+			technology_group = muslim
+		}
+		FROM = {
+			OR = {
+				AND = {
+					is_rival = ROOT
+					is_great_power = yes
+				}
+				is_great_power = no
+			}
+			OR = {
+				technology_group = western
+				technology_group = eastern
+				technology_group = ottoman
+				technology_group = muslim
+			}
+			any_subject_country = { 
+				NOT = { num_of_cities = ROOT }
+				NOT = { is_subject_of = ROOT }
+				is_subject_of_type = dominion
+				is_neighbor_of = ROOT
+				OR = {
+					technology_group = western
+					technology_group = eastern
+					technology_group = ottoman
+					technology_group = muslim
+				}
+			}
+		}
+	}
+
+	attacker_disabled_po = {
+		po_demand_provinces
+	#	po_revoke_cores
+	#	po_release_vassals
+	#	po_release_annexed
+	#	po_return_cores
+		po_become_vassal
+		po_become_tributary_state
+		po_form_personal_union
+	#   po_gold
+	#   po_concede_defeat
+	    po_annul_treaties
+		po_war_reparations
+	    po_change_government
+	    po_revoke_elector
+	    po_trade_power
+	    po_steer_trade
+	    po_humiliate
+	}
+	
+	war_goal = superiority_domains
+}
+
+cb_transfer_fiefs = {
+	valid_for_subject = no
+	
+	#is_triggered_only = yes
+
+	prerequisites = {
+		current_age = age_of_discovery
+		OR = {
+			technology_group = western
+			technology_group = eastern
+			technology_group = ottoman
+			technology_group = muslim
+		}
+		if = {
+			limit = { OR = { tag = ENG tag = FRA } NOT = { has_global_flag = HYW_end }}
+			FROM = {
+				any_subject_country = { 
+					NOT = { num_of_cities = ROOT }
+					NOT = { num_of_cities = 9 }
+					NOT = { is_subject_of = ROOT }
+					OR = {
+						culture_group = british
+						culture_group = french
+					}
+					religion_group = ROOT
+					is_neighbor_of = ROOT
+					OR = {
+						technology_group = western
+						technology_group = eastern
+						technology_group = ottoman
+						technology_group = muslim
+					}
+				}
+			}
+		}
+		else = {
+			FROM = {
+				any_subject_country = { 
+					NOT = { num_of_cities = ROOT }
+					NOT = { num_of_cities = 9 }
+					NOT = { is_subject_of = ROOT }
+					culture_group = ROOT
+					religion_group = ROOT
+					is_neighbor_of = ROOT
+					OR = {
+						technology_group = western
+						technology_group = eastern
+						technology_group = ottoman
+						technology_group = muslim
+					}
+				}
+			}
+		}
+	}
+
+	attacker_disabled_po = {
+		po_demand_provinces
+	#	po_revoke_cores
+	#	po_release_vassals
+	#	po_release_annexed
+	#	po_return_cores
+		po_become_vassal
+		po_become_tributary_state
+		po_form_personal_union
+	#   po_gold
+	#   po_concede_defeat
+	    po_annul_treaties
+		po_war_reparations
+	    po_change_government
+	    po_revoke_elector
+	    po_trade_power
+	    po_steer_trade
+	    po_humiliate
+	}
+	
+	war_goal = superiority_fiefs
 }
