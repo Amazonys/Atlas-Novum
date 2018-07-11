@@ -70,6 +70,8 @@ NDefines.NMilitary.LOOTED_RECOVERY = 0.2
 NDefines.NMilitary.RIVER_CROSSING_PENALTY = -1						-- Dice roll penalty from river crossing
 NDefines.NMilitary.STRAIT_CROSSING_PENALTY = -1					-- Dice roll penalty from strait crossing
 NDefines.NMilitary.SEA_LANDING_PENALTY = -1
+NDefines.NMilitary.SLAVE_RAIDS_SAILOR_FACTOR = 0.2						-- 
+NDefines.NMilitary.SLAVE_RAIDS_DURATION = 730
 
 NDefines.NMilitary.MAX_REBEL_SUPPRESSION = 10.0				-- Maximum amount of rebel suppression by troops in a province
 NDefines.NMilitary.INF_SUPPRESSION = 0.5					-- The amount of reduction to unrest for each friendly infantry regiment in a province
