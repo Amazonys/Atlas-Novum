@@ -1,15 +1,12 @@
-name="Imperialism Reinvigorated: Mediterranean Development Beta"
+name="Imperialism Reinvigorated: Unstable Development"
 path="mod/!improvedhistory_dev"
-replace_path="missions"
-replace_path="common/countries"
-replace_path="common/colonial_regions"
-replace_path="common/trade_companies"
-replace_path="history/countries"
-replace_path="history/diplomacy"
-replace_path="common/bookmarks"
 dependencies={
 	"Beyond Typus 9.0"
-}	
+}
+replace_path="missions"
+replace_path="common/colonial_regions"
+replace_path="common/trade_companies"
+replace_path="common/bookmarks"
 tags={
 	"Missions and Decisions"
 	"Historical"
@@ -22,4 +19,5 @@ tags={
 	"Graphics"
 }
 picture="reinvigorationpic.jpeg"
+remote_file_id="1381948766"
 supported_version="1.25.*.*"
