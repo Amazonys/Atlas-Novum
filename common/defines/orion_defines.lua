@@ -77,7 +77,7 @@ NDefines.NMilitary.MAX_REBEL_SUPPRESSION = 10.0				-- Maximum amount of rebel su
 NDefines.NMilitary.INF_SUPPRESSION = 0.5					-- The amount of reduction to unrest for each friendly infantry regiment in a province
 NDefines.NMilitary.CAV_SUPPRESSION = 0.75						-- The amount of reduction to unrest for each friendly cavalry regiment in a province
 NDefines.NMilitary.ART_SUPPRESSION = 0.25					-- The amount of reduction to unrest for each friendly artillery regiment in a province
-
+NDefines.NMilitary.ARMY_DRILL_YEARLY_DECAY = -0.05
 
 
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
