@@ -137,117 +137,6 @@ spa_slot_1 = {
 		}
 	}
 	
-	spa_combat_ned = {
-		icon = mission_cannons_firing
-		required_missions = { spa_acquire_lowlands }
-		position = 7
-		
-		
-		provinces_to_highlight = {
-			region = low_countries_region
-			country_or_non_sovereign_subject_holds = NED
-		}
-		
-		trigger = {
-			NED = { exists = yes }
-			ROOT = { at_war_with = NED }
-		}
-		
-		effect = {
-			low_countries_region = {
-				limit = { country_or_non_sovereign_subject_holds = NED }
-				add_claim = ROOT 
-			}
-		}
-	}
-	
-	spa_fortify_belgium = {
-		icon = mission_cannons_firing
-		required_missions = { spa_combat_ned }
-		position = 9
-		
-		
-		provinces_to_highlight = {
-			OR = { 
-				region = low_countries_region
-
-			}
-		}
-		
-		trigger = {
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 14
-				region = low_countries_region
-			}
-		
-		}
-		
-		effect = {
-			add_mil_power = 100
-			add_manpower = 30
-			every_owned_province = {
-				limit = { region = low_countries_region }
-				add_country_modifier = {
-					name = "buffer_zone_commerce"
-					duration = 7300
-				}
-			}
-		}
-	}
-	
-	spa_defeat_ned = {
-		icon = mission_cannons_firing
-		required_missions = { spa_fortify_belgium }
-		position = 10
-		
-		provinces_to_highlight = {
-			OR = { 
-				tag = NED
-
-			}
-		}
-		
-		trigger = {
-			is_year = 1600
-			NED = { exists = no }
-		}
-		
-		effect = {
-			add_country_modifier = {
-				name = "spa_win_eyw"
-				duration = 18250
-			}
-		}
-	}
-	
-	
-	spa_iberian_empire = {
-		icon = mission_empire
-		required_missions = { spa_iberian_union spa_defeat_ned }
-		position = 11
-		
-		provinces_to_highlight = {
-			OR = {
-				region = iberia_region
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		
-		trigger = {
-			iberia_region = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-		}
-		
-		effect = {
-			add_country_modifier = {
-				name = "spa_empire"
-				duration = -1
-			}
-		}
-	}
-	
 }
 #slot 2
 spa_slot_2 = {
@@ -480,6 +369,13 @@ spa_slot_2 = {
 		}
 		
 		effect = {	
+			define_conquistador = {
+				name = "Francisco Pizzaro"
+    			shock = 5
+   				fire = 3
+   				manuever = 5
+    			siege = 2
+			}
 			hidden_effect = {
 				panama_area = {
 					limit = { is_empty = yes }
@@ -492,11 +388,12 @@ spa_slot_2 = {
 				limit = { is_empty = yes }
 				cede_province = ROOT		
 			}
-			835 = { add_province_modifier = {
+			835 = { 
+				add_province_modifier = {
 					name = "spa_audiencia"
 					duration = -1
-				} }
-		
+				} 
+			}
 		}
 	}
 	
@@ -520,13 +417,6 @@ spa_slot_2 = {
 		}
 		
 		effect = {
-			define_conquistador = {
-				name = "Francisco Pizzaro"
-    			shock = 5
-   				fire = 3
-   				manuever = 5
-    			siege = 2
-			}
 			2647 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
@@ -840,6 +730,7 @@ spa_slot_3 = {
 			OR = { 
 				colonial_region = colonial_hispaniola
 			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
 		
 		trigger = { 
@@ -1302,6 +1193,10 @@ spa_slot_4 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
+			337 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
 		}
 	}
 	
@@ -1316,10 +1211,33 @@ spa_slot_4 = {
 		}
 		
 		trigger = {
-			ROOT = { controls = 335 }
+			335 = {
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					custom_trigger_tooltip = {
+						tooltip = control_prov.tooltip
+						if = {
+							limit = { 335 = { owner = { ai = yes } } }
+							OR = {
+								controlled_by = ROOT
+								controller = { is_subject_of = ROOT NOT = { is_subject_of_type = tributary_state } }
+							}
+						}
+					}
+				} 
+			}
 		}
 		
 		effect = {
+			every_province = {
+				limit = {
+					controller = { is_subject_of = ROOT }
+					OR = {
+						province_id = 335
+					}
+				}
+				change_controller = ROOT
+			}
 			add_mil_power = 50
 			335 = { 
 				cede_province = ROOT 
@@ -1715,12 +1633,41 @@ spa_slot_5 = {
 		}
 		
 		trigger = {
-			ROOT { controls = 337 }
+			337 = {
+				OR = {
+					country_or_non_sovereign_subject_holds = ROOT
+					custom_trigger_tooltip = {
+						tooltip = control_prov.tooltip
+						if = {
+							limit = { 337 = { owner = { ai = yes } } }
+							OR = {
+								controlled_by = ROOT
+								controller = { is_subject_of = ROOT NOT = { is_subject_of_type = tributary_state } }
+							}
+						}
+					}
+				} 
+			}
 		}
 		
 		effect = {
-			add_adm_power = 50
-			337 = { cede_province = ROOT } 
+			every_province = {
+				limit = {
+					controller = { is_subject_of = ROOT }
+					OR = {
+						province_id = 337
+					}
+				}
+				change_controller = ROOT
+			}
+			add_mil_power = 50
+			337 = { 
+				cede_province = ROOT 
+				add_province_modifier = {
+					name = "spa_settle"
+					duration = -1
+				}
+			} 
 			2465 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } } 
 				add_permanent_claim = ROOT
