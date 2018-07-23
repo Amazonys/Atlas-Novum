@@ -59,8 +59,8 @@ NDefines.NDiplomacy.IMPERIAL_AUTHORITY_FROM_PRINCES = 0.075
 NDefines.NCountry.MERCHANT_REPUBLIC_SIZE_LIMIT = 40
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 30
 NDefines.NMilitary.INFANTRY_SPEED = 0.6					-- _MDEF_INFANTRY_SPEED = 10,
-NDefines.NMilitary.CAVALRY_SPEED = 0.9							-- _MDEF_CAVALRY_SPEED = 10,
-NDefines.NMilitary.ARTILLERY_SPEED = 0.3				-- 
+NDefines.NMilitary.CAVALRY_SPEED = 0.8							-- _MDEF_CAVALRY_SPEED = 10,
+NDefines.NMilitary.ARTILLERY_SPEED = 0.4				-- 
 NDefines.NMilitary.LOOT_DEVASTATION_IMPACT = 25						-- how much devastation full loot impacts
 NDefines.NMilitary.SCORCHED_DEVASTATION_IMPACT = 50
 NDefines.NMilitary.SCORCHED_DURATION = 36				-- months
