@@ -256,11 +256,23 @@ country_event = {
 	
 	option = {		# Where is the loyalty...
 		name = "castilian_succession.4.a"
-		declare_war_with_cb = {
-			who = POR
-			casus_belli = cb_succession_war
+		if = { 
+			limit = { POR = { overlord_of = LON } }
+			declare_war_with_cb = {
+				who = POR
+				casus_belli = cb_succession_war
+			}
+			set_country_flag = declared_war_por_lon
 		}
-		set_country_flag = declared_war_por_lon
+		if = { 
+			limit = { POR = { has_country_flag = no_lon_union } }
+			add_prestige = 10
+			declare_war_with_cb = {
+				who = LON
+				casus_belli = cb_restore_personal_union
+			}
+		}
+		set_global_flag = wocs_conflict
 	}
 }
 
@@ -360,24 +372,14 @@ country_event = {
 	
 	is_triggered_only = yes
 	
-	mean_time_to_happen = {
-		days = 1
-	}
 
 	option = {
 		name = "castilian_succession.100.a" # hist
 		trigger = {
-			OR = {
-				AND = {
-					has_country_flag = cas_aragon_candidate
-					is_year = 1480
-					is_at_war = no
-				}
-			}
+			is_at_war = no
+			LON = { is_subject = no }
+			has_global_flag = wocs_conflict	
 		}
-		white_peace = POR
-		white_peace = LON
-		white_peace = FRA
 		CAS = { inherit = LON }
 		197 = { cede_province = FRA }
 		add_opinion = {
@@ -394,7 +396,11 @@ country_event = {
 	option = {
 		name = "castilian_succession.100.b" # Portugal Triumphs
 		trigger = {
-			
+			trigger = {
+				is_at_war = no
+				LON = { junior_union_with = POR }
+				has_global_flag = wocs_conflict	
+			}
 		}
 		if = {
 			limit = { 197 = { NOT = { owned_by = FRA } } }
@@ -408,7 +414,11 @@ country_event = {
 			limit = { 366 = { NOT = { owned_by = POR } } }
 			366 = { cede_province = POR }
 		}
+		ARA = { grant_independence = yes }
 		POR = { create_union = CAS }
+		hidden_effect = {
+			add_liberty_desire = -50
+		}
 		if = {
 			limit = {
 				has_opinion_modifier = {
@@ -435,10 +445,17 @@ country_event = {
 	option = {
 		name = "castilian_succession.100.c" # Castile Triumphs
 		trigger = {
-			
+			is_at_war = no	
+			LON = { junior_union_with = CAS }
 		}
 		CAS = { inherit = LON }
-		POR = { release = CAS }
+		hidden_effect = { 
+			POR = { release = CAS }
+			if = { 
+				limit = { POR = { is_subject_of = ROOT } }
+				POR = { grant_independence = yes }
+			}
+		}
 		if = {
 			limit = { POR = { owns = 368 } }
 			368 = { cede_province = CAS }
