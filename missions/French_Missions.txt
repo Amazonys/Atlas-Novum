@@ -78,37 +78,11 @@ fra_slot_1 = {
 			}
 		}
 	}
-	fra_take_nevers = {
-		icon = mission_cannons_firing
-		required_missions = {  }
-		position = 5
-		
-		provinces_to_highlight = {
-			OR = {
-				owned_by = NEV
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		trigger = {
-			if = { 
-				limit = { NEV = { exists = yes } }
-				NEV = { 
-					is_subject_of = ROOT 
-				}
-			}	
-			else_if = { 
-				limit = { NEV = { exists = no } }
-				181 = { country_or_non_sovereign_subject_holds = ROOT }
-				191 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
-		}
-		effect = {
-		}
-	}
+
 	
 	fra_conquer_burgundy = {
 		icon = mission_cannons_firing
-		required_missions = { fra_take_nevers fra_conquer_hainaut }
+		required_missions = { fra_conquer_hainaut }
 		position = 6
 		provinces_to_highlight = {
 			area = bourgogne_area
@@ -185,6 +159,46 @@ fra_slot_1 = {
 			}
 		}
 		effect = {
+		    add_mil_power = 150
+			if = { 
+				limit = { NOT = { government = french_monarchy } }
+				if = { 
+					limit = { NEV = { exists = no } }
+					hidden_effect = {
+						191 = { cede_province = NEV remove_claim = ROOT  remove_core = ROOT }
+						181 = { cede_province = NEV remove_claim = ROOT  remove_core = ROOT }
+						if = {
+							limit = { NEV = { NOT = { government = french_principality } } }
+							NEV = { change_government = french_principality }
+						}
+					}
+					create_subject = {
+						subject_type = fief
+						subject = NEV
+					}
+				}
+				else_if = { 
+					limit = { NEV = { exists = yes is_subject_of = ROOT is_subject_of_type = vassal NOT = { num_of_cities = 9 } } }
+					hidden_effect = { 
+						if = {
+							limit = { PIC = { NOT = { government = french_principality } } }
+							NEV = { change_government = french_principality }
+						}
+					}
+					create_subject = {
+						subject_type = fief
+						subject = NEV
+					}
+				}
+				else = {
+					tooltip = {
+						create_subject = {
+							subject_type = fief
+							subject = NEV
+						}
+					}
+				}
+			}		
 			
 		}
 	}
@@ -215,6 +229,10 @@ fra_slot_1 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
+			romandie_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
 		}
 	}
 	
@@ -238,6 +256,9 @@ fra_slot_1 = {
 			}
 		}
 		effect = {
+		add_adm_power = 200
+		add_dip_power = 200
+		add_mil_power = 200
 		}
 	}
 	
@@ -957,7 +978,6 @@ fra_slot_2 = {
 		}
 		trigger = {
 			if = { 
-				limit = { 3083 = { owner = { ai = yes } } }
 				3083 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -971,12 +991,7 @@ fra_slot_2 = {
 					}
 				} 
 			}
-			else_if = { 
-				limit = { 3083 = { owner = { ai = no } } }
-				3083 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
 			if = { 
-				limit = { 3081 = { owner = { ai = yes } } }
 				3081 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -990,12 +1005,7 @@ fra_slot_2 = {
 					}
 				} 
 			}
-			else_if = { 
-				limit = { 3081 = { owner = { ai = no } } }
-				3081 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
 			if = { 
-				limit = { 173 = { owner = { ai = yes } } }
 				173 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -1009,12 +1019,7 @@ fra_slot_2 = {
 					}
 				} 
 			}
-			else_if = { 
-				limit = { 173 = { owner = { ai = no } } }
-				173 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
 			if = { 
-				limit = { 174 = { owner = { ai = yes } } }
 				174 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -1027,10 +1032,6 @@ fra_slot_2 = {
 						}
 					}
 				} 
-			}
-			else_if = { 
-				limit = { 174 = { owner = { ai = no } } }
-				174 = { country_or_non_sovereign_subject_holds = ROOT }
 			}
 		}
 		effect = {
@@ -1232,6 +1233,10 @@ fra_slot_2 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
+			bourgogne_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }	
+				add_permanent_claim = ROOT  
+			}
 		}
 	}
 	
@@ -1306,6 +1311,7 @@ fra_slot_2 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT  } }
 				add_permanent_claim = ROOT
 			}
+		2974 = { cede_province = LIE }	
 		}
 	}
 	
@@ -2146,16 +2152,16 @@ fra_slot_3 = {
 			
 			add_casus_belli = {
               target = PRO
-              type = cb_vassalize_mission
-              duration = -1
+              type = cb_restore_personal_union
+              duration = 240
             }
 		
 		    add_casus_belli = {
               target = BRI
               type = cb_vassalize_mission
-              duration = -1
+              duration = 240
             }
-		
+            break_alliance = PRO		
 		
 		}
 	}
@@ -2221,6 +2227,10 @@ fra_slot_3 = {
 				}
 			}
 			87 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			1743 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
@@ -3057,6 +3067,7 @@ fra_slot_3 = {
 		}
 		
 		effect = {
+			add_mil_power = 200
 		}
 	}
 	
@@ -3087,7 +3098,6 @@ fra_slot_4 = {
 		}
 		trigger = {
 			if = { 
-				limit = { 167 = { owner = { ai = yes } } }
 				167 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -3101,12 +3111,7 @@ fra_slot_4 = {
 					}
 				} 
 			}
-			else_if = { 
-				limit = { 167 = { owner = { ai = no } } }
-				167 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
 			if = { 
-				limit = { 168 = { owner = { ai = yes } } }
 				168 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -3120,12 +3125,7 @@ fra_slot_4 = {
 					}
 				} 
 			}
-			else_if = { 
-				limit = { 168 = { owner = { ai = no } } }
-				168 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
 			if = { 
-				limit = { 177 = { owner = { ai = yes } } }
 				177 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -3139,12 +3139,7 @@ fra_slot_4 = {
 					}
 				} 
 			}
-			else_if = { 
-				limit = { 177 = { owner = { ai = no } } }
-				177 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
 			if = { 
-				limit = { 1879 = { owner = { ai = yes } } }
 				1879 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -3158,12 +3153,7 @@ fra_slot_4 = {
 					}
 				} 
 			}
-			else_if = { 
-				limit = { 1879 = { owner = { ai = no } } }
-				1879 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
 			if = { 
-				limit = { 3073 = { owner = { ai = yes } } }
 				3073 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -3177,12 +3167,7 @@ fra_slot_4 = {
 					}
 				} 
 			}
-			else_if = { 
-				limit = { 3073 = { owner = { ai = no } } }
-				3073 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
 			if = { 
-				limit = { 4385 = { owner = { ai = yes } } }
 				4385 = {
 					OR = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -3195,10 +3180,6 @@ fra_slot_4 = {
 						}
 					}
 				} 
-			}
-			else_if = { 
-				limit = { 4385 = { owner = { ai = no } } }
-				4385 = { country_or_non_sovereign_subject_holds = ROOT }
 			}
 		}
 		effect = {
@@ -4315,6 +4296,10 @@ fra_slot_5 = {
 					}
 				}
 			}
+			3069 = {
+             add_permanent_claim = FRA
+            
+			}
 		}
 	}
 	
@@ -4576,7 +4561,7 @@ fra_slot_5 = {
 			cyprus_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
-			}
+			}			
 		}
 	}
 	
