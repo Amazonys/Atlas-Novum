@@ -96,7 +96,7 @@ NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_MILITARY_RULERS = 1 --If s
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_NEIGHBORS = 1 --If set to 1, AI will only send Condottieri to neighbors, regardless of access.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_DISABLE_VERSUS_PLAYER_ENEMIES = 0 --If set to 1, AI will try avoid sending Condottieri having to fight against human player enemies.
 NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 20
-NDefines.NAI.PEACE_TERMS_VASSAL_BASE_MULT = 2000.0 -- only applied if the AI has vassalize priority
+NDefines.NAI.PEACE_TERMS_VASSAL_BASE_MULT = 10.0 -- only applied if the AI has vassalize priority
 
 	
 NDefines.NCountry.CORE_COLONY = 0.25								-- Multiplied with development, colonized by country or overseas
