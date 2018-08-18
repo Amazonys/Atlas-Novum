@@ -474,11 +474,7 @@ country_decisions = {
 			british_isles_region = { 
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT
-			}
-			ireland_area = { 
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}			
+			}		
 			if = {
 				limit = { SCO = { junior_union_with = ROOT } }
 				SCO = { NOT = { num_of_cities = 24 } } 
@@ -582,8 +578,114 @@ country_decisions = {
 		}
 		ai_importance = 400 #
 	}
-
 	
+# Ireland	# NEEDS AMY EDIT - FROM BT 
+	irish_nation = {
+		major = yes
+		potential = {
+			 
+			NOT = { has_country_flag = formed_ireland_flag }
+			NOT = { tag = IRE }
+			NOT = { tag = SCO }
+			NOT = { tag = ANI }
+			NOT = { tag = TNA }
+			ANI = { exists = no }
+			OR = {
+				primary_culture = irish
+				AND = {
+					culture_group = gaelic
+					any_owned_province = { region = ireland_area }
+				}
+			}
+			OR = {
+				tag = LEI
+				tag = ULS
+				tag = MNS
+				tag = CNN
+				calc_true_if = {
+					all_owned_province = {
+						region = ireland_area
+						is_core = owner
+					}
+					amount = 9			#over half of Ireland to see if not one of the four primary provincial kingdoms
+				}
+			}
+			NOT = { government = irish_clann }			#Clans and Lordships need to create provincial kingdom
+			NOT = { government = norman_lordship }			#Clans and Lordships need to create provincial kingdom
+		}
+		provinces_to_highlight = {
+			region = ireland_area
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+			}
+		}
+		allow = {
+			NOT = { exists = IRE }
+			hidden_trigger = { NOT = { exists = ANI } }			#Hidden because it shows up in UI as doubled Ireland
+			is_at_war = no
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			owns_core_province = 4120			# Kildare, stand in for Tara
+			custom_trigger_tooltip = {
+				tooltip = two_thirds_of_ireland_tooltip
+				calc_true_if = {
+					all_owned_province = {
+						is_core = ROOT
+						region = ireland_area
+					}
+					amount = 12			#At least 2/3 of Ireland's 17 provinces
+				}	#requires roughly two thirds of Ireland to form, so ANI can be formed without the west or IRE can be formed without the Pale and the NE plantations
+			}
+			total_development = 75			#Special discount. Normal requirement for rank 2 is 300 dev, so this is 75 percent discounted
+			prestige = 25			#Normal requirement for rank 2 is 50 prestige, so this is 50 percent discounted
+		}
+		effect = {
+			change_tag = IRE
+			change_government = high_kingship
+			remove_non_electors_emperors_from_empire_effect = yes
+			hidden_effect = { country_event = { id = BeyondTypusCelticFlavour.1 days = 1 } }			#Fires new BT Tanistry succession
+			custom_tooltip = tooltip_bt_starts_tanistry_succession
+			ireland_area = {
+				limit = {
+					NOT = { owned_by = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = IRE
+			}
+			if = {
+				limit = { NOT = { government_rank = 2 } }
+				set_government_rank = 2
+			}
+			if = {
+				limit = {
+					exists = ENG
+					NOT = { historical_friend_with = ENG }
+					NOT = { historical_rival_with = ENG }
+					NOT = { has_opinion = { who = ENG value = 0 } }
+				}
+				add_historical_rival = ENG
+			}			#Add England as a historical rival if relations are negative (and not already rivals or friends)
+			add_country_modifier = {
+				name = "centralization_modifier"
+				duration = 7300
+			}
+			#I decided to remove the development bonus from forming altogether. With the ability to build up provinces already there, this isn't really needed and can get out of hand quickly. Plus capital should move to Dublin anyway.
+			add_prestige = 25
+			if = {
+				limit = {
+					has_custom_ideas = no
+					NOT = { has_idea_group = irish_ideas }
+				}
+				country_event = { id = ideagroups.1 } #Swap Ideas
+			}
+			set_country_flag = formed_ireland_flag
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+
 # Connacht  
 	
 	ir_connacht_nation = {
@@ -651,7 +753,7 @@ country_decisions = {
 	
 # Ulster  
 	
-	ir_connacht_nation = {
+	ir_ulster_nation = {
 		major = yes
 		potential = {
 			NOT = { tag = CNN }
@@ -3356,112 +3458,6 @@ country_decisions = {
 			}
 		}
 		ai_importance = 400 #
-	}
-	
-# 	Ireland	 
-	irish_nation = {
-		major = yes
-		potential = {
-			 
-			NOT = { has_country_flag = formed_ireland_flag }
-			NOT = { tag = IRE }
-			NOT = { tag = SCO }
-			NOT = { tag = ANI }
-			NOT = { tag = TNA }
-			OR = {
-				primary_culture = irish
-				AND = {
-					culture_group = gaelic
-					any_owned_province = { region = ireland_area }
-				}
-			}
-			OR = {
-				tag = LEI
-				tag = ULS
-				tag = MNS
-				tag = CNN
-				calc_true_if = {
-					all_owned_province = {
-						region = ireland_area
-						is_core = owner
-					}
-					amount = 9			#over half of Ireland to see if not one of the four primary provincial kingdoms
-				}
-			}
-			NOT = { government = irish_clann }			#Clans and Lordships need to create provincial kingdom
-			NOT = { government = norman_lordship }			#Clans and Lordships need to create provincial kingdom
-		}
-		provinces_to_highlight = {
-			region = ireland_area
-			OR = {
-				NOT = { owned_by = ROOT }
-				NOT = { is_core = ROOT }
-			}
-		}
-		allow = {
-			NOT = { exists = IRE }
-			hidden_trigger = { NOT = { exists = ANI } }			#Hidden because it shows up in UI as doubled Ireland
-			is_at_war = no
-			is_free_or_tributary_trigger = yes
-			is_nomad = no
-			owns_core_province = 4120			# Kildare, stand in for Tara
-			custom_trigger_tooltip = {
-				tooltip = two_thirds_of_ireland_tooltip
-				calc_true_if = {
-					all_owned_province = {
-						is_core = ROOT
-						region = ireland_area
-					}
-					amount = 12			#At least 2/3 of Ireland's 17 provinces
-				}	#requires roughly two thirds of Ireland to form, so ANI can be formed without the west or IRE can be formed without the Pale and the NE plantations
-			}
-			total_development = 75			#Special discount. Normal requirement for rank 2 is 300 dev, so this is 75 percent discounted
-			prestige = 25			#Normal requirement for rank 2 is 50 prestige, so this is 50 percent discounted
-		}
-		effect = {
-			change_tag = IRE
-			change_government = high_kingship
-			remove_non_electors_emperors_from_empire_effect = yes
-			hidden_effect = { country_event = { id = BeyondTypusCelticFlavour.1 days = 1 } }			#Fires new BT Tanistry succession
-			custom_tooltip = tooltip_bt_starts_tanistry_succession
-			ireland_area = {
-				limit = {
-					NOT = { owned_by = ROOT }
-					NOT = { is_core = ROOT }
-				}
-				add_permanent_claim = IRE
-			}
-			if = {
-				limit = { NOT = { government_rank = 2 } }
-				set_government_rank = 2
-			}
-			if = {
-				limit = {
-					exists = ENG
-					NOT = { historical_friend_with = ENG }
-					NOT = { historical_rival_with = ENG }
-					NOT = { has_opinion = { who = ENG value = 0 } }
-				}
-				add_historical_rival = ENG
-			}			#Add England as a historical rival if relations are negative (and not already rivals or friends)
-			add_country_modifier = {
-				name = "centralization_modifier"
-				duration = 7300
-			}
-			#I decided to remove the development bonus from forming altogether. With the ability to build up provinces already there, this isn't really needed and can get out of hand quickly. Plus capital should move to Dublin anyway.
-			add_prestige = 25
-			if = {
-				limit = {
-					has_custom_ideas = no
-					NOT = { has_idea_group = irish_ideas }
-				}
-				country_event = { id = ideagroups.1 } #Swap Ideas
-			}
-			set_country_flag = formed_ireland_flag
-		}
-		ai_will_do = {
-			factor = 1
-		}
 	}
 
 # 	Italy	 
