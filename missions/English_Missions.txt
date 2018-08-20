@@ -4283,7 +4283,7 @@ eng_slot_5 = {
 	has_country_shield = yes
 	
 	eng_finish_welsh_march = {
-		icon = mission_cannons_firing
+		icon = mission_unite_home_region
 		required_missions = { }
 	
 		
@@ -4295,18 +4295,73 @@ eng_slot_5 = {
 		}
 		
 		trigger = {
-			wales_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-				OR = {
-					is_core = WMC
-					is_core = ROOT
-				}
+			if = { 
+				limit = { wales_area = { owner = { ai = yes } } }
+				wales_area = {
+					type = all
+					OR = {
+						country_or_non_sovereign_subject_holds = ROOT
+						custom_trigger_tooltip = {
+							tooltip = control_prov.tooltip
+							OR = {
+								controlled_by = ROOT
+								controller = { is_subject_of = ROOT NOT = { is_subject_of_type = tributary_state } }
+							}
+						}
+					}
+				} 
+			}
+			else_if = { 
+				limit = { wales_area = { owner = { ai = no } } }
+				wales_area = { type = all country_or_non_sovereign_subject_holds = ROOT }
 			}
 		}
 		
 		effect = {
-			inherit = WMC
+			hidden_effect = {
+				every_province = {
+					limit = {
+						controller = { is_subject_of = ROOT }
+						NOT = { controlled_by = WMC }
+						OR = {
+							area = wales_area
+						}
+					}
+					if = { 
+						limit = { WMC = { exists = yes is_subject_of = ROOT } }
+						change_controller = WMC
+					}
+					else = {
+						change_controller = ROOT
+					}
+				}
+			}
+			add_mil_power = 25
+			if = {
+				limit = { WMC = { exists = yes is_subject_of = ROOT } }
+				every_province = {
+					limit = {
+						controlled_by = WMC
+						OR = {
+							area = wales_area
+						}
+					}
+					cede_province = WMC
+				}
+				inherit = WMC
+			}
+			else_if = {
+				limit = { WMC = { OR = { exists = no NOT = { is_subject_of = ROOT } } } }
+				every_province = {
+					limit = {
+						controlled_by = ROOT
+						OR = {
+							area = wales_area
+						}
+					}
+					cede_province = ROOT
+				}
+			}
 			add_country_modifier = {
 				name = "extra_culture"
 				duration = -1
