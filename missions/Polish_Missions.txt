@@ -89,7 +89,7 @@ pol_slot_1 = {
 	volyn_crownlands = {
 		icon = mission_monarch_in_throne_room
 		required_missions = { pol_reform_govt }
-		position = 7
+		position = 8
 		
 		provinces_to_highlight = {
 			OR = {
@@ -111,7 +111,7 @@ pol_slot_1 = {
 	pol_conquer_silesia = {
 		icon = mission_cannons_firing
 		required_missions = { pol_form_plc }
-		position = 9	
+		position = 10	
 		provinces_to_highlight = {
 			OR = {
 				owned_by = SIL
@@ -255,7 +255,7 @@ pol_slot_2 = {
 	pol_dnieper_crownlands = {
 		icon = mission_monarch_in_throne_room
 		required_missions = { pol_reform_govt }
-		position = 7
+		position = 8
 		
 		provinces_to_highlight = {
 			OR = {
@@ -278,7 +278,7 @@ pol_slot_2 = {
 	pol_conquer_over_carpathia = {
 		icon = mission_cannons_firing
 		required_missions = { pol_form_plc }
-		position = 9
+		position = 10
 		
 		provinces_to_highlight = {
 			OR = {
@@ -506,7 +506,7 @@ pol_slot_3 = {
 	pol_reform_govt = {
 		icon = mission_rb_monopolize_the_channel
 		required_missions = { }
-		position = 6
+		position = 7
 		
 		trigger = {
 			has_country_modifier = union_of_lublin
@@ -519,7 +519,7 @@ pol_slot_3 = {
 	pol_dniestr_crownlands = {
 		icon = mission_monarch_in_throne_room
 		required_missions = { pol_reform_govt }
-		position = 7
+		position = 8
 		
 		provinces_to_highlight = {
 			OR = {
@@ -544,7 +544,7 @@ pol_slot_3 = {
 	pol_form_plc = {
 		icon = mission_rb_monopolize_the_channel
 		required_missions = { }
-		position = 8
+		position = 9
 		
 		trigger = {
 			tag = PLC
@@ -559,7 +559,7 @@ pol_slot_3 = {
 	pol_subjugate_tra = {
 		icon = mission_cannons_firing
 		required_missions = { pol_form_plc }
-		position = 9
+		position = 10
 		
 		provinces_to_highlight = {
 			OR = {
@@ -666,18 +666,89 @@ pol_slot_4 = {
 				}
 				add_liberty_desire = -50 
 			}
+			pomerelia_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			west_prussia_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
 		}
 	}
 	
-	conquer_warmia = { #Conquer Western Prussia
+	pol_conquer_thorn = { #Conquer pomerelia
 		icon = mission_unite_home_region
 		required_missions = { plc_formed }
 		position = 2
 		
 		provinces_to_highlight = {
 			OR = {
-				area = west_prussia_area
 				area = pomerelia_area
+			}
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			if = { 
+				limit = { pomerelia_area = { owner = { ai = yes } } }
+				pomerelia_area = {
+					type = all
+					OR = {
+						country_or_non_sovereign_subject_holds = ROOT
+						custom_trigger_tooltip = {
+							tooltip = control_prov.tooltip
+							OR = {
+								controlled_by = ROOT
+								controller = { is_subject_of = ROOT NOT = { OR = { is_subject_of_type = tributary_state is_subject_of_type = league } } }
+							}
+						}
+					}
+				} 
+			}
+			else_if = { 
+				limit = { pomerelia_area = { owner = { ai = no } } }
+				pomerelia_area = { type = all country_or_non_sovereign_subject_holds = ROOT }
+			}
+		}
+		effect = {
+			every_province = {
+				limit = {
+					controller = { is_subject_of = ROOT }
+					OR = {
+						area = pomerelia_area
+					}
+				}
+				change_controller = ROOT
+			}
+			add_mil_power = 25
+			pomerelia_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = TEU }
+				cede_province = ROOT 
+			}
+			add_country_modifier = {
+				name = "prussian_confed_rise"
+				duration = -1
+			}
+			pomerelia_area = {
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_province_modifier = {
+					name = "prussia_confed_prov"
+					duration = 18250	
+				}
+			}
+		}
+	}
+	
+	pol_conquer_warmia = { #Conquer Western Prussia
+		icon = mission_unite_home_region
+		required_missions = { pol_conquer_thorn }
+		position = 3
+		
+		provinces_to_highlight = {
+			OR = {
+				area = west_prussia_area
 			}
 			NOT = {
 				country_or_non_sovereign_subject_holds = ROOT
@@ -704,39 +775,18 @@ pol_slot_4 = {
 				limit = { west_prussia_area = { owner = { ai = no } } }
 				west_prussia_area = { type = all country_or_non_sovereign_subject_holds = ROOT }
 			}
-			if = { 
-				limit = { pomerelia_area = { owner = { ai = yes } } }
-				pomerelia_area = {
-					type = all
-					OR = {
-						country_or_non_sovereign_subject_holds = ROOT
-						custom_trigger_tooltip = {
-							tooltip = control_prov.tooltip
-							OR = {
-								controlled_by = ROOT
-								controller = { is_subject_of = ROOT NOT = { is_subject_of_type = tributary_state } }
-							}
-						}
-					}
-				} 
-			}
-			else_if = { 
-				limit = { pomerelia_area = { owner = { ai = no } } }
-				pomerelia_area = { type = all country_or_non_sovereign_subject_holds = ROOT }
-			}
 		}
 		effect = {
 			every_province = {
 				limit = {
 					controller = { is_subject_of = ROOT }
 					OR = {
-						area = west_prussia_area
 						area = pomerelia_area
 					}
 				}
 				change_controller = ROOT
 			}
-			add_mil_power = 100
+			add_mil_power = 50
 			hidden_effect = {
 				if = { 
 					limit = { war_with = TEU } 
@@ -747,10 +797,6 @@ pol_slot_4 = {
 				}
 			}
 			west_prussia_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = TEU }
-				cede_province = ROOT 
-			}
-			pomerelia_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = TEU }
 				cede_province = ROOT 
 			}
@@ -772,17 +818,6 @@ pol_slot_4 = {
 				name = "teutons_pacified"
 				duration = 7300
 			}
-			add_country_modifier = {
-				name = "prussian_confed_rise"
-				duration = -1
-			}
-			pomerelia_area = {
-				limit = { country_or_non_sovereign_subject_holds = ROOT }
-				add_province_modifier = {
-					name = "prussia_confed_prov"
-					duration = 18250	
-				}
-			}
 			west_prussia_area = {
 				limit = { country_or_non_sovereign_subject_holds = ROOT }
 				add_province_modifier = {
@@ -795,7 +830,7 @@ pol_slot_4 = {
 	
 	pol_conquer_livonia = {
 		icon = mission_unite_home_region
-		required_missions = { conquer_warmia }
+		required_missions = { pol_conquer_warmia }
 		provinces_to_highlight = {
 			OR = {
 				province_id = 37
@@ -935,7 +970,7 @@ pol_slot_4 = {
 	pol_conquer_estonia = {
 		icon = mission_cannons_firing
 		required_missions = { pol_conquer_livonia }
-		position = 4
+		position = 5
 		
 		provinces_to_highlight = {
 			OR = {
@@ -963,7 +998,7 @@ pol_slot_4 = {
 	pol_conquer_ingria = {
 		icon = mission_cannons_firing
 		required_missions = { pol_conquer_estonia pol_conquer_novgorod }
-		position = 5
+		position = 6
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1003,7 +1038,7 @@ pol_slot_4 = {
 	pol_conquer_karelia = {
 		icon = mission_cannons_firing
 		required_missions = { pol_conquer_ingria }
-		position = 6
+		position = 7
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1042,7 +1077,7 @@ pol_slot_4 = {
 	pol_tartars = {
 		icon = mission_cannons_firing
 		required_missions = { pol_form_plc }
-		position = 9
+		position = 10
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1094,7 +1129,7 @@ pol_slot_4 = {
 	pol_astrakhan = {
 		icon = mission_cannons_firing
 		required_missions = { pol_tartars }
-		position = 10
+		position = 11
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1140,8 +1175,8 @@ pol_slot_5 = {
 	
 	pol_conquer_pskov = {
 		icon = mission_cannons_firing
-		required_missions = { conquer_warmia }
-		position = 3
+		required_missions = { pol_conquer_warmia }
+		position = 4
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1179,7 +1214,7 @@ pol_slot_5 = {
 	pol_conquer_novgorod = {
 		icon = mission_unite_home_region
 		required_missions = { pol_conquer_pskov }
-		position = 4
+		position = 5
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1269,7 +1304,7 @@ pol_slot_5 = {
 	pol_conquer_tver = {
 		icon = mission_cannons_firing
 		required_missions = { pol_conquer_novgorod }
-		position = 5
+		position = 6
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1311,7 +1346,7 @@ pol_slot_5 = {
 	pol_lit_confed = {
 		icon = mission_cannons_firing
 		required_missions = { pol_conquer_tver }
-		position = 6
+		position = 7
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1354,7 +1389,7 @@ pol_slot_5 = {
 	pol_sack_moscow = {
 		icon = mission_cannons_firing
 		required_missions = { pol_lit_confed pol_reform_govt }
-		position = 6
+		position = 8
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1401,7 +1436,7 @@ pol_slot_5 = {
 	pol_conquer_zaporizia = {
 		icon = mission_cannons_firing
 		required_missions = { pol_form_plc }
-		position = 9
+		position = 10
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1435,7 +1470,7 @@ pol_slot_5 = {
 	pol_conquer_azov = {
 		icon = mission_cannons_firing
 		required_missions = { pol_conquer_zaporizia }
-		position = 10
+		position = 11
 		
 		provinces_to_highlight = {
 			OR = {
@@ -1475,7 +1510,7 @@ pol_slot_5 = {
 	pol_conquer_caucuses = {
 		icon = mission_cannons_firing
 		required_missions = { pol_conquer_azov }
-		position = 11
+		position = 12
 		
 		provinces_to_highlight = {
 			OR = {
