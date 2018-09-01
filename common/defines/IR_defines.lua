@@ -111,3 +111,12 @@ NDefines.NCountry.CORE_SAME_REGION = 0.25						-- Multiplied with development, f
 NDefines.NCountry.CORE_SAME_CONTINENT = 0.75						-- Multiplied with development, for colonial nations
 NDefines.NCountry.CORE_HAD_CLAIM = 0.15						-- Impacts MODIFIER_CORE_CREATION
 NDefines.NCountry.CORE_HAD_PERMANENT_CLAIM = 0.3
+
+-- Balance of Power defines changes
+NDefines.NCountry.IDEA_TO_TECH = -0.005 --Vanilla -0.02
+NDefines.NCountry.TECH_TIME_COST = 0.5 --Vanilla 0.3
+NDefines.NCountry.NEIGHBOURBONUS_CAP = -0.3 --Vanilla -0.75
+
+NDefines.NDiplomacy.REVANCHISM_MONTHLY_DECAY = 0.5 --16 yrs 8mths, Vanilla 0.833 (10 yrs)
+NDefines.NDiplomacy.SPY_NETWORK_SIEGE_EFFECT = 0.4 --vanilla 0.2
+NDefines.NDiplomacy.SPY_NETWORK_AE_EFFECT = -0.2 --vanilla -0.1
