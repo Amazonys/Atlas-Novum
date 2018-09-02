@@ -603,16 +603,15 @@ country_decisions = {
 	}
 	
 # Ireland	# NEEDS AMY EDIT - FROM BT 
-	irish_nation = {
+	ir_irish_nation = {
 		major = yes
 		potential = {
-			 
 			NOT = { has_country_flag = formed_ireland_flag }
 			NOT = { tag = IRE }
 			NOT = { tag = SCO }
-			NOT = { tag = ANI }
 			NOT = { tag = TNA }
-			ANI = { exists = no }
+			IRE = { exists = no }
+			is_nomad = no
 			OR = {
 				primary_culture = irish
 				AND = {
@@ -625,58 +624,40 @@ country_decisions = {
 				tag = ULS
 				tag = MNS
 				tag = CNN
-				calc_true_if = {
-					all_owned_province = {
-						region = ireland_area
-						is_core = owner
-					}
-					amount = 9			#over half of Ireland to see if not one of the four primary provincial kingdoms
-				}
 			}
 			NOT = { government = irish_clann }			#Clans and Lordships need to create provincial kingdom
 			NOT = { government = norman_lordship }			#Clans and Lordships need to create provincial kingdom
 		}
 		provinces_to_highlight = {
 			region = ireland_area
-			OR = {
-				NOT = { owned_by = ROOT }
-				NOT = { is_core = ROOT }
-			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
 		allow = {
-			NOT = { exists = IRE }
-			hidden_trigger = { NOT = { exists = ANI } }			#Hidden because it shows up in UI as doubled Ireland
-			is_at_war = no
-			is_free_or_tributary_trigger = yes
-			is_nomad = no
-			owns_core_province = 4120			# Kildare, stand in for Tara
-			custom_trigger_tooltip = {
-				tooltip = two_thirds_of_ireland_tooltip
-				calc_true_if = {
-					all_owned_province = {
-						is_core = ROOT
-						region = ireland_area
-					}
-					amount = 12			#At least 2/3 of Ireland's 17 provinces
-				}	#requires roughly two thirds of Ireland to form, so ANI can be formed without the west or IRE can be formed without the Pale and the NE plantations
+			ireland_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
 			}
-			total_development = 75			#Special discount. Normal requirement for rank 2 is 300 dev, so this is 75 percent discounted
-			prestige = 25			#Normal requirement for rank 2 is 50 prestige, so this is 50 percent discounted
+			NOT = { current_age = age_of_discovery }
+			is_at_war = no
 		}
 		effect = {
+			# integrate fiefs
+			custom_tooltip = integrate_fiefs.tooltip
+			hidden_effect = {
+				every_subject_country = {
+					limit = { is_subject_of = ROOT is_subject_of_type = fief NOT = { num_of_cities = 9 } }
+					every_owned_province = {
+						add_core = ROOT
+						cede_province = ROOT
+					}
+				}
+			}
 			change_tag = IRE
 			change_government = high_kingship
 			swap_non_generic_missions = yes
 			remove_non_electors_emperors_from_empire_effect = yes
 			hidden_effect = { country_event = { id = BeyondTypusCelticFlavour.1 days = 1 } }			#Fires new BT Tanistry succession
 			custom_tooltip = tooltip_bt_starts_tanistry_succession
-			ireland_area = {
-				limit = {
-					NOT = { owned_by = ROOT }
-					NOT = { is_core = ROOT }
-				}
-				add_permanent_claim = IRE
-			}
 			if = {
 				limit = { NOT = { government_rank = 2 } }
 				set_government_rank = 2
