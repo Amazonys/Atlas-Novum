@@ -90,7 +90,7 @@ NDefines.NMilitary.ARMY_DRILL_YEARLY_DECAY = -0.05
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
 NDefines.NEconomy.GOLD_MINE_DEPLETION_THRESHOLD = 5				-- Gold mines above production level or above can be depleted
 NDefines.NEconomy.GOLD_MINE_DEPLETION_CHANCE = 0.5					-- Chance of gold mine being depleted (yearly, per production above threshold) 
-NDefines.NEconomy.GOLD_MINE_SIZE_PRIMITIVES = 4
+NDefines.NEconomy.GOLD_MINE_SIZE_PRIMITIVES = 20
 
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_BASE_MULT = 33 -- AI scoring for offer condottieri, base scale.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_MONTHLY_PARTICIPATION_RATE = -0.3 --Base monthly decay in participation. Related to multipliers for war participation (but doesn't depend on number of regiments, so raw multiplier matters).
