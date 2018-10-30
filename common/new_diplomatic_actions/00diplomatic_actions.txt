@@ -1,0 +1,198 @@
+# Triggers and effects will be given the Actor's scope, with the Recipient's as FROM
+
+static_actions = # static_actions is a reserved token.
+{
+	# alert_index maps to the frame of the alert icon
+	royal_marriage = 										{ alert_index = 1 alert_tooltip = ICON_RM }
+	requestpeace = 										{ alert_index = 2 alert_tooltip = ICON_PEACE  } # alert_index will be overwritten in code for this one.
+	allianceaction = 										{ alert_index = 3 alert_tooltip = ICON_ALLIANCE }
+# 4 is currently unused.
+	integrationaction = 									{ alert_index = 5 alert_tooltip = ICON_ANNEX }
+	annexationaction =									{ alert_index = 5 alert_tooltip = ICON_ANNEX }
+	vassalaction = 										{ alert_index = 6 alert_tooltip = ICON_VASSAL }
+	milaccess = 											{ alert_index = 7 alert_tooltip = ICON_ASKMIL }
+	fleet_access = 										{ alert_index = 8 alert_tooltip = ICON_ASKFLEET }
+	offermilaccess = 										{ alert_index = 9 alert_tooltip = ICON_OFFACC }
+	callaction = 											{ alert_index = 10 alert_tooltip = ICON_CALLALLY } # This one is referred to in the code (settings.cpp)
+	offerloan = 												{ alert_index = 11 alert_tooltip = ICON_OFFERLOAN }
+	sellprov = 												{ alert_index = 12 alert_tooltip = ICON_PROVSALE }
+		#13 is cursed
+	request_to_join_federation = 						{ alert_index = 14 alert_tooltip = ICON_FEDERATIONREQUEST }
+	invite_to_federation = 								{ alert_index = 15 alert_tooltip = ICON_FEDERATIONINVITE }
+	transfer_trade_power = 							{ alert_index = 16 alert_tooltip = TRANSFER_TRADE_POWER }
+	religious_unity_action = 							{ alert_index = 17 alert_tooltip = ICON_RELIGIOUS_UNITY }
+		# 18 is used by requestpeace
+	form_coalition = 										{ alert_index = 19 alert_tooltip = ICON_FORM_COALITION }
+	enforce_peace = 										{ alert_index = 20 alert_tooltip = ICON_ENFORCE_PEACE } # This one may be overwritten in code.
+	grant_electorate = 									{ alert_index = 21 alert_tooltip = ICON_GRANT_ELECTORATE }
+	demand_unlawful_territory_action = 			{ alert_index = 22 alert_tooltip = ICON_DEMAND_UNLAWFUL_TERRITORY }
+		# 23 is used by requestpeace
+		# 24 is used by requestpeace
+		# 25 is used by requestpeace
+		# 26 is used by requestpeace
+		# 27 is used by enforce_peace (when actor is coalition leader) with tooltip "ICON_ENFORCE_PEACE_COALITION_LEADER"
+	support_independence_action = 					{ alert_index = 28 alert_tooltip = support_independence }
+	steer_trade = 										{ alert_index = 29 alert_tooltip = ICON_STEER_TRADE }
+	ask_for_march = 										{ alert_index = 30 alert_tooltip = ICON_MARCH }
+	sell_ships_action = 									{ alert_index = 31 alert_tooltip = ICON_FLEETSALE }
+	grant_freecity = 										{ alert_index = 32 alert_tooltip = ICON_GRANT_FREECITY }
+# 33 is currently unused
+	invite_to_trade_league = 							{ alert_index = 34 alert_tooltip = ICON_TRADELEAGUEINVITE }
+	request_to_join_trade_league = 					{ alert_index = 35 alert_tooltip = ICON_TRADELEAGUEREQUEST }
+	sharemap = 											{ alert_index = 36 alert_tooltip = ICON_REQUESTSHAREMAP } # alert_tooltip gets special treatment in the code
+	condottieri_action = 								{ alert_index = 37 alert_tooltip = ICON_CONDOTTIERI }
+	offer_fleet_access = 								{ alert_index = 38 alert_tooltip = ICON_OFFERFLEET }
+	break_alliance = 										{ alert_index = 39 alert_tooltip = ICON_BREAK_ALLIANCE }
+	tributary_state_action = 							{ alert_index = 40 alert_tooltip = ICON_TRIBUTARY }
+	ask_for_tributary_state_action = 				{ alert_index = 41 alert_tooltip = ICON_ASK_TRIBUTARY }
+	knowledge_sharing = 								{ alert_index = 42 alert_tooltip = ICON_KNOWLEDGESHARE } #The answer to life
+# 43 is currently unused
+	charter_company = 								{ alert_index = 44 alert_tooltip = ICON_CHARTERCOMPANY }
+}
+
+# Create new diplomatic actions like this. AI will currently never send them.
+demand_dummy = {
+	category = influence
+
+	alert_index = 40
+	alert_tooltip = demand_dummy_alert_tooltip
+
+	require_acceptance = yes # Whether the recipient gets an option to decline
+
+	is_visible = {
+		always = no ############################ Remove this line to unleash the magic ########################################
+		religion_group = christian
+		is_subject = no
+		FROM = {
+			is_subject = no
+		}
+	}
+	is_allowed = {
+		variable_arithmetic_trigger = {
+			custom_tooltip = HAS_OLDER_RULER_THAN_THEIR_HEIR
+			export_to_variable = { # All export to variable will happen first. Then the other effects and triggers will be executed/evaluated in order
+				variable_name = my_age
+				value = trigger_value:ruler_age
+			}
+			export_to_variable = {
+				variable_name = their_age
+				value = trigger_value:heir_age
+				who = FROM
+			}
+			ruler_age = 0 # This is a normal trigger.
+			FROM = {
+				heir_age = 0 # This is a normal trigger too.
+			}
+			check_variable = { # This trigger is only allowed inside a variable_arithmetic_trigger.
+				which = my_age
+				which = their_age
+			}
+		}
+		religion = catholic
+	}
+	on_accept = {
+		add_trust = {
+			who = FROM
+			value = 20
+			mutual = yes
+		}
+		create_subject = {
+			subject_type = dummy
+			subject = FROM
+		}
+	}
+	on_decline =
+	{
+		add_trust = {
+			who = FROM
+			value = -100
+			mutual = no
+		}
+	}
+
+	ai_acceptance = { # This works similarly to variable_arithmetic_trigger, but does not support triggers generally. Instead, "limit" will be evaluated first and the rest ignored if it isn't passed.
+		add_entry = {
+			name = TRUST
+			limit = { religion = catholic }
+			export_to_variable = {
+				variable_name = ai_value # Each "add_entry" must create one variable called "ai_value", the value of which will be extracted after executing all effects
+				value = trust
+				who = FROM
+				with = THIS
+			}
+			subtract_variable = { which = ai_value value = 50 }
+			multiply_variable = { which = ai_value value = 2 }
+		}
+		add_entry = {
+			name = TRUST
+			limit = { NOT = { religion = catholic } }
+			export_to_variable = {
+				variable_name = ai_value
+				value = trust
+				who = FROM
+				with = THIS
+			}
+			export_to_variable = {
+				variable_name = is_defender
+				value = trigger_value:is_defender_of_faith # This sets is_defender to either 0.0 or 1.0
+			}
+			multiply_variable = {
+				which = is_defender
+				value = 10
+			}
+			change_variable = {
+				which = ai_value
+				which = is_defender # This adds 10 to ai_value if you are defender of faith
+			}
+			subtract_variable = { which = ai_value value = 50 }
+		}
+		add_entry = {
+			name = OPINION
+			export_to_variable = {
+				variable_name = ai_value
+				value = opinion
+				who = FROM
+				with = THIS
+			}
+			divide_variable = { which = ai_value value = 4 }
+		}
+	}
+
+	ai_will_do = { # this is a trigger
+		has_opinion_modifier = {
+			modifier = insulted
+			who = FROM
+		}
+	}
+}
+
+cancel_dummy =  {
+	category = influence
+	require_acceptance = no
+	is_visible = {
+		overlord_of = FROM
+		FROM = {
+			is_subject_of_type = dummy
+		}
+	}
+	is_allowed = {
+		reverse_has_opinion_modifier = {
+			modifier = insulted
+			who = FROM
+		}
+	}
+	on_accept = {
+		add_trust = {
+			who = FROM
+			value = -100
+			mutual = yes
+		}
+		FROM = {
+			grant_independence = yes
+		}
+	}
+	ai_will_do = {
+		always = no
+	}
+}
+

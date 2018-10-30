@@ -22,9 +22,6 @@ Code
 #ifndef STANDARDFUNCS_H_
 #define STANDARDFUNCS_H_
 
-
-
-
 // Photoshop filters, kinda...
 float3 Hue( float H )
 {
@@ -68,9 +65,6 @@ float3 RGBtoHSV( in float3 RGB )
     }
     return HSV;
 }
-
-
-
 
 float3 GetOverlay( float3 vColor, float3 vOverlay, float vOverlayPercent )
 {
@@ -176,14 +170,14 @@ float GetTI( float4 vFoWColor )
 
 float4 GetTIColor( float3 vPos, in sampler2D TITexture )
 {
-	return tex2D( TITexture, float2 ( vPos.x * 1.0909f + 1.0f, -vPos.z ) / 2048.0f );
+	return tex2D( TITexture, ( vPos.xz + 0.5f ) / float2( 1876.0f, 2048.0f ) );
 }
 
 float GetFoW( float3 vPos, float4 vFoWColor, in sampler2D FoWDiffuse )
 {
-	float vFoWDiffuse = tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 256.0f + vFoWOpacity_Time.y * 0.02f ).r;
-	vFoWDiffuse = sin( ( vFoWDiffuse + frac( vFoWOpacity_Time.y * 0.1f ) ) * 6.28318531f ) * 0.1f;
-	float vShade = vFoWDiffuse + 0.5f;
+	//float vFoWDiffuse = 0.1f;//tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 256.0f).r;
+	//vFoWDiffuse = sin(vFoWDiffuse * 6.28318531f ) * 0.1f;
+	float vShade = 0.5f;
 	float vIsFow = vFoWColor.a;
 	return lerp( 1.0f, saturate( vIsFow + vShade ), vFoWOpacity_Time.x );
 }
@@ -208,25 +202,11 @@ float GetSnow( float4 vFoWColor )
 float3 ApplySnow( float3 vColor, float3 vPos, inout float3 vNormal, float4 vFoWColor, in sampler2D FoWDiffuse, float3 vSnowColor )
 {
 	float vSnowFade = saturate( vPos.y - SNOW_START_HEIGHT );
-	float vNormalFade = saturate( saturate( vNormal.y - SNOW_NORMAL_START ) * 10.0f );
-
-	float vNoise = tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 100.0f  ).r;
-	float vSnowTexture = tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 10.0f  ).r;
-	
 	float vIsSnow = GetSnow( vFoWColor );
+	float vSnow = saturate( saturate( 1.0f - ( 1.0f - vIsSnow ) ) * 5.0f );
+	float vFrost = saturate( saturate( 1.0f + 0.5f ) - ( 1.0f - vIsSnow ) );
 	
-	//Increase snow on ridges
-	vNoise += saturate( vPos.y - SNOW_RIDGE_START_HEIGHT )*( saturate( (vNormal.y-0.9f) * 1000.0f )*vIsSnow );
-	vNoise = saturate( vNoise );
-	
-	float vSnow = saturate( saturate( vNoise - ( 1.0f - vIsSnow ) ) * 5.0f );
-	float vFrost = saturate( saturate( vNoise + 0.5f ) - ( 1.0f - vIsSnow ) );
-	
-	vColor = lerp( vColor, vSnowColor * ( 0.9f + 0.1f * vSnowTexture), saturate( vSnow + vFrost ) * vSnowFade * vNormalFade * ( saturate( vIsSnow*2.25f ) ) );	
-	
-	vNormal.y += 1.0f * saturate( vSnow + vFrost ) * vSnowFade * vNormalFade;
-	vNormal = normalize( vNormal );
-	
+	vColor = lerp( vColor, vSnowColor, saturate( vSnow + vFrost ) * vSnowFade * ( saturate( vIsSnow*2.25f ) ) );
 	return vColor;
 }
 
