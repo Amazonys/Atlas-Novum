@@ -7,9 +7,11 @@ Development team: please do not overwrite the following documents unless given p
 
 provinces.bmp
 
-tradenodes.txt
+terrain.txt
 
 default.map
+
+tradenodes.txt
 
 on_actions.txt
 
