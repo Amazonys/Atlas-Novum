@@ -1,0 +1,566 @@
+estate_exarches =
+{
+	icon = 10
+	
+	color = { 100 0 60 } #Semi-tyrian Purple
+	
+	# Used for when declaring independence
+	independence_government = despotic_monarchy
+	independence_tech_group = eastern_group
+	independence_trigger = { #Seems to be provinces that declare independence
+		OR = { #Hopefully this catches all of them. Ideally I'd be wanting each exarch province to take the whole region, but I don't know how to do that.
+			has_estate = estate_exarches
+			any_province = {
+				region = PREV
+				has_estate = estate_exarches
+			}
+		}
+	}
+	
+	# Is estate kept in control of province on conquest?
+	keep_on_conquest = no
+	
+	# Giving territory affects power this much compared to base
+	territory_power_modifier = 5 #Quintuple influence from territory gain! This means 7.5%/1%
+	
+	#Removed to match 1.26 Estates
+	# wanted_territory_modifier = {
+		# desc = EST_VAL_HAS_EXARCH_SYSTEM
+		# trigger = {
+			# has_country_modifier = the_exarch_system
+		# }	
+		# value = 1 #Just some number. I suppose this is to make it so that you cannot just pick random provinces, but rather have to be decently wealthy.
+	# }
+	
+	# If true, country will get estate
+	trigger = {	
+		has_country_flag = revoked_exarch_autonomy
+	}
+	
+	# If true, province can be granted to estate
+	province_trigger = {
+		estate_exarches_province_trigger = yes
+	}	
+	
+	# Min autonomy in estate provinces
+	min_autonomy = 50
+	
+	
+	# Estate cancels out the following multiplicative local autonomy effects:
+	autonomy_does_not_affect = local_manpower_modifier
+	autonomy_does_not_affect = land_forcelimit_modifier
+	autonomy_does_not_affect = local_tax_modifier
+	
+	country_modifier_happy = {
+		land_forcelimit_modifier = 0.2
+		naval_forcelimit_modifier = 0.2
+		global_unrest = -2
+	}
+	country_modifier_neutral = {
+		state_maintenance_modifier = 1
+	}	
+	country_modifier_angry = {
+		state_maintenance_modifier = 5
+		land_forcelimit_modifier = -0.2
+		naval_forcelimit_modifier = -0.2
+	}
+	
+	# These do not scale, but only applied in provinces owned by the estate
+	province_modifier_happy = {
+		local_development_cost = -0.33 #Regional capitals should get a hefty development cost modifier.
+		local_build_cost = -0.33
+		local_state_maintenance_modifier = -0.5	
+	}
+	province_modifier_neutral = {
+		local_state_maintenance_modifier = 0.5
+	}	
+	province_modifier_angry = {
+		local_unrest = 5
+		local_state_maintenance_modifier = 1
+	}
+	
+	# Influence modifiers
+	base_influence = 20
+	#Well-developed exarch seat
+	influence_modifier = {	
+		desc = EST_VAL_HIGH_DEVELOPMENT_EXARH_SEAT
+		trigger = {
+			any_owned_province = {
+				has_estate = estate_exarches
+				development = 20
+			}
+			NOT = { #To prevent this existing when very-well developed exarch seat is in effect
+				any_owned_province = {
+					has_estate = estate_exarches
+					development = 30
+				}
+			}
+		}
+		influence = 10
+	}
+	#Very well-developed exarch seat
+	influence_modifier = {	
+		desc = EST_VAL_VERY_HIGH_DEVELOPMENT_EXARH_SEAT
+		trigger = {
+			any_owned_province = {
+				has_estate = estate_exarches
+				development = 30
+			}
+		}
+		influence = 20
+	}
+	
+	# Influence modifiers from Events:
+	influence_modifier = {
+		desc = EST_VAL_OTHER_ESTATE_IN_POWER
+		trigger = {
+			OR = {
+				has_disaster = estate_church_disaster
+				has_disaster = estate_burghers_disaster
+				has_disaster = estate_nobility_disaster
+			}
+		}	
+		influence = -40
+	}
+	
+	# Loyalty modifiers
+	loyalty_modifier = {
+		desc = EST_VAL_OTHER_ESTATE_IN_POWER_LOY
+		trigger = {
+			OR = {
+				has_disaster = estate_church_disaster
+				has_disaster = estate_burghers_disaster
+				has_disaster = estate_nobility_disaster
+			}
+		}
+		loyalty = -20
+	}
+	
+	# Legitimacy affects loyalty
+	loyalty_modifier = {
+		desc = EST_VAL_VERY_LEGITIMATE
+		trigger = {
+			government = monarchy
+			legitimacy = 95
+		}
+		loyalty = 10
+	}
+	loyalty_modifier = {
+		desc = EST_VAL_LEGITIMATE
+		trigger = {
+			government = monarchy
+			legitimacy = 70
+			NOT = { legitimacy = 95 }
+		}
+		loyalty = 5
+	}
+	loyalty_modifier = {
+		desc = EST_VAL_NOT_LEGITIMATE
+		trigger = {
+			government = monarchy
+			NOT = { legitimacy = 50 }
+			legitimacy = 25
+		}
+		loyalty = -5
+	}
+	loyalty_modifier = {
+		desc = EST_VAL_ILLEGITIMATE
+		trigger = {
+			government = monarchy
+			NOT = { legitimacy = 25 }
+		}
+		loyalty = -10
+	}
+	
+	# Alternative naming of estates
+	# No.
+	
+	# Does the AI want to give any extra territory beyond the minimum?
+	# No.
+	
+	# For province assignment
+	ai_grant_province = {
+		factor = 1			
+	}	
+	
+	# Special interactions
+	
+	#Grant Autonomy
+	interaction = {
+		name = "GRANT_EXARCH_AUTONOMY"
+		icon = 7
+		
+		years_between_use = 10
+		
+		potential = {
+			NOT = { has_disaster = estate_church_disaster }
+			NOT = { has_disaster = estate_burghers_disaster }
+			NOT = { has_disaster = estate_nobility_disaster }
+		}
+		
+		trigger = {
+			estate_loyalty = {
+				estate = estate_exarches
+				loyalty = 30
+			}	
+			estate_influence = {
+				estate = estate_exarches
+				influence = 40
+			}			
+		}
+		
+		effect = {
+			add_estate_loyalty = {
+				estate = estate_exarches
+				loyalty = 20
+			}
+			custom_tooltip = add_local_autonomy_tooltip
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						has_active_triggered_province_modifier = exarch_territory_modifier
+					}
+					add_local_autonomy = 10
+				}
+			}
+			if = {
+				limit = {
+					estate_influence = {
+						estate = estate_exarches
+						influence = 70
+					}	
+				}
+				add_stability = 1
+			}
+		}
+		
+		ai_will_do = {
+			factor = 0
+		}
+	}
+	
+	#Draft Exarch Eparch (Taken directly from Nobles, then modified)
+	interaction = {
+		name = "DRAFT_EXARCH_EPARCH"
+		icon = 5
+		
+		years_between_use = 10
+		
+		potential = {
+			NOT = { has_disaster = estate_church_disaster }
+			NOT = { has_disaster = estate_burghers_disaster }
+			NOT = { has_disaster = estate_nobility_disaster }
+		}
+		
+		trigger = {
+			estate_loyalty = {
+				estate = estate_exarches
+				loyalty = 30
+			}	
+			estate_influence = {
+				estate = estate_exarches
+				influence = 40
+			}			
+		}
+		
+		effect = {
+			create_general = { tradition = 60 }
+			add_estate_influence_modifier = {
+				estate = estate_exarches
+				desc = EST_VAL_DRAFTED_EXARCH_EPARCH
+				influence = 10
+				duration = 3650
+			}
+			add_estate_loyalty = {
+				estate = estate_exarches
+				loyalty = -10
+			}
+			if = {
+				limit = { has_estate = estate_nobles }
+				add_estate_loyalty = {
+					estate = estate_nobles
+					loyalty = -5
+				}
+			}
+		}
+		
+		ai_will_do = {
+			factor = 0
+		}
+	}
+	
+	#Recruit Minister (Note: Uses vanilla localisation for both interaction name and nobility influence modifier)
+	interaction = {
+		name = "RECRUIT_MINISTER"
+		icon = 24
+		
+		years_between_use = 30
+		
+		potential = {
+			NOT = { has_disaster = estate_church_disaster }
+			NOT = { has_disaster = estate_burghers_disaster }
+			NOT = { has_disaster = estate_nobility_disaster }
+		}
+		
+		trigger = {
+			estate_influence = {
+				estate = estate_exarches
+				influence = 40
+			}
+		}
+		
+		effect = {
+			#Byz Resurgence changed to use scripted effect instead of this jumbled mess of code.
+			create_estate_advisor_effect = {
+				ADVISORTYPE = provincial_governor
+				ESTATE = estate_exarches
+				EVENTTARGET = exarches_estate_province
+			}
+			add_estate_influence_modifier = {
+				estate = estate_exarches
+				desc = EST_VAL_NOBLES_MINISTER
+				influence = 15
+				duration = 10950
+			}
+		}
+	}
+	
+	#Draft Exarch's Troops (Taken directly from Nobles, then modified)
+	interaction = {
+		name = "DRAFT_EXARCH_TROOPS"
+		icon = 12
+		
+		years_between_use = 25
+		
+		potential = {
+			NOT = { has_disaster = estate_church_disaster }
+			NOT = { has_disaster = estate_burghers_disaster }
+			NOT = { has_disaster = estate_nobility_disaster }
+		}
+		
+		trigger = {
+			estate_loyalty = {
+				estate = estate_exarches
+				loyalty = 30
+			}
+			estate_influence = {
+				estate = estate_exarches
+				influence = 40
+			}
+		}
+		
+		effect = {
+			if = {
+				limit = {
+					NOT = {
+						estate_influence = {
+							estate = estate_exarches
+							influence = 50
+						}	
+					}
+				}
+				add_yearly_manpower = 2
+			}
+			if = {
+				limit = {
+					estate_influence = {
+						estate = estate_exarches
+						influence = 50
+					}
+					NOT = {
+						estate_influence = {
+							estate = estate_exarches
+							influence = 75
+						}	
+					}
+				}
+				add_yearly_manpower = 3
+			}
+			if = {
+				limit = {
+					estate_influence = {
+						estate = estate_exarches
+						influence = 75
+					}
+					NOT = {
+						estate_influence = {
+							estate = estate_exarches
+							influence = 100
+						}	
+					}
+				}
+				add_yearly_manpower = 4
+			}
+			if = {
+				limit = {
+					estate_influence = {
+						estate = estate_exarches
+						influence = 100
+					}
+				}
+				add_yearly_manpower = 5
+			}	
+			add_estate_loyalty = {
+				estate = estate_exarches
+				loyalty = -15
+			}
+		}
+		
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					estate_loyalty = {
+						estate = estate_exarches
+						loyalty = 50
+					}	
+				}
+			}
+			modifier = {
+				factor = 0
+				manpower_percentage = 0.25				
+			}
+			modifier = {
+				factor = 0
+				is_at_war = no
+			}			
+		}
+	}
+
+	#Name Exarch heir
+	interaction = {
+		name = "NAME_EXARCH_HEIR"
+		icon = 23
+		
+		years_between_use = 20
+		
+		potential = {
+			NOT = { has_disaster = estate_church_disaster }
+			NOT = { has_disaster = estate_burghers_disaster }
+			NOT = { has_disaster = estate_nobility_disaster }
+			government = roman_autocracy
+		}
+		
+		trigger = {
+			OR = {
+				NOT = { has_idea = byz_formalize_succession_laws }
+				custom_trigger_tooltip = {
+					tooltip = exarches_appointed_relative_tooltip
+					has_estate_influence_modifier = {
+						estate = estate_exarches
+						modifier = EST_VAL_APPOINTED_RELATIVE_EXARCH
+					}
+				}
+			}
+			estate_loyalty = {
+				estate = estate_exarches
+				loyalty = 40
+			}
+			estate_influence = {
+				estate = estate_exarches
+				influence = 60
+			}
+		}
+		
+		effect = {
+			if = { #If appointed relative as exarch, gives your dynasty and 100 claim
+				limit = {
+					has_estate_influence_modifier = {
+						estate = estate_exarches
+						modifier = EST_VAL_APPOINTED_RELATIVE_EXARCH
+					}
+				}
+				define_heir = { 
+					dynasty = ROOT
+					age = 30
+					adm = 4
+					mil = 4
+					claim = 100
+					no_consort_with_heir = yes
+				}	
+			}
+			else = {
+				define_heir = {
+					age = 30
+					adm = 4
+					mil = 4
+					claim = 50
+					no_consort_with_heir = yes
+				}	
+			}
+			add_estate_influence_modifier = {
+				estate = estate_exarches
+				desc = EST_VAL_NAMED_EXARCH_HEIR
+				influence = 10
+				duration = 7300
+			}
+			add_estate_loyalty = {
+				estate = estate_exarches
+				loyalty = 10
+			}
+			add_estate_loyalty = {
+				estate = estate_nobles
+				loyalty = -20
+			}
+		}
+		
+		
+		ai_will_do = {
+			factor = 0
+		}
+	}
+	
+	#Appoint Relative as Exarch
+	interaction = {
+		name = "APPOINT_RELATIVE_EXARCH"
+		icon = 1
+		
+		years_between_use = 20
+		
+		potential = {
+			NOT = { has_disaster = estate_church_disaster }
+			NOT = { has_disaster = estate_burghers_disaster }
+			NOT = { has_disaster = estate_nobility_disaster }
+			government = roman_autocracy
+		}
+		
+		trigger = {
+			estate_loyalty = {
+				estate = estate_exarches
+				loyalty = 40
+			}
+			estate_influence = {
+				estate = estate_exarches
+				influence = 60
+			}
+		}
+		
+		effect = {
+			random_owned_province = {
+				limit = {
+					has_estate = estate_exarches
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 4
+				}
+			}
+			add_estate_influence_modifier = {
+				estate = estate_exarches
+				desc = EST_VAL_APPOINTED_RELATIVE_EXARCH
+				influence = -10
+				duration = 7300
+			}
+			add_estate_loyalty = {
+				estate = estate_exarches
+				loyalty = -20
+			}
+		}
+		
+		
+		ai_will_do = {
+			factor = 0
+		}
+	}
+}
