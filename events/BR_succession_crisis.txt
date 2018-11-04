@@ -1,0 +1,900 @@
+#Events taken from Byzantium Events mod by Nevik. Used with permission.
+
+namespace = succession_crisis
+
+#Succession Crisis in Byzantine Empire, intended to be altered to become a disaster instead.
+country_event = {
+    id = succession_crisis.34
+    title = succession_crisis.34.t
+    desc = succession_crisis.34.d
+    picture = KING_SICK_IN_BED_eventPicture
+	
+    is_triggered_only = yes
+        
+	mean_time_to_happen = {
+		days = 1
+	}
+    major = yes
+    
+    immediate = { #Adjusted to give a bit more rebels so it isn't so easy to get out of, meaning events are more likely to fire in the meantime.
+        hidden_effect = {
+            set_country_flag = had_byz_succ_crisis
+            add_stability = -3
+            add_country_modifier = {
+                name = byz_succession_crisis
+                duration = 9125
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = noble_rebels
+                    size = 1
+                }
+            }
+			random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 2
+                }
+            }
+            if = {
+                limit = {
+                    TUR = {
+                        is_great_power = yes
+                    }
+                    NOT = { is_great_power = yes }
+                }
+                random_owned_province = {
+                    limit = {
+                        is_capital = no
+                    }
+                    spawn_rebels = {
+                        type = noble_rebels
+                        size = 1
+                        friend = TUR
+                    }
+                }
+				random_owned_province = {
+                    limit = {
+                        is_capital = no
+                    }
+                    spawn_rebels = {
+                        type = pretender_rebels
+                        size = 2
+                        friend = TUR
+                    }
+                } 
+            }
+            
+        }
+    }
+    
+    option = {
+        name = succession_crisis.34.a
+        trigger = {
+            has_regency = no
+            has_heir = yes
+        }
+        kill_ruler = yes
+        add_legitimacy = -100
+		set_country_flag = byz_heir_defend_succession
+    }
+    
+    option = {
+        name = succession_crisis.34.b
+        trigger = {
+            has_regency = yes
+        }
+        add_legitimacy = -100
+    }
+    
+    option = {
+        name = succession_crisis.34.c
+        trigger = {
+            has_regency = no
+            has_heir = no
+        }
+        define_ruler = {
+            name = "(Interregnum)"
+            adm = 0
+            dip = 0
+            mil = 0
+            fixed = yes
+            regency = yes
+        }
+        add_legitimacy = -100
+    }
+}
+
+#Gothic Pretenders Arise
+country_event = {
+    id = succession_crisis.35
+    title = succession_crisis.35.t
+    desc = succession_crisis.35.d
+    picture = CONQUEST_eventPicture
+    
+    trigger = { #Commented some trigger requirements due to them either being present already as part of disaster trigger or me not thinking they make sense.
+        #tag = BYZ
+        #has_country_flag = had_byz_succ_crisis
+        #NOT = { stability = 2 }
+        #government = monarchy
+		OR = { #Overhauled to allow for the event even though Theodoro does not exist, much like Montferrat works.
+			owns = 2410 #Theodoro/Doros/Cherson/Whatever
+			FEO = {
+				exists = yes
+				has_regency = no
+			}
+		}
+        #NOT = { num_of_rebel_armies = 1 }
+    }
+    
+    is_triggered_only = yes
+        
+	mean_time_to_happen = {
+		days = 1
+	}
+    
+    fire_only_once = yes
+    
+    option = {
+        name = succession_crisis.35.a
+        add_legitimacy = 10
+        if = {
+            limit = {
+                FEO = {
+                    exists = yes
+                    dynasty = "of Gothia"
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 2
+                    leader = "Alexander of Gothia"
+                    friend = FEO
+                }
+            }
+        }
+        if = {
+            limit = {
+                FEO = {
+                    exists = yes
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 1
+                    friend = FEO
+                }
+            }
+        }
+    }
+    
+    option = {
+		trigger = {
+			NOT = {
+				has_country_flag = accepted_pretender
+			}
+		}
+        name = succession_crisis.35.b
+		if = {
+			limit = {
+				FEO = {
+					exists = yes
+                    dynasty = "of Gothia"
+				}
+			}
+			define_ruler = {
+				name = "(Interregnum)"
+				adm = 0
+				dip = 0
+				mil = 0
+				fixed = yes
+				regency = yes
+			}
+			kill_heir = yes
+			set_country_flag = accepted_goth
+			country_event = { id = succession_crisis.45 }
+		}
+		else = {
+			kill_heir = yes
+			define_ruler = {
+				adm = 1
+				dip = 1
+				mil = 1
+				claim = 50
+				dynasty = "of Gothia"
+			}			
+		}
+        set_country_flag = accepted_pretender
+        
+    }
+}
+
+#End of the Succession Crisis
+country_event = {
+    id = succession_crisis.36
+    title = succession_crisis.36.t
+	desc = {
+		trigger = { has_country_flag = accepted_goth }
+		desc = succession_crisis.36.dFEO
+	}
+	desc = {
+		trigger = { has_country_flag = accepted_tre }
+		desc = succession_crisis.36.dTRE
+	}
+	desc = {
+		trigger = { has_country_flag = accepted_pal }
+		desc = succession_crisis.36.dMFA
+	}
+	desc = {
+		trigger = { has_country_flag = byz_heir_defend_succession }
+		desc = succession_crisis.36.dHeld
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				has_country_flag = accepted_goth
+				has_country_flag = accepted_tre
+				has_country_flag = accepted_pal
+				has_country_flag = byz_heir_defend_succession
+			}
+		}
+		desc = succession_crisis.36.d
+	}
+    picture = BYZANTINE_EMPEROR_eventPicture
+    
+    is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+    option = {
+        name = succession_crisis.36.a
+		trigger = { NOT = { has_country_flag = byz_heir_defend_succession } }
+        if = {
+            limit = {
+                has_regency = yes
+                has_heir = no
+            }
+            define_ruler = {
+                adm = 1
+                dip = 1
+                mil = 1
+                claim = 100
+            }
+        }
+        add_adm_power = 100
+        add_dip_power = 100
+        add_mil_power = 100
+        add_legitimacy = 50
+        add_stability = 2
+		if = {
+            limit = {
+                has_country_flag = accepted_goth
+            }
+            clr_country_flag = accepted_goth
+        }
+        if = {
+            limit = {
+                has_country_flag = accepted_tre
+            }
+            clr_country_flag = accepted_tre
+        }
+        if = {
+            limit = {
+                has_country_flag = accepted_pal
+            }
+            clr_country_flag = accepted_pal
+        }
+    }
+	
+	option = {
+        name = succession_crisis.36.a
+		trigger = { has_country_flag = byz_heir_defend_succession }
+        if = {
+            limit = {
+                has_regency = yes
+                has_heir = no
+            }
+            define_ruler = {
+                adm = 1
+                dip = 1
+                mil = 1
+                claim = 100
+            }
+        }
+        add_adm_power = 100
+        add_dip_power = 100
+        add_mil_power = 100
+        add_legitimacy = 50
+        add_stability = 2
+        if = {
+            limit = {
+                has_country_flag = byz_heir_defend_succession
+            }
+            clr_country_flag = byz_heir_defend_succession
+        }
+    }
+}
+
+#Trebizondian Pretenders Arise
+country_event = {
+    id = succession_crisis.38
+    title = succession_crisis.38.t
+    desc = succession_crisis.38.d
+    picture = CONQUEST_eventPicture
+    
+    trigger = { #Commented some trigger requirements due to them either being present already as part of disaster trigger or me not thinking they make sense.
+        #tag = BYZ
+        #has_country_flag = had_byz_succ_crisis
+        #NOT = { stability = 2 }
+        #government = monarchy
+		OR = { #Overhauled to allow for the event even though Theodoro does not exist, much like Montferrat works.
+			owns = 330
+			TRE = {
+				exists = yes
+				has_regency = no
+			}
+		}
+        #NOT = { num_of_rebel_armies = 1 }
+    }
+    
+    is_triggered_only = yes
+        
+	mean_time_to_happen = {
+		days = 1
+	}
+    
+    fire_only_once = yes
+    
+    option = {
+        name = succession_crisis.38.a
+        add_legitimacy = 10
+        if = {
+            limit = {
+                TRE = {
+                    exists = yes
+                    dynasty = "Komnenos"
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 2
+                    leader = "Alexios Komnenos"
+                    friend = TRE
+                }
+            }
+        }
+		else_if = {
+			limit = {
+				owns = 330
+			}
+			330 = {
+				spawn_rebels = {
+                    type = pretender_rebels
+                    size = 2
+                    leader = "Alexios Komnenos"
+                    friend = TRE
+                }
+			}
+		}
+        if = {
+            limit = {
+                TRE = {
+                    exists = yes
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 1
+                    friend = TRE
+                }
+            }
+        }
+    }
+    
+    option = {
+        name = succession_crisis.38.b
+		trigger = {
+			NOT = {
+				has_country_flag = accepted_pretender
+			}
+		}
+		if = {
+			limit = {
+				TRE = {
+					exists = yes
+                    dynasty = "Komnenos"
+				}
+			}
+			define_ruler = {
+				name = "(Interregnum)"
+				adm = 0
+				dip = 0
+				mil = 0
+				fixed = yes
+				regency = yes
+			}
+			kill_heir = yes
+			set_country_flag = accepted_tre
+			country_event = { id = succession_crisis.45 }
+		}
+		else = {
+			kill_heir = yes
+			define_ruler = {
+				adm = 1
+				dip = 1
+				mil = 1
+				claim = 50
+				dynasty = "Komnenos"
+			}
+		}
+        set_country_flag = accepted_pretender
+    }
+
+}
+
+#Palaiologan Pretenders Arise
+country_event = {
+    id = succession_crisis.39
+    title = succession_crisis.39.t
+    desc = succession_crisis.39.d
+    picture = CONQUEST_eventPicture
+    
+    trigger = { #Commented some trigger requirements due to them either being present already as part of disaster trigger or me not thinking they make sense.
+        #tag = BYZ
+        #has_country_flag = had_byz_succ_crisis
+        #NOT = { stability = 2 }
+        #government = monarchy
+        OR = {
+            SAV = {
+                exists = yes
+                owns = 2981
+            }
+            MFA = {
+                exists = yes
+                has_regency = no
+            }
+        }
+        #NOT = { num_of_rebel_armies = 1 }
+    }
+    
+    is_triggered_only = yes
+        
+	mean_time_to_happen = {
+		days = 1
+	}
+    
+    fire_only_once = yes
+    
+    option = {
+        name = succession_crisis.39.a
+        add_legitimacy = 10
+        if = {
+            limit = {
+                MFA = {
+                    exists = yes
+                    dynasty = "Palaiologos"
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 2
+                    leader = "Teodoro Palaiologos"
+                    friend = MFA
+                }
+            }
+        }
+        if = {
+            limit = {
+                SAV = {
+                    exists = yes
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 1
+                    friend = SAV
+                }
+            }
+        }
+    }
+    
+    option = {
+        name = succession_crisis.39.b
+		trigger = {
+			NOT = {
+				has_country_flag = accepted_pretender
+			}
+		}
+        if = {
+            limit = {
+                MFA = {
+                    exists = yes
+                    dynasty = "Palaiologos"
+                }
+            }
+            define_ruler = {
+                name = "(Interregnum)"
+                adm = 0
+                dip = 0
+                mil = 0
+                fixed = yes
+                regency = yes
+            }
+            kill_heir = yes
+            set_country_flag = accepted_pal
+            country_event = { id = succession_crisis.45 }
+        }
+        else = {
+            kill_heir = yes
+            define_ruler = {
+                adm = 1
+                dip = 1
+                mil = 1
+                claim = 100
+                dynasty = "Palaiologos"
+            }
+        }
+		set_country_flag = accepted_pretender
+    }
+
+}
+
+#The Angeloi Philanthropenoi
+country_event = {
+    id = succession_crisis.41
+    title = succession_crisis.41.t
+    desc = succession_crisis.41.d
+    picture = CIVIL_WAR_eventPicture
+    
+    trigger = { #Commented some trigger requirements due to them either being present already as part of disaster trigger or me not thinking they make sense.
+        #tag = BYZ
+        #has_country_flag = had_byz_succ_crisis
+        #NOT = { stability = 2 }
+        #government = monarchy
+        owns = 147
+        #NOT = { num_of_rebel_armies = 1 }
+    }
+    
+    fire_only_once = yes
+    
+    is_triggered_only = yes
+        
+	mean_time_to_happen = {
+		days = 1
+	}
+    
+    option = {
+        name = succession_crisis.41.a
+        add_legitimacy = 10
+        147 = {
+            spawn_rebels = {
+                type = pretender_rebels
+                size = 2
+                leader = "Manuel Angelos Philanthropenos"
+            }
+        }
+        if = {
+            limit = {
+                SER = {
+                    exists = yes
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 1
+                    friend = SER
+                }
+            }
+        }
+    }
+    
+    option = {
+        name = succession_crisis.41.b
+		trigger = {
+			NOT = {
+				has_country_flag = accepted_pretender
+			}
+		}
+        kill_heir = yes
+        define_ruler = {
+            adm = 1
+            dip = 1
+            mil = 1
+            claim = 50
+            dynasty = "Angelos Philanthropenos"
+        }
+		set_country_flag = accepted_pretender
+    }
+}
+
+#The Kantazouzenoi
+country_event = {
+    id = succession_crisis.42
+    title = succession_crisis.42.t
+    desc = succession_crisis.42.d
+    picture = CIVIL_WAR_eventPicture
+    
+    trigger = { #Commented some trigger requirements due to them either being present already as part of disaster trigger or me not thinking they make sense.
+        #tag = BYZ
+        #has_country_flag = had_byz_succ_crisis
+        #NOT = { stability = 2 }
+        #government = monarchy
+        owns = 145
+        #NOT = { num_of_rebel_armies = 1 }
+    }
+	
+    fire_only_once = yes
+    
+    is_triggered_only = yes
+        
+	mean_time_to_happen = {
+		days = 1
+	}
+    
+    option = {
+        name = succession_crisis.42.a
+        145 = {
+            spawn_rebels = {
+                type = pretender_rebels
+                size = 1
+                leader = "Georgios Kantakouzenos"
+            }
+        }
+        if = {
+            limit = {
+                SER = {
+                    exists = yes
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 1
+                    friend = SER
+                }
+            }
+        }
+    }
+    
+    option = {
+        name = succession_crisis.42.b
+		trigger = {
+			NOT = {
+				has_country_flag = accepted_pretender
+			}
+		}
+        kill_heir = yes
+        define_ruler = {
+            adm = 1
+            dip = 1
+            mil = 1
+            claim = 50
+            dynasty = "Kantakouzenos"
+        }
+		set_country_flag = accepted_pretender
+    }
+}
+
+#The Komnenodoukai
+country_event = {
+    id = succession_crisis.43
+    title = succession_crisis.43.t
+    desc = succession_crisis.43.d
+    picture = CIVIL_WAR_eventPicture
+    
+    trigger = { #Commented some trigger requirements due to them either being present already as part of disaster trigger or me not thinking they make sense.
+        #tag = BYZ
+        #has_country_flag = had_byz_succ_crisis
+        #NOT = { stability = 2 }
+        #government = monarchy
+        owns = 144
+        #NOT = { num_of_rebel_armies = 1 }
+    }
+    
+    fire_only_once = yes
+    
+    is_triggered_only = yes
+        
+	mean_time_to_happen = {
+		days = 1
+	}
+    
+    option = {
+        name = succession_crisis.43.a
+        144 = {
+            spawn_rebels = {
+                type = pretender_rebels
+                size = 1
+                leader = "Thomas Komnenodoukas"
+            }
+        }
+        if = {
+            limit = {
+                NAP = {
+                    exists = yes
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 1
+                    friend = NAP
+                }
+            }
+        }
+    }
+    
+    option = {
+        name = succession_crisis.43.b
+		trigger = {
+			NOT = {
+				has_country_flag = accepted_pretender
+			}
+		}
+        kill_heir = yes
+        define_ruler = {
+            adm = 1
+            dip = 1
+            mil = 1
+            claim = 50
+            dynasty = "Komnenodoukas"
+        }
+		set_country_flag = accepted_pretender
+    }
+}
+
+#The Laskaris
+country_event = {
+    id = succession_crisis.44
+    title = succession_crisis.44.t
+    desc = succession_crisis.44.d
+    picture = CIVIL_WAR_eventPicture
+    
+    trigger = { #Commented some trigger requirements due to them either being present already as part of disaster trigger or me not thinking they make sense.
+        #tag = BYZ
+        #has_country_flag = had_byz_succ_crisis
+        #NOT = { stability = 2 }
+        #government = monarchy
+        owns = 5157 #I think this is meant to be Nicaea. Since that is represented in BT, I'll change it to that.
+        #NOT = { num_of_rebel_armies = 1 }
+    }
+    
+    fire_only_once = yes
+    
+    is_triggered_only = yes
+        
+	mean_time_to_happen = {
+		days = 1
+	}
+    
+    option = {
+        name = succession_crisis.44.a
+        5157 = {
+            spawn_rebels = {
+                type = pretender_rebels
+                size = 1
+                leader = "Ioannes Laskaris"
+            }
+        }
+        if = {
+            limit = {
+                SAV = {
+                    exists = yes
+                }
+            }
+            random_owned_province = {
+                limit = {
+                    is_capital = no
+                }
+                spawn_rebels = {
+                    type = pretender_rebels
+                    size = 1
+                    friend = SAV
+                }
+            }
+        }
+    }
+    
+    option = {
+        name = succession_crisis.44.b
+		trigger = {
+			NOT = {
+				has_country_flag = accepted_pretender
+			}
+		}
+        kill_heir = yes
+        define_ruler = {
+            adm = 1
+            dip = 1
+            mil = 1
+            claim = 50
+            dynasty = "Laskaris"
+        }
+		set_country_flag = accepted_pretender
+    }
+}
+
+#Personal Union
+country_event = {
+    id = succession_crisis.45
+    title = succession_crisis.45.t
+    desc = succession_crisis.45.d
+    picture = CONQUEST_eventPicture
+    
+    is_triggered_only = yes
+    
+    option = {
+        name = succession_crisis.45.a
+        if = {
+            limit = {
+                has_country_flag = accepted_goth
+            }
+            create_union = FEO
+            clr_country_flag = accepted_goth
+        }
+        if = {
+            limit = {
+                has_country_flag = accepted_tre
+            }
+            create_union = TRE
+            clr_country_flag = accepted_tre
+        }
+        if = {
+            limit = {
+                has_country_flag = accepted_pal
+            }
+            create_union = MFA
+            clr_country_flag = accepted_pal
+        }
+		#Commented out because it made no sense that a PU would end it, but not other options.
+        # if = {
+            # limit = {
+                # has_country_modifier = byz_succession_crisis
+            # }
+            # remove_country_modifier = byz_succession_crisis
+        # }
+    }
+}
+
