@@ -1,0 +1,102 @@
+namespace = latin_imperial_authority_pulse_event
+
+country_event = {
+	id = latin_imperial_authority_pulse_event.1
+	title = "latin_imperial_authority_pulse_event.1.t"
+	desc = "latin_imperial_authority_pulse_event.1.d"
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	hidden = yes
+	trigger = {
+		tag = LTE
+		OR = { #Attempts to pulse every 30 days
+			NOT = { has_country_flag = authority_pulse_event_flag }
+			had_country_flag = {
+				flag = authority_pulse_event_flag
+				days = 30
+			}
+		}
+		always = no #Remove once implemented.
+	}
+	
+	mean_time_to_happen = { days = 1 } #Is this even needed? Not sure.
+	immediate = { set_country_flag = authority_pulse_event_flag }
+	
+	option = {
+		every_owned_province = { #Subtract 0.01 authority per owned non-capital province
+			limit = {
+					NOT = { is_capital = yes }
+				}
+			ROOT = {
+				subtract_variable = {
+					which = latinImperialAuthorityVariable
+					value = 0.01
+				}
+			}
+		}
+		every_subject_country = { #Add 0.1 authority per loyal Knightly Order, decreased by 0.01 for every province they have.
+			limit = { #Not disloyal Knightly Order
+				is_subject_of_type = byz_crusader_vassal
+				NOT = { liberty_desire = 50 }
+			}
+			every_owned_province = { #Subtract 0.01 authority per non-capital province.
+				limit = {
+					NOT = { is_capital = yes }
+				}
+				ROOT = {
+					subtract_variable = {
+						which = latinImperialAuthorityVariable
+						value = 0.01
+					}
+				}
+			}
+			ROOT = {
+				change_variable = {
+					which = latinImperialAuthorityVariable
+					value = 0.1
+				}
+			}
+		}
+		#Add 0.001 authority/point of legitimacy/month, for 0.1/month at 100 legitimacy.
+		export_to_variable = {
+			variable_name = latinImperialAuthorityLegitimacy
+			value = trigger_value:legitimacy
+			who = ROOT
+		}
+		divide_variable = {            
+			which = latinImperialAuthorityLegitimacy
+			value = 1000
+		}
+		change_variable = {
+			which = latinImperialAuthorityVariable
+			which = latinImperialAuthorityLegitimacy
+		}
+		
+		if = { #If not at least 0 at the end of this, set to 0.
+			limit = {
+				NOT = {
+					check_variable = {
+						which = latinImperialAuthorityVariable
+						value = 0
+					}
+				}
+			}
+			set_variable = {
+				which = latinImperialAuthorityVariable
+				value = 0
+			}
+		}
+		if = { #If above 100 at the end of this, set to 100. Thus bounding the value between 0-100.
+			limit = {
+				check_variable = {
+					which = latinImperialAuthorityVariable
+					value = 100
+				}
+			}
+			set_variable = {
+				which = latinImperialAuthorityVariable
+				value = 100
+			}
+		}
+	}
+}
