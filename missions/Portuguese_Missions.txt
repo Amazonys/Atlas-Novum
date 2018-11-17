@@ -45,18 +45,54 @@ por_slot_2 = {
 		
 		provinces_to_highlight = {
 			por_centralization_provinces = yes
+			NOT = { owned_by = ROOT }
+		}
+		
+		trigger = {
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=por_centralization_provinces
+				OWNER_TYPE=owned_by
+			}
+			NOT = { exists = BGC }
+			NOT = { exists = VSU }
+			NOT = { exists = COI }
+			NOT = { exists = BJ1 }
+		}
+		
+		effect = {
+			add_adm_power = 75
+			add_country_modifier = {
+				name = "por_centralize"
+				duration = 7300
+			}
+		}
+	}
+	
+	por_consolidate_authority = {
+		icon = mission_have_two_subjects
+		required_missions = { por_centralization }
+		position = 2
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_centralization_provinces = yes
 			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
 		
 		trigger = {
-			
+			average_home_autonomy = 30
 		}
 		
 		effect = {
-			add_mil_power = 25
-			
+			change_government_reform_progress = 75
 		}
-	
 	}
 	
 }
@@ -110,6 +146,166 @@ por_slot_5 = {
 	}
 	has_country_shield = yes
 	
+	por_dum_diversas = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { }
+	
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		trigger = {
+			any_rival_country = {
+				custom_trigger_tooltip = {
+					tooltip = capital_maghreb.tooltip
+					capital_scope = { region = maghreb_region }
+				}
+				is_neighbor_of = ROOT
+				religion_group = muslim
+			}
+			PAP = { 
+				has_opinion = {
+					who = ROOT
+					value = 50
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "dum_diversas"
+				duration = 7300
+			}
+			334 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } } 
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	por_control_tangiers = {
+		icon = mission_unite_home_region
+		required_missions = { por_dum_diversas }
+		position = 2
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 334
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=334
+			}
+		}
+		
+		effect = {
+			#Amyzonis - NEEDED CODE for CONTROL missions - ensures that provinces are properly annexed
+			every_province = {
+				limit = { province_id = 334 country_or_non_sovereign_subject_controls = ROOT }
+				change_controller = ROOT
+				cede_province = ROOT
+			}
+			#Remove bypass modifier on Ceuta - only valuable with Tangier
+			1751 = { remove_province_modifier = bypassed_by_tangiers }
+			#Cripple AI Morocco through a somewhat historical turn of events. Morocco could be strong in theory, but they are prone to internal disputes, one represented here.
+			if = { 
+				limit = { MOR = { ai = yes } }
+				MOR = { country_event = { id = orion_colonial.1 days = 0 } }
+			}
+			#Amyzonis AE modifier to balance control missions
+			if = {
+				limit = { NOT = { has_country_modifier = ae_boost } }
+				add_country_modifier = {
+					name = "ae_boost"
+					duration = 1825
+				}
+			}
+			else_if = {
+				limit = { has_country_modifier = ae_boost }
+				hidden_effect = {
+					remove_country_modifier = ae_boost
+				}
+				add_country_modifier = {
+					name = "ae_boost"
+					duration = 1825
+				}
+			}
+			#claims
+			348 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } } 
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	por_control_mazagao = {
+		icon = mission_unite_home_region
+		required_missions = { por_control_tangiers }
+		position = 3
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 348
+ 			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=348
+			}
+		}
+		
+		effect = {
+			#Amyzonis - NEEDED CODE for CONTROL missions - ensures that provinces are properly annexed
+			every_province = {
+				limit = { province_id = 348 country_or_non_sovereign_subject_controls = ROOT }
+				change_controller = ROOT
+				cede_province = ROOT
+			}
+			#Amyzonis AE modifier to balance control missions
+			if = {
+				limit = { NOT = { has_country_modifier = ae_boost } }
+				add_country_modifier = {
+					name = "ae_boost"
+					duration = 1825
+				}
+			}
+			else_if = {
+				limit = { has_country_modifier = ae_boost }
+				hidden_effect = {
+					remove_country_modifier = ae_boost
+				}
+				add_country_modifier = {
+					name = "ae_boost"
+					duration = 1825
+				}
+			}
+			#claims
+			#348 = {
+			#	limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } } 
+			#	add_permanent_claim = ROOT
+			#}
+		}
+	}
 }
 
 #slot 6
