@@ -17,27 +17,27 @@ NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.1			-- from 0p25
 NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.25			-- from 0p5
 NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.1			-- from 0p33
  -- Peace Prestige
-NDefines.NDiplomacy.PO_ANNEX_PRESTIGE = 0.1			-- from 0p25
-NDefines.NDiplomacy.PO_DEMAND_PROVINCES_PRESTIGE = 0.1			-- from 0p25
+NDefines.NDiplomacy.PO_ANNEX_PRESTIGE = 0.15			-- from 0p25
+NDefines.NDiplomacy.PO_DEMAND_PROVINCES_PRESTIGE = 0.2			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Directly demanding provinces should be slightly rarer and harder now so offsetting larger penalties minorly with prestige
 NDefines.NDiplomacy.PO_REVOKE_CORES_PRESTIGE = 0.1			-- from 0p1
-NDefines.NDiplomacy.PO_RETURN_CORES_PRESTIGE = 0.1			-- from 0p25
-NDefines.NDiplomacy.PO_RELEASE_VASSAL_PRESTIGE = 0.1			-- from 0p25
-NDefines.NDiplomacy.PO_TRANSFER_VASSAL_PRESTIGE = 0.1			-- from 0p25
-NDefines.NDiplomacy.PO_RELEASE_ANNEXED_PRESTIGE = 0.1			-- from 0p25
-NDefines.NDiplomacy.PO_CHANGE_RELIGION_PRESTIGE = 0.25			-- from 0p5
+NDefines.NDiplomacy.PO_RETURN_CORES_PRESTIGE = 0.1			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Now cheaper so lowering bonuses to prevent exploiting or overtweaking
+NDefines.NDiplomacy.PO_RELEASE_VASSAL_PRESTIGE = 0.1			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Now cheaper so lowering bonuses to prevent exploiting or overtweaking
+NDefines.NDiplomacy.PO_TRANSFER_VASSAL_PRESTIGE = 0.1			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Now cheaper so lowering bonuses to prevent exploiting or overtweaking
+NDefines.NDiplomacy.PO_RELEASE_ANNEXED_PRESTIGE = 0.1			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Now cheaper so lowering bonuses to prevent exploiting or overtweaking
+NDefines.NDiplomacy.PO_CHANGE_RELIGION_PRESTIGE = 0.2			-- from 0p5   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Now cheaper so lowering bonuses to prevent exploiting or overtweaking
 NDefines.NDiplomacy.PO_FORM_PU_PRESTIGE = 0.1			-- from 0p25
-NDefines.NDiplomacy.PO_BECOME_VASSAL_PRESTIGE = 0.1			-- from 0p25
+NDefines.NDiplomacy.PO_BECOME_VASSAL_PRESTIGE = 0.1			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Now cheaper so lowering bonuses to prevent exploiting or overtweaking
 NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_PRESTIGE = 1			-- from 2
 NDefines.NDiplomacy.PO_GIVE_UP_CLAIM_PRESTIGE = 1			-- from 2
  -- Peace Costs
 NDefines.NDiplomacy.PEACE_COST_DEMAND_PROVINCE = 0.5			-- from 1
-NDefines.NDiplomacy.PEACE_COST_CONCEDE_PROVINCE = 0.5			-- from 1
-NDefines.NDiplomacy.PEACE_COST_BECOME_VASSAL = 0.5			-- from 1
-NDefines.NDiplomacy.PEACE_COST_RETURN_CORE = 0.5			-- from 1
+NDefines.NDiplomacy.PEACE_COST_CONCEDE_PROVINCE = 0.4			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   More provinces and dev in colonial regions was making this too expensive   Also noticed that occasionally choosing provinces individually was less warscore why I dont know but we dont want that
+NDefines.NDiplomacy.PEACE_COST_BECOME_VASSAL = 0.4			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   This might be a personal thing but completely taking land shouldnt be the same price or cheaper than enforcing vassalage   vassal relations historically happened somewhat often even between larger nations
+NDefines.NDiplomacy.PEACE_COST_RETURN_CORE = 0.4			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   returning a core to a rightful owner should be a less dramatic negotiating factor than taking a completely new province
 NDefines.NDiplomacy.PEACE_COST_REVOKE_CORE = 0.25			-- from 0p5
-NDefines.NDiplomacy.PEACE_COST_RELEASE_ANNEXED = 0.5			-- from 1
+NDefines.NDiplomacy.PEACE_COST_RELEASE_ANNEXED = 0.4			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   releasing an annexed vassal shouldnt be as dramatic as demanding a completely new province   Also encourages breaking up of blobs which can only be a good thing
 NDefines.NDiplomacy.PEACE_COST_RELEASE_VASSAL = 0.25			-- from 0p5
-NDefines.NDiplomacy.PEACE_COST_CONVERSION = 0.5			-- from 1
+NDefines.NDiplomacy.PEACE_COST_CONVERSION = 0.25			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   I know people love their beliefs and resist religious change but the absurdly high price of this made it only possible against very small tags where it was usually preferable to just annex   Now this might be useful
 NDefines.NDiplomacy.PEACE_COST_RELEASE = 1			-- from 2
  --End of Peace Costs
 NDefines.NDiplomacy.ANNEX_DIP_COST_PER_DEVELOPMENT = 4			-- from 8
@@ -93,7 +93,7 @@ NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 2.5			-- from 5     I dont ac
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 100			-- from 50
 NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.125			-- from 0p25
-NDefines.NMilitary.BLOCKADE_FACTOR = 6			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
+NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
 
  --NAI changes

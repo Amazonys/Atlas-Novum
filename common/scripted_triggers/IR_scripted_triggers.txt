@@ -29,36 +29,6 @@ trade_good_price_med = {
     }
 }
 
-has_unique_government_system = {
-	OR = {
-		has_reform = grand_duchy_reform
-		has_reform = daimyo
-		has_reform = indep_daimyo
-		has_reform = elective_monarchy
-		has_reform = iqta
-		has_reform = ottoman_government
-		has_reform = prussian_monarchy
-		has_reform = principality
-		has_reform = tsardom
-		has_reform = mamluk_government
-		has_reform = feudal_theocracy
-		has_reform = celestial_empire
-		has_reform = shogunate
-		has_reform = english_monarchy
-		has_reform = mandala_reform
-		has_reform = revolutionary_empire_reform
-	
-		has_reform = roman_autocracy
-		has_reform = french_crown
-		has_reform = french_principality
-		has_reform = french_monarchy
-		has_reform = iberian_crown
-		has_reform = iberian_reino
-		has_reform = iberian_monarchy
-		
-	}
-}
-
 is_colonizer_tech_group = {
 	OR = {
 		technology_group = western 
@@ -137,12 +107,6 @@ country_or_non_sovereign_subject_controls = {
 	custom_trigger_tooltip = {
 		tooltip = country_or_non_sovereign_subject_controls.tooltip
 		OR = {
-			NOT = { exists = $TAG$ }
-			$TAG$ = {
-				is_subject_of = $SCOPE$
-			}
-		}
-		OR = {
 			controlled_by = $TAG$
 			controller = { is_subject_of = $TAG$ NOT = { is_subject_of_type = tributary_state } }
 		}
@@ -155,8 +119,8 @@ control_mission_trigger = {
 			any_province = {
 				$PROVINCES$ = yes
 				if = {
-					limit = { owner = { ai = yes } }
-					NOT = { country_or_non_sovereign_subject_controls = ROOT }
+					limit = { owner = { ai = yes } NOT = { has_global_flag = IR_control_missions_disabled } }
+					NOT = { country_or_non_sovereign_subject_controls = { TAG=ROOT } }
 				}
 				else_if = {
 					limit = { owner = { ai = no } }
@@ -174,6 +138,34 @@ discover_mission_trigger = {
 			any_province = {
 				$PROVINCES$ = yes
 				NOT = {	has_discovered = ROOT }
+			}
+		}
+	}
+}
+
+vassalize_mission_trigger = {
+	custom_trigger_tooltip = {
+		tooltip = vassalize_mission.tooltip
+		if = { 
+			limit = { $TAG$ = { exists = yes } }
+			$TAG$ = { 
+				is_subject_of = ROOT 
+				NOT = { OR = { is_subject_of_type = league is_subject_of_type = tributary_state } }
+			}
+			NOT = {
+				any_province = {
+					is_core = $TAG$
+					NOT = {	country_or_non_sovereign_subject_holds = ROOT }
+				}
+			}
+		}
+		else_if = {
+			limit = { $TAG$ = { exists = no } }
+			NOT = {
+				any_province = {
+					is_core = $TAG$
+					NOT = {	owned_by = ROOT }
+				}
 			}
 		}
 	}
