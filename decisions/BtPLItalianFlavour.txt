@@ -1,0 +1,385 @@
+country_decisions = {
+
+
+#################################################
+#Some new Papal stuff
+#################################################
+
+	bt_enforce_temporal_authority = {
+		major = yes
+		potential = {
+			tag = PAP
+			any_subject_country = { is_subject_of_type = papal_subject_bt }
+		}
+		
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			is_at_war = no
+			any_neighbor_country = {
+				is_subject_of_type = papal_subject_bt
+				has_opinion = { who = PAP value = 175 }
+				is_at_war = no
+			}
+		}
+		
+		effect = {
+			every_neighbor_country = {
+				limit = {
+					is_subject_of_type = papal_subject_bt
+					has_opinion = { who = PAP value = 175 }
+					is_at_war = no
+				}
+				PAP = { vassalize = PREV }
+				add_opinion = {
+					who = PAP
+					modifier = bt_temporal_authority_enforced
+				}
+			}
+			every_subject_country = {
+				limit = {
+					is_subject_of_type = papal_subject_bt
+					OR = {
+						NOT = { is_neighbor_of = PAP }
+						NOT = { has_opinion = { who = PAP value = 175 } }
+						is_at_war = yes
+					}
+				}
+				add_opinion = {
+					who = PAP
+					modifier = bt_temporal_authority_enforced_on_other
+				}
+			}
+		}
+		
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { has_opinion = { who = PAP value = 75 } }
+			}
+		}
+	}
+
+#################################################
+#Guelph and Ghibelline Stuff
+#################################################
+
+	bt_declare_for_the_guelphs = {
+		potential = {
+			bt_guelph_ghibelline_drama_enabled = yes
+			NOT = { has_country_modifier = bt_guelph_nation }
+			NOT = { has_country_modifier = bt_ghibelline_nation }
+			NOT = { has_country_modifier = bt_apathetic_guelph_or_ghibellines }
+		}
+		
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			is_at_war = no
+			PAP = {
+				has_opinion = {
+					who = ROOT
+					value = 75
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "bt_guelph_nation"
+				duration = -1
+			}
+			every_known_country = {
+				limit = {
+					OR = {
+						tag = PAP
+						has_country_modifier = bt_guelph_nation
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = bt_declared_for_guelphs
+				}
+			}
+			every_known_country = {
+				limit = {
+					OR = {
+						is_emperor = yes
+						has_country_modifier = bt_ghibelline_nation
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = bt_declared_for_guelphs_unhappy
+				}
+			}
+		}
+		
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { has_opinion = { who = PAP value = 75 } }
+			}
+			modifier = {
+				factor = 0
+				has_opinion = { who = emperor value = 50 }
+			}
+			modifier = {
+				factor = 0
+				any_ally = { has_country_modifier = bt_ghibelline_nation }
+			}
+		}
+	}
+
+	bt_declare_for_the_ghibellines = {
+		potential = {
+			bt_guelph_ghibelline_drama_enabled = yes
+			NOT = { has_country_modifier = bt_guelph_nation }
+			NOT = { has_country_modifier = bt_ghibelline_nation }
+			NOT = { has_country_modifier = bt_apathetic_guelph_or_ghibellines }
+		}
+		
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			is_at_war = no
+			emperor = {
+				has_opinion = {
+					who = ROOT
+					value = 75
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "bt_ghibelline_nation"
+				duration = -1
+			}
+			every_known_country = {
+				limit = {
+					OR = {
+						is_emperor = yes
+						has_country_modifier = bt_ghibelline_nation
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = bt_declared_for_ghibellines
+				}
+			}
+			every_known_country = {
+				limit = {
+					OR = {
+						tag = PAP
+						has_country_modifier = bt_guelph_nation
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = bt_declared_for_ghibellines_unhappy
+				}
+			}
+		}
+		
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { has_opinion = { who = emperor value = 75 } }
+			}
+			modifier = {
+				factor = 0
+				has_opinion = { who = PAP value = 50 }
+			}
+			modifier = {
+				factor = 0
+				any_ally = { has_country_modifier = bt_guelph_nation }
+			}
+		}
+	}
+
+	bt_betray_the_guelphs = {
+		potential = {
+			bt_guelph_ghibelline_drama_enabled = yes
+			has_country_modifier = bt_guelph_nation
+			NOT = { has_country_modifier = bt_traitorous_nation }
+		}
+		
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			is_at_war = no
+			emperor = {
+				has_opinion = {
+					who = ROOT
+					value = 50
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "bt_ghibelline_nation"
+				duration = -1
+			}
+			add_country_modifier = {
+				name = "bt_traitorous_nation"
+				duration = 9125
+			}
+			remove_country_modifier = bt_guelph_nation
+#Removed, wasn't working for some reason. I've rarely bothered with opinion mods and I don't have time now, so I'll figure it out later
+#			every_known_country = {
+#				limit = { has_opinion_modifier = bt_declared_for_guelphs }
+#				remove_opinion = {
+#					who = ROOT
+#					modifier = bt_declared_for_guelphs
+#				}
+#			}
+			every_known_country = {
+				limit = {
+					OR = {
+						is_emperor = yes
+						has_country_modifier = bt_ghibelline_nation
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = bt_declared_for_ghibellines
+				}
+			}
+			every_known_country = {
+				limit = {
+					OR = {
+						tag = PAP
+						has_country_modifier = bt_guelph_nation
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = bt_betrayed_guelph_or_ghibellines
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				has_opinion = { who = PAP value = 10 }
+			}
+		}
+	}
+
+	bt_betray_the_ghibellines = {
+		potential = {
+			bt_guelph_ghibelline_drama_enabled = yes
+			has_country_modifier = bt_ghibelline_nation
+			NOT = { has_country_modifier = bt_traitorous_nation }
+		}
+		
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			is_at_war = no
+			PAP = {
+				has_opinion = {
+					who = ROOT
+					value = 50
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "bt_guelph_nation"
+				duration = -1
+			}
+			add_country_modifier = {
+				name = "bt_traitorous_nation"
+				duration = 9125
+			}
+			remove_country_modifier = bt_ghibelline_nation
+#Removed, wasn't working for some reason. I've rarely bothered with opinion mods and I don't have time now, so I'll figure it out later
+#			every_known_country = {
+#				limit = { has_opinion_modifier = bt_declared_for_ghibellines }
+#				remove_opinion = {
+#					who = ROOT
+#					modifier = bt_declared_for_ghibellines
+#				}
+#			}
+			every_known_country = {
+				limit = {
+					OR = {
+						tag = PAP
+						has_country_modifier = bt_guelph_nation
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = bt_declared_for_guelphs
+				}
+			}
+			every_known_country = {
+				limit = {
+					OR = {
+						is_emperor = yes
+						has_country_modifier = bt_ghibelline_nation
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = bt_betrayed_guelph_or_ghibellines
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				has_opinion = { who = emperor value = 10 }
+			}
+		}
+	}
+	
+	bt_abandon_guelph_ghibelline_dispute = {
+		potential = {
+			OR = {
+				has_country_modifier = bt_guelph_nation
+				has_country_modifier = bt_ghibelline_nation
+			}
+			NOT = { has_country_modifier = bt_apathetic_guelph_or_ghibellines }
+		}
+		
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			is_at_war = no
+		}
+		
+		effect = {
+			if = {
+				limit = { has_country_modifier = bt_guelph_nation }
+				remove_country_modifier = bt_guelph_nation
+			}
+			if = {
+				limit = { has_country_modifier = bt_ghibelline_nation }
+				remove_country_modifier = bt_ghibelline_nation
+			}
+			add_country_modifier = {
+				name = "bt_apathetic_guelph_or_ghibellines"
+				duration = 3650
+			}
+		}
+		
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { any_ally = { is_great_power = yes } }
+			}
+		}
+	}
+	
+}

@@ -1,0 +1,226 @@
+country_decisions = {
+
+	make_constantinople_capital = {
+		potential = {
+			OR = {
+				tag = TUR
+				tag = RUM
+			}
+			owns = 151
+			NOT = { capital = 151 }
+			NOT = { has_country_flag = relocated_capital_constantinople }
+			normal_or_historical_nations = yes
+			OR = {
+				ai = no
+				is_playing_custom_nation = no
+			}
+		}
+		provinces_to_highlight = { province_id = 151 }
+		allow = {
+			is_at_war = no
+			primary_culture = turkish
+			religion_group = muslim
+			controls = 151
+			owns = 149		# Edirne
+			owns = 316		# Bithnyia
+			owns = 317		# Bursa
+			owns = 1764		# Burgas			
+		}
+		effect = {
+			set_country_flag = relocated_capital_constantinople
+			#add_stability = 1			#Driaocht removing stability, why would the Ottomans become more stable with a new capital? They didn't have the history with it the greeks did. Plus TUR now gets a bigger dev bonus with the restored decision
+			add_core = 151
+			151 = {
+				move_capital_effect = yes
+				change_culture = turkish 
+				change_religion = ROOT
+				rename_capital = Kostantiniyye
+			}
+			if = {
+				limit = {
+					has_global_flag = constantinople_restored
+				}
+				151 = {
+					add_base_tax = 4
+					add_base_production = 4
+					add_base_manpower = 2
+				}
+			}	#Added another if, in case the Greeks have partially restored the capital, but then Ottomans take it. relocated_capital_constantinople flag will prevent spamming of this, meaning no doubling up of dev bonus. Keep this above the limit below, not below it, or double bonus happens when taking the decision (oops again =p)
+			if = {
+				limit = {
+					NOT = { has_global_flag = constantinople_restored }
+				}
+				151 = {
+					add_base_tax = 6
+					add_base_production = 6
+					add_base_manpower = 3
+				}
+				set_global_flag = constantinople_restored
+			}
+			if = {
+				limit = {
+					149 = { 
+						development = 15
+						NOT = { development = 25 }
+					}
+				}
+				149 = {
+					add_base_tax = -2
+					add_base_production = -2
+					add_base_manpower = -1
+				}
+			}
+			if = {
+				limit = {
+					149 = { 
+						development = 25
+						NOT = { development = 35 }
+					}
+				}
+				149 = {
+					add_base_tax = -4
+					add_base_production = -4
+					add_base_manpower = -2
+				}
+				151 = {
+					add_base_tax = 2
+					add_base_production = 2
+					add_base_manpower = 1
+				}
+			}
+			if = {
+				limit = { 149 = { development = 35 } }
+				149 = {
+					add_base_tax = -6
+					add_base_production = -6
+					add_base_manpower = -3
+				}
+				151 = {
+					add_base_tax = 4
+					add_base_production = 4
+					add_base_manpower = 2
+				}
+			}
+			set_government_rank = 3
+			anatolia_region = {
+				limit = {
+					NOT = { owned_by = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}	#New effect in BT 4.0.1, Ottomans weren't really expanding like they should with all the new changes in BtPL. Depending on how it goes, might add a Balkan one, too, or perhaps just Greece.
+		}
+		ai_will_do = {
+			factor = 1
+		}
+		do_not_core = 151 # Constantinople
+	}
+
+	provincial_system = {
+		potential = {
+			tag = TUR
+			NOT = { has_country_modifier = the_provincial_system }
+			normal_or_historical_nations = yes
+			OR = {
+				ai = no
+				is_playing_custom_nation = no
+			}
+		}
+		allow = {
+			adm_tech = 5
+			ADM = 4
+			adm_power = 50
+		}
+		effect = {
+			add_country_modifier = {
+				name = "the_provincial_system"
+				duration = -1
+			}
+			add_adm_power = -50
+			set_country_flag = the_provincial_system
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { mil_power = 100 }
+			}
+		}
+	}
+
+	devshirme_system = {
+		potential = {
+			has_reform = ottoman_government
+			NOT = { has_disaster = janissary_decadence }
+			NOT = { has_country_modifier = the_devshirme_system }
+			NOT = { has_country_flag = lapse_of_devshirme }
+			normal_or_historical_nations = yes
+			OR = {
+				ai = no
+				is_playing_custom_nation = no
+			}
+		}
+		allow = {
+			mil_power = 100
+		}
+		effect = {
+			add_mil_power = -100
+			add_country_modifier = {
+				name = "the_devshirme_system"
+				duration = -1
+			}
+			if = {
+				limit = {
+					NOT = { has_dlc = "Cradle of Civilization" }
+				}
+				custom_tooltip = janissary_event_tooltip_devs
+				hidden_effect = {
+					country_event = { id = flavor_tur.100 days = 4380 }
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { mil_power = 200 }
+			}
+		}
+	}
+
+
+	disband_the_janissaries = {
+		major = yes
+		potential = {
+			has_disaster = janissary_decadence
+			normal_or_historical_nations = yes
+		}
+		allow = {
+			has_disaster = janissary_decadence
+			if = {
+				limit = { has_dlc = "Cradle of Civilization" }
+				OR = {
+					NOT = { janissary_percentage = 0.05 }
+					NOT = { num_of_janissaries = 3 }
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					has_country_modifier = tur_janissary
+				}
+				remove_country_modifier = tur_janissary
+			}
+			else = {
+				set_country_flag = yoklama
+				custom_tooltip = yoklama_effect_tooltip
+			}
+			end_disaster = janissary_decadence
+			country_event = { id = janissary_decadence.100 }
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+
+}

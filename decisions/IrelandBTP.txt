@@ -68,12 +68,11 @@ country_decisions = {
 				value = 1
 				region = ireland_area
 			}	#changed Dublin only to any Irish province being able to allow this decision
-			any_country = {
+			any_known_country = {
 				primary_culture = anglo_irish
 				OR = {
-					government = norman_duchy
-					government = norman_lordship
-					government = anglo_irish_monarchy
+					has_reform = norman_lordship_reform
+					has_reform = anglo_irish_monarchy_reform
 				}
 				num_of_owned_provinces_with = {
 					value = 1
@@ -92,13 +91,12 @@ country_decisions = {
 		}
 		effect = {
 			set_country_flag = demanded_fealty_of_ireland
-			random_country = {
+			random_known_country = {
 				limit = {
 					primary_culture = anglo_irish
 					OR = {
-						government = norman_duchy
-						government = norman_lordship
-						government = anglo_irish_monarchy
+						has_reform = norman_lordship_reform
+						has_reform = anglo_irish_monarchy_reform
 					}
 					num_of_owned_provinces_with = {
 						value = 1
@@ -143,26 +141,31 @@ country_decisions = {
 		potential = {
 			NOT = { exists = ANI }
 			NOT = { exists = IRE }
-			NOT = { current_age = age_of_discovery }
-			OR = { 
-				government = norman_lordship
-				government = irish_clann
-				government = norman_duchy
-				government = provincial_kingdom
+			is_year = 1600
+			OR = {
+				has_reform = norman_lordship_reform
+				has_reform = irish_clann_reform
 			}
 		}
 		allow = {
+			is_year = 1600
 			OR = {
-				government = norman_lordship
-				government = irish_clann			
-				government = norman_duchy
-				government = provincial_kingdom
+				has_reform = norman_lordship_reform
+				has_reform = irish_clann_reform
 			}
 			is_free_or_tributary_trigger = yes
 			is_at_war = no
 		}
 		effect = {
-			change_government = feudal_monarchy
+			if ={
+				limit = { has_reform = norman_lordship_reform }
+				remove_government_reform = norman_lordship_reform
+			}
+			if ={
+				limit = { has_reform = irish_clann_reform }
+				remove_government_reform = irish_clann_reform
+			}
+			add_government_reform = feudalism_reform
 			add_country_modifier = {
 				name = "centralization_modifier"
 				duration = 7300
@@ -179,7 +182,7 @@ country_decisions = {
 	embrace_irish_traditions = {
 		major = yes
 		potential = {
-			government = norman_lordship
+			has_reform = norman_lordship_reform
 		}
 		allow = {
 			NOT = { alliance_with = ENG }
@@ -206,6 +209,7 @@ country_decisions = {
 		major = yes
 		potential = {
 			NOT = { tag = UNK }
+			NOT = { exists = ANI }
 			NOT = { exists = IRE }
 			OR = {
 				ai = no
@@ -220,38 +224,56 @@ country_decisions = {
 		}
 		provinces_to_highlight = {
 			region = ireland_area
-			country_or_non_sovereign_subject_holds = ROOT
+			owned_by = ROOT
 		}
 		allow = {
-			ireland_area
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
 			is_at_war = no
+			NOT = { exists = IRE }
+			hidden_trigger = {
+				NOT = { exists = ANI }			#Hidden because it shows up in UI as doubled
+			}
+			custom_trigger_tooltip = {
+				tooltip = three_quarters_of_ireland_tooltip
+				num_of_owned_provinces_with = {
+					value = 13
+					region = ireland_area
+					is_core = ROOT
+				}	#3/4 of Ireland's 17 provinces
+			}
 		}
 		effect = {
-			hidden_effect = {
-				every_province = {
-					limit = { region = ireland_area }
-					cede_province = IRE
-					add_core = ROOT
-					remove_core = ROOT
-				}
+			ireland_area = {
+				limit = { NOT = { owned_by = ROOT } }
+				add_permanent_claim = ANI
 			}
 			hidden_effect = {
-				IRE = {
+				ireland_area = {
+					limit = { owned_by = ROOT }
+					remove_core = ROOT
+					add_core = ANI
+				}
+			}
+			ireland_area = {
+				limit = { owned_by = ROOT }
+				cede_province = ANI
+			}
+			hidden_effect = {
+				ANI = {
 					set_government_rank = 2
-					change_government = puppet_kingdom_of_ireland
+					change_government = republic
+					add_government_reform = puppet_kingdom_reform
 					add_historical_friend = ROOT
 					change_primary_culture = ROOT
 					change_religion = ROOT
 					set_country_flag = formed_kingdom_of_ireland_flag_btp
+					set_country_flag = bt_is_a_puppet_state
 				}
 			}
 			create_subject = {
-				subject_type = dominion
-				subject = IRE
+				subject_type = viceroyalty_bt
+				subject = ANI
 			}
 			add_country_modifier = {
 				name = "huzzah_for_devolution"
@@ -264,8 +286,8 @@ country_decisions = {
 			factor = 1
 			modifier = {
 				factor = 0
-				NOT = { total_development = 300 }			#tag will not do if the new country (95 dev with 1444 values + Dublin decision) would have over 50 percent the dev of the remaining country. Note this is based on 1444 values, because there is no way to calculate dynamically.
-			}	#Also note England's base dev in 181, plus 28 in Wales and Cornwall, and 90 in Ireland so this will almost always be a yes even if England loses all French holdings and doesn't build up dev
+				NOT = { total_development = 500 }			#tag will not do if the new country (95 dev with 1444 values + Dublin decision) would have over 50 percent the dev of the remaining country. Note this is based on 1444 values, because there is no way to calculate dynamically.
+			}	#Also note England's base dev in 362, plus 56 in Wales and Cornwall, and 180 in Ireland so this will almost always be a yes even if England loses all French holdings and doesn't build up dev
 			modifier = {
 				factor = 0
 				NOT = {
@@ -277,6 +299,46 @@ country_decisions = {
 				}
 			}
 		}
-	}	
+	}
+	
+	#Just some house cleaning
+	cede_stragglers_to_koi_as_ruler = {
+		major = yes
+		potential = {
+			exists = ANI
+			ANI = { is_subject_of = ROOT }
+			any_owned_province = { region = ireland_area }
+		}
+		provinces_to_highlight = {
+			region = ireland_area
+			owned_by = ROOT
+		}
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			is_at_war = no
+		}
+		effect = {
+			random_core_province = {
+				limit = { region = ireland_area }
+				cede_province = ANI
+				if = {
+					limit = { is_core = ROOT }
+					remove_core = ROOT
+					add_core = ANI
+				}
+			}
+			ANI = {
+				add_opinion = {
+					who = ROOT
+					modifier = returned_core_to_me
+				}
+				add_liberty_desire = -5
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
 
 }

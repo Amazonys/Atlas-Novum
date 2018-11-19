@@ -79,7 +79,6 @@ NDefines.NCountry.MONTHS_TO_CHANGE_CULTURE = 5			-- from 10
 NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.15			-- from 0p3
 NDefines.NCountry.RAZE_PROVINCE_POWER_PER_DEVELOPMENT = 10			-- from 25p0
 NDefines.NCountry.HORDE_UNITY_PER_RAZE = 0.25			-- from 0p5
-NDefines.NCountry.SETTLEMENT_GROWTH_DEVELOPMENT_INCREASE = 2			-- from 1
 NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 5.0			-- from 2p5
 NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.02			-- from 0p05
 
