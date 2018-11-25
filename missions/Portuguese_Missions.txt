@@ -68,14 +68,6 @@ por_slot_1 = {
 		
 		effect = {
 			create_union = LON
-			create_subject = {
-				subject_type = fief
-				subject = GAL
-			}
-			create_subject = {
-				subject_type = fief
-				subject = EXT
-			}
 		}
 	}
 	
@@ -224,14 +216,14 @@ por_slot_2 = {
 		trigger = {
 			treasury = 200
 			navy_tradition = 30
-			conquest_mission_trigger = {
-				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
-				PROVINCES=por_algarve_provinces
-				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			230 = {
+				owned_by = ROOT
+				has_province_modifier = por_sacres
 			}
 		}
 		
 		effect = {
+			add_treasury = -200
 			add_country_modifier = {
 				name = "sagres_trained_captains"
 				duration = -1
@@ -270,6 +262,7 @@ por_slot_2 = {
 		}
 		
 		effect = {
+			add_treasury = -500
 			add_country_modifier = {
 				name = "por_carrack"
 				duration = -1
@@ -290,13 +283,15 @@ por_slot_2 = {
 		}
 		
 		trigger = {
-			treasury = 500
+			treasury = 1000
+			mil_power = 400
 			num_of_heavy_ships = 50
 			num_of_light_ships = 100
-			mil_power = 400
 		}
 		
 		effect = {
+			add_treasury = -1000
+			add_mil_power = -400
 			add_country_modifier = {
 				name = "por_frota_em_sur"
 				duration = -1
@@ -335,10 +330,6 @@ por_slot_3 = {
 		trigger = {
 			navy_size_percentage = 0.9
 			num_of_heavy_ship = 5
-			230 = {
-				owned_by = ROOT
-				has_province_modifier = por_sacres
-			}
 		}
 		
 		effect = {
@@ -369,6 +360,7 @@ por_slot_3 = {
 		}
 		
 		effect = {
+			add_treasury = -200
 			add_navy_tradition = 5
 			227 = { add_building = shipyard }
 			230 = { add_building = shipyard }
@@ -389,13 +381,14 @@ por_slot_3 = {
 		}
 		
 		trigger = {
-			treasury = 250
+			treasury = 300
 			num_of_light_ships = 30
 			dip_tech = 9
 			has_idea = overseas_exploration
 		}
 		
 		effect = {
+			add_treasury = -300
 			add_country_modifier = {
 				name = "por_caravel"
 				duration = -1
@@ -559,7 +552,7 @@ por_slot_5 = {
 		effect = {
 			#Amyzonis - NEEDED CODE for CONTROL missions - ensures that provinces are properly annexed
 			every_province = {
-				limit = { province_id = 334 country_or_non_sovereign_subject_controls = { TAG=ROOT } }
+				limit = { province_id = 334 NOT = { owned_by = ROOT } }
 				change_controller = ROOT
 				cede_province = ROOT
 			}
@@ -629,7 +622,7 @@ por_slot_5 = {
 		effect = {
 			#Amyzonis - NEEDED CODE for CONTROL missions - ensures that provinces are properly annexed
 			every_province = {
-				limit = { province_id = 348 country_or_non_sovereign_subject_controls = { TAG=ROOT } }
+				limit = { province_id = 348 NOT = { owned_by = ROOT } }
 				change_controller = ROOT
 				cede_province = ROOT
 			}
@@ -733,6 +726,88 @@ por_slot_6 = {
 			}
 		}
 	}
+	
+	por_cabo_verde = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_romanus_pontifex }
+		position = 3
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		
+		provinces_to_highlight = {
+			por_cabo_verde_provinces = yes
+			has_discovered = ROOT
+		}
+		
+		trigger = {
+			discover_mission_trigger = {
+				TOOLTIP=por_cabo_verde.tooltip
+				PROVINCES=por_cabo_verde_provinces
+			}
+			treasury = 75
+			dip_power = 50
+			has_idea = quest_for_the_new_world	
+		}
+		
+		effect = {
+			if = { 
+				limit = { 1096 = { is_empty = yes } }
+				hidden_effect = {
+					1096 = {
+						change_trade_goods = sugar
+						change_religion = ROOT	
+						change_culture = ROOT
+						add_territorial_core = ROOT	
+					}
+				}
+				add_treasury = -75
+				add_dip_power = -50
+				1096 = { 
+					cede_province = ROOT 
+					add_province_modifier = {
+						name = "por_feitoria"
+						duration = -1
+					}
+				}
+			}
+			if = { 
+				limit = { 1096 = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } }
+				if = {
+					limit = { 
+						1096 = { owner = { is_colonizer_tech_group = no } }
+					}
+					hidden_effect = {
+						1096 = {
+							owner = { country_event = { id = orion_seize.1 days = 0 } }
+							change_trade_goods = sugar
+							add_territorial_core = ROOT	
+						}	
+					}
+					add_treasury = -75
+					add_dip_power = -50
+					1096 = { 
+						cede_province = ROOT 
+						add_province_modifier = {
+							name = "por_feitoria"
+							duration = -1
+						}
+					}
+				}
+				else_if = {
+					limit = { 
+						1096 = { owner = { is_colonizer_tech_group = yes } } 
+					}
+					1096 = { add_permanent_claim = ROOT }
+				}
+			}
+		}
+	}
 }
 
 #slot 7
@@ -826,7 +901,6 @@ por_slot_8 = {
 						}	
 					}
 					add_treasury = -50
-					add_manpower = -1
 					1111 = { 
 						cede_province = ROOT 
 						add_province_modifier = {
