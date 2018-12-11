@@ -1,0 +1,577 @@
+#To any modder who wishes to keep compatibility: If you change any of the below on_actions, simply copy over whatever I declare in these on_actions to your mod.
+#Since it will never take effect unless my mod is loaded, as the flag is set upon reading my mod's history file for Byzantium, it'll do nothing to your users.
+#If you want me to add your stuff in here, use a similar solution of adding a global flag and make your on_action script dependent on that flag being loaded.
+#Then send said piece of code to me, or tell me to take a look at your mod's. I'll add it in here.
+#
+#Kind regards,
+#Dub.
+
+#NB: This file replaces specific on_action effects. In each on_action the effects are ordered in Vanilla - BR (Byzantine Resurgence) - BT (Beyond Typus).
+
+#Byz_startup to allow for unintegrated events
+on_startup = {
+	#Vanilla
+	events = {
+		muslim_school_events.20 #Pick School
+	}
+	if = {
+		limit = {
+			has_dlc = "Cradle of Civilization"
+			has_country_modifier = tur_janissary
+		}
+		remove_country_modifier = tur_janissary
+	}
+	initialize_schools_effect = yes #This is only used here but is used for readability of on_action file.
+	#BR
+	if = {
+		limit = {
+			has_global_flag = byz_resurgence_loaded
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_global_flag = integrated_byz_events_used
+					has_global_flag = original_byz_events_used
+				}
+			}
+			BYZ = {
+				country_event = { id = integrated_byz_events.3 }
+			}
+		}
+		#Adding the Schismatic Relations province triggered modifier. Does cause certain savegame bloat, but it is frankly quite necessary for now unless I only add it to Orthodox provinces and add it dynamically as more are converted.
+		if = {
+			limit = {
+				NOT = { has_global_flag = br_schismatic_relations_added }
+			}
+			every_province = {
+				limit = {
+					NOT = { has_province_modifier = orthodox_catholic_relations }
+				}
+				add_province_triggered_modifier = orthodox_catholic_relations
+			}
+			set_global_flag = br_schismatic_relations_added
+		}
+		#Fixing Macedonia & Thessaly crash upon establishing them as Knightly Orders in savegames pre-3.0.4.
+		if = {
+			limit = {
+				NOT = { has_global_flag = br_fixed_macedonia_thessaly_crash }
+			}
+			OHR = {
+				change_government = monarchy
+				add_government_reform = feudalism_reform
+			}
+			TSY = {
+				change_government = monarchy
+				add_government_reform = feudalism_reform
+			}
+			set_global_flag = br_fixed_macedonia_thessaly_crash
+		}
+	}
+	#BT
+	#New for better addon support
+	if = {
+		limit = { NOT = { has_global_flag = beyond_typus_mod_enabled } }
+		set_global_flag = beyond_typus_mod_enabled
+	}
+	#Guelph Ghibelline System
+	#Uncommenting once implemented in BT 10.0
+	# if = {
+		# limit = {
+			# NOT = { has_global_flag = bt_guelph_ghibelline_initialised }
+		# }
+		# every_country = { #Countries
+			# if = { #Guelph
+				# limit = {
+					# is_historical_guelph_nation = yes
+				# }
+				# set_guelph_loyalty_effect = yes
+			# }
+			# else_if = { #Ghibelline
+				# limit = {
+					# is_historical_ghibelline_nation = yes
+				# }
+				# set_ghibelline_loyalty_effect = yes
+			# }
+			# else = { #Unaffiliated
+				# set_guelph_ghibelline_unaffiliated_effect = yes
+			# }
+		# }
+		# #Provinces
+		# every_province = { #Whatever provinces should have the modifier
+			# limit = {
+				# is_guelph_ghibelline_relevant_province = yes
+			# }
+			# add_province_triggered_modifier = bt_guelph_city_ghibelline_owner
+			# add_province_triggered_modifier = bt_ghibelline_city_guelph_owner
+			# add_province_triggered_modifier = bt_guelph_city_guelph_owner
+			# add_province_triggered_modifier = bt_ghibelline_city_ghibelline_owner
+			# if = { #Guelph
+				# limit = {
+					# is_historical_guelph_province = yes
+				# }
+				# set_guelph_loyalty_effect = yes	
+			# }
+			# else_if = { #Ghibelline
+				# limit = {
+					# is_historical_ghibelline_province = yes
+				# }
+				# set_ghibelline_loyalty_effect = yes	
+			# }
+			# else = { #Unaffiliated
+				# set_guelph_ghibelline_unaffiliated_effect = yes
+			# }
+		# }
+		# set_global_flag = bt_guelph_ghibelline_initialised
+	# }
+}
+#Byz adding Demetrios Palaiologos as pretender event, as well as the Basileus Protostrategos mechanic.
+on_monarch_death = {
+	#Vanilla
+	if = {
+		limit = {
+			tag = ANS
+			BRA = {
+				has_country_flag = albrecht_achilles_flag
+			}
+		}
+		BRA = {
+			clr_country_flag = albrecht_achilles_flag #Just to be sure
+			kill_heir = yes #If Albrecht Achilles dies in Ansbach he will also be dead in Brandenburg, will appear as normal death of heir to BRA.
+		}
+	}
+	events = {
+		flavor_tus.16 #Savanorola Leaves This World
+	}
+	#BR
+	if = {
+		limit = {
+			has_global_flag = byz_resurgence_loaded
+			tag = BYZ
+			BYZ = {
+				has_country_flag = rebellious_demetrios_flag
+			}
+		}
+		BYZ = {
+			country_event = { id = integrated_byz_events.16 } #The Rebellion of Demetrios Palaiologos
+			clr_country_flag = rebellious_demetrios_flag #Just to be sure
+		}
+	}
+	if = { #Making the ruler a general if you've got the Basileus Protostrategos reform.
+		limit = {
+			has_global_flag = byz_resurgence_loaded
+			has_reform = basileus_protostrategos_reform
+			is_monarch_leader = no
+		}
+		if = {
+			limit = {
+				is_female = yes
+			}
+			convert_female_ruler_to_general = yes
+		}
+		else = {
+			convert_ruler_to_general = yes
+		}
+	}
+	#BT
+	if = {
+		limit = {
+			government = high_kingship
+			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
+		}
+		set_country_flag = bt_tanistry_king_just_died
+		clr_country_flag = bt_tanistry_high_queen_reigning
+		remove_country_modifier = bt_uncertainty_about_a_high_queen
+		remove_country_modifier = bt_tanistry_underaged_heir
+		remove_country_modifier = bt_tanistry_female_heir
+		remove_country_modifier = bt_tanistry_waiting_on_heir
+	}
+}
+#Byz_estates
+on_five_year_pulse_2 = {
+	random_events = {
+		#Vanilla
+		# Burghers	
+		100 = burghers_estate_events.1
+		100 = burghers_estate_events.2
+		100 = burghers_estate_events.3
+		100 = burghers_estate_events.4
+		100 = burghers_estate_events.5
+		100 = burghers_estate_events.6
+		100 = burghers_estate_events.7
+		100 = burghers_estate_events.8
+		100 = burghers_estate_events.9
+		400 = burghers_estate_events.10 #Demands
+		100 = burghers_estate_events.11 #Bonus
+		100 = burghers_estate_events.12
+		100 = burghers_estate_events.13
+		400 = burghers_estate_events.14 #Demands
+		100 = burghers_estate_events.15 #Disloyal
+		# Nobles
+		100 = nobles_estate_events.1 #Demands
+		100 = nobles_estate_events.2
+		100 = nobles_estate_events.3
+		100 = nobles_estate_events.4
+		400 = nobles_estate_events.5 #Demands
+		100 = nobles_estate_events.6
+		100 = nobles_estate_events.7
+		400 = nobles_estate_events.8 #Disloyal
+		400 = nobles_estate_events.9 #Disloyal
+		50 = nobles_estate_events.10
+		100 = nobles_estate_events.11 #Bonus
+		# Clergy
+		100 = church_estate_events.1
+			#Regional Variations:
+			100 = church_estate_events.101 
+			100 = church_estate_events.102
+			100 = church_estate_events.103
+			100 = church_estate_events.104
+			100 = church_estate_events.105
+		100 = church_estate_events.2
+		100 = church_estate_events.3
+		100 = church_estate_events.4
+		400 = church_estate_events.5 #Disloyal
+		400 = church_estate_events.6 #Demands
+		100 = church_estate_events.7 #Bonus
+		100 = church_estate_events.8
+		100 = church_estate_events.9
+		100 = church_estate_events.10
+		# Dhimmi
+		100 = dhimmi_estate_events.1
+		400 = dhimmi_estate_events.2 #Demands
+		100 = dhimmi_estate_events.3
+		100 = dhimmi_estate_events.4
+		100 = dhimmi_estate_events.5
+		100 = dhimmi_estate_events.6
+		400 = dhimmi_estate_events.7 #Disloyal
+		100 = dhimmi_estate_events.8
+		# Cossacks
+		100 = cossack_estate_events.1
+		#100 = cossack_estate_events.2 (triggers in neighbor country)
+		100 = cossack_estate_events.6
+		100 = cossack_estate_events.7
+		100 = cossack_estate_events.8
+		100 = cossack_estate_events.9
+		100 = cossack_estate_events.10
+		100 = cossack_estate_events.11
+		400 = cossack_estate_events.12 #Disloyal
+		100 = cossack_estate_events.13
+		400 = cossack_estate_events.14 #Demands
+		# Tribes
+		100 = tribal_estate_events.1
+		100 = tribal_estate_events.2
+		100 = tribal_estate_events.3
+		100 = tribal_estate_events.4
+		100 = tribal_estate_events.5
+		100 = tribal_estate_events.6
+		100 = tribal_estate_events.7
+		100 = tribal_estate_events.8
+		100 = tribal_estate_events.9
+		150 = tribal_estate_events.11 #Demands
+		150 = tribal_estate_events.12 #Demands
+		150 = tribal_estate_events.13 #Demands
+		150 = tribal_estate_events.14 #Demands
+		
+		1000 = 0    
+		
+		#BR
+		# Strategoi
+		100 = strategoi_estate_events.1
+		100 = strategoi_estate_events.2
+		100 = strategoi_estate_events.3
+		100 = strategoi_estate_events.4 #Bonus
+		100 = strategoi_estate_events.5
+		100 = strategoi_estate_events.6
+		100 = strategoi_estate_events.7
+		100 = strategoi_estate_events.8
+		100 = strategoi_estate_events.9
+		100 = strategoi_estate_events.10 
+		100 = strategoi_estate_events.11 
+		400 = strategoi_estate_events.12 #Demands
+		100 = strategoi_estate_events.13
+		100 = strategoi_estate_events.14 
+		
+		# Exarches
+		50 = exarches_estate_events.1
+		50 = exarches_estate_events.2
+		50 = exarches_estate_events.3
+		100 = exarches_estate_events.4
+	}
+}
+#Byz estate rebels
+on_revoke_estate_land = {
+	#Vanilla
+	if = {
+		limit = {
+			has_estate = estate_cossacks
+			owner = {
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+		}
+		spawn_rebels = {
+			type = cossack_rebels
+			size = 1
+		}
+		province_event = { id = cossack_estate_events.15 }
+	}
+	if = {
+		limit = {
+			has_estate = estate_dhimmi
+			owner = {
+				NOT = {
+					estate_loyalty = {
+						estate = estate_dhimmi
+						loyalty = 40
+					}
+				}
+			}
+		}
+		spawn_rebels = {
+			type = religious_rebels
+			size = 1
+		}
+		province_event = { id = dhimmi_estate_events.9 }
+	}
+	if = {
+		limit = {
+			has_estate = estate_church
+			has_owner_religion = yes
+			owner = {
+				NOT = {
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 40
+					}
+				}
+			}
+		}
+		spawn_rebels = {
+			type = religious_rebels
+			size = 1
+		}
+		province_event = { id = church_estate_events.11 }
+	}
+	if = {
+		limit = {
+			has_estate = estate_church
+			has_owner_religion = no
+			owner = {
+				NOT = {
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 40
+					}
+				}
+			}
+		}
+		spawn_rebels = {
+			type = particularist_rebels
+			size = 1
+		}
+		province_event = { id = church_estate_events.11 }
+	}
+	if = {
+		limit = {
+			has_estate = estate_nobles
+			owner = {
+				NOT = {
+					estate_loyalty = {
+						estate = estate_nobles
+						loyalty = 40
+					}
+				}
+			}
+		}
+		spawn_rebels = {
+			type = noble_rebels
+			size = 1
+		}
+		province_event = { id = nobles_estate_events.12 }
+	}
+	if = {
+		limit = {
+			has_estate = estate_burghers
+			owner = {
+				NOT = {
+					estate_loyalty = {
+						estate = estate_burghers
+						loyalty = 40
+					}
+				}
+			}
+		}
+		spawn_rebels = {
+			type = particularist_rebels
+			size = 1
+		}
+		province_event = { id = burghers_estate_events.16 }
+	}
+	if = {
+		limit = {
+			has_estate = estate_nomadic_tribes
+			owner = {
+				NOT = {
+					estate_loyalty = {
+						estate = estate_nomadic_tribes
+						loyalty = 40
+					}
+				}
+			}
+		}
+		spawn_rebels = {
+			type = tribal_rebels
+			size = 1
+		}
+		province_event = { id = tribal_estate_events.10 }
+	}
+	
+	#BR
+	#Changing themes is not something you do just like that, assuming the themes are influential enough.
+	if = {
+		limit = {
+			has_estate = estate_strategoi
+			owner = {
+				#Either 50 strategoi influence and not loyal, or them being pissed during revocation.
+				OR = {
+					AND = {
+						estate_influence = {
+							estate = estate_strategoi
+							influence = 50
+						}
+						NOT = { #Not loyal
+							estate_loyalty = {
+								estate = estate_strategoi
+								loyalty = 60
+							}
+						}
+					}
+					NOT = { #Disloyal
+						estate_loyalty = {
+							estate = estate_strategoi
+							loyalty = 40
+						}
+					}
+				}
+			}
+		}
+		spawn_rebels = {
+			type = pretender_rebels
+			size = 2
+		}
+		
+		if = {
+			limit = {
+				owner = {
+					#If the strategoi also have 75 influence and not loyal during revocation:
+					AND = {
+						estate_influence = {
+							estate = estate_strategoi
+							influence = 75
+						}
+						NOT = { #Not loyal
+							estate_loyalty = {
+								estate = estate_strategoi
+								loyalty = 60
+							}
+						}
+					}
+					
+				}
+			}
+			owner = {
+				every_owned_province = {
+					limit = {
+						has_estate = estate_strategoi
+					}
+					random = {
+						chance = 20
+						spawn_rebels = {
+							type = pretender_rebels
+							size = 1
+						}
+					}
+					
+				}
+			}
+		}
+		
+		
+		province_event = { id = strategoi_estate_events.42 }
+	}
+	#Exarches trigger is similar to the Strategoi.
+	if = {
+		limit = {
+			has_estate = estate_exarches
+			owner = {
+				#Either 50 strategoi influence and not loyal, or them being pissed during revocation.
+				OR = {
+					AND = {
+						estate_influence = {
+							estate = estate_exarches
+							influence = 50
+						}
+						NOT = { #Not loyal
+							estate_loyalty = {
+								estate = estate_exarches
+								loyalty = 60
+							}
+						}
+					}
+					NOT = { #Disloyal
+						estate_loyalty = {
+							estate = estate_exarches
+							loyalty = 40
+						}
+					}
+				}
+			}
+		}
+		spawn_rebels = {
+			type = pretender_rebels
+			size = 2
+		}
+		
+		if = {
+			limit = {
+				owner = {
+					#If the strategoi also have 75 influence and not loyal during revocation:
+					AND = {
+						estate_influence = {
+							estate = estate_exarches
+							influence = 75
+						}
+						NOT = { #Not loyal
+							estate_loyalty = {
+								estate = estate_exarches
+								loyalty = 60
+							}
+						}
+					}
+					
+				}
+			}
+			owner = {
+				every_owned_province = {
+					limit = {
+						has_estate = estate_exarches
+					}
+					random = {
+						chance = 20
+						spawn_rebels = {
+							type = pretender_rebels
+							size = 1
+						}
+					}
+					
+				}
+			}
+		}
+		
+		
+		province_event = { id = exarches_estate_events.42 }
+	}
+}
