@@ -29,6 +29,7 @@ NDefines.NDiplomacy.PO_FORM_PU_PRESTIGE = 0.1			-- from 0p25
 NDefines.NDiplomacy.PO_BECOME_VASSAL_PRESTIGE = 0.1			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Now cheaper so lowering bonuses to prevent exploiting or overtweaking
 NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_PRESTIGE = 1			-- from 2
 NDefines.NDiplomacy.PO_GIVE_UP_CLAIM_PRESTIGE = 1			-- from 2
+NDefines.NDiplomacy.PO_WAR_REPARATIONS_PRESTIGE = 1			-- from 2
  -- Peace Costs
 NDefines.NDiplomacy.PEACE_COST_DEMAND_PROVINCE = 0.5			-- from 1
 NDefines.NDiplomacy.PEACE_COST_CONCEDE_PROVINCE = 0.4			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   More provinces and dev in colonial regions was making this too expensive   Also noticed that occasionally choosing provinces individually was less warscore why I dont know but we dont want that
