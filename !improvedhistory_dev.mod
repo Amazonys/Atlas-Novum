@@ -1,4 +1,4 @@
-name="[1.27] Imperialism Reinvigorated: Github/Home Development"
+name="[1.28] Imperialism Reinvigorated: Github Development"
 archive="mod/!improvedhistory_dev"
 replace_path="missions"
 replace_path="decisions"
@@ -17,4 +17,4 @@ tags={
 	"Graphics"
 }
 picture="reinvigorationpic.jpeg"
-supported_version="1.27.*.*"
+supported_version="1.28.*.*"

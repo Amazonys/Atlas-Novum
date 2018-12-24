@@ -63,6 +63,7 @@ por_slot_1 = {
 		}
 		
 		trigger = {
+			always = no
 			#has_country_modifier = por_won_wocs
 		}
 		
@@ -71,6 +72,494 @@ por_slot_1 = {
 		}
 	}
 	
+	
+	por_fill_treasury = {
+		icon = mission_war_chest
+		required_missions = { }
+		position = 9
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		trigger = {
+			treasury = 2000
+			monthly_income = 40
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = por_fill_treasury
+				duration = -1
+			}
+		}
+	}
+	
+	por_develop_capital	= {
+		icon = mission_war_chest
+		required_missions = { por_fill_treasury }
+		position = 10
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_lisbon_provinces = yes
+		}
+		
+		trigger = {
+			treasury = 500
+			temple = 5
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted
+				PROVINCES=por_lisbon_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			227 = { add_building = grand_shipyard }
+			develop_region = {
+				TOOLTIP = por_develop_capital.tooltip
+				OWNER_TYPE = owned_by
+				TAG = ROOT
+				PROVINCES = por_lisbon_provinces 
+				TAX = 2
+				PROD = 2
+				MIL = 1
+			}
+			assign_group_prov_modifier = {
+				PROVINCES = por_tagus_fazenda_provinces
+				TYPE = city
+				MODIFIER = por_fazenda
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_develop_porto = {
+		icon = mission_war_chest
+		required_missions = { por_develop_capital }
+		position = 11
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_porto_provinces = yes
+		}
+		
+		trigger = {
+			treasury = 350
+			num_of_light_ship = 15
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted
+				PROVINCES=por_porto_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			develop_region = {
+				TOOLTIP = por_develop_porto.tooltip
+				OWNER_TYPE = owned_by
+				TAG = ROOT
+				PROVINCES = por_porto_provinces 
+				TAX = 2
+				PROD = 2
+				MIL = 1
+			}
+			assign_group_prov_modifier = {
+				PROVINCES = por_vinho_provinces
+				TYPE = city
+				MODIFIER = por_vinho_porto
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_cidade_invicta = {
+		icon = mission_war_chest
+		required_missions = { por_develop_porto }
+		position = 12
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 231
+		}
+		
+		trigger = {
+			mil_power = 200
+			army_tradition = 50
+			231 = { owned_by = ROOT fort_level = 2}
+		}
+		
+		effect = {
+			add_mil_power = -200
+			231 = {
+				if = {
+					limit = {
+					hidden_effect = { has_building = fort_15th }
+						remove_building = fort_15th
+					}
+					add_building = fort_16th
+				}
+				add_building = grand_shipyard
+				add_province_modifier = {
+					name = fort_joao_foz
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	por_discover_china = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { }
+		position = 13
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_discover_china_provinces = yes
+		}
+		
+		
+		trigger = { 
+			has_idea = quest_for_the_new_world	
+			discover_mission_trigger = {
+				TOOLTIP=por_discover_china.tooltip
+				PROVINCES=por_discover_china_provinces
+			}
+		}
+	
+		effect = {
+			every_country = {
+				limit = { is_emperor_of_china = yes }
+				add_treasury = 25
+				add_opinion = {
+					who = ROOT
+					modifier = por_meet_china
+				}
+			}
+		}
+	}
+
+	por_macau = {
+		icon = mission_war_chest
+		required_missions = { por_discover_china }
+		position = 14
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 668
+		}
+		
+		trigger = { 
+			dip_power = 50
+			treasury = 500
+			668 = { has_discovered = ROOT }
+		}
+	
+		effect = {
+			add_dip_power = -50
+			add_treasury = -500
+			668 = { 
+				owner = {
+					add_treasury = 500
+					add_opinion = {
+						who = ROOT
+						modifier = por_macau
+					}
+				}
+				hidden_effect = {
+					remove_core = owner
+					add_territorial_core = ROOT
+				}
+				cede_province = ROOT
+			}
+		}
+	}	
+
+	por_nanban_trade = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { por_macau }
+		position = 15
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		trigger = { 
+			dip_power = 100
+		}
+	
+		effect = {
+			add_dip_power = -100
+			add_treasury = 1200
+			1371 = { #Canton
+				add_trade_modifier = {
+					who = ROOT
+					duration = 7300
+					power = 50
+					key = canton_ambition
+				}
+			}
+			1376 = { #Nippon
+				add_trade_modifier = {
+					who = ROOT
+					duration = 7300
+					power = 50
+					key = nippon_ambition
+				}
+			}
+		}
+	}	
+	
+	por_colonize_formosa = {
+		icon = mission_colonial
+		required_missions = { por_nanban_trade }
+		position = 16
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		} 
+		
+		provinces_to_highlight = {
+			por_formosa_provinces = yes
+		}
+		
+		trigger = {
+			num_colonized_mission_trigger = {
+				#TOOLTIP=
+				NUM=2
+				PROVINCES=por_formosa_provinces
+			}
+		}
+		
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_formosa_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 3650
+			}
+		}
+	}
+	
+	por_open_china = {
+		icon = mission_alliances
+		required_missions = { por_colonize_formosa }
+		position = 17
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		} 
+		
+		provinces_to_highlight = {
+			province_id = 688
+		}
+		
+		trigger = {
+			every_country = {
+				limit = { is_emperor_of_china = yes }
+				has_opinion = {
+					who = ROOT
+					value = 150
+				}
+			}
+		}
+		
+		effect = {
+			add_treasury = 1000
+			668 = {
+				add_province_modifier = {
+					name = exclusive_trading_port
+					duration = -1
+				}
+			}
+		}
+	}	
+	
+	por_corte_real = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { }
+		position = 19
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 1495
+		}
+		
+		
+		trigger = { 
+			has_idea = quest_for_the_new_world	
+			1495 = { has_discovered = ROOT }
+		}
+	
+		effect = {
+			define_explorer = {
+				name = "Gaspar Corte-Real"
+   				shock = 2
+    			fire = 2
+    			manuever = 4
+    			siege = 1
+			}
+		}
+	}
+	
+	por_explore_labrador = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_corte_real }
+		position = 20
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_labrador_provinces = yes
+		}
+		
+		
+		trigger = { 
+			has_idea = quest_for_the_new_world	
+			discover_mission_trigger = {
+				TOOLTIP=por_discover_labrador.tooltip
+				PROVINCES=por_labrador_provinces
+			}
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_labrador_port_provinces
+				TYPE = city
+				MODIFIER = por_porto_maritima
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_porto_mil_virgens = {
+		icon = mission_colonial
+		required_missions = { por_explore_labrador }
+		position = 21	
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_porto_mil_virgens_provinces = yes
+		}
+		
+		
+		trigger = { 
+			has_idea = quest_for_the_new_world	
+			colonize_mission_trigger = {
+				TOOLTIP=por_porto_mil_virgens.tooltip
+				SCOPE = any
+				PROVINCES=por_porto_mil_virgens_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			5019 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+			assign_group_prov_modifier = {
+				PROVINCES = por_labrador_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 3650
+			}
+		}
+	}
+	
+	por_bacalhau = {
+		icon = mission_empire
+		required_missions = { por_porto_mil_virgens }
+		position = 22
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		} 
+		
+		provinces_to_highlight = {
+			por_labrador_provinces = yes
+		}
+		
+		trigger = {
+			num_colonized_mission_trigger = {
+				#TOOLTIP=
+				NUM=8
+				PROVINCES=por_labrador_provinces
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = por_bacalhau
+				duration = -1
+			}
+		}
+	}
 }
 
 #slot 2
@@ -196,7 +685,7 @@ por_slot_2 = {
 		}
 		
 		effect = {
-		#	change_government_reform_progress = 75
+			change_government_reform_progress = 75
 		}
 	}
 	
@@ -296,6 +785,468 @@ por_slot_2 = {
 				name = "por_frota_em_sur"
 				duration = -1
 			}
+		}
+	}
+	
+	por_develop_algarve	= {
+		icon = mission_war_chest
+		required_missions = { por_fill_treasury }
+		position = 10
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_algarve_provinces = yes
+		}
+		
+		trigger = {
+			treasury = 250
+			dock = 5
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted
+				PROVINCES=por_algarve_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			230 = { add_building = grand_shipyard }
+			develop_region = {
+				TOOLTIP = por_develop_capital.tooltip
+				OWNER_TYPE = owned_by
+				TAG = ROOT
+				PROVINCES = por_algarve_provinces 
+				TAX = 0
+				PROD = 1
+				MIL = 1
+			}
+		}
+	}
+	
+	por_develop_beja = {
+		icon = mission_war_chest
+		required_missions = { por_develop_algarve }
+		position = 10
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_algarve_provinces = yes
+		}
+		
+		trigger = {
+			treasury = 350
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted
+				PROVINCES=por_algarve_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			4150 = {
+				add_province_modifier = {
+					name = por_fazenda
+					duration = -1
+				}
+			}
+			develop_region = {
+				TOOLTIP = por_develop_beja.tooltip
+				OWNER_TYPE = owned_by
+				TAG = ROOT
+				PROVINCES = por_algarve_provinces 
+				TAX = 1
+				PROD = 1
+				MIL = 1
+			}
+		}
+	}
+	
+	por_cortica = {
+		icon = mission_war_chest
+		required_missions = { por_develop_beja }
+		position = 11
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_algarve_provinces = yes
+		}
+		
+		trigger = {
+			treasury = 200
+			workshop = 5
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted
+				PROVINCES=por_algarve_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			3108 = {
+				add_building = wharf
+				add_permanent_province_modifier = {
+					name = por_setubal_salt
+					duration = -1
+				}
+			}
+			assign_group_prov_modifier = {
+				PROVINCES = por_cortica_provinces
+				TYPE = city
+				MODIFIER = por_plantation
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_motherland_enriched = {
+		icon = mission_war_chest
+		required_missions = { por_cortica por_cidade_invicta }
+		position = 12
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_dev_motherland_provinces = yes
+		}
+		
+		trigger = {
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted
+				PROVINCES=por_dev_motherland_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_dev_motherland_provinces
+				TYPE = city
+				MODIFIER = por_porto_maritima
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_nagasaki = {
+		icon = mission_war_chest
+		required_missions = { por_discover_china }
+		position = 14
+		
+		provinces_to_highlight = {
+			province_id = 7288
+		}
+		
+		
+		trigger = { 
+			dip_power = 50
+			treasury = 500
+			7288 = { has_discovered = ROOT }
+		}
+	
+		effect = {
+			add_dip_power = -50
+			add_treasury = -500
+			7288 = { 
+				owner = {
+					add_treasury = 500
+					add_opinion = {
+						who = ROOT
+						modifier = por_nagasaki
+					}
+				}
+				hidden_effect = {
+					remove_core = owner
+					add_territorial_core = ROOT
+				}
+				cede_province = ROOT
+			}
+		}
+	}	
+	
+	por_tanegashim = {
+		icon = mission_unite_home_region
+		required_missions = { por_nagasaki }
+		position = 15
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_tanegashim_provinces = yes
+		}
+		
+		trigger = {
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted 
+				PROVINCES=por_tanegashim_provinces
+			}
+		}
+		
+		effect = {
+			#Amyzonis - NEEDED CODE for CONTROL missions
+			control_mission_cede = {
+				PROVINCES = por_tanegashim_provinces
+			}
+			7280 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	por_destabalize_shogun = {
+		icon = mission_japanese_samurai
+		required_missions = { por_tanegashim }
+		position = 16
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			# province_id = 
+		}
+		
+		trigger = {
+			mil_power = 300
+			1020 = { 
+				owner = {
+					has_spy_network_from = {
+						who = ROOT
+						value = 100
+					}
+				}
+			}
+		}
+		
+		effect = {
+			1020 = { owner = {
+				country_event = { id = IR_flavor_POR.40 days = 0 }
+			} }
+		}
+	}
+	
+	por_restore_japan = {
+		icon = mission_japanese_fort
+		required_missions = { por_destabalize_shogun }
+		position = 17
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_restore_japan_provinces = yes
+		}
+		
+		trigger = {
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted
+				PROVINCES=por_restore_japan_provinces
+				OWNER_TYPE=country_holds_or_non_sovereign_subject_holds_highlighted
+			}
+		}
+		
+		effect = {
+			add_treasury = 1000
+			7288 = {
+				add_province_modifier = {
+					name = exclusive_trading_port
+					duration = -1
+				}
+			}
+			1020 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+			1028 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	por_magellanica = {
+		icon = mission_colonial
+		required_missions = { por_pacific_station }
+		position = 18
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_nz_provinces = yes
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				#TOOLTIP=
+				NUM=16
+				PROVINCES=por_nz_provinces
+			}
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_nz_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 7300
+			}
+		}
+	}
+	
+	por_settle_guiana = {
+		icon = mission_colonial
+		required_missions = { por_discover_caribbean }
+		position = 20
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_settle_guyana_provinces = yes
+		}
+		
+		trigger = {
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted 
+				SCOPE = every
+				PROVINCES=por_settle_guyana_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			745 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	por_guiana_plantation = {
+		icon = mission_colonial
+		required_missions = { por_settle_guiana }
+		position = 21
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_guyana_plantation_provinces = yes
+		}
+		
+		trigger = {
+			dip_power = 50
+			treasury = 200
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted 
+				SCOPE = every
+				PROVINCES=por_guyana_plantation_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			add_dip_power = -50
+			add_treasury = -200
+			assign_group_prov_modifier = {
+				PROVINCES = por_guyana_plantation_provinces
+				TYPE = city
+				MODIFIER = por_plantation
+				DURATION = -1
+			}
+			assign_group_trade_goods = {
+				PROVINCES = por_guyana_plantation_provinces
+				TRADE_GOOD = sugar
+			}
+		}
+	}
+	
+	por_rum = {
+		icon = mission_colonial
+		required_missions = { por_guiana_plantation }
+		position = 22
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_guyana_plantation_provinces = yes
+		}
+		
+		trigger = {
+			dip_power = 50
+			treasury = 300
+			num_colonized_mission_trigger = {
+				#TOOLTIP= 
+				NUM=6
+				PROVINCES=por_guyana_provinces
+			}
+		}
+		
+		effect = {
+			add_dip_power = -50
+			add_treasury = -300
+			745 = { add_building = plantations }
 		}
 	}
 }
@@ -492,6 +1443,428 @@ por_slot_3 = {
 			}
 		}
 	}
+	
+	por_take_banten = {
+		icon = mission_unite_home_region
+		required_missions = { por_discover_malacca }
+		position = 14
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_take_banten_provinces = yes
+		}
+		
+		trigger = {
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted 
+				PROVINCES=por_take_banten_provinces
+			}
+		}
+		
+		effect = {
+			#Amyzonis - NEEDED CODE for CONTROL missions
+			control_mission_cede = {
+				PROVINCES = por_take_banten_provinces
+			}
+			624 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+			custom_tooltip = por_take_banten_claims.tooltip
+			assign_claim_core = {
+				PROVINCES = por_conquer_java_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+	
+	por_conquer_java = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { por_take_banten }
+		position = 15
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		provinces_to_highlight = {
+			por_conquer_java_provinces = yes
+		}
+		
+		trigger = {
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=por_conquer_java_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			630 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+			629 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	por_discover_pacific = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { }
+		position = 16
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_discover_pacific_provinces = yes
+		}
+		
+		
+		trigger = { 
+			has_idea = quest_for_the_new_world	
+			discover_mission_trigger = {
+				TOOLTIP=por_discover_pacific.tooltip
+				PROVINCES=por_discover_pacific_provinces
+			}
+		}
+	
+		effect = {
+			add_country_modifier = {
+				name = circumnavigation
+				duration = 1095
+			}
+		}
+	}
+	
+	por_pacific_station = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_discover_pacific }
+		position = 17
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 1992
+		}
+		
+		
+		trigger = { 
+			treasury = 25
+			1992 = { has_discovered = ROOT }
+		}
+	
+		effect = {
+			discovery_mission_cede = {
+				PROVINCE_ID = 1992
+				COST = 25
+				TRADE_GOOD = naval_supplies
+				MODIFIER = por_feitoria
+				DURATION = -1
+			}
+			add_casus_belli = {
+				target = YZW
+				type = cb_vassalize_mission
+				months = 60
+			}
+		}
+	}
+	
+	por_java_major = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_pacific_station }
+		position = 18
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_australia_provinces = yes
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				#TOOLTIP=
+				NUM=16
+				PROVINCES=por_australia_provinces
+			}
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_australia_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 7300
+			}
+		}
+	}
+	
+	por_discover_caribbean = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { }
+		position = 19
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_antilhas_sul_provinces = yes
+		}
+		
+		
+		trigger = { 
+			treasury = 75
+			discover_mission_trigger = {
+				TOOLTIP=por_discover_caribbean.tooltip
+				PROVINCES=por_antilhas_sul_provinces
+			}
+		}
+	
+		effect = {
+			add_prestige = 10
+		}
+	}
+	
+	por_antilhas_sul = {
+		icon = mission_cannons_firing 
+		required_missions = { por_discover_caribbean }
+		position = 20
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_antilhas_sul_provinces = yes
+		}
+		
+		trigger = {
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted 
+				SCOPE = every
+				PROVINCES=por_antilhas_sul_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			#Amyzonis - NEEDED CODE for CONTROL missions
+			control_mission_cede = {
+				PROVINCES = por_antilhas_sul_provinces
+			}
+			assign_group_prov_modifier = {
+				PROVINCES = por_antilhas_sul_provinces
+				TYPE = city
+				MODIFIER = por_feitoria
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_novas_ilhas = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { por_antilhas_sul }
+		position = 21
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_antilhas_sul_provinces = yes
+		}
+		
+		trigger = {
+			dip_power = 50
+			treasury = 150
+			596 = { owned_by = ROOT }
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted 
+				PROVINCES=por_antilhas_sul_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			add_dip_power = -50
+			add_treasury = -150
+			assign_group_trade_goods = {
+				PROVINCES = por_antilhas_sul_provinces
+				TRADE_GOOD = spices
+			}
+		}
+	}
+	
+	por_antilhas_plantation = {
+		icon = mission_colonial
+		required_missions = { por_novas_ilhas }
+		position = 22
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_antilhas_sul_provinces = yes
+		}
+		
+		trigger = {
+			adm_power = 50
+			treasury = 250
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted 
+				PROVINCES=por_antilhas_sul_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			add_adm_power = -50
+			add_treasury = -250
+			assign_group_trade_goods = {
+				PROVINCES = por_antilhas_sul_provinces
+				TYPE = city
+				MODIFIER = por_plantation
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_reino_do_sul_e_surf = {
+		icon = mission_empire
+		required_missions = { por_antilhas_plantation por_rum por_hispaniola_plantation }
+		position = 23
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			OR = {
+				por_antilhas_sul_provinces = yes
+				por_hispaniola_provinces = yes
+				por_guyana_provinces = yes
+			}
+		}
+		
+		trigger = {
+			num_colonized_mission_trigger = {
+				#TOOLTIP=
+				NUM=6
+				PROVINCES=por_guyana_provinces
+			}
+			num_colonized_mission_trigger = {
+				#TOOLTIP=
+				NUM=12
+				PROVINCES=por_hispaniola_provinces
+			}
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=por_antilhas_sul_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = por_caribbean
+				duration = -1
+			}
+			add_casus_belli = {
+				target = NED
+				type = cb_humiliate
+				months = 120
+			}
+		}
+	}
+	
+	por_destroy_ned = {
+		icon = mission_empire
+		required_missions = { por_reino_do_sul_e_surf }
+		position = 24
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_destroy_ned_provinces = yes
+		}
+		
+		trigger = {
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted 
+				PROVINCES=por_destroy_ned_provinces
+			}
+		}
+		
+		effect = {
+			white_peace = NED
+			97 = {
+				add_base_tax = -4
+				add_base_production = -4
+				add_base_manpower = -4
+				add_province_modifier = {
+					name = por_destroy_ned
+					duration = 1095
+				}
+			}
+			
+		}
+	}
+	
 }
 
 #slot 4
@@ -588,7 +1961,7 @@ por_slot_4 = {
 				PROVINCES = por_s_africa_provinces
 				TYPE = empty
 				MODIFIER = por_colony
-				DURATION = -1
+				DURATION = 7300
 			}
 		}
 	}
@@ -622,7 +1995,7 @@ por_slot_4 = {
 				PROVINCES = por_natal_provinces
 				TYPE = empty
 				MODIFIER = por_colony
-				DURATION = -1
+				DURATION = 7300
 			}
 		}
 	}
@@ -760,6 +2133,284 @@ por_slot_4 = {
 			}
 		}
 	}
+	
+	por_deprive_the_turks = {
+		icon = mission_empire
+		required_missions = { por_aden_trade por_hormuz_trade }
+		position = 13
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		
+		trigger = {
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = por_deprive_turks
+				duration = -1
+			}
+			1331 = { #Aden
+				add_trade_modifier = {
+					who = TUR
+					duration = 7300
+					power = -50
+					key = por_turks_deprived_mod
+				}
+			}
+			1334 = { #Hormuz
+				add_trade_modifier = {
+					who = TUR
+					duration = 7300
+					power = -50
+					key = por_turks_deprived_mod
+				}
+			}
+		}
+	}
+	
+	por_take_pasai = {
+		icon = mission_unite_home_region
+		required_missions = { por_discover_malacca }
+		position = 14
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_take_pasai_provinces = yes
+		}
+		
+		trigger = {
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted 
+				PROVINCES=por_take_pasai_provinces
+			}
+		}
+		
+		effect = {
+			#Amyzonis - NEEDED CODE for CONTROL missions
+			control_mission_cede = {
+				PROVINCES = por_take_pasai_provinces
+			}
+			2673 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+			custom_tooltip = por_take_pasai_claims.tooltip
+			assign_claim_core = {
+				PROVINCES = por_conquer_sumatra_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+	
+	por_conquer_sumatra = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { por_take_pasai }
+		position = 15
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		provinces_to_highlight = {
+			por_conquer_sumatra_provinces = yes
+		}
+		
+		trigger = {
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=por_conquer_sumatra_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			620 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+			622 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	por_hawaii = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_pacific_station }
+		position = 18
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_hawaii_provinces = yes
+		}
+		
+		
+		trigger = { 
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				SCOPE = every
+				PROVINCES=por_hawaii_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			5029 = {
+				change_trade_goods = gems
+				add_province_modifier = {
+					name = por_porto_perola
+					duration = -1
+				}
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+			5817 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	por_settle_hispaniola = {
+		icon = mission_colonial
+		required_missions = { por_discover_caribbean }
+		position = 20
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_hispaniola_provinces = yes
+		}
+		
+		trigger = {
+			num_colonized_mission_trigger = {
+				#TOOLTIP= 
+				NUM=5
+				PROVINCES=por_hispaniola_provinces
+			}
+		}
+		
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_hispaniola_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 3650
+			}
+		}
+	}
+	
+	por_ilha_metal_fruta = {
+		icon = mission_colonial
+		required_missions = { por_settle_hispaniola }
+		position = 21
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_hispaniola_provinces = yes
+		}
+		
+		trigger = {
+			adm_power = 75
+			mil_power = 25
+			treasury = 125
+		}
+		
+		effect = {
+			add_adm_power = -75
+			add_mil_power = -25
+			add_treasury = -125
+			add_country_modifier = {
+				name = por_break_tordesillas
+				duration = -1
+			}
+		}
+	}
+	
+	por_hispaniola_plantation = {
+		icon = mission_colonial
+		required_missions = { por_ilha_metal_fruta }
+		position = 22
+
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_hispaniola_plantation_provinces = yes
+		}
+		
+		trigger = {
+			dip_power = 50
+			treasury = 300
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted 
+				PROVINCES=por_hispaniola_plantation_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			add_dip_power = -50
+			add_treasury = -300
+			assign_group_trade_goods = {
+				PROVINCES = por_hispaniola_plantation_provinces
+				TYPE = city
+				MODIFIER = por_plantation
+				DURATION = -1
+			}
+			assign_group_trade_goods = {
+				PROVINCES = por_hispaniola_plantation_provinces
+				TRADE_GOOD = sugar
+			}
+		}
+	}
 }
 
 #slot 5
@@ -883,6 +2534,12 @@ por_slot_5 = {
 			#Amyzonis - NEEDED CODE for CONTROL missions
 			control_mission_cede = {
 				PROVINCES = por_mazagao_provinces
+			}
+			2469 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
 			}
 		}
 	}
@@ -1042,6 +2699,12 @@ por_slot_5 = {
 			control_mission_cede = {
 				PROVINCES = por_zanzibar_provinces
 			}
+			1201 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
 		}
 	}
 	
@@ -1108,6 +2771,12 @@ por_slot_5 = {
 			control_mission_cede = {
 				PROVINCES = por_aden_provinces
 			}
+			388 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
+			}
 		}
 	}
 	
@@ -1138,6 +2807,12 @@ por_slot_5 = {
 			#Amyzonis - NEEDED CODE for CONTROL missions
 			control_mission_cede = {
 				PROVINCES = por_seize_babelmandebe_provinces
+			}
+			1212 = {
+				add_province_modifier = {
+					name = por_feitoria
+					duration = -1
+				}
 			}
 		}
 	}
@@ -1176,10 +2851,118 @@ por_slot_5 = {
 		}
 	}
 	
-	por_deprive_the_turks = {
-		icon = mission_empire
-		required_missions = { por_aden_trade por_hormuz_trade }
+	por_discover_malacca = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_take_goa }
 		position = 13
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_malacca_provinces = yes
+		}
+		
+		trigger = {
+			discover_mission_trigger = {
+				TOOLTIP=por_discover_malacca.tooltip
+				PROVINCES=por_malacca_provinces
+			}
+			treasury = 50
+		}
+		
+		effect = {
+			discovery_mission_cede = {
+				PROVINCE_ID = 596
+				COST = 50
+				TRADE_GOOD = spices
+				MODIFIER = a_famosa
+				DURATION = -1
+			}
+			custom_tooltip = por_discover_malacca_claims.tooltip
+			assign_claim_core = {
+				PROVINCES = por_discover_malacca_claim_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+	
+	por_subjugate_johor = {
+		icon = mission_unite_home_region
+		required_missions = { por_discover_malacca }
+		position = 14
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_subjugate_johor_provinces = yes
+		}
+		
+		trigger = {
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted 
+				PROVINCES=por_subjugate_johor_provinces
+			}
+		}
+		
+		effect = {
+			#Amyzonis - NEEDED CODE for CONTROL missions
+			control_mission_cede = {
+				PROVINCES = por_subjugate_johor_provinces
+			}
+			custom_tooltip = por_subjugate_johor_claims.tooltip
+			assign_claim_core = {
+				PROVINCES = por_subjugate_johor_claims_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+	
+	por_conquer_malaysia = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { por_subjugate_johor }
+		position = 15
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		provinces_to_highlight = {
+			por_conquer_sumatra_provinces = yes
+		}
+		
+		trigger = {
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=por_conquer_sumatra_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			integrate_subject = {
+				TOOLTIP = por_conquer_malaysia.tooltip
+				TAG = JOH
+			}
+		}
+	}
+	
+	por_oriental_casas = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { por_survey_celebes por_conquer_malaysia por_conquer_java por_conquer_sumatra }
+		position = 16
 		
 		ai_weight = {
 			factor = 5
@@ -1190,31 +2973,288 @@ por_slot_5 = {
 		
 		
 		trigger = {
+			treasury = 800
+			1361 = { #Malacca
+				trade_share = {
+					country = ROOT
+					share = 70
+				}
+			}
+			1357 = { #Moluccas
+				trade_share = {
+					country = ROOT
+					share = 70
+				}
+			}
 		}
 		
 		effect = {
-			add_country_modifier = {
-				name = por_deprive_turks
-				duration = -1
-			}
-			1331 = { #Aden
-				add_trade_modifier = {
-					who = TUR
-					duration = 7300
-					power = -50
-					key = por_turks_deprived_mod
-				}
-			}
-			1334 = { #Hormuz
-				add_trade_modifier = {
-					who = TUR
-					duration = 7300
-					power = -50
-					key = por_turks_deprived_mod
-				}
+			add_treasury = -800
+			assign_group_prov_modifier = {
+				PROVINCES = por_oriental_casas_provinces
+				TYPE = city
+				MODIFIER = por_casa_da_india_oriental
+				DURATION = -1
 			}
 		}
 	}
+	
+	por_orient_plantation = {
+		icon = mission_empire
+		required_missions = { por_oriental_casas }
+		position = 17
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		provinces_to_highlight = {
+			por_orient_plantation_provinces = yes
+		}
+		
+		trigger = {
+			dip_power = 100
+			treasury = 700
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted 
+				PROVINCES=por_orient_plantation_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			add_dip_power = -100
+			add_treasury = -700
+			assign_group_prov_modifier = {
+				PROVINCES = por_orient_plantation_provinces
+				TYPE = city
+				MODIFIER = por_plantation
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_pedro_teixeira = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_discover_brazil }
+		position = 19
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 2934
+		}
+		
+		
+		trigger = { 
+			2934 = { has_discovered = ROOT }
+		}
+	
+		effect = {
+			discover_region = {
+				TOOLTIP = por_pedro_teixeira.tooltip
+				PROVINCES = por_peru_provinces
+			}
+		}
+	}
+	
+	por_colonize_maranhao = {
+		icon = mission_colonial
+		required_missions = { por_pedro_teixeira }
+		position = 20
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_maranhao_provinces = yes
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				NUM=4
+				PROVINCES=por_maranhao_provinces
+			}
+			749 = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_maranhao_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 18250
+			}
+		}
+	}
+	
+	por_colonize_belem = {
+		icon = mission_colonial
+		required_missions = { por_colonize_maranhao por_capitanias_norte }
+		position = 21
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_amazonis_provinces = yes
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				NUM=4
+				PROVINCES=por_amazonis_provinces
+			}
+			748 = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_amazonis_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 18250
+			}
+		}
+	}
+	
+	por_drogas_sertao = {
+		icon = mission_colonial
+		required_missions = { por_colonize_belem }
+		position = 22
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_drogas_sertao_provinces = yes
+		}
+		
+		
+		trigger = { 
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted
+				PROVINCES=por_drogas_sertao_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_drogas_sertao_provinces
+				TYPE = city
+				MODIFIER = por_drogas_sertao
+				DURATION = -1
+			}
+			assign_group_trade_goods = {
+				PROVINCES = por_drogas_sertao_provinces
+				TRADE_GOOD = cocoa
+			}
+		}
+	}
+	
+	por_sugar_plantation = {
+		icon = mission_colonial
+		required_missions = { por_drogas_sertao }
+		position = 23
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		provinces_to_highlight = {
+			por_sugar_plantation_provinces = yes
+		}
+		
+		trigger = {
+			dip_power = 25
+			treasury = 100
+			conquest_mission_trigger = {
+				TOOLTIP=owned_by_highlighted 
+				PROVINCES=por_sugar_plantation_provinces
+				OWNER_TYPE=owned_by
+			}
+		}
+		
+		effect = {
+			add_dip_power = -25
+			add_treasury = -100
+			assign_group_prov_modifier = {
+				PROVINCES = por_sugar_plantation_provinces
+				TYPE = city
+				MODIFIER = por_plantation
+				DURATION = -1
+			}
+			assign_group_trade_goods = {
+				PROVINCES = por_sugar_plantation_provinces
+				TRADE_GOOD = sugar
+			}
+		}
+	}
+	
+	por_brasil_takeover = {
+		icon = mission_colonial
+		required_missions = { por_joia_imperio }
+		position = 26
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		trigger = {
+			every_owned_province = {
+				limit = { region = iberia_region }
+				NOT = { controlled_by = ROOT }
+			}
+			BRZ = { exists = yes is_subject_of = ROOT }
+			num_colonized_mission_trigger = {
+				NUM=50
+				PROVINCES=por_brazil_provinces
+			}
+		}
+		
+		effect = {
+			BRZ = {
+				hidden_effect = {
+					grant_independence = yes
+				}
+				create_subject = {
+					subject = ROOT
+					subject_type = domain 
+				}
+			}
+			change_tag = BRZ
+		}
+	}
+	
 }
 
 #slot 6
@@ -1570,6 +3610,436 @@ por_slot_6 = {
 			}
 		}
 	}
+	
+	por_discover_banda = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_take_goa }
+		position = 13
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_banda_provinces = yes
+		}
+		
+		trigger = {
+			discover_mission_trigger = {
+				TOOLTIP=por_discover_banda.tooltip
+				PROVINCES=por_banda_provinces
+			}
+			treasury = 50
+		}
+		
+		effect = {
+			633 = { discover_province = ROOT }
+			discovery_mission_cede = {
+				PROVINCE_ID = 633
+				COST = 50
+				TRADE_GOOD = spices
+				MODIFIER = por_feitoria
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_conquer_moluccas = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { por_discover_banda }
+		position = 14
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		
+		provinces_to_highlight = {
+			por_moluccas_provinces = yes
+		}
+		
+		trigger = {
+			treasury = 50
+			colonize_mission_trigger = {
+				TOOLTIP=por_conquer_moluccas.tooltip
+				SCOPE = every
+				PROVINCES=por_moluccas_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			integrate_subject = {
+				TOOLTIP = por_ternate.tooltip
+				TAG = TER
+			}
+			assign_group_prov_modifier = {
+				PROVINCES = por_moluccas_feitoria_provinces
+				TYPE = city
+				MODIFIER = por_feitoria
+				DURATION = -1
+			}
+			custom_tooltip = por_conquer_moluccas_claims.tooltip
+			assign_claim_core = {
+				PROVINCES = por_celebes_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+	
+	por_survey_celebes = {
+		icon = mission_unite_home_region
+		required_missions = { por_conquer_moluccas }
+		position = 15
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_celebes_provinces = yes
+		}
+		
+		trigger = {
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted 
+				PROVINCES=por_celebes_provinces
+			}
+		}
+		
+		effect = {
+			#Amyzonis - NEEDED CODE for CONTROL missions
+			control_mission_cede = {
+				PROVINCES = por_celebes_provinces
+			}
+			assign_group_prov_modifier = {
+				PROVINCES = por_banda_provinces
+				TYPE = city
+				MODIFIER = por_monopoly
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_mare_clausum = {
+		icon = mission_empire
+		required_missions = { por_oriental_casas por_india_plantation }
+		position = 17
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		provinces_to_highlight = {
+			mare_clausum_provinces = yes
+		}
+		
+		trigger = {
+			num_of_heavy_ship = 50
+
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=mare_clausum_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			1460 = { #Cape of Good Hope
+				add_trade_modifier = {
+					who = ROOT
+					duration = 18250
+					power = 50
+					key = por_mare_clausum
+				}
+			}
+			1448 = { #Zanzibar
+				add_trade_modifier = {
+					who = ROOT
+					duration = 18250
+					power = 50
+					key = por_mare_clausum
+				}
+			}
+			1331 = { #Aden
+				add_trade_modifier = {
+					who = ROOT
+					duration = 18250
+					power = 50
+					key = por_mare_clausum
+				}
+			}
+			1334 = { #Hormuz
+				add_trade_modifier = {
+					who = ROOT
+					duration = 18250
+					power = 50
+					key = por_mare_clausum
+				}
+			}
+			504 = { #Gujarat
+				add_trade_modifier = {
+					who = ROOT
+					duration = 18250
+					power = 50
+					key = por_mare_clausum
+				}
+			}
+			1340 = { #Coromandel
+				add_trade_modifier = {
+					who = ROOT
+					duration = 18250
+					power = 50
+					key = por_mare_clausum
+				}
+			}
+			1343 = { #Bengal
+				add_trade_modifier = {
+					who = ROOT
+					duration = 18250
+					power = 50
+					key = por_mare_clausum
+				}
+			}
+			1361 = { #Malacca
+				add_trade_modifier = {
+					who = ROOT
+					duration = 18250
+					power = 50
+					key = por_mare_clausum
+				}
+			}
+		}
+	}
+	
+	por_mare_clausum_plus = {
+		icon = mission_empire
+		required_missions = { por_mare_clausum }
+		position = 18
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		provinces_to_highlight = {
+			mare_clausum_provinces = yes
+		}
+		
+		trigger = {
+			num_of_heavy_ship = 75
+			num_of_heavy_ship = 75
+			legitimacy = 100
+			treasury = 250
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=mare_clausum_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			add_treasury = -250
+			add_country_modifier = {
+				name = por_mare_clausum_plus
+				duration = -1
+			}
+		}
+	}
+	
+	por_vespucio_coelho = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_discover_brazil }
+		position = 19
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 755
+		}
+		
+		
+		trigger = { 
+			dip_power = 50
+			treasury = 75
+			755 = { has_discovered = ROOT }
+		}
+	
+		effect = {
+			discovery_mission_cede = {
+				PROVINCE_ID = 755
+				COST = 75
+				TRADE_GOOD = sugar
+				MODIFIER = por_feitoria
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_capitanias_norte = {
+		icon = mission_colonial
+		required_missions = { por_vespucio_coelho }
+		position = 20
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 755
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				#TOOLTIP = 
+				NUM=8
+				PROVINCES=por_capitanias_norte_provinces
+			}
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_capitanias_norte_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 18250
+			}
+			add_country_modifier = {
+				name = por_capitanias
+				duration = -1
+			}
+		}
+	}
+	
+	por_bandeirantes = {
+		icon = mission_colonial
+		required_missions = { por_pau_brasil }
+		position = 22
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_rio_de_janeiro_provinces = yes
+		}
+		
+		
+		trigger = { 
+			treasury = 200
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				SCOPE=every
+				PROVINCES=por_rio_de_janeiro_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			add_treasury = -200
+			add_country_modifier = {
+				name = por_bandeirantes
+				duration = -1
+			}
+		}
+	}
+	
+	por_moncoes_mato_grosso = {
+		icon = mission_colonial
+		required_missions = { por_bandeirantes }
+		position = 23
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_mato_grosso_provinces = yes
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				#TOOLTIP=
+				NUM=8
+				PROVINCES=por_mato_grosso_provinces = yes
+			}
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_mato_grosso_provinces
+				TYPE = empty 
+				MODIFIER = por_colony
+				DURATION = 18250
+			}
+		}
+	}
+	
+	 por_boiadas_sertao = {
+		icon = mission_colonial
+		required_missions = { por_moncoes_mato_grosso por_sugar_plantation }
+		position = 24
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_maranhao_provinces = yes
+		}
+		
+		
+		trigger = { 
+			adm_power = 50
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				SCOPE=every
+				PROVINCES=por_maranhao_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			add_adm_power = -50
+			add_country_modifier = {
+				name = por_boiadas_sertao
+				duration = 7300
+			}
+		}
+	}
 }
 
 #slot 7
@@ -1602,7 +4072,6 @@ por_slot_7 = {
 		
 		provinces_to_highlight = {
 			province_id = 10080
-			has_discovered = ROOT
 		}
 		
 		trigger = {
@@ -1877,7 +4346,7 @@ por_slot_7 = {
 	}
 	
 	por_seize_diu = {
-		icon = mission_colonial
+		icon = mission_trade_company_region_abroad
 		required_missions = { por_discover_india }
 		position = 11
 		
@@ -1907,6 +4376,211 @@ por_slot_7 = {
 				MODIFIER = por_feitoria
 				DURATION = -1
 			}
+		}
+	}
+	
+	por_seize_chittagong = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { por_take_goa }
+		position = 13
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 568
+		}
+		
+		trigger = {
+			mil_power = 75
+			treasury = 100
+			569 = { has_discovered = ROOT }
+		}
+		
+		effect = {
+			add_mil_power = -75
+			discovery_mission_cede = {
+				PROVINCE_ID = 568
+				COST = 100
+				TRADE_GOOD = cotton
+				MODIFIER = por_feitoria
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_discover_brazil = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { }
+		position = 18
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_discover_brazil_provinces = yes
+		}
+		
+		
+		trigger = { 
+			treasury = 50
+			has_idea = quest_for_the_new_world	
+			discover_mission_trigger = {
+				TOOLTIP=por_discover_brazil.tooltip
+				PROVINCES=por_discover_brazil_provinces
+			}
+		}
+	
+		effect = {
+			discovery_mission_cede = {
+				PROVINCE_ID = 760
+				COST = 50
+				TRADE_GOOD = sugar
+				MODIFIER = por_feitoria
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_pau_brasil = {
+		icon = mission_colonial
+		required_missions = { por_capitanias_norte por_capitanias_sul }
+		position = 21
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		
+		trigger = { 
+			adm_power = 50
+			num_of_light_ship = 25
+		}
+	
+		effect = {
+			add_adm_power = -50
+			add_treasury = 300
+			add_country_modifier = {
+				name = pau_brasil
+				duration = -1
+			}
+		}
+	}
+	
+	por_cerrado_fazenda = {
+		icon = mission_colonial
+		required_missions = { por_moncoes_mato_grosso por_mate_guayra }
+		position = 24
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				#TOOLTIP=
+				NUM=14
+				PROVINCES=por_mato_grosso_provinces
+			}
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_cerrado_fazenda_provinces
+				TYPE = city
+				MODIFIER = por_fazenda
+				DURATION = -1
+			}
+		}
+	}
+	
+	por_joia_imperio = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { por_cerrado_fazenda por_boiadas_sertao por_esmagar_quilombos }
+		position = 25
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				#TOOLTIP=
+				NUM=50
+				PROVINCES=por_brazil_provinces
+			}
+		}
+	
+		effect = {
+			consolidate_region = {
+				TOOLTIP = por_joia_imperio.tooltip
+				PROVINCES = por_brazil_provinces
+			}
+			custom_subject = {
+				TOOLTIP = por_joia_imperio_brazil.tooltip
+				TAG = BRZ
+				SUBJECT_TYPE = domain
+				PROVINCES = por_brazil_provinces
+				LEADER = Pedro I
+   				DYNASTY = Bragança
+    			ADM = 2 
+    			DIP = 4 
+    			MIL = 2
+    			AGE = 35
+    			CLAIM = 75
+    			CULTURE = portugese
+    			RELIGION = catholic
+    			FIXED = no
+    			GENDER = male
+			}
+		}
+	}
+	
+	por_reino_unido = {
+		icon = mission_empire
+		required_missions = { por_joia_imperio }
+		position = 26
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		
+		trigger = {
+			stability = 1
+			adm_power = 200
+			BRZ = { exists = yes is_subject_of = ROOT NOT = { liberty_desire = 51 } }
+			num_colonized_mission_trigger = {
+				NUM=50
+				PROVINCES=por_brazil_provinces
+			}
+		}
+	
+		effect = {
+			add_adm_power = -200
+			create_union = BRZ
 		}
 	}
 }
@@ -2270,7 +4944,10 @@ por_slot_8 = {
 		}
 		
 		effect = {
-			
+			add_country_modifier = {
+				name = slave_monopoly
+				duration = -1
+			}
 		}
 	}
 	
@@ -2516,7 +5193,7 @@ por_slot_8 = {
 		}
 	
 		provinces_to_highlight = {
-			por_india_plantation_provinces = yes
+			por_kerala_provinces = yes
 		}
 		
 		trigger = {
@@ -2524,21 +5201,232 @@ por_slot_8 = {
 			num_of_light_ship = 50
 			treasury = 750	
 			conquest_mission_trigger = {
-				TOOLTIP=owned_by_highlighted 
-				PROVINCES=por_india_plantation_provinces
-				OWNER_TYPE=owned_by
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted 
+				PROVINCES=por_kerala_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
 			}
 		}
 		
 		effect = {
-			add_adm_power = -100
-			add_treasury = -750
+			country_event = { id = IR_flavor_POR.6 days = 0 }
+		}
+	}
+	
+	
+	por_hindustao = {
+		icon = mission_empire
+		required_missions = { por_india_plantation }
+		position = 17
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+	
+		trigger = {
+			adm_power = 100
+			num_of_light_ship = 50
+			treasury = 750
+			event_mission_trigger = {
+				TOOLTIP=por_hindustao.tooltip
+				EVENT=IR_flavor_POR.6
+				BYPASS_DATE=1837 #Unbypassable
+			}			
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = por_india_steering
+				duration = -1
+			}
+		}
+	}
+	
+	por_rio_de_janeiro = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_discover_brazil }
+		position = 19
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_janeiro_provinces = yes
+		}
+		
+		
+		trigger = { 
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				PROVINCES=por_janeiro_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			develop_region = {
+				TOOLTIP = por_develop_rio.tooltip
+				OWNER_TYPE = country_or_non_sovereign_subject_holds
+				TAG = ROOT
+				PROVINCES = por_janeiro_provinces 
+				TAX = 1
+				PROD = 1
+				MIL = 1
+			}
+		}
+	}
+	
+	por_capitanias_sul = {
+		icon = mission_colonial
+		required_missions = { por_rio_de_janeiro }
+		position = 20
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_riogrande_provinces = yes
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				NUM=2
+				PROVINCES=por_riogrande_provinces
+			}
+			2587 = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+	
+		effect = {
+			2857 = {
+				add_province_modifier = {
+					name = por_plantation
+					duration = -1
+				}
+			}
+			create_subject = {
+				subject = GUA
+				subject_type = domain
+			}
 			assign_group_prov_modifier = {
-				PROVINCES = por_india_plantation_provinces
+				PROVINCES = por_riogrande_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 18250
+			}
+		}
+	}
+	
+	por_corrida_ouro = {
+		icon = mission_war_chest
+		required_missions = { por_pau_brasil }
+		position = 22
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_riogrande_provinces = yes
+		}
+		
+		
+		trigger = { 
+			765 = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+	
+		effect = {
+			765 = {
+				change_trade_goods = gold
+				add_permanent_province_modifier = {
+					name = minas_gerais
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	por_mate_guayra = {
+		icon = mission_colonial
+		required_missions = { por_corrida_ouro }
+		position = 23
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_mate_guayra_provinces = yes
+		}
+		
+		
+		trigger = { 
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				PROVINCES=por_mate_guayra_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_mate_guayra_provinces
 				TYPE = city
 				MODIFIER = por_plantation
 				DURATION = -1
 			}
+			assign_group_trade_goods = {
+				PROVINCES = por_mate_guayra_provinces
+				TRADE_GOOD = tea
+			}	
+		}
+	}
+	
+	por_esmagar_quilombos = {
+		icon = mission_build_up_to_force_limit
+		required_missions = { por_mate_guayra por_estancia_gaunchas }
+		position = 24
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_riogrande_uruguay_provinces = yes
+		}
+		
+		
+		trigger = { 
+			mil_power = 100
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				PROVINCES=por_riogrande_uruguay_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			add_mil_power = -100
+			add_prestige = 15
 		}
 	}
 }
@@ -2991,6 +5879,206 @@ por_slot_9 = {
 			add_country_modifier = {
 				name = por_kerala_production
 				duration = -1
+			}
+		}
+	}
+	
+	por_garcia_solis = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { por_discover_brazil }
+		position = 19
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			province_id = 788
+		}
+		
+		
+		trigger = { 
+			788 = { has_discovered = ROOT }
+		}
+	
+		effect = {
+			discover_region = {
+				TOOLTIP = por_garcia_solis.tooltip
+				PROVINCES = por_plata_peru_provinces
+			}
+		}
+	}
+	
+	por_colonize_sacramento = {
+		icon = mission_colonial
+		required_missions = { por_garcia_solis }
+		position = 20
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_uruguay_provinces = yes
+		}
+		
+		
+		trigger = { 
+			2851 = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_uruguay_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 7300
+			}
+		}
+	}
+	
+	por_colonize_san_pedro = {
+		icon = mission_colonial
+		required_missions = { por_colonize_sacramento }
+		position = 21
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_riogrande_provinces = yes
+		}
+		
+		
+		trigger = { 
+			num_colonized_mission_trigger = {
+				NUM=4
+				PROVINCES=por_riogrande_provinces
+			}
+		}
+	
+		effect = {
+			assign_group_prov_modifier = {
+				PROVINCES = por_riogrande_provinces
+				TYPE = empty
+				MODIFIER = por_colony
+				DURATION = 7300
+			}
+		}
+	}
+	
+	por_jesuits = {
+		icon = mission_european_church
+		required_missions = { por_colonize_san_pedro }
+		position = 22
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_jesuits_provinces = yes
+		}
+		
+		
+		trigger = { 
+			GUA = { is_subject_of = ROOT religion_group = christian }
+		}
+	
+		effect = {
+			GUA = {
+				colony_mission_cede = {
+					TOOLTIP = por_jesuits.tooltip
+					COST = 50
+					PROVINCES = por_jesuits_provinces
+				}
+			}
+		}
+	}
+	
+	por_estancia_gaunchas = {
+		icon = mission_colonial
+		required_missions = { por_jesuits }
+		position = 23
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_estancia_gaunchas_provinces = yes
+		}
+		
+		
+		trigger = { 
+			GUA = { exists = no }
+			colonize_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted
+				PROVINCES=por_estancia_gaunchas_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			2855 = {
+				add_province_modifier = {
+					name = por_plantation
+					duration = -1
+				}
+			}
+			2853 = {
+				add_province_modifier = {
+					name = por_plantation
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	por_bastion_coffee = {
+		icon = mission_empire
+		required_missions = { por_joia_imperio }
+		position = 26
+		
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		provinces_to_highlight = {
+			por_brazil_provinces = yes
+		}
+		
+		
+		trigger = { 
+			treasury = 1000
+			387 = { country_or_non_sovereign_subject_holds = ROOT }
+			388 = { country_or_non_sovereign_subject_holds = ROOT } 
+		}
+	
+		effect = {
+			add_treasury = -1000
+			every_province = {
+				limit = { por_brazil_provinces = yes is_city = yes NOT = { OR = { trade_goods = ir_silver trade_goods = gold } }}
+				change_trade_goods = coffee
 			}
 		}
 	}
