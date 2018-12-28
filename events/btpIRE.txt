@@ -1,0 +1,302 @@
+namespace = btpIRE
+# England Demands Fealty
+country_event = {
+	id = btpIRE.1
+	title = "btpIRE.EVTNAME1"
+	desc = "btpIRE.EVTDESC1"
+	picture = COURT_eventPicture
+
+	is_triggered_only = yes
+	
+	option = {
+		name = "btpIRE.EVTOPTA1"
+		ai_chance = {
+			factor = 65
+			modifier = {
+				factor = 2.0
+				ruler_has_personality = bold_fighter_personality
+			}	#Brave doesn't accept
+			modifier = {
+				factor = 1.5
+				NOT = { has_opinion = { who = ENG value = -10 } }
+			}	#Hates England makes acceptance less likely
+			modifier = {
+				factor = 2.0
+				NOT = { has_opinion = { who = ENG value = -100 } }
+			}	#Hates England makes acceptance less likely
+			modifier = {
+				factor = 4.0
+				NOT = { army_strength = { who = ENG value = 1.0 } }
+			}	#Does this condition even work???
+			modifier = {
+				factor = 10.0
+				total_development = ENG
+			}	#Does this condition even work???
+			modifier = {
+				factor = 2.0
+				ruler_has_personality = fierce_negotiator_personality
+			}	#Fierce Negotiaters don't accept defeat so easily
+		}
+		ENG = { country_event = { id = btpIRE.2 } }
+	}
+	
+	option = {
+		name = "btpIRE.EVTOPTB1"
+		ai_chance = {
+			factor = 35
+			modifier = {
+				factor = 2.0
+				ruler_has_personality = craven_personality
+			}	#Cowards accept
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = ENG value = 30 }
+			}	#Higher opinion of England makes acceptance more likely
+			modifier = {
+				factor = 2.0
+				has_opinion = { who = ENG value = 75 }
+			}	#Higher opinion of England makes acceptance more likely
+			modifier = {
+				factor = 2.5
+				has_opinion = { who = ENG value = 180 }
+			}	#Higher opinion of England makes acceptance more likely
+			modifier = {
+				factor = 1.5
+				army_strength = { who = ENG value = 2.0 }
+			}	#Does this condition even work???
+			modifier = {
+				factor = 2.0
+				army_strength = { who = ENG value = 4.0 }
+			}	#Does this condition even work???
+			modifier = {
+				factor = 2.5
+				army_strength = { who = ENG value = 8.0 }
+			}	#Does this condition even work???
+		}
+		ENG = {
+			vassalize = ROOT
+		}
+	}
+}
+
+#Old English refuse, does England blink?
+country_event = {
+	id = btpIRE.2
+	title = "btpIRE.EVTNAME2"
+	desc = "btpIRE.EVTDESC2"
+	picture = COURT_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "btpIRE.EVTOPTA2"
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 0.3
+				ruler_has_personality = craven_personality
+			}	#Cowards back down
+			modifier = {
+				factor = 0.1
+				army_strength = { who = FROM value = 1.0 }
+			}	#England rethinks it when facing matched armies
+		}
+#Draiocht- I like the concept here, of encouraging a growing Irish rebellion, more serious than just one OPM, but it application it is too buggy right now. Dublin did historically break from England once or twice in favour of local rebellions, but practically guarenteed to be fully ceded to another OPM is too much
+#		random = {
+#			chance = 50
+#			random_province = {
+#				limit = { AND = { region = ireland_area owned_by = ENG } }
+#				cede_province = FROM
+#				add_core = FROM
+#			}
+#		}	#No longer must be Dublin, and no longer guarenteed
+#Draiocht - Maybe another event or decision, alongside this one, to represent the major religiously motivated rebellions later, of the sort that led to the foundation of the KoI under the England Throne. Another idea is to force other OPM in Ireland to join the war
+		ENG = {
+			declare_war_with_cb = {
+				who = FROM
+				casus_belli = cb_disloyal_vassal
+			}
+		}
+		hidden_effect = { remove_country_modifier = irish_fealty_negotiations_ongoing }
+	}
+	
+	option = {
+		name = "btpIRE.EVTOPTB2"
+		ai_chance = {
+			factor = 10
+		}
+		add_prestige = -10
+		hidden_effect = { remove_country_modifier = irish_fealty_negotiations_ongoing }
+		add_country_modifier = { name = "humiliated_by_former_vassal" duration = 1825 }
+	}
+}
+
+country_event = {
+	id = btpIRE.3
+	title = "btpIRE.EVTNAME3"
+	desc = "btpIRE.EVTDESC3"
+	picture = ELECTION_REPUBLICAN_eventPicture
+	
+	trigger = {
+		tag = ANI
+		has_reform = puppet_kingdom_reform
+		is_free_or_tributary_trigger = yes
+	}
+
+	mean_time_to_happen = {
+		days = 3
+	}
+	
+	option = {
+		name = "btpIRE.EVTOPTA3"
+		add_prestige = 10
+		if = {
+			limit = { has_dlc = "Res Publica" }
+			remove_government_reform = pupet_kingdom_reform
+			add_government_reform = transitional_government_reform
+			hidden_effect = {
+				country_event = {
+					id = btpIRE.4
+					days = 1095
+				}
+				set_country_flag = independent_ireland_reorganisation_underway
+				clr_country_flag = bt_is_a_puppet_state
+			}
+		}
+		if = {
+			limit = { NOT = { has_dlc = "Res Publica" } }
+			change_government = monarchy
+			add_government_reform = feudalism_reform
+			add_stability = -1
+		}
+	}
+}
+
+country_event = {
+	id = btpIRE.4
+	title = "btpIRE.EVTNAME4"
+	desc = "btpIRE.EVTDESC4"
+	picture = ELECTION_REPUBLICAN_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {			#Status Quo Accendancy ruled
+		name = "btpIRE.EVTOPTA4"
+		ai_chance = {
+			factor = 30
+			modifier = {
+				factor = 0
+				any_core_province = {
+					region = ireland_area
+					NOT = { culture = irish }
+				}
+			}	#Disabled if only Irish culture provinces left
+		}
+		clr_country_flag = independent_ireland_reorganisation_underway
+		if = {
+			limit = { NOT = { has_reform = anglo_irish_monarchy_reform } }
+			change_government = monarchy
+			add_government_reform = anglo_irish_monarchy_reform
+		}
+	}
+	option = {			#Return to the High Kingship system
+		name = "btpIRE.EVTOPTB4"
+		ai_chance = {
+			factor = 30
+			modifier = {
+				factor = 0
+				NOT = {
+					any_core_province = {
+						region = ireland_area
+						culture = irish
+					}
+				}
+			}	#Disabled if no Irish culture provinces left
+		}
+		clr_country_flag = independent_ireland_reorganisation_underway
+		change_tag = IRE
+		change_government = monarchy
+		add_government_reform = tanistry_reform
+		change_primary_culture = irish
+		if = {
+			limit = { historical_friend_with = ENG }
+			remove_historical_friend = ENG
+		}
+		if = {
+			limit = { historical_friend_with = GBR }
+			remove_historical_friend = GBR
+		}
+		if = {
+			limit = {
+				NOT = { religion = catholic }
+				num_of_owned_provinces_with = {
+					value = 8
+					region = ireland_area
+					religion = catholic
+				}
+			}
+			change_religion = catholic
+			add_country_modifier = {
+				name = "religious_shift_tension_bt"
+				duration = 10950			#30 years
+			}
+		}	#Converts religion to Catholic if at least half of Ireland is still Catholic
+		every_owned_province = {
+			limit = {
+				region = ireland_area
+				NOT = { culture = irish }
+			}
+			add_province_modifier = {
+				name = culture_shift_tension_bt
+				duration = 10950			#30 years
+			}
+		}
+		country_event = { id = ideagroups.1 } #Swap Ideas
+	}
+	option = {			#An.... almost realistic historical option to represent what the Republic actually did in real life (though obviously hundreds of years later) Note the Northern Ireland split is too much work for me to program right now.
+		name = "btpIRE.EVTOPTC4"
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 0
+				NOT = {
+					any_core_province = {
+						region = ireland_area
+						culture = irish
+					}
+				}
+			}	#Disabled if no Irish culture provinces left
+		}
+		clr_country_flag = independent_ireland_reorganisation_underway
+		change_government = constitutional_republic
+		remove_government_reform = transitional_government_reform
+		add_government_reform = federal_republic
+		change_primary_culture = irish
+		if = {
+			limit = {
+				NOT = { religion = catholic }
+				num_of_owned_provinces_with = {
+					value = 8
+					region = ireland_area
+					religion = catholic
+				}
+			}
+			change_religion = catholic
+			add_country_modifier = {
+				name = "religious_shift_tension_bt"
+				duration = 10950			#30 years
+			}
+		}	#Converts religion to Catholic if at least half of Ireland is still Catholic
+		every_owned_province = {
+			limit = {
+				region = ireland_area
+				NOT = { culture = irish }
+			}
+			add_province_modifier = {
+				name = culture_shift_tension_bt
+				duration = 10950			#30 years
+			}
+		}
+		country_event = { id = ideagroups.1 } #Swap Ideas
+	}
+}

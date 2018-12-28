@@ -6,6 +6,8 @@ replace_path="history/provinces"
 replace_path="common/colonial_regions"
 replace_path="common/trade_companies"
 replace_path="history/diplomacy"
+replace_path="history/wars"
+#replace_path="history/countries"
 #replace_path="events"
 tags={
 	"Missions and Decisions"
