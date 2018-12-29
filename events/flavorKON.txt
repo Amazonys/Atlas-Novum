@@ -1,0 +1,257 @@
+########################################
+# Events for Kongo
+#
+# written by Johan Andersson
+########################################
+
+namespace = flavor_kon
+normal_or_historical_nations = yes
+
+	
+# Portuguese Missionaries
+country_event = {
+	id = flavor_kon.1
+	title = flavor_kon.1.t
+	desc = flavor_kon.1.d
+	picture = POPE_PREACHING_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = KON
+		OR = {
+			AND = {
+				POR = {
+					religion = catholic
+				}
+				kongo_area = {
+					has_discovered = POR
+				}
+			}
+			AND = {
+				NOT = { exists = POR }
+				IBE = {
+					religion = catholic
+				}
+				kongo_area = {
+					has_discovered = IBE
+				}
+			}
+		}
+		NOT = { religion = catholic }
+
+	}
+
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	
+	option = { 
+		name = flavor_kon.1.a			# Let Them Preach
+		ai_chance = { factor = 90 }
+		
+		add_stability = -1
+		add_prestige = -25
+		add_legitimacy = -25
+		random_owned_province = {
+			limit = {
+				NOT = { religion = catholic }
+			}
+			change_religion = catholic
+ 		}
+		set_country_flag = kongo_allows_missionaries
+		if = {
+			limit = { exists = POR }
+			reverse_add_opinion = {
+				who = POR
+				modifier = missionaries_accepted
+			}
+			hidden_effect = {
+				POR = {
+					country_event = { id = flavor_kon.2 days = 1 }
+				}
+			}
+		}
+		if = {
+			limit = {
+				NOT = { exists = POR }
+				exists = IBE
+			}
+			reverse_add_opinion = {
+				who = IBE
+				modifier = missionaries_accepted
+			}
+			hidden_effect = {
+				IBE = {
+					country_event = { id = flavor_kon.2 days = 1 }
+				}
+			}
+		}
+	}
+	option = {
+		name = flavor_kon.1.b			# Drive off the missionaries!
+		ai_chance = { factor = 10 }
+		
+		add_stability_or_adm_power = yes
+		add_prestige = 10
+		
+		if = {
+			limit = { exists = POR }
+			reverse_add_opinion = {
+				who = POR
+				modifier = missionaries_rebuffed
+			}
+			hidden_effect = {
+				POR = {
+					country_event = { id = flavor_kon.3 days = 1 }
+				}		
+			}
+		}
+		if = {
+			limit = {
+				NOT = { exists = POR }
+				exists = IBE
+			}
+			reverse_add_opinion = {
+				who = IBE
+				modifier = missionaries_rebuffed
+			}
+			hidden_effect = {
+				IBE = {
+					country_event = { id = flavor_kon.3 days = 1 }
+
+
+				}
+			}
+		}
+	}
+	
+	
+}
+
+# Missionaries accepted
+country_event = {
+	id = flavor_kon.2
+	title = flavor_kon.2.t
+	desc = flavor_kon.2.d
+	picture = POPE_PREACHING_eventPicture
+
+	is_triggered_only = yes
+		
+	option = { # Another investment pays off.
+		name = flavor_kon.2.a
+		add_papal_influence = 25
+		if = {
+			limit = {
+				NOT = { has_completed_all_reforms_trigger = yes }
+			}
+			add_reform_progress_small_effect = yes
+		}
+		reverse_add_opinion = {
+			who = KON
+			modifier = missionaries_accepted
+		}
+	}
+}
+
+# Missionaries rebuffed!
+country_event = {
+	id = flavor_kon.3
+	title = flavor_kon.3.t
+	desc = flavor_kon.3.d
+	picture = POPE_PREACHING_eventPicture
+
+	is_triggered_only = yes
+		
+	option = { # We shall wipe the dust.. on them.
+		name = flavor_kon.3.a
+		add_prestige = -5
+		reverse_add_opinion = {
+			who = KON
+			modifier = missionaries_rebuffed
+		}
+	}
+}
+
+
+# The King of Kongo Converts!
+country_event = {
+	id = flavor_kon.4
+	title = flavor_kon.4.t
+	desc = flavor_kon.4.d
+	picture = POPE_PREACHING_eventPicture
+	fire_only_once = yes
+
+
+	trigger = {
+		has_country_flag = kongo_allows_missionaries
+		NOT = { religion = catholic }
+		is_female = no
+		
+		any_owned_province = {
+			 religion = catholic
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+
+		
+	option = { # Christianity will triumph in Kongo
+		name = flavor_kon.4.a
+		ai_chance = { factor = 90 }
+		change_religion = catholic
+		if = {
+			limit = { is_tribal = yes }
+			change_government_via_reform = monarchy
+			set_legacy_government = despotic_monarchy
+		}
+		add_stability = -3
+
+		if = {
+			limit = { exists = POR }
+			hidden_effect = {
+				POR = {
+					country_event = { id = flavor_kon.5 days = 1 }
+
+				}		
+			}
+		}
+		if = {
+			limit = { 
+				NOT = { exists = POR }
+				exists = IBE
+			}
+			hidden_effect = {
+				IBE = {
+					country_event = { id = flavor_kon.5 days = 1 }
+
+				}		
+			}
+		}
+	}
+	option = { # Kill the Ruler!
+		name =  flavor_kon.4.b
+		ai_chance = { factor = 10 }
+		kill_ruler = yes
+	}
+}
+
+
+
+# Conversion of the Kongo!
+country_event = {
+	id = flavor_kon.5
+	title = flavor_kon.5.t
+	desc = flavor_kon.5.d
+	picture = POPE_PREACHING_eventPicture
+	is_triggered_only = yes
+		
+	option = { # Another investment pays off.
+		name = flavor_kon.5.a
+		add_prestige = 25
+		add_papal_influence = 25
+	}
+}
+

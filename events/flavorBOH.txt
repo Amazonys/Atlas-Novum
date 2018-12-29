@@ -1,0 +1,640 @@
+########################################
+# Events for Bohemia
+#
+# written by Johan Andersson
+########################################
+
+namespace = flavor_boh
+normal_or_historical_nations = yes
+
+#Hussites march on Prague
+country_event = {
+	id = flavor_boh.1
+	title = flavor_boh.1.t
+	desc = flavor_boh.1.d
+	picture = CIVIL_WAR_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		OR = {
+			tag = BOH
+			AND = {
+				tag = GMV
+				primary_culture = czech
+				NOT = { exists = BOH }
+			}
+		}
+		owns = 266
+		is_year = 1446
+		NOT = { is_year = 1457 }
+		is_at_war = no
+		religion = catholic
+		is_free_or_tributary_trigger = yes
+	}
+	
+	mean_time_to_happen = {
+		months = 17
+	}
+	
+	option = {
+		ai_chance = { factor = 90 }
+		name = flavor_boh.1.a
+		add_papal_influence = -100
+		if = {
+			limit = {
+				has_regency = no
+			}
+			tooltip = {
+				kill_ruler = yes
+			}
+		}
+		if = {
+			limit = {
+				has_heir = yes
+			}
+			remove_heir = yes
+		}
+		define_ruler = {
+			name = "Jirí"
+			dynasty = "z Podebrad"
+			adm = 5
+			dip = 3
+			mil = 3
+		}
+		if = {
+			limit = {
+				has_states_general_mechanic = yes
+			}
+			change_statists_vs_orangists = 200
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality = zealot_personality }
+		}
+		add_reform_desire = 0.03
+		add_ruler_modifier = {
+			name = "boh_hussite_king"
+			duration = -1
+		}
+		set_country_flag = boh_supported_hussites
+		set_country_flag = boh_hussites_mission_accept
+		PAP = {
+			country_event = { id = flavor_boh.9 }
+		}
+		every_known_country = {
+			limit = {
+				religion = catholic
+				is_free_or_tributary_trigger = yes
+				OR = {
+					is_neighbor_of = ROOT
+					num_of_cities = 15
+					government = theocracy
+				}
+			}
+			add_opinion = {
+				who = root
+				modifier = boh_heretic_hussite
+			}
+		}
+	}
+	
+	option = {
+		name = flavor_boh.1.b
+		266 = {
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 1
+				leader = "Jirí z Podebrad"
+			}		
+		}
+		random_owned_province = {
+			limit = {
+				NOT = { province_id = 266 }
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 1
+			}
+		}
+		set_country_flag = boh_hussites_mission_decline
+		if = {
+			limit = { exists = PAP }
+			add_papal_influence = 5
+			PAP = {
+				add_opinion = {
+					who = root
+					modifier = boh_papal_reconciled
+				}
+			}
+		}
+	}
+}
+
+#The Heretic King
+country_event = {
+	id = flavor_boh.2
+	title = flavor_boh.2.t
+	desc = flavor_boh.2.d
+	picture = COURT_eventPicture
+	
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			tag = BOH
+			AND = {
+				tag = GMV
+				primary_culture = czech
+				NOT = { exists = BOH }
+			}
+		}
+		has_country_flag = boh_supported_hussites
+		NOT = { is_religion_enabled = protestant }
+		has_regency = no
+	}
+	
+	immediate = {
+		every_country = {
+			limit = {
+				has_opinion_modifier = {
+					who = ROOT
+					modifier = boh_heretic_hussite
+				}
+			}
+			remove_opinion = {
+				who = ROOT
+				modifier = boh_heretic_hussite
+			}
+		}
+	}
+	
+	option = {
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 0.1
+				is_year = 1470
+			}
+		}
+		name = flavor_boh.2.a
+		add_stability = -1
+		if = {
+			limit = { exists = PAP }
+			add_papal_influence = 5
+			PAP = {
+				add_opinion = {
+					who = root
+					modifier = boh_papal_reconciled
+				}
+			}
+		}
+		add_reform_desire = -0.01
+		clr_country_flag = boh_supported_hussites
+		if = {
+			limit = {
+				NOT = { is_year = 1490 }
+			}
+			random_owned_province = {
+				limit = { is_state = yes }
+				spawn_rebels = {
+					type = heretic_rebels
+					size = 2
+				}
+			}
+		}
+	}
+	option = {
+		name = flavor_boh.2.b
+		ai_chance = {
+			factor = 10
+		}
+		add_ruler_modifier = {
+			name = "boh_hussite_king"
+			duration = -1
+		}
+		if = {
+			limit = {
+				exists = PAP
+			}
+			PAP = { country_event = { id = flavor_boh.9 } }
+		}
+		add_reform_desire = 0.01
+		custom_tooltip = flavor_boh.2.3
+		every_known_country = {
+			limit = {
+				religion = catholic
+				is_free_or_tributary_trigger = yes
+				OR = {
+					is_neighbor_of = ROOT
+					num_of_cities = 15
+					government = theocracy
+				}
+			}
+			add_opinion = {
+				who = root
+				modifier = boh_heretic_hussite
+			}
+		}
+	}
+}
+
+# Confederacy of Zelena Hora
+country_event = {
+	id = flavor_boh.3
+	title = flavor_boh.3.t
+	desc = flavor_boh.3.d
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	trigger = {
+		OR = {
+			tag = BOH
+			AND = {
+				tag = GMV
+				primary_culture = czech
+				NOT = { exists = BOH }
+			}
+		}
+		is_year = 1465
+		has_country_modifier = boh_hussite_king
+		NOT = { has_country_flag = confederacy_of_zelena_hora }
+		owns = 265
+		owns = 2970
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = confederacy_of_zelena_hora
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 48
+	}
+	
+	option = {
+		name = flavor_boh.3.a
+		add_prestige = -5
+		tooltip = {
+			265 = {
+				spawn_rebels = {
+					type = religious_rebels
+					size = 1
+				}
+			}
+			2970 = {
+				spawn_rebels = {
+					type = religious_rebels
+					size = 1
+				}
+			}
+		}
+		if = {
+			limit = {
+				is_neighbor_of = HUN
+				HUN = {
+					religion = catholic
+					has_regency = no
+				}
+			}
+			HUN = {
+				country_event = { id = flavor_hun.13 }
+			}
+			else = {
+				hidden_effect = {
+					265 = {
+						spawn_rebels = {
+							type = religious_rebels
+							size = 1
+						}
+					}
+					2970 = {
+						spawn_rebels = {
+							type = religious_rebels
+							size = 1
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# The Vladislav Hall
+country_event = {
+	id = flavor_boh.4
+	title = flavor_boh.4.t
+	desc = flavor_boh.4.d
+	picture = FORT_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		OR = {
+			tag = BOH
+			AND = {
+				tag = GMV
+				primary_culture = czech
+				NOT = { exists = BOH }
+			}
+		}
+		owns = 266
+		is_year = 1493
+	}
+	
+	mean_time_to_happen = {
+		months = 32
+	}
+	
+	option = {
+		name = flavor_boh.4.a
+		add_prestige = 50
+	}
+}
+
+# Municipal Constitution
+country_event = {
+	id = flavor_boh.5
+	title = flavor_boh.5.t
+	desc = flavor_boh.5.d
+	picture = DEBATE_REPUBLICAN_eventPicture
+	
+	fire_only_once = yes
+
+	trigger = {
+		OR = {
+			tag = BOH
+			AND = {
+				tag = GMV
+				primary_culture = czech
+				NOT = { exists = BOH }
+			}
+		}
+		is_year = 1500
+		NOT = { ADM = 4 }
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	option = {
+		name = flavor_boh.5.a
+		ai_chance = { factor = 90 }
+		add_ruler_modifier = {
+			name = boh_strong_nobles
+		}
+	}
+	option = {
+		name = flavor_boh.5.b
+		add_stability = -3
+		random_owned_province = {
+			spawn_rebels = {
+				type = noble_rebels
+				size = 1
+			}
+		}
+	}
+}
+
+# Brahe & Kepler
+country_event = {
+	id = flavor_boh.6
+	title = flavor_boh.6.t
+	desc = flavor_boh.6.d
+	picture = INVENTION_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		OR = {
+			tag = BOH
+			AND = {
+				tag = GMV
+				primary_culture = czech
+				NOT = { exists = BOH }
+			}
+		}
+		is_year = 1599
+		owns = 266
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	option = {
+		name = flavor_boh.6.a
+		trigger = {
+			num_of_ports = 1
+		}
+		ai_chance = { factor = 90 }	
+		add_navy_tradition = 10
+	}
+	option = {
+		name = flavor_boh.6.b
+		add_army_tradition = 10
+	}	
+}
+
+# Hussite Traditions.
+country_event = {
+	id = flavor_boh.7
+	title = flavor_boh.7.t
+	desc = flavor_boh.7.d
+	picture = RELIGION_eventPicture
+	
+	fire_only_once = no		#can happen repeatedly... :)
+
+	trigger = {
+		owns = 266
+		is_religion_enabled = protestant
+		religion = catholic
+		NOT = { religion_years = { protestant = 100 } }
+		NOT = { has_reform = papacy_reform }
+		any_owned_province = {
+			religion = catholic
+			culture = czech
+		}
+	}	
+
+	mean_time_to_happen = {
+		months = 120
+		modifier = {
+			factor = 0.75
+			num_of_religion = {
+				religion = catholic
+				value = 0.5
+			}			
+		}
+	}
+	
+	option = {
+		name = flavor_boh.7.a
+		ai_chance = { factor = 90 }	
+		random_owned_province = {
+			limit = {
+				religion = catholic
+				culture = czech
+			}
+			change_religion = protestant
+		}
+	}
+	
+	option = {
+		name = flavor_boh.7.b
+		ai_chance = { factor = 0 }	
+		trigger = {
+			adm_power = 10
+		}
+		add_adm_power = -50
+	}
+}
+
+# Winter King in Prague
+country_event = {
+	id = flavor_boh.8
+	title = flavor_boh.8.t
+	desc = flavor_boh.8.d
+	picture = COURT_eventPicture
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			tag = BOH
+			AND = {
+				tag = GMV
+				primary_culture = czech
+				NOT = { exists = BOH }
+			}
+		}
+		is_emperor = no
+		religion = catholic
+		any_owned_province = {
+			religion = protestant
+			culture = czech
+		}
+		is_year = 1580
+	}
+	
+	
+	option = {
+		name = flavor_boh.8.a
+		ai_chance = { factor = 90 }	
+		change_religion = protestant
+		if = {
+			limit = {
+				emperor = { religion = catholic }
+			}
+			emperor = {
+				add_casus_belli = {	
+					target = BOH
+					type = cb_religious_conformance
+					months = 1200
+				}
+				add_opinion = {
+					who = root
+					modifier = boh_protestant_king
+				}										
+			}
+		}
+
+		every_neighbor_country = {
+			limit = {
+				is_emperor = no
+				religion = catholic
+				num_of_cities = 5
+			}
+			add_casus_belli = {	
+				target = BOH
+				type = cb_religious_conformance
+				months = 1200
+			}	
+			add_opinion = {
+				who = root
+				modifier = boh_protestant_king
+			}							
+		}
+	}
+}
+
+
+# The Hussites of Bohemia (Papal reaction)
+country_event = {
+	id = flavor_boh.9
+	title = flavor_boh.9.t
+	desc = flavor_boh.9.d
+	picture = POPE_PREACHING_eventPicture
+	
+	is_triggered_only = yes
+
+	option = {
+		name = flavor_boh.9.a #Condemn the [From.Monarch.GetTitle]
+		ai_chance = { factor = 90 }
+		add_devotion = 10
+		add_reform_desire = -0.01
+		FROM = {
+			country_event = { id = flavor_boh.10 }
+			add_opinion = {
+				who = root
+				modifier = boh_heretic_hussite
+			}
+		}
+	}
+	option = {
+		name = flavor_boh.9.b #We must seek Reconciliation
+		ai_chance = { factor = 10 }
+		add_reform_desire = 0.01
+		add_devotion = -10
+		FROM = {
+			country_event = { id = flavor_boh.11 }
+			add_opinion = {
+				who = root
+				modifier = boh_papal_reconciled
+			}
+		}
+	}
+}
+
+# The Pope Condemns [Root.Monarch.GetName]
+country_event = {
+	id = flavor_boh.10
+	title = flavor_boh.10.t
+	desc = flavor_boh.10.d
+	picture = POPE_PREACHING_eventPicture
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+
+	
+	option = {
+		name = flavor_boh.10.a
+		add_prestige = -5 #Real effects are in the modifier you already got.
+	}
+}
+
+# Papacy remains 
+country_event = {
+	id = flavor_boh.11
+	title = flavor_boh.11.t
+	desc = flavor_boh.11.d
+	picture = POPE_PREACHING_eventPicture
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+
+	
+	option = {
+		name = flavor_boh.11.a
+		PAP = {
+			add_opinion = {
+				who = ROOT
+				modifier = boh_papal_reconciled
+			}
+		}
+	}
+}

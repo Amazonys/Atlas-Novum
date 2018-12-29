@@ -1,0 +1,213 @@
+namespace = btpSCO
+
+# Margaret of Denmark
+country_event = {
+	id = btpSCO.1
+	title = "btpSCO.EVTNAME1"
+	desc = "btpSCO.EVTDESC1"
+	picture = DIPLOMACY_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		tag = DAN
+		NOT = { has_country_flag = margarets_dowry	}
+		is_at_war = no
+		is_free_or_tributary_trigger = yes
+		NOT = { is_year = 1490 }
+		is_year = 1460
+		exists = SCO
+		NOT = { truce_with = SCO }
+		SCO = {
+			is_at_war = no
+			is_free_or_tributary_trigger = yes
+		}
+		OR = {
+			369 = {
+				country_or_vassal_holds = ROOT
+			}
+			1978 = {
+				country_or_vassal_holds = ROOT
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	immediate = {
+		hidden_effect = { set_country_flag = margarets_dowry }
+	}
+	
+	option = {
+		name = "btpSCO.EVTOPTA1" # Make the approach
+		ai_chance = { factor = 85 }
+		tooltip = {
+			create_marriage = SCO
+			369 = {
+				if = {
+					limit = { country_or_vassal_holds = ROOT }
+					cede_province = SCO
+				}
+			}
+			1978 = {
+				if = {
+					limit = { country_or_vassal_holds = ROOT }
+					cede_province = SCO
+				}
+			}
+		}
+		SCO = {
+			country_event = { 
+				id = btpSCO.2
+				days = 3
+			}
+		}
+	}
+	
+	option = {
+		ai_chance = { factor = 15 }
+		name = "btpSCO.EVTOPTB1" # Do nothing
+		add_prestige = -1
+	}
+}
+
+# Margaret's Dowry
+country_event = {
+	id = btpSCO.2
+	title = "btpSCO.EVTNAME2"
+	desc = "btpSCO.EVTDESC2"
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+	major = yes
+	
+	option = {
+		name = "btpSCO.EVTOPTA2" # Accept
+		ai_chance = { factor = 95 }
+		hidden_effect = {
+			remove_historical_friend = DAN
+			DAN = {
+				remove_historical_friend = SCO
+				add_country_modifier = {
+					name = "btp_dano_scottish_wedding"
+					duration = 9125
+				}
+			}
+			reverse_add_opinion = {
+				who = DAN
+				modifier = btp_opinion_accepted_proposal
+			}
+		}
+		add_opinion = {
+			who = DAN
+			modifier = btp_opinion_accepted_proposal
+		}
+		add_country_modifier = {
+			name = "btp_dano_scottish_wedding"
+			duration = 9125
+		}
+		create_marriage = DAN
+		369 = {
+			if = {
+				limit = { country_or_vassal_holds = DAN }
+				cede_province = ROOT
+				add_core = ROOT
+			}
+			hidden_effect = {
+				if = {
+					limit = { is_core = DAN }
+					remove_core = DAN
+				}
+				if = {
+					limit = { is_core = NOR }
+					remove_core = NOR
+				}
+			}
+		}
+		1978 = {
+			if = {
+				limit = { country_or_vassal_holds = DAN }
+				cede_province = ROOT
+				add_core = ROOT
+			}
+			hidden_effect = {
+				if = {
+					limit = { is_core = DAN }
+					remove_core = DAN
+				}
+				if = {
+					limit = { is_core = NOR }
+					remove_core = NOR
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = "btpSCO.EVTOPTB2" # Reject
+		ai_chance = { factor = 5 }
+		add_prestige = -5
+		DAN = {
+			add_opinion = {
+				who = ROOT
+				modifier = btp_opinion_rejected_proposal
+			}
+		}
+		if = {
+			limit = { owns = 253 }
+			253 = { add_claim = DAN }
+		}
+	}
+}
+
+# No true Scotsman
+province_event = {
+	id = btpSCO.3
+	title = "btpSCO.EVTNAME3"
+	desc = "btpSCO.EVTDESC3"
+	picture = STREET_SPEECH_eventPicture
+	
+	trigger = {
+		culture = highland_scottish 
+		NOT = { is_core = SCO }
+		OR = {
+			area = highlands_area
+			area = lowlands_area
+		}
+		owner = {
+			NOT = { 
+				tag = SCO
+				culture_group = gaelic
+				accepted_culture = highland_scottish
+			}
+			OR = {
+				NOT = { primary_culture = scottish }
+				tag = GBR
+			}
+			is_at_war = no
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 6
+	}
+	
+	option = {
+		name = "btpSCO.EVTOPTA3" # We have no choice but to accept
+		change_culture = scottish
+		if = {
+			limit = {
+				NOT = {
+					owner = {
+						tag = GBR
+						primary_culture = scottish
+					}
+				}
+			}
+			add_core = SCO
+		}
+	}
+
+}

@@ -1,0 +1,344 @@
+country_decisions = {
+
+	move_capital_dublin = {
+		major = yes
+		potential = {
+			OR = {
+				tag = IRE
+				tag = TNA
+				tag = ANI
+			}
+			OR = {
+				culture_group = gaelic
+				culture_group = british
+			}
+			owns = 373
+			NOT = { has_global_flag = built_capital_in_dublin }
+		}
+		allow = {
+			is_core = 373
+			is_at_war = no
+			adm_power = 100
+		}
+		effect = {
+			set_global_flag = built_capital_in_dublin
+			if = {
+				limit = { NOT = { capital = 373 } }
+				373 = { move_capital_effect = yes }
+				add_adm_power = -50			#Roughly 1/4 price compared to normal moving capital
+			}
+			if = {
+				limit = { culture_group = gaelic }
+				373 = { rename_capital = "Baile Átha Cliath" }
+			}
+			if = {
+				limit = { NOT = { culture_group = gaelic } }
+				373 = { rename_capital = "Dublin" }
+			}
+			if = {
+				limit = { 373 = { has_owner_culture = no } }
+				373 = {
+					add_culture_construction = {
+					culture = ROOT
+					speed = 0.5
+					cost = 0.0
+					}
+				}
+			}
+			373 = {
+			 	add_base_tax = 2
+				add_base_production = 2
+			 	add_base_manpower = 1
+			}
+			add_prestige = 10
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	#Note I merged the old 'move_capital_dublin' and 'move_capital_dublin_anglo_irish' decisions into one, as there was only a few minor differences which can be fixed with a few ors and ifs  -Draiocht
+
+	england_demand_fealty_of_ireland = {
+		potential = {
+			tag = ENG
+			NOT = { has_country_modifier = humiliated_by_former_vassal }
+			NOT = { has_country_modifier = irish_fealty_negotiations_ongoing }
+			num_of_owned_provinces_with = {
+				value = 1
+				region = ireland_area
+			}	#changed Dublin only to any Irish province being able to allow this decision
+			any_known_country = {
+				primary_culture = anglo_irish
+				OR = {
+					has_reform = norman_lordship_reform
+					has_reform = anglo_irish_monarchy_reform
+				}
+				num_of_owned_provinces_with = {
+					value = 1
+					region = ireland_area
+				}
+				is_free_or_tributary_trigger = yes
+				is_at_war = no
+			}
+			NOT = { has_country_flag = demanded_fealty_of_ireland }
+		}
+		allow = {
+			tag = ENG
+			num_of_free_diplomatic_relations = 1
+			is_at_war = no
+			is_free_or_tributary_trigger = yes
+		}
+		effect = {
+			set_country_flag = demanded_fealty_of_ireland
+			random_known_country = {
+				limit = {
+					primary_culture = anglo_irish
+					OR = {
+						has_reform = norman_lordship_reform
+						has_reform = anglo_irish_monarchy_reform
+					}
+					num_of_owned_provinces_with = {
+						value = 1
+						region = ireland_area
+					}
+					is_free_or_tributary_trigger = yes
+					is_at_war = no
+				}
+				country_event = { id = btpIRE.1 days = 3 }
+				hidden_effect = { add_country_modifier = { name = "irish_fealty_negotiations_ongoing" duration = 30 } }
+			}
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					OR = {
+						ruler_has_personality = expansionist_personality
+						ruler_has_personality = conqueror_personality
+						ruler_has_personality = greedy_personality
+						any_province = {
+							region = ireland_area
+							NOT = { owned_by = ENG }
+							OR = {
+								is_claim = ROOT
+								is_core = ROOT
+							}
+						}
+					}
+				}
+			}	#Draiocht added a few conditions and details. Need a ruler personality trait or claim to justify, also to prevent instant spam
+			modifier = {
+				factor = 0
+				NOT = { stability = 1 }
+			}	#Want a stable England before they try to reclaim old hegemony, also to prevent instant spam
+		}
+	}
+	
+	reform_irish_government = {
+		major = yes
+		potential = {
+			NOT = { exists = ANI }
+			NOT = { exists = IRE }
+			is_year = 1600
+			OR = {
+				has_reform = norman_lordship_reform
+				has_reform = irish_clann_reform
+			}
+		}
+		allow = {
+			is_year = 1600
+			OR = {
+				has_reform = norman_lordship_reform
+				has_reform = irish_clann_reform
+			}
+			is_free_or_tributary_trigger = yes
+			is_at_war = no
+		}
+		effect = {
+			if ={
+				limit = { has_reform = norman_lordship_reform }
+				remove_government_reform = norman_lordship_reform
+			}
+			if ={
+				limit = { has_reform = irish_clann_reform }
+				remove_government_reform = irish_clann_reform
+			}
+			add_government_reform = feudalism_reform
+			add_country_modifier = {
+				name = "centralization_modifier"
+				duration = 7300
+			}
+			capital_scope = {
+				add_base_tax = 1
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	embrace_irish_traditions = {
+		major = yes
+		potential = {
+			has_reform = norman_lordship_reform
+		}
+		allow = {
+			NOT = { alliance_with = ENG }
+			any_ally = { primary_culture = irish }
+			is_free_or_tributary_trigger = yes
+			is_at_war = no
+		}
+		effect = {
+			change_primary_culture = irish
+			capital_scope = { change_culture = irish }
+			add_stability = -1
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { stability = 1 }			#tag will not do if stability 0 or lower
+			}
+		}
+	}
+	
+	#Historical formation of ANI
+	create_the_kingdom_of_ireland_as_england = {
+		major = yes
+		potential = {
+			NOT = { tag = UNK }
+			NOT = { exists = ANI }
+			NOT = { exists = IRE }
+			OR = {
+				ai = no
+				is_playing_custom_nation = no
+			}
+			capital_scope = { region = british_isles_region }			#This will include England, Scotland, and Great Britain, but also dynamically any alt history powers in the British Isles. For non British polities history is out the window enough that this option shouldn't really be available, as it isn't for any other area.
+			NOT = { culture_group = gaelic }			#Gaels will try to form TnG
+			num_of_owned_provinces_with = {
+				value = 9
+				region = ireland_area
+			}	#over half of Ireland to see
+		}
+		provinces_to_highlight = {
+			region = ireland_area
+			owned_by = ROOT
+		}
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			is_at_war = no
+			NOT = { exists = IRE }
+			hidden_trigger = {
+				NOT = { exists = ANI }			#Hidden because it shows up in UI as doubled
+			}
+			custom_trigger_tooltip = {
+				tooltip = three_quarters_of_ireland_tooltip
+				num_of_owned_provinces_with = {
+					value = 13
+					region = ireland_area
+					is_core = ROOT
+				}	#3/4 of Ireland's 17 provinces
+			}
+		}
+		effect = {
+			ireland_area = {
+				limit = { NOT = { owned_by = ROOT } }
+				add_permanent_claim = ANI
+			}
+			hidden_effect = {
+				ireland_area = {
+					limit = { owned_by = ROOT }
+					remove_core = ROOT
+					add_core = ANI
+				}
+			}
+			ireland_area = {
+				limit = { owned_by = ROOT }
+				cede_province = ANI
+			}
+			hidden_effect = {
+				ANI = {
+					set_government_rank = 2
+					change_government = republic
+					add_government_reform = puppet_kingdom_reform
+					add_historical_friend = ROOT
+					change_primary_culture = ROOT
+					change_religion = ROOT
+					set_country_flag = formed_kingdom_of_ireland_flag_btp
+					set_country_flag = bt_is_a_puppet_state
+				}
+			}
+			create_subject = {
+				subject_type = viceroyalty_bt
+				subject = ANI
+			}
+			add_country_modifier = {
+				name = "huzzah_for_devolution"
+				duration = 7300
+			}
+			add_dip_power = 300			#Little reward for founder in addition to dip rep
+			add_prestige = 10
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { total_development = 500 }			#tag will not do if the new country (95 dev with 1444 values + Dublin decision) would have over 50 percent the dev of the remaining country. Note this is based on 1444 values, because there is no way to calculate dynamically.
+			}	#Also note England's base dev in 362, plus 56 in Wales and Cornwall, and 180 in Ireland so this will almost always be a yes even if England loses all French holdings and doesn't build up dev
+			modifier = {
+				factor = 0
+				NOT = {
+					OR = {
+						tag = ENG
+						tag = GBR			#AI will not do unless one of the historical nations in Britain.
+						tag = SCO
+					}
+				}
+			}
+		}
+	}
+	
+	#Just some house cleaning
+	cede_stragglers_to_koi_as_ruler = {
+		major = yes
+		potential = {
+			exists = ANI
+			ANI = { is_subject_of = ROOT }
+			any_owned_province = { region = ireland_area }
+		}
+		provinces_to_highlight = {
+			region = ireland_area
+			owned_by = ROOT
+		}
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			is_at_war = no
+		}
+		effect = {
+			random_core_province = {
+				limit = { region = ireland_area }
+				cede_province = ANI
+				if = {
+					limit = { is_core = ROOT }
+					remove_core = ROOT
+					add_core = ANI
+				}
+			}
+			ANI = {
+				add_opinion = {
+					who = ROOT
+					modifier = returned_core_to_me
+				}
+				add_liberty_desire = -5
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+
+}
