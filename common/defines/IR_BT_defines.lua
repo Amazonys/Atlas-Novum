@@ -119,6 +119,8 @@ NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 5.0			-- from 2p5
 NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.02			-- from 0p05
 NDefines.NCountry.MERCHANT_REPUBLIC_SIZE_LIMIT = 50
 NDefines.NCountry.PS_BOOST_MILITARIZATION = 30			-- Same logic as above new provinces cause faster decline thus need lower cost ideally I can find a better solution later Base 50
+NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.15		-- from 0.3
+NDefines.NCountry.REVOLT_SIZE_BASE = 3	-- from 4
  --Colonial
 NDefines.NCountry.MAX_CROWN_COLONIES = 3
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
