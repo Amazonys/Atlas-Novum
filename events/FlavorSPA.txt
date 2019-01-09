@@ -3,192 +3,9 @@
 ########################################
 
 namespace = flavor_spa
-normal_or_historical_nations = yes
+#normal_or_historical_nations = yes why?
 
-# The Iberian Wedding
-country_event = {
-	id = flavor_spa.3716
-	title = "flavor_spa.EVTNAME3716"
-	desc = "flavor_spa.EVTDESC3716"
-	picture = DIPLOMACY_eventPicture
-
-	major = yes
-	
-	fire_only_once = yes
-	
-	
-	trigger = {
-		NOT = { exists = SPA }
-		OR = {
-			AND = {
-				tag = CAS
-				NOT = { war_with = ARA }
-				ARA = {
-					exists = yes
-					ai = yes
-					was_player = no
-					is_subject = no
-					is_neighbor_of = ROOT
-				}
-				num_of_cities = 25
-			}
-			AND = {
-				tag = ARA
-				NOT = { war_with = CAS }
-				ai = no
-				CAS = {
-					exists = yes
-					ai = yes
-					was_player = no
-					is_subject = no
-					is_neighbor_of = ROOT
-				}
-				num_of_cities = 16
-			}
-		}
-		is_year = 1450
-		NOT = { is_year = 1530 }
-		is_subject = no
-		num_of_cities = 10
-		OR = {
-			AND = {
-				CAS = { is_female = yes }
-				ARA = { is_female = no }
-			}
-			AND = {
-				CAS = { is_female = no }
-				ARA = { is_female = yes }
-			}
-			ARA = {
-				ai = yes
-				has_regency = yes
-			}
-			CAS = {
-				ai = yes
-				has_regency = yes
-			}
-		}
-	}
-
-	mean_time_to_happen = {
-		months = 120
-		modifier = {
-			factor = 0.1
-			OR = {
-				AND = {
-					tag = CAS
-					ARA = {
-						has_regency = no 
-					}
-				}
-				AND = {
-					tag = ARA
-					CAS = { 
-						has_regency = no 
-					}
-				}
-			}
-		}
-	}
-	
-	
-	option = {		# Let us bind their Dynasty to ours
-		name = "flavor_spa.EVTOPTA3716"
-		ai_chance = { factor = 90 }
-		if = {
-			limit = { tag = CAS }
-			create_union = ARA
-			add_opinion = {
-				who = ARA
-				modifier = spa_iberian_wedding
-			}
-			ARA = {
-				add_opinion = {
-					who = ROOT
-					modifier = spa_iberian_wedding
-				}
-				add_liberty_desire = -50
-			}
-			every_known_country = {
-				limit = {
-					marriage_with = ARA
-				}
-				add_opinion = {
-					who = ROOT
-					modifier = spa_iberian_wedding_negative
-				}
-			}
-		}
-		if = {
-			limit = { tag = ARA }
-			create_union = CAS
-			add_opinion = {
-				who = CAS
-				modifier = spa_iberian_wedding
-			}
-			CAS = {
-				add_opinion = {
-					who = ROOT
-					modifier = spa_iberian_wedding
-				}
-				add_liberty_desire = -50
-			}
-			every_known_country = {
-				limit = {
-					marriage_with = CAS
-				}
-				add_opinion = {
-					who = ROOT
-					modifier = spa_iberian_wedding_negative
-				}
-			}
-		}
-		random_owned_province = {
-			limit = {
-				is_capital = no
-			}
-			spawn_rebels = {
-				type = noble_rebels
-				size = 2
-			}
-		}
-	}
-	option = {		# No let us marry a local talent instead
-		name = "flavor_spa.EVTOPTB3716"
-		ai_chance = { factor = 10 }
-		add_stability_or_adm_power = yes
-		if = {
-			limit = { tag = CAS }
-			ARA = {
-				add_opinion = {
-					who = ROOT
-					modifier = spa_declined_iberian_wedding
-				}
-			}
-		}
-		if = {
-			limit = { tag = ARA }
-			CAS = {
-				add_opinion = {
-					who = ROOT
-					modifier = spa_declined_iberian_wedding
-				}
-			}
-		}
-		if = {
-			limit = {
-				has_consort = no
-				has_government_attribute = queen
-			}
-			define_consort = {
-				ADM = 2
-				MIL = 2
-				DIP = 2
-			}
-		}
-	}
-}
-
+#IR deleted Iberian wedding, have our own event
 # Torquemada and the Conversion of the Moors
 country_event = {
 	id = flavor_spa.3150
@@ -294,126 +111,8 @@ country_event = {
 
 }
 
-# Christopher Columbus
-country_event = {
-	id = flavor_spa.1
-	title = "flavor_spa.EVTNAME1"
-	desc = "flavor_spa.EVTDESC1"
-	picture = SHIP_SAILING_eventPicture
-
-	is_triggered_only = yes
-	
-	trigger = {
-		NOT = { has_global_flag = columbus_happened }
-		has_idea = quest_for_the_new_world
-		NOT = { is_year = 1506 }				#Colombus died in 1506.... should be able to hire him after that.
-		OR = {
-			NOT = {
-				north_america = {
-					has_discovered = ROOT
-				}
-			}
-			NOT = {
-				south_america = {
-					has_discovered = ROOT
-				}
-			}
-			NOT = {
-				any_known_country = {
-					north_america = {
-						has_discovered = PREV
-					}
-				}
-			}
-			NOT = {
-				any_known_country = {
-					south_america = {
-						has_discovered = PREV
-					}
-				}
-			}
-		}
-	}
-
-	option = {		# Reject his proposal
-		name = "flavor_spa.EVTOPTA1"
-		ai_chance = { factor = 5 }
-		set_country_flag = turned_down_columbus
-		random_known_country = {
-			limit = {
-				NOT = { has_country_flag = turned_down_columbus }
-				religion = catholic
-				num_of_ports = 1
-				has_idea = quest_for_the_new_world
-			}
-			country_event = { id = flavor_spa.1 }
-		}
-	}
-	option = {		# Hire Columbus
-		name = "flavor_spa.EVTOPTB1"
-		ai_chance = { factor = 95 }
-		add_years_of_income = -0.25
-		set_global_flag = columbus_happened
-		define_explorer = {
-			name = "Cristóbal Colón"
-			fire = 1
-			shock = 1
-			manuever = 5
-			siege = 0
-		}
-		add_country_modifier = {
-			name = bt_daring_navigator
-			duration = 3650
-		}
-	}
-}
-
-# Discovery of the New World!
-country_event = {
-	id = flavor_spa.1005
-	title = "flavor_spa.EVTNAME1005"
-	desc = "flavor_spa.EVTDESC1005"
-	picture = COLONIZATION_eventPicture
-	
-	
-	fire_only_once = yes
-	
-	trigger = {
-		NOT = { has_global_flag = new_world_discovered }
-		OR = {
-			AND = {
-				tag = CAS
-				NOT = { exists = SPA }
-			}
-			tag = SPA
-		}
-		OR = {
-			north_america = {
-				has_discovered = ROOT
-			}
-			south_america = {
-				has_discovered = ROOT
-			}
-			new_world = {
-				has_discovered = ROOT
-			}
-		}
-	}
-
-	mean_time_to_happen = {
-		months = 1
-	}
-	
-	immediate = {
-		set_global_flag = new_world_discovered
-	}
-
-	option = {		# Now so have we!
-		name = "flavor_spa.EVTOPTA1005"
-		add_prestige = 50
-		add_innovativeness_small_effect = yes
-	}
-}
+#IR deleted, uses its own Columbus event
+#
 
 # Ignacio de Loyola
 country_event = {
@@ -1196,7 +895,7 @@ country_event = {
 			limit = {
 				culture = portugese
 			}
-			add_unrest = 20
+			add_unrest = 40
 		}
 	}
 	option = {		# Appease them!
@@ -1245,7 +944,7 @@ country_event = {
 			limit = {
 				region = italy_region
 			}
-			add_unrest = 20
+			add_unrest = 40
 		}
 	}
 	option = {		# Appease them!
@@ -1729,7 +1428,7 @@ country_event = {
 		add_prestige = 10
 	}
 }
-
+# IR AMYZ
 # Unification of Spain / Nueva Planta Decrees
 country_event = {
 	id = flavor_spa.4
@@ -2411,7 +2110,7 @@ country_event = {
 		}
 	}
 }
-
+# IR AMYZ
 
 #A Habsburg Heir in Spain
 country_event = {

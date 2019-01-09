@@ -12,12 +12,12 @@ NDefines.NDiplomacy.AE_ATTACKER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_DEFENDER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_PROVINCE_CAP = 50			-- from 30
  -- Peace AE
-NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.4			-- from 0p75
+NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.35			-- from 0p75
 NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.25			-- from 0p5
 NDefines.NDiplomacy.PO_FORM_PU_AE = 0.05			-- from 0p1
-NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.1			-- from 0p25
+NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.05			-- from 0p25
 NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.25			-- from 0p5
-NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.1			-- from 0p33
+NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.25			-- from 0p33
  -- Peace Prestige
 NDefines.NDiplomacy.PO_ANNEX_PRESTIGE = 0.15			-- from 0p25
 NDefines.NDiplomacy.PO_DEMAND_PROVINCES_PRESTIGE = 0.2			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Directly demanding provinces should be slightly rarer and harder now so offsetting larger penalties minorly with prestige
@@ -33,14 +33,14 @@ NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_PRESTIGE = 1			-- from 2
 NDefines.NDiplomacy.PO_GIVE_UP_CLAIM_PRESTIGE = 1			-- from 2
 NDefines.NDiplomacy.PO_WAR_REPARATIONS_PRESTIGE = 1			-- from 2
  -- Peace Costs
-NDefines.NDiplomacy.PEACE_COST_DEMAND_PROVINCE = 0.8			-- from 1
-NDefines.NDiplomacy.PEACE_COST_CONCEDE_PROVINCE = 0.6			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   More provinces and dev in colonial regions was making this too expensive   Also noticed that occasionally choosing provinces individually was less warscore why I dont know but we dont want that
-NDefines.NDiplomacy.PEACE_COST_BECOME_VASSAL = 0.5			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   This might be a personal thing but completely taking land shouldnt be the same price or cheaper than enforcing vassalage   vassal relations historically happened somewhat often even between larger nations
-NDefines.NDiplomacy.PEACE_COST_RETURN_CORE = 0.5			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   returning a core to a rightful owner should be a less dramatic negotiating factor than taking a completely new province
-NDefines.NDiplomacy.PEACE_COST_REVOKE_CORE = 0.25			-- from 0p5
-NDefines.NDiplomacy.PEACE_COST_RELEASE_ANNEXED = 0.5			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   releasing an annexed vassal shouldnt be as dramatic as demanding a completely new province   Also encourages breaking up of blobs which can only be a good thing
-NDefines.NDiplomacy.PEACE_COST_RELEASE_VASSAL = 1.0			-- from 0p5
-NDefines.NDiplomacy.PEACE_COST_CONVERSION = 0.25			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   I know people love their beliefs and resist religious change but the absurdly high price of this made it only possible against very small tags where it was usually preferable to just annex   Now this might be useful
+NDefines.NDiplomacy.PEACE_COST_DEMAND_PROVINCE = 0.7			-- from 1
+NDefines.NDiplomacy.PEACE_COST_CONCEDE_PROVINCE = 0.5			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   More provinces and dev in colonial regions was making this too expensive   Also noticed that occasionally choosing provinces individually was less warscore why I dont know but we dont want that
+NDefines.NDiplomacy.PEACE_COST_BECOME_VASSAL = 0.4			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   This might be a personal thing but completely taking land shouldnt be the same price or cheaper than enforcing vassalage   vassal relations historically happened somewhat often even between larger nations
+NDefines.NDiplomacy.PEACE_COST_RETURN_CORE = 0.4			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   returning a core to a rightful owner should be a less dramatic negotiating factor than taking a completely new province
+NDefines.NDiplomacy.PEACE_COST_REVOKE_CORE = 0.2			-- from 0p5
+NDefines.NDiplomacy.PEACE_COST_RELEASE_ANNEXED = 0.4			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   releasing an annexed vassal shouldnt be as dramatic as demanding a completely new province   Also encourages breaking up of blobs which can only be a good thing
+NDefines.NDiplomacy.PEACE_COST_RELEASE_VASSAL = 0.5		-- from 0p5
+NDefines.NDiplomacy.PEACE_COST_CONVERSION = 0.12		-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   I know people love their beliefs and resist religious change but the absurdly high price of this made it only possible against very small tags where it was usually preferable to just annex   Now this might be useful
 NDefines.NDiplomacy.PEACE_COST_RELEASE = 1			-- from 2
 NDefines.NDiplomacy.ANNEX_DIP_COST_PER_DEVELOPMENT = 4 -- from 8
  --End of Peace Costs
@@ -53,19 +53,8 @@ NDefines.NDiplomacy.AE_SAME_RELIGION = 0.5
 NDefines.NDiplomacy.AE_SAME_RELIGION_GROUP = 0.0
 NDefines.NDiplomacy.AE_DIFFERENT_RELIGION = -0.5
 NDefines.NDiplomacy.AE_HRE_INTERNAL = 0.5
-NDefines.NDiplomacy.AE_ATTACKER_DEVELOPMENT = 0.01	-- +50% cap (at 1000 development)
-NDefines.NDiplomacy.AE_DEFENDER_DEVELOPMENT = 0.01	-- -50% cap (at 1000 development)
 NDefines.NDiplomacy.AE_DISTANCE_BASE = 0.75
 NDefines.NDiplomacy.AE_SAME_OVERLORD = 0.5	
-NDefines.NDiplomacy.AE_PROVINCE_CAP = 30				-- Province development above this will not count for AE (also used for warscore cost cap)
-NDefines.NDiplomacy.AE_THREATEN_WAR = 1.0
--- PO AE
-NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.66		-- _DDEF_PO_DEMAND_PROVINCES_AE = 10, (Per development)
-NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.5			-- (Per core, only applied if returning cores to vassals of winner)
-NDefines.NDiplomacy.PO_FORM_PU_AE = 0.1							-- _DDEF_PO_FORM_PU_AE = 10, (Per development)
-NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.1
-NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.5					-- _DDEF_PO_BECOME_VASSAL_AE = 10, (Per development)
-NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.5
  --Empire of China
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.03			-- from 0p06
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_DEVASTATION = -2.5			-- from -5p0
@@ -130,6 +119,8 @@ NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 5.0			-- from 2p5
 NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.02			-- from 0p05
 NDefines.NCountry.MERCHANT_REPUBLIC_SIZE_LIMIT = 50
 NDefines.NCountry.PS_BOOST_MILITARIZATION = 30			-- Same logic as above new provinces cause faster decline thus need lower cost ideally I can find a better solution later Base 50
+NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.15		-- from 0.3
+NDefines.NCountry.REVOLT_SIZE_BASE = 3	-- from 4
  --Colonial
 NDefines.NCountry.MAX_CROWN_COLONIES = 3
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
@@ -161,7 +152,7 @@ NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.25
  --NMilitary changes
 NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 2.5			-- from 5     I dont actually know how this works     Might have it reversed better check later
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
-NDefines.NMilitary.FORT_PER_DEV_RATIO = 75			-- from 50
+NDefines.NMilitary.FORT_PER_DEV_RATIO = 40			-- from 50
 NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.125			-- from 0p25
 NDefines.NMilitary.FORTRESS_COST = 0.2			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
@@ -205,7 +196,7 @@ NDefines.NAI.DIPLOMATIC_ACTION_CLAIM_THRONE_DEVELOPMENT_FACTOR = 0.5			-- from 1
 NDefines.NAI.DIPLOMATIC_ACTION_AGITATE_FOR_LIBERTY_DEVELOPMENT_FACTOR = 0.15			-- from 0p25
 NDefines.NAI.DIPLOMATIC_ACTION_SUPPORT_HEIR_DEVELOPMENT_FACTOR = 1			-- from 2
 NDefines.NAI.DIPLOMATIC_ACTION_TRIBUTARY_ACCEPTANCE_PER_DEVELOPMENT = -0.25			-- from -0p5
-NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 0.5			-- from 3 THANK GOD
+NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 0.1			-- from 3 THANK GOD
  -- Condotierri
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_BASE_MULT = 33 -- AI scoring for offer condottieri, base scale.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_MONTHLY_PARTICIPATION_RATE = -0.3 --Base monthly decay in participation. Related to multipliers for war participation (but doesn't depend on number of regiments, so raw multiplier matters).
@@ -217,7 +208,7 @@ NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_MILITARY_RULERS = 1 --If s
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_NEIGHBORS = 1 --If set to 1, AI will only send Condottieri to neighbors, regardless of access.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_DISABLE_VERSUS_PLAYER_ENEMIES = 0 --If set to 1, AI will try avoid sending Condottieri having to fight against human player enemies.
  --Peace Deals
-NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 20
+NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 25
 NDefines.NAI.PEACE_TERMS_VASSAL_BASE_MULT = 10.0 -- only applied if the AI has vassalize priority
 
  --NGraphics changes
