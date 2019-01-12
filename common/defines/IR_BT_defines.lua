@@ -137,6 +137,14 @@ NDefines.NCountry.CORE_HAD_PERMANENT_CLAIM = 0.2
  -- states and territories
 NDefines.NCountry.ALLOWED_TERRITORY_VS_MAX_STATES = 1.5			-- Same logic as above new provinces and areas require higher numbers 
 NDefines.NCountry.TERRITORY_PENALTY_CAP = 60			-- Same logic as above new provinces and areas require higher numbers 
+ -- abdicate and disinherit
+NDefines.NCountry.ABDICATE_LEGITIMACY_THRESHOLD = 75 -- from 50
+NDefines.NCountry.ABDICATE_AGE_THRESHOLD = 60 -- from 60 
+NDefines.NCountry.ABDICATE_RULING_LENGTH_THRESHOLD = 25 -- from 20
+NDefines.NCountry.ABDICATE_LEGITIMACY_HIT = -25 -- from -20
+NDefines.NCountry.ABDICATE_PRESTIGE_HIT = -50 -- from -50
+NDefines.NCountry.DISINHERIT_PRESTIGE_HIT = -50 -- from -50
+NDefines.NCountry.DISINHERIT_PRESTIGE_THRESHOLD = 50 -- from 0
 
  --NEconomy
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
