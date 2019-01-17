@@ -179,7 +179,7 @@ NDefines.NMilitary.LOOTED_DAYS = 730								-- Time the "Looted" static modifier
 NDefines.NMilitary.LOOTED_SCALE = 2								-- Scaling value from province development to number of ducats it contains.									-- Maximum amount of ducats (total) a province can be looted for each month.
 NDefines.NMilitary.LOOTED_RECOVERY = 0.2
 NDefines.NMilitary.SLAVE_RAIDS_SAILOR_FACTOR = 0.2						
-NDefines.NMilitary.SLAVE_RAIDS_DURATION = 730
+NDefines.NMilitary.SLAVE_RAIDS_DURATION = 7300
  --Defence penalties
 NDefines.NMilitary.RIVER_CROSSING_PENALTY = -1						-- Dice roll penalty from river crossing
 NDefines.NMilitary.STRAIT_CROSSING_PENALTY = -2					-- Dice roll penalty from strait crossing
