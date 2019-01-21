@@ -77,10 +77,10 @@ NDefines.NDiplomacy.SABOTAGE_RECRUITMENT_COST = 90
 NDefines.NDiplomacy.SLANDER_MERCHANTS_COST = 90	
  --HRE
 NDefines.NDiplomacy.MAX_FREE_CITIES = 20
-NDefines.NDiplomacy.HRE_PRINCE_AUTHORITY_THRESHOLD = 35			-- from original BtP increased from 25
-NDefines.NDiplomacy.IMPERIAL_AUTHORITY_FROM_PRINCES = 0.005			-- from original BtP reduced from 01
-NDefines.NDiplomacy.IMPERIAL_CITY_IA = 0.001
-NDefines.NDiplomacy.HRE_FOREIGN_CONTROL_PENALTY = -0.001
+NDefines.NDiplomacy.HRE_PRINCE_AUTHORITY_THRESHOLD = 50			-- from original BtP increased from 25
+NDefines.NDiplomacy.IMPERIAL_AUTHORITY_FROM_PRINCES = 0.01		-- from 0.005
+NDefines.NDiplomacy.IMPERIAL_CITY_IA = 0.01 -- from 0.001
+NDefines.NDiplomacy.HRE_FOREIGN_CONTROL_PENALTY = -0.01 -- from -0.001
  -- Great powers
 NDefines.NDiplomacy.NUM_OF_GREAT_POWERS = 12
 
@@ -166,7 +166,7 @@ NDefines.NMilitary.FORTRESS_COST = 0.2			-- Beyond Typus added so many new provi
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
 NDefines.NMilitary.GARRISON_SIZE = 500							-- GARRISON_SIZE
-NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 6	
+NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 9	
  --Unit Speeds
 NDefines.NMilitary.INFANTRY_SPEED = 0.6					
 NDefines.NMilitary.CAVALRY_SPEED = 0.8							
