@@ -1009,7 +1009,7 @@ country_event = {
 			female = yes
 		}
 		create_union = LON
-		CAS = { country_event = { id IR_flavor_SPA.21 days = 0 } }
+		CAS = { country_event = { id = IR_flavor_SPA.21 days = 0 } }
 	}
 	option = {		# Stay out
 		name = "IR_flavor_SPA.22.b"
@@ -1019,7 +1019,7 @@ country_event = {
 	}
 }
 
-# Treaty of Alcacovas - indecisive 
+# Treaty of Alcacovas - Castilian Victory 
 country_event = {
 	id = IR_flavor_SPA.23
 	title = "IR_flavor_SPA.23.t"
@@ -1030,10 +1030,14 @@ country_event = {
 	major = yes
 
 	trigger = {
-		tag = POR
-		is_year = 1445
-		always = no
-		NOT = { has_country_flag = IR_flavor_SPA.23_happened }
+		tag = CAS
+		is_at_war = no
+		has_country_flag = IR_flavor_SPA.21_happened
+		POR = { has_country_flag = IR_flavor_SPA.22_happened }
+		NOT = { OR = { has_country_flag = IR_flavor_SPA.23_happened has_country_flag = IR_flavor_SPA.24_happened } }
+	
+		truce_with = POR
+		LON = { junior_union_with = ROOT }
 	}
 
 	mean_time_to_happen = {
@@ -1046,21 +1050,36 @@ country_event = {
 	}
 	
 	
-	option = {		# Intervene 
+	option = {		# treaty of alcacovas 
 		name = "IR_flavor_SPA.23.a"
-		ai_chance = { factor = 40 }
-		
-		
-	}
-	option = {		# Stay out
-		name = "IR_flavor_SPA.23.b"
-		ai_chance = { factor = 60 }
-		
-		
+		ai_chance = { factor = 100 }
+		inherit = LON
+		if = {
+			limit = { GAL = { is_subject_of = POR } }
+			create_subject = {
+				subject_type = fief 
+				subject = GAL
+			}
+		}
+		if = {
+			limit = { EXT = { is_subject_of = POR } }
+			create_subject = {
+				subject_type = fief 
+				subject = EXT
+			}
+		}
+		tooltip = {
+			every_province = {
+				limit = { country_or_non_sovereign_subject_holds = POR canaries_core_provinces = yes }
+				hidden_effect = { add_core = ROOT }
+				cede_province = ROOT
+			} 
+		}
+		hidden_effect = { POR = { country_event = { id = IR_flavor_SPA.25 days = 0 } } }
 	}
 }
 
-# Treaty of Segovia - Castilian Victory
+# Portuguese Victory - Isabella deposed, Coking Union
 country_event = {
 	id = IR_flavor_SPA.24
 	title = "IR_flavor_SPA.24.t"
@@ -1071,10 +1090,14 @@ country_event = {
 	major = yes
 
 	trigger = {
-		tag = POR
-		is_year = 1445
-		always = no
-		NOT = { has_country_flag = IR_flavor_SPA.24_happened }
+		ttag = CAS
+		is_at_war = no
+		has_country_flag = IR_flavor_SPA.21_happened
+		POR = { has_country_flag = IR_flavor_SPA.22_happened }
+		NOT = { OR = { has_country_flag = IR_flavor_SPA.23_happened has_country_flag = IR_flavor_SPA.24_happened } }
+	
+		truce_with = POR
+		LON = { junior_union_with = POR }
 	}
 
 	mean_time_to_happen = {
@@ -1087,21 +1110,48 @@ country_event = {
 	}
 	
 	
-	option = {		# Intervene 
+	option = {		# treaty of leon 
 		name = "IR_flavor_SPA.24.a"
-		ai_chance = { factor = 40 }
+		ai_chance = { factor = 100 }
+		if = {
+			limit = { ARA = { junior_union_with = CAS } }
+			grant_independence = yes
+		}
+		if = { 
+			limit = { CAT = { junior_union_with = CAS } }
+			ARA = { create_union = CAT }
+		}
+		if = { 
+			limit = { VAL = { junior_union_with = CAS } }
+			ARA = { create_union = VAL }
+		}
+		if = { 
+			limit = { NAV = { junior_union_with = CAS } }
+			ARA = { create_union = NAV }
+		}
+		if = { 
+			limit = { MLA = { junior_union_with = CAS } }
+			ARA = { create_union = MLA }
+		}
+		if = { 
+			limit = { SAR = { is_subject_of = CAS } }
+			ARA = { create_union = SAR }
+		}
+		if = { 
+			limit = { SIC = { is_subject_of = CAS } }
+			ARA = { create_union = SIC }
+		}
+		if = { 
+			limit = { NAP = { is_subject_of = CAS } }
+			ARA = { create_union = NAP }
+		}
+		create_union = CAS
 		
-		
-	}
-	option = {		# Stay out
-		name = "IR_flavor_SPA.24.b"
-		ai_chance = { factor = 60 }
-		
-		
+		hidden_effect = { POR = { country_event = { id = IR_flavor_SPA.25 days = 0 } } }
 	}
 }
 
-# Portuguese Victory - Isabella deposed, Coking Union
+# Portugal reaction
 country_event = {
 	id = IR_flavor_SPA.25
 	title = "IR_flavor_SPA.25.t"
@@ -1109,17 +1159,12 @@ country_event = {
 	picture = BATTLE_eventPicture
 
 	fire_only_once = yes
-	major = yes
+	is_triggered_only = yes
 
 	trigger = {
 		tag = POR
-		is_year = 1445
-		always = no
+		CAS = { OR = { has_country_flag = IR_flavor_SPA.23_happened  has_country_flag = IR_flavor_SPA.24_happened } }
 		NOT = { has_country_flag = IR_flavor_SPA.25_happened }
-	}
-
-	mean_time_to_happen = {
-		days = 15
 	}
 	
 	
@@ -1128,17 +1173,35 @@ country_event = {
 	}
 	
 	
-	option = {		# Intervene 
+	option = {		# won 
 		name = "IR_flavor_SPA.25.a"
-		ai_chance = { factor = 40 }
-		
-		
+		trigger = { CAS = { has_country_flag = IR_flavor_SPA.24_happened } }
+		tooltip = {
+			create_union = CAS
+			ARA = { grant_independence = yes }
+		}
 	}
-	option = {		# Stay out
+	option = {		# lost 
 		name = "IR_flavor_SPA.25.b"
-		ai_chance = { factor = 60 }
-		
-		
+		trigger = { CAS = { has_country_flag = IR_flavor_SPA.23_happened } }
+		tooltip = { 
+			CAS = { 
+				inherit = LON 
+				create_subject = {
+					subject_type = fief 
+					subject = GAL
+				}
+				create_subject = {
+					subject_type = fief 
+					subject = EXT
+				}
+			}
+		}
+		every_province = {
+			limit = { country_or_non_sovereign_subject_holds = ROOT canaries_core_provinces = yes }
+			hidden_effect = { add_core = FROM }
+			cede_province = FROM
+		}
 	}
 }
 
@@ -1154,14 +1217,14 @@ country_event = {
 	major = yes
 
 	trigger = {
-		tag = POR
-		is_year = 1445
-		always = no
+		tag = CAS
+		is_year = 1500
+		OR = { has_country_flag = IR_flavor_SPA.23_happened has_country_flag = IR_flavor_SPA.24_happened }
 		NOT = { has_country_flag = IR_flavor_SPA.26_happened }
 	}
 
 	mean_time_to_happen = {
-		days = 15
+		months = 24
 	}
 	
 	
@@ -1170,16 +1233,22 @@ country_event = {
 	}
 	
 	
-	option = {		# Intervene 
+	option = {		# sure 
 		name = "IR_flavor_SPA.26.a"
-		ai_chance = { factor = 40 }
-		
-		
+		ai_chance = { factor = 99 }
+		define_heir = {
+			name = "Charles"
+			dynasty = "Habsburg"
+			age = 0
+			adm = 5
+			dip = 4
+			mil = 4
+			fixed = yes
+		}
 	}
-	option = {		# Stay out
+	option = {		# no thanks
 		name = "IR_flavor_SPA.26.b"
-		ai_chance = { factor = 60 }
-		
+		ai_chance = { factor = 1 }
 		
 	}
 }
