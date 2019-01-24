@@ -145,6 +145,24 @@ NDefines.NCountry.ABDICATE_LEGITIMACY_HIT = -25 -- from -20
 NDefines.NCountry.ABDICATE_PRESTIGE_HIT = -50 -- from -50
 NDefines.NCountry.DISINHERIT_PRESTIGE_HIT = -50 -- from -50
 NDefines.NCountry.DISINHERIT_PRESTIGE_THRESHOLD = 50 -- from 0
+ -- ranks
+NDefines.NCountry.CULTURAL_UNION_MIN_RANK = 5
+NDefines.NCountry.HRE_RANK = 5
+NDefines.NCountry.HRE_MAX_RANK = 3
+NDefines.NCountry.HRE_MAX_RANK_ELECTOR = 3
+NDefines.NCountry.SUBJECT_MAX_RANK = 4
+NDefines.NCountry.PRESTIGE_GAIN_FOR_GOV_RANK_2 = 5
+NDefines.NCountry.PRESTIGE_GAIN_FOR_GOV_RANK_3 = 10
+NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_2 = 10
+NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_3 = 25
+-- NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_4 = ?
+NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_2 = 150
+NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_3 = 300
+-- NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_4 = ?
+NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_X = 50
+NDefines.NCountry.ADDITIONAL_MIN_DEVELOPMENT_FOR_GOV_RANK_X = 300
+NDefines.NCountry.MAX_GOV_RANK = 5
+NDefines.NCountry.NAT_FOCUS_YEARS_RANK = 2
 
  --NEconomy
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
