@@ -162,7 +162,7 @@ NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_3 = 300
 NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_X = 50
 NDefines.NCountry.ADDITIONAL_MIN_DEVELOPMENT_FOR_GOV_RANK_X = 300
 NDefines.NCountry.MAX_GOV_RANK = 5
-NDefines.NCountry.NAT_FOCUS_YEARS_RANK = 2
+NDefines.NCountry.NAT_FOCUS_YEARS_RANK = 3
 
  --NEconomy
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
