@@ -3,6 +3,7 @@ archive="mod/!improvedhistory_dev"
 replace_path="missions"
 replace_path="decisions"
 replace_path="history/provinces"
+replace_path="history/diplomacy"
 replace_path="common/colonial_regions"
 replace_path="common/trade_companies"
 tags={

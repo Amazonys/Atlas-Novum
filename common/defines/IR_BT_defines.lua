@@ -234,3 +234,4 @@ NDefines.NReligion.HARMONY_LOSS_PER_DEV_CONVERTED = 0.5			-- from 1
 NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.25			-- from 0p5
 NDefines.NNationDesigner.PRODUCTION_COST_MODIFIER = 0.25			-- from 0p5
 NDefines.NNationDesigner.MANPOWER_COST_MODIFIER = 0.25			-- from 0p5
+NDefines.NNationDesigner.MAX_GOVERNMENT_RANK = 5 -- was 3
