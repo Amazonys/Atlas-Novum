@@ -72,13 +72,17 @@ spa_slot_1 = {
 			else_if = {
 				limit = { SEV = { exists = yes is_subject_of = ROOT } }
 				every_province = {
-					limit = { spa_gibraltar_provinces = yes owned_by = GRA }
+					limit = { spa_gibraltar_provinces = yes }
 					cede_province = SEV
 				}
 			}
-			create_subject = {
-				subject_type = tributary_state
-				subject = GRA
+			if = { 
+				limit = { war_with = GRA }
+				hidden_effect = { white_peace = GRA }
+				create_subject = {
+					subject_type = tributary_state
+					subject = GRA
+				}
 			}
 		}
 	}
@@ -115,13 +119,17 @@ spa_slot_1 = {
 			else_if = {
 				limit = { SEV = { exists = yes is_subject_of = ROOT } }
 				every_province = {
-					limit = { spa_control_malaga_provinces = yes owned_by = GRA }
+					limit = { spa_control_malaga_provinces = yes }
 					cede_province = SEV
 				}
 			}
-			create_subject = {
-				subject_type = tributary_state
-				subject = GRA
+			if = { 
+				limit = { war_with = GRA }
+				hidden_effect = { white_peace = GRA }
+				create_subject = {
+					subject_type = tributary_state
+					subject = GRA
+				}
 			}
 		}
 	}
@@ -150,18 +158,26 @@ spa_slot_1 = {
 		}
 		
 		effect = {
-			#Amyzonis - NEEDED CODE for CONTROL missions
-			#if = {	
-			#	limit = { JAE = { exists = no } }
-				control_mission_cede = { PROVINCES = spa_granada_provinces }
-			#}
-			#else_if = {
-			#	limit = { JAE = { exists = yes is_subject_of = ROOT } }
-			#	every_province = {
-			#		limit = { spa_granada_provinces = yes owned_by = GRA }
-			#		cede_province = JAE
-			#	}
-			#}
+			every_province = {
+				limit = { gra_core_provinces = yes }
+				if = {
+					limit = { owned_by = GRA }
+					hidden_effect = { add_core = GR4 }
+					cede_province = GR4
+				}
+				else_if = { 
+					limit = { country_or_non_sovereign_subject_holds = ROOT }
+					hidden_effect = { add_core = GR4 remove_core = owner }
+					cede_province = GR4
+				}
+				else = {
+					add_core = GR4
+				}
+			}
+			create_subject = {
+				subject_type = coking
+				subject = GR4
+			}
 		}
 	}
 	
@@ -353,7 +369,7 @@ spa_slot_1 = {
 	spa_conquer_luzon = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { spa_discover_east_indies }
-		position = 15
+		position = 21
 		
 		provinces_to_highlight = {
 			OR = { 
@@ -383,6 +399,237 @@ spa_slot_1 = {
 					name = "spa_plantation"
 					duration = -1
 				}
+			}
+		}
+	}
+
+	spa_discover_spice_isles = {
+		icon = mission_establish_high_seas_navy
+		required_missions = {  }
+		position = 22
+		
+		provinces_to_highlight = {
+			OR = { 
+				province_id = 2696
+				province_id = 649
+				province_id = 650
+				
+			}
+		}
+		
+		trigger = { 
+			649 = { has_discovered = ROOT }
+			650 = { has_discovered = ROOT }
+			2696 = { has_discovered = ROOT }
+			has_idea = quest_for_the_new_world
+		}
+	
+		effect = {
+			add_dip_power = 25 
+			hidden_effect = {
+				discover_province = 645 
+				discover_province = 2696 
+				discover_province = 2717 
+				discover_province = 2725
+				discover_province = 1401
+				discover_province = 1409
+			}
+			if = { 
+				limit = { TID = { exist = yes ai = yes } 650 = { owned_by = TID } }
+				create_subject = { 
+					subject_type = colony
+					subject = TID
+				}
+				TID = { country_event = { id = orion_colonial.5 days = 0 } }
+			}
+					
+			if = { 
+				limit = { 2696 = { is_empty = yes } }
+				hidden_effect = {
+					2696 = {
+						change_trade_goods = spices
+						add_territorial_core = ROOT
+					}
+				}
+				2696 = { 
+					cede_province = ROOT 
+					add_province_modifier = {
+						name = "spa_presidio"
+						duration = -1
+					}
+				}
+			}
+			if = { 
+				limit = { 2696 = { is_city = yes  NOT = { country_or_non_sovereign_subject_holds = ROOT } } }
+				if = {
+					limit = { 
+						2696 = { owner = { is_colonizer_tech_group = no } }
+					}
+					hidden_effect = {
+						2696 = {
+							owner = { country_event = { id = orion_seize.1 days = 0 } }	
+							change_trade_goods = spices
+							add_territorial_core = ROOT	
+						}	
+					}
+					2696 = { 
+						cede_province = ROOT 
+						add_province_modifier = {
+							name = "spa_presidio"
+							duration = -1
+						}
+					}
+				}
+				else_if = {
+					limit = { 
+						2696 = { owner = { is_colonizer_tech_group = yes } } 
+					}
+					2696 = { add_permanent_claim = ROOT }
+				}
+			}
+			add_years_of_income = 2.5
+		}
+	}
+	
+	spa_colonize_samoa = {
+		icon = mission_colonial
+		required_missions = { spa_discover_spice_isles }
+		position = 23
+		
+		provinces_to_highlight = {
+			province_id = 1243
+		}
+		
+		trigger = {
+			1243 = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_dip_power = 25
+			1243 = { 
+				add_province_modifier = {
+					name = "spa_presidio"
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	spa_circumnavigation = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_colonize_samoa }
+		position = 24
+		
+		provinces_to_highlight = {
+			OR = {
+				area = west_micronesia_area
+				area = polynesia_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		
+		trigger = {
+			west_micronesia_area = { type = all has_discovered = ROOT }
+			polynesia_area = { type = all has_discovered = ROOT }
+			has_idea = quest_for_the_new_world	
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "circumnavigation"
+				duration = 730
+			}
+			create_explorer = 80
+		}
+	}
+	
+	spa_colonize_hawaii = {
+		icon = mission_colonial
+		required_missions = { spa_circumnavigation }
+		position = 25
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 1240
+				province_id = 5029 
+				province_id = 5817 
+				province_id = 5818 
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		
+		trigger = {
+			1240 = { country_or_non_sovereign_subject_holds = ROOT is_city = yes }
+			5029 = { country_or_non_sovereign_subject_holds = ROOT is_city = yes }
+			5817 = { country_or_non_sovereign_subject_holds = ROOT is_city = yes }
+			5818 = { country_or_non_sovereign_subject_holds = ROOT is_city = yes }
+		}
+		
+		effect = {
+			1240 = {
+				add_province_modifier = {
+					name = "spa_plantation"
+					duration = -1
+				}
+			}
+			5029 = {
+				add_province_modifier = {
+					name = "spa_plantation"
+					duration = -1
+				}
+			}
+			5817 = {
+				add_province_modifier = {
+					name = "spa_plantation"
+					duration = -1
+				}
+			}
+			5818 = {
+				add_province_modifier = {
+					name = "spa_plantation"
+					duration = -1
+				}
+			}
+			hidden_effect = {
+				1240 = { change_trade_goods = coffee }
+				5029 = { change_trade_goods = gems }
+				5817 = { change_trade_goods = sugar }
+				5818 = { change_trade_goods = tropical_wood }
+			}
+		}
+	}
+	
+	spa_polynesia = {
+		icon = mission_empire
+		required_missions = { spa_colonize_hawaii spa_outpost_pacific }
+		position = 26
+		
+		provinces_to_highlight = {
+			OR = {
+				region = oceanea_region
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		
+		trigger = {
+			oceanea_region = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+				is_city = yes
+			}
+		}
+		
+		effect = {
+			add_prestige = 10
+			add_years_of_income = 2
+			add_country_modifier = {
+				name = "sun_never_sets"
+				duration = 36500
 			}
 		}
 	}
@@ -437,55 +684,6 @@ spa_slot_2 = {
 		}
 		
 		effect = {
-		}
-	}
-	
-	spa_hermandad = {
-		icon = mission_rb_monopolize_the_channel
-		required_missions = { spa_entrench_the_army }
-		position = 3
-		
-		#provinces_to_highlight = {
-			
-		#}
-		
-		trigger = {
-			treasury = 100
-			navy_tradition = 10
-			navy_size_percentage = 0.9
-		}
-		
-		effect = {
-			add_treasury = -100
-			add_navy_tradition = 5
-			1745 = { add_building = shipyard }
-			10023 = { add_building = shipyard }
-		}
-	}
-	
-	spa_basque_naval = {
-		icon = mission_rb_monopolize_the_channel
-		required_missions = { spa_hermandad }
-		position = 4
-		
-		provinces_to_highlight = {
-			country_or_non_sovereign_subject_holds = VZC
-		}
-		
-		trigger = {
-			dip_power = 100
-			treasury = 50
-			vassalize_mission_trigger = {
-				TOOLTIP=spa_vassalize_VZC.tooltip
-				TAG=VZC
-			} 
-		}
-		
-		effect = {
-			add_dip_power = -100
-			add_treasury = -50
-			add_navy_tradition = 10
-			#NAVAL MODIFIER
 		}
 	}
 	
@@ -724,7 +922,7 @@ spa_slot_2 = {
 	spa_discover_east_indies = {
 		icon = mission_establish_high_seas_navy
 		required_missions = {  }
-		position = 14
+		position = 20
 		
 		provinces_to_highlight = {
 			OR = { 
@@ -808,7 +1006,7 @@ spa_slot_2 = {
 	spa_conquer_philip_isles = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { spa_discover_east_indies }
-		position = 15
+		position = 21
 		
 		provinces_to_highlight = {
 			OR = { 
@@ -842,163 +1040,135 @@ spa_slot_2 = {
 			}
 		}
 	}
-		
-	spa_conquer_philippines = {
-		icon = mission_empire
-		required_missions = { spa_conquer_philip_isles spa_conquer_palawan spa_conquer_mindanao spa_conquer_luzon }
-		position = 16
+
+	spa_colonize_taiwan = {
+		icon = mission_colonial
+		required_missions = { spa_discover_spice_isles }
+		position = 23
 		
 		provinces_to_highlight = {
-			OR = { 
-				area = visayas_area
-				area = mindanao_area
-				area = west_mindanao_area
-				area = palawan_area
-				area = luzon_area
-				area = southern_luzon_area
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			area = taiwan_area
 		}
 		
 		trigger = {
-			luzon_area = {
+			taiwan_area = {
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT
+				is_city = yes
 			}
-			southern_luzon_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
+		}
+		
+		effect = {
+			add_dip_power = 25
+			738 = { 
+				add_province_modifier = {
+					name = "spa_presidio"
+					duration = -1
+				}
 			}
-			palawan_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
+			add_country_modifier = {
+				name = "taiwan_conquered"
+				duration = 7300
 			}
-			visayas_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			mindanao_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			west_mindanao_area = {
-				type = all
+		}
+	}
+	
+	spa_colonize_guam = {
+		icon = mission_colonial
+		required_missions = { spa_colonize_taiwan }
+		position = 24
+		
+		provinces_to_highlight = {
+			province_id = 1015
+		}
+		
+		trigger = {
+			1015 = {
 				country_or_non_sovereign_subject_holds = ROOT
 			}
 		}
 		
 		effect = {
-			add_dip_power = 50
-			656 = {	
-				add_province_modifier = { 
-					name = "spa_audiencia"
+			add_dip_power = 25
+			add_mil_power = 25
+			1015 = { 
+				add_province_modifier = {
+					name = "spa_presidio"
 					duration = -1
 				}
 			}
 		}
 	}
 	
-	spa_moluccas = {
-		icon = mission_empire
-		required_missions = { spa_conquer_philippines spa_conquer_borneo spa_conquer_sulawesi }
-		position = 17
-		
-		provinces_to_highlight = {
-			OR = { 
-				area = lesser_sunda_islands_area
-				area = ceram_area
-				area = timor_area
-				area = molluca_area
-				area = spice_islands_area
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		
-		trigger = {
-			lesser_sunda_islands_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			ceram_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			timor_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			molluca_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-			spice_islands_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-			}
-		}
-		
-		effect = {
-			add_dip_power = 50
-			631 = {	
-				add_province_modifier = { 
-					name = "spa_audiencia"
-					duration = -1
-				}
-			}
-			635 = {	
-				add_province_modifier = { 
-					name = "spa_audiencia"
-					duration = -1
-				}
-			}
-		}
-	}
-	
-	spa_east_indies = {
-		icon = mission_rb_colonise_spice_islands
-		required_missions = { spa_moluccas spa_conquer_sumatra }
-		position = 18
+	spa_colonize_australia = {
+		icon = mission_colonial
+		required_missions = { spa_circumnavigation }
+		position = 25
 		
 		provinces_to_highlight = {
 			OR = {
-				region = indonesia_region
-				region = moluccas_region
-				area = malacca_area
-				area = malaya_area
-				area = tenasserim_area
+				colonial_region = colonial_australia
 			}
 			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
 		
 		trigger = {
-			indonesia_region = { 
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-			moluccas_region = { 
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-			malacca_area = { 
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-			malaya_area = { 
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-			tenasserim_area = { 
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 18
+				OR = {
+					colonial_region = colonial_australia
+					is_city = yes 
+				}
 			}
 		}
 		
 		effect = {
-			add_prestige = 25
-			add_years_of_income = 5
+			add_dip_power = 50
+			colonial_australia = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
+				add_permanent_province_modifier = {
+					name = "spa_colony"
+					duration = 3650
+				}
+			}
 			add_country_modifier = {
-				name = "por_spice_trade"
-				duration = 9125
+				name = "eng_australian_colony"
+				duration = 18250
+			}
+			
+		}
+	}
+	
+	spa_new_zeeland = {
+		icon = mission_empire
+		required_missions = { spa_colonize_australia }
+		position = 26
+		
+		provinces_to_highlight = {
+			OR = {
+				colonial_region = colonial_nz
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 16
+				OR = {
+					colonial_region = colonial_nz
+				}
+				is_city = yes
+			}
+		}
+		
+		effect = {
+			add_dip_power = 50
+			colonial_nz = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
+				add_permanent_province_modifier = {
+					name = "spa_colony"
+					duration = 3650
+				}
 			}
 		}
 	}
@@ -1110,7 +1280,7 @@ spa_slot_3 = {
 	spa_conquer_palawan = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { spa_discover_east_indies }
-		position = 15
+		position = 21
 		
 		provinces_to_highlight = {
 			OR = { 
@@ -1151,67 +1321,162 @@ spa_slot_3 = {
 		}
 	}
 	
-	spa_conquer_borneo = {
-		icon = mission_cannons_firing
-		required_missions = { spa_conquer_palawan }
+	spa_conquer_philippines = {
+		icon = mission_empire
+		required_missions = { spa_conquer_philip_isles spa_conquer_palawan spa_conquer_mindanao spa_conquer_luzon }
 		position = 16
 		
 		provinces_to_highlight = {
-			OR = {
-				area = brunei_area
-				area = kutai_area
-				area = kalimantan_area
+			OR = { 
+				area = visayas_area
+				area = mindanao_area
+				area = west_mindanao_area
+				area = palawan_area
+				area = luzon_area
+				area = southern_luzon_area
 			}
 			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
 		
+		trigger = {
+			luzon_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			southern_luzon_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			palawan_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			visayas_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			mindanao_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			west_mindanao_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_dip_power = 50
+			656 = {	
+				add_province_modifier = { 
+					name = "spa_audiencia"
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	spa_moluccas = {
+		icon = mission_empire
+		required_missions = { spa_conquer_philippines }
+		position = 22
+		
+		provinces_to_highlight = {
+			OR = { 
+				area = lesser_sunda_islands_area
+				area = ceram_area
+				area = timor_area
+				area = molluca_area
+				area = spice_islands_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
 		
 		trigger = {
-			brunei_area = { 
+			lesser_sunda_islands_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			ceram_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			timor_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			molluca_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			spice_islands_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		
+		effect = {
+			add_dip_power = 50
+			631 = {	
+				add_province_modifier = { 
+					name = "spa_audiencia"
+					duration = -1
+				}
+			}
+			635 = {	
+				add_province_modifier = { 
+					name = "spa_audiencia"
+					duration = -1
+				}
+			}
+		}
+	}
+	
+	spa_east_indies = {
+		icon = mission_rb_colonise_spice_islands
+		required_missions = { spa_moluccas spa_conquer_sumatra }
+		position = 23
+		
+		provinces_to_highlight = {
+			OR = {
+				region = indonesia_region
+				region = moluccas_region
+				area = malacca_area
+				area = malaya_area
+				area = tenasserim_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			indonesia_region = { 
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT 
 			}
-			kutai_area = { 
+			moluccas_region = { 
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT 
 			}
-			kalimantan_area = { 
+			malacca_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT 
+			}
+			malaya_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT 
+			}
+			tenasserim_area = { 
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT 
 			}
 		}
 		
 		effect = {
-			add_mil_power = 25
-			2709 = {
-				add_province_modifier = {
-					name = "spa_presidio"
-					duration = -1
-				}
-			}
-			malacca_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			malaya_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			tenasserim_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			west_java_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			central_java_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			east_java_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
+			add_prestige = 25
+			add_years_of_income = 5
+			add_country_modifier = {
+				name = "por_spice_trade"
+				duration = 9125
 			}
 		}
 	}
@@ -1232,9 +1497,9 @@ spa_slot_4 = {
 	}
 	has_country_shield = yes
 	
-	spa_farce_avila = {
-		icon = mission_alliances
-		required_missions = { spa_defeat_infante spa_juans_will }
+	spa_hermandad = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { spa_defeat_infante }
 		position = 2
 		
 		#provinces_to_highlight = {
@@ -1242,88 +1507,184 @@ spa_slot_4 = {
 		#}
 		
 		trigger = {
-			event_mission_trigger = {
-				TOOLTIP=spa_farce_avila.tooltip
-				EVENT=IR_flavor_SPA.4
-				BYPASS_DATE=1470
-			}
-		}
-		
-		effect = {
-			
-		}
-	}
-
-	spa_cartagena = {
-		icon = mission_colonial
-		required_missions = { spa_cabo_de_la_vela }
-		position = 10
-		
-		provinces_to_highlight = {
-			province_id = 828
-		}
-		
-		
-		trigger = {
-			dip_power = 50
 			treasury = 100
-			828 = { has_discovered = ROOT }
+			navy_tradition = 10
+			navy_size_percentage = 0.9
 		}
 		
 		effect = {
-			add_dip_power = -50
-			discovery_mission_cede = {
-				PROVINCE_ID = 828
-				COST = 100
-				TRADE_GOOD = gold
-				MODIFIER = spa_presidio
-				DURATION = -1
-			}
-			assign_colony_reserve = {
-				PROVINCES = spa_colombia_provinces
-				MODIFIER = spa_colony
-				DURATION = 18250
-			}
-		}	
-	}
-
-	spa_panama = {
-		icon = mission_colonial
-		required_missions = { spa_cabo_de_la_vela }
-		position = 10
-		
-		provinces_to_highlight = {
-			province_id = 828
+			add_treasury = -100
+			add_navy_tradition = 5
+			1745 = { add_building = shipyard }
+			10023 = { add_building = shipyard }
 		}
-		
-		
-		trigger = {
-			dip_power = 50
-			treasury = 100
-			828 = { has_discovered = ROOT }
-		}
-		
-		effect = {
-			add_dip_power = -50
-			discovery_mission_cede = {
-				PROVINCE_ID = 828
-				COST = 100
-				TRADE_GOOD = gold
-				MODIFIER = spa_presidio
-				DURATION = -1
-			}
-			assign_colony_reserve = {
-				PROVINCES = spa_colombia_provinces
-				MODIFIER = spa_colony
-				DURATION = 18250
-			}
-		}	
 	}
 	
+	spa_basque_naval = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { spa_hermandad spa_eleanor_navarra }
+		position = 3
+		
+		provinces_to_highlight = {
+			country_or_non_sovereign_subject_holds = VZC
+		}
+		
+		trigger = {
+			dip_power = 100
+			treasury = 50
+			vassalize_mission_trigger = {
+				TOOLTIP=spa_vassalize_VZC.tooltip
+				TAG=VZC
+			} 
+		}
+		
+		effect = {
+			add_dip_power = -100
+			add_treasury = -50
+			add_navy_tradition = 10
+			add_country_modifier = {
+				name = "spa_basque_sailors"
+				duration = -1
+			}
+		}
+	}
+	
+	spa_cumana = {
+		icon = mission_colonial
+		required_missions = { spa_discover_colombia }
+		position = 9
+		
+		provinces_to_highlight = {
+			spa_terra_firma_provinces = yes
+		}
+		
+		
+		trigger = {
+			dip_power = 50
+			treasury = 100
+			831 = { has_discovered = ROOT }
+		}
+		
+		effect = {
+			add_dip_power = -50
+			discovery_mission_cede = {
+				PROVINCE_ID = 831
+				COST = 100
+				TRADE_GOOD = sugar
+				MODIFIER = spa_presidio
+				DURATION = -1
+			}
+			assign_colony_reserve = {
+				PROVINCES = spa_terra_firma_provinces
+				MODIFIER = spa_colony
+				DURATION = 18250
+			}
+		}
+	}
+
+	spa_caracas = {
+		icon = mission_colonial
+		required_missions = { spa_cumana }
+		position = 10
+		
+		provinces_to_highlight = {
+			spa_terra_firma_provinces = yes
+		}
+		
+		
+		trigger = {
+			dip_power = 50
+			treasury = 100
+			831 = { has_discovered = ROOT }
+		}
+		
+		effect = {
+			add_dip_power = -50
+			discovery_mission_cede = {
+				PROVINCE_ID = 831
+				COST = 100
+				TRADE_GOOD = sugar
+				MODIFIER = spa_audiencia
+				DURATION = -1
+			}
+			assign_colony_reserve = {
+				PROVINCES = spa_terra_firma_provinces
+				MODIFIER = spa_colony
+				DURATION = 18250
+			}
+		}
+	}
+
+	spa_terra_firma = {
+		icon = mission_colonial
+		required_missions = { spa_caracas spa_colombia }
+		position = 12
+		
+		provinces_to_highlight = {
+			spa_terra_firma_provinces = yes
+		}
+		
+		
+		trigger = {
+			adm_power = 50
+			treasury = 50
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				SCOPE=every
+				PROVINCES=spa_terra_firma_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			add_adm_power = -50
+			add_treasury = -50
+			831 = {
+				add_province_modifier = {
+					name = spa_audiencia
+					duration = -1 
+				}
+			}
+		}
+	}
+
+	spa_orinoco = {
+		icon = mission_colonial
+		required_missions = { spa_terra_firma spa_conquer_musica }
+		position = 13
+		
+		provinces_to_highlight = {
+			spa_orinoco_provinces = yes
+		}
+		
+		
+		trigger = {
+			adm_power = 50
+			treasury = 50
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				SCOPE=every
+				PROVINCES=spa_orinoco_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			add_adm_power = -100
+			add_treasury = -200
+			assign_group_prov_modifier = {
+				PROVINCES = spa_orinoco_provinces
+				TYPE = city
+				MODIFIER = spa_plantation
+				DURATION = -1
+			}
+		}
+	}
+
 	spa_conquer_mindanao = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { spa_discover_east_indies }
-		position = 15
+		position = 21
 		
 		provinces_to_highlight = {
 			OR = { 
@@ -1351,42 +1712,6 @@ spa_slot_4 = {
 				limit = { OR = { area = mindanao_area area = west_mindanao_area } NOT = { has_province_modifier = spa_plantation } OR = { trade_goods = spices trade_goods = tea trade_goods = sugar trade_goods = coffee trade_goods = incense trade_goods = tobacco trade_goods = cotton trade_goods = dyes }}
 				add_province_modifier = {
 					name = "spa_plantation"
-					duration = -1
-				}
-			}
-		}
-	}
-	
-	spa_conquer_sulawesi = {
-		icon = mission_cannons_firing
-		required_missions = { spa_conquer_mindanao }
-		position = 16
-		
-		provinces_to_highlight = {
-			OR = {
-				area = sulawesi_area
-				area = south_sulawesi_area
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		
-		
-		trigger = {
-			sulawesi_area = { 
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-			south_sulawesi_area = { 
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-		}
-		
-		effect = {
-			add_mil_power = 25
-			2716 = {
-				add_province_modifier = {
-					name = "spa_presidio"
 					duration = -1
 				}
 			}
@@ -1428,6 +1753,28 @@ spa_slot_5 = {
 		
 		effect = {
 			add_prestige = 5
+		}
+	}
+
+	spa_farce_avila = {
+		icon = mission_alliances
+		required_missions = { spa_defeat_infante spa_juans_will }
+		position = 2
+		
+		#provinces_to_highlight = {
+			
+		#}
+		
+		trigger = {
+			event_mission_trigger = {
+				TOOLTIP=spa_farce_avila.tooltip
+				EVENT=IR_flavor_SPA.4
+				BYPASS_DATE=1470
+			}
+		}
+		
+		effect = {
+			
 		}
 	}
 	
@@ -1531,7 +1878,7 @@ spa_slot_5 = {
 		}
 		
 		trigger = {
-			treasury = 75
+			treasury = 25
 			discover_mission_trigger = {
 				TOOLTIP=spa_discover_colombia.tooltip
 				SCOPE=any
@@ -1542,7 +1889,7 @@ spa_slot_5 = {
 		effect = {
 			discovery_mission_cede = {
 				PROVINCE_ID = 5579
-				COST = 75
+				COST = 25
 				TRADE_GOOD = naval_supplies
 				MODIFIER = mark_of_discovery
 				DURATION = 3650
@@ -1556,18 +1903,20 @@ spa_slot_5 = {
 		position = 9
 		
 		provinces_to_highlight = {
-			spa_cartagena_provinces = yes
+			spa_guajira_provinces = yes
 		}
 		
 		
 		trigger = {
-			dip_power = 25
+			discover_mission_trigger = {
+				TOOLTIP=spa_guajira.tooltip
+				SCOPE=any
+				PROVINCES=spa_guajira_provinces
+			}
 			treasury = 50
-			2806 = { has_discovered = ROOT }
 		}
 		
 		effect = {
-			add_dip_power = -25
 			discovery_mission_cede = {
 				PROVINCE_ID = 2806
 				COST = 50
@@ -1576,9 +1925,9 @@ spa_slot_5 = {
 				DURATION = -1
 			}
 			assign_colony_reserve = {
-				PROVINCES = spa_cartagena_provinces
+				PROVINCES = spa_guajira_provinces
 				MODIFIER = spa_colony
-				DURATION = 18250
+				DURATION = 9125
 			}
 		}	
 	}
@@ -1589,7 +1938,7 @@ spa_slot_5 = {
 		position = 11
 		
 		provinces_to_highlight = {
-			spa_colombia_provinces = yes
+			spa_castillo_de_oro_provinces = yes
 		}
 		
 		
@@ -1597,7 +1946,8 @@ spa_slot_5 = {
 			adm_power = 50
 			colonize_mission_trigger = {
 				TOOLTIP=colonize_conquer_highlighted
-				PROVINCES=spa_colombia_provinces
+				SCOPE=every
+				PROVINCES=spa_castillo_de_oro_provinces
 				OWNER_TYPE=country_or_non_sovereign_subject_holds
 			}
 		}
@@ -1624,189 +1974,264 @@ spa_slot_5 = {
 		position = 12
 		
 		provinces_to_highlight = {
-			OR = {
-				province_id = 832
-				province_id = 825
-				province_id = 2817
-			}
+			spa_musica_provinces = yes
 		}
 		
 		trigger = {
 			MCA = { exists = no }
-			832 = { country_or_non_sovereign_subject_holds = ROOT }
-			825 = { country_or_non_sovereign_subject_holds = ROOT }
-			2817 = { country_or_non_sovereign_subject_holds = ROOT }
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted
+				PROVINCES=spa_musica_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
 		}
 		
 		effect = {	
-			define_conquistador = {
-				name = "Francisco Pizzaro"
-    			shock = 5
-   				fire = 3
-   				manuever = 5
-    			siege = 2
-			}
-			835 = { 
+			825 = {
 				add_province_modifier = {
-					name = "spa_audiencia"
+					name = spa_audiencia
 					duration = -1
-				} 
-			}
-			panama_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
 				}
 			}
 		}
 	}
 	
-	spa_pizarro = {
+	spa_popayan = {
 		icon = mission_cannons_firing
-		required_missions = { spa_conquer_musica }
-		position = 10
+		required_missions = { spa_conquer_musica spa_panama }
+		position = 13
 		
 		provinces_to_highlight = {
-			OR = {
-				province_id = 2647
-				province_id = 852
-				province_id = 849
-				province_id = 850
-			}
+			spa_popayan_provinces = yes
 		}
 		
 		trigger = { 
-		
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_every_highlighted 
+				SCOPE=every
+				PROVINCES=spa_popayan_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
 		}
 	
 		effect = {
-			add_mil_power = 50
-			2942 = {	
-				add_province_modifier = { 
-					name = "spa_audiencia"
-					duration = -1
-				}
+			custom_tooltip = spa_popayan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = spa_quito_provinces
+				TYPE = permanent_claim
 			}
-			808 = {
-				add_province_modifier = {
-					name = "spa_audiencia"
-					duration = -1
-				}
+		}
+	}
+
+	spa_control_quito = {
+		icon = mission_unite_home_region
+		required_missions = { spa_popayan }
+		position = 14
+		
+		provinces_to_highlight = {
+			spa_honduras_provinces = yes
+		}
+		
+		trigger = { 
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted 
+				PROVINCES=spa_quito_provinces
 			}
+		}
+	
+		effect = {
+			control_mission_cede = { PROVINCES = spa_quito_provinces }
 			820 = {
 				add_province_modifier = {
-					name = "spa_audiencia"
+					name = spa_presidio
 					duration = -1
 				}
 			}
-			787 = {
-				add_province_modifier = {
-					name = "spa_audiencia"
-					duration = -1
-				}
+			custom_tooltip = spa_quito_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = spa_peru_coast_provinces
+				TYPE = permanent_claim
 			}
+		}
+	}	
+
+	spa_control_peru_coast = {
+		icon = mission_unite_home_region
+		required_missions = { spa_control_quito }
+		position = 15
+		
+		provinces_to_highlight = {
+			spa_peru_coast_provinces = yes
+		}
+		
+		trigger = { 
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
+				PROVINCES=spa_peru_coast_provinces
+			}
+		}
+	
+		effect = {
+			control_mission_cede = { PROVINCES = spa_peru_coast_provinces }
 			809 = {
 				add_province_modifier = {
-					name = "spa_audiencia"
+					name = spa_presidio
 					duration = -1
 				}
 			}
-		}
-	}
-	
-	spa_incas = {
-		icon = mission_cannons_firing
-		required_missions = { spa_pizarro }
-		position = 11
-		
-		provinces_to_highlight = {
-			OR = {
-				area = kuntisuyu_area
-				area = antisuyu_area
-				area = potosi_area
-				area = jujuy_area
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		
-		trigger = { 
-			antisuyu_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-			kuntisuyu_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-			potosi_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-			jujuy_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT 
-			}
-		}
-	
-		effect = {
-			add_dip_power = 50
-			2834 = {
+			812 = {
 				add_province_modifier = {
-					name = "spa_audiencia"
+					name = spa_presidio
 					duration = -1
 				}
 			}
-			colonial_chile = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+			custom_tooltip = spa_peru_coast_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = spa_cuzco_provinces
+				TYPE = permanent_claim
 			}
 		}
-	}
-	
-	spa_bolivia = {
-		icon = mission_colonial
-		required_missions = { spa_incas }
-		position = 12
+	}	
+
+	spa_cuzco = {
+		icon = mission_unite_home_region
+		required_missions = { spa_control_peru_coast }
+		position = 16
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_bolivia
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			spa_cuzco_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 15
-				colonial_region = colonial_bolivia
-			}	
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
+				PROVINCES=spa_cuzco_provinces
+			}
 		}
 	
 		effect = {
-			add_dip_power = 25
-			add_mil_power = 25
-			2621 = {	
-				add_province_modifier = { 
-					name = "spa_audiencia"
+			control_mission_cede = { PROVINCES = spa_cuzco_provinces }
+			every_country = {
+				limit = { capital_scope = { OR = { region = peru_region region = upper_peru_region } } }
+				country_event = { id = IR_flavor_SPA.34 days = 30 random = 15 }
+			}
+		}
+	}
+
+	spa_arequiba = {
+		icon = mission_colonial
+		required_missions = { spa_cuzco }
+		position = 17
+		
+		provinces_to_highlight = {
+			spa_atacama_provinces = yes
+		}
+		
+		
+		trigger = {
+			dip_power = 100
+			treasury = 100
+			805 = { has_discovered = ROOT }
+		}
+		
+		effect = {
+			add_dip_power = -100
+			discovery_mission_cede = {
+				PROVINCE_ID = 805
+				COST = 100
+				TRADE_GOOD = ir_silver
+				MODIFIER = spa_presidio
+				DURATION = -1
+			}
+			805 = { center_of_trade = 1 }
+			assign_colony_reserve = {
+				PROVINCES = spa_atacama_provinces
+				MODIFIER = spa_colony
+				DURATION = 9125
+			}
+		}	
+	}
+
+
+	spa_atacama_coast = {
+		icon = mission_colonial
+		required_missions = { spa_arequiba }
+		position = 18
+		
+		provinces_to_highlight = {
+			spa_atacama_provinces = yes
+		}
+		
+		trigger = { 
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_every_highlighted 
+				SCOPE=every
+				PROVINCES=spa_atacama_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+
+		}
+	}
+
+	spa_santiago = {
+		icon = mission_colonial
+		required_missions = { spa_atacama_coast }
+		position = 19
+		
+		provinces_to_highlight = {
+			spa_chile_provinces = yes
+		}
+		
+		
+		trigger = {
+			dip_power = 100
+			treasury = 100
+			787 = { has_discovered = ROOT }
+		}
+		
+		effect = {
+			add_dip_power = -100
+			discovery_mission_cede = {
+				PROVINCE_ID = 787
+				COST = 100
+				TRADE_GOOD = naval_supplies
+				MODIFIER = spa_presidio
+				DURATION = -1
+			}
+			assign_colony_reserve = {
+				PROVINCES = spa_chile_provinces
+				MODIFIER = spa_colony
+				DURATION = 9125
+			}
+		}	
+	}
+
+	spa_chile = {
+		icon = mission_colonial
+		required_missions = { spa_santiago }
+		position = 20
+		
+		provinces_to_highlight = {
+			spa_chile_provinces = yes
+		}
+		
+		trigger = { 
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_every_highlighted 
+				SCOPE=every
+				PROVINCES=spa_chile_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+			784 = {
+				add_province_modifier = {
+					name = spa_audiencia
 					duration = -1
-				}
-			}
-			colonial_bolivia = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_chile = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
 				}
 			}
 		}
@@ -1826,320 +2251,308 @@ spa_slot_6 = {
 		}
 	}
 	has_country_shield = yes
+
+	spa_segovia_alcazar = {
+		icon = mission_alliances
+		required_missions = { spa_juans_will }
+		position = 2
+		
+		#provinces_to_highlight = {
+			
+		#}
+		
+		trigger = {
+			treasury = 100
+			army_tradition = 20
+			4552 = { owned_by = ROOT }
+		}
+		
+		effect = {
+			add_treasury = -100
+			if = { 
+				limit = { 4552 = { NOT = { has_province_modifier = spa_segovia_alcazar } } }
+				4552 = {
+					add_permanent_province_modifier = {
+						name = "spa_segovia_alcazar"
+						duration = -1
+					}
+				}
+			}
+		}
+	}
 	
-	spa_caracas = {
+	spa_madrid_alcazar = {
+		icon = mission_alliances
+		required_missions = { spa_segovia_alcazar }
+		position = 3
+		
+		#provinces_to_highlight = {
+			
+		#}
+		
+		trigger = {
+			treasury = 150
+			mil_power = 50
+			217 = { owned_by = ROOT }
+		}
+		
+		effect = {
+			add_treasury = -150
+			add_mil_power = -50
+			set_capital = 217
+			if = { 
+				limit = { 217 = { NOT = { has_province_modifier = spa_madrid_alcazar } } }
+				217 = {
+					add_permanent_province_modifier = {
+						name = "spa_madrid_alcazar"
+						duration = -1
+					}
+				}
+			}
+		}
+	}
+
+	spa_cartagena = {
 		icon = mission_colonial
-		required_missions = { spa_discover_colombia }
-		position = 9
+		required_missions = { spa_cabo_de_la_vela }
+		position = 10
 		
 		provinces_to_highlight = {
-			spa_terra_firma_provinces = yes
+			province_id = 828
 		}
 		
 		
 		trigger = {
 			dip_power = 50
 			treasury = 100
-			831 = { has_discovered = ROOT }
+			828 = { has_discovered = ROOT }
 		}
 		
 		effect = {
 			add_dip_power = -50
 			discovery_mission_cede = {
-				PROVINCE_ID = 831
+				PROVINCE_ID = 828
 				COST = 100
-				TRADE_GOOD = sugar
+				TRADE_GOOD = gold
 				MODIFIER = spa_presidio
 				DURATION = -1
 			}
 			assign_colony_reserve = {
-				PROVINCES = spa_terra_firma_provinces
+				PROVINCES = spa_colombia_provinces
 				MODIFIER = spa_colony
 				DURATION = 18250
 			}
-		}
+		}	
 	}
 
-	spa_terra_firma = {
+	spa_uraba = {
 		icon = mission_colonial
-		required_missions = { spa_caracas }
-		position = 10
+		required_missions = { spa_cartagena }
+		position = 11
 		
 		provinces_to_highlight = {
-			spa_terra_firma_provinces = yes
+			spa_uraba_provinces = yes
 		}
 		
 		
 		trigger = {
-			adm_power = 50
-			treasury = 50
-			colonize_mission_trigger = {
-				TOOLTIP=colonize_conquer_highlighted
-				PROVINCES=spa_terra_firma_provinces
-				OWNER_TYPE=country_or_non_sovereign_subject_holds
-			}
+			dip_power = 50
+			treasury = 100
+			828 = { has_discovered = ROOT }
 		}
 		
 		effect = {
-			add_adm_power = -50
-			add_treasury = -50
-			831 = {
-				add_province_modifier = {
-					name = spa_audiencia
-					duration = -1 
-				}
+			add_dip_power = -50
+			discovery_mission_cede = {
+				PROVINCE_ID = 828
+				COST = 100
+				TRADE_GOOD = gold
+				MODIFIER = spa_presidio
+				DURATION = -1
 			}
-		}
+		}	
 	}
-	
-	spa_discover_laplata = {
-		icon = mission_establish_high_seas_navy
-		required_missions = { spa_pizarro }
+
+	spa_panama = {
+		icon = mission_colonial
+		required_missions = { spa_uraba }
 		position = 12
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_la_plata
-
-			}
+			province_id = 828
 		}
 		
+		
 		trigger = {
-			buenos_aires_area = { type = all has_discovered = ROOT }
-			misiones_area = { type = all has_discovered = ROOT }
-			paraguay_area = { type = all has_discovered = ROOT }
+			dip_power = 50
+			treasury = 100
+			828 = { has_discovered = ROOT }
 		}
 		
 		effect = {
-			if = { 
-				limit = { 775 = { is_empty = yes } }
-				hidden_effect = {
-					775 = {
-						change_religion = ROOT	
-						change_culture = castillian
-						add_territorial_core = ROOT
-					}
-				}
-				775 = { cede_province = ROOT }
+			add_dip_power = -50
+			discovery_mission_cede = {
+				PROVINCE_ID = 828
+				COST = 100
+				TRADE_GOOD = gold
+				MODIFIER = spa_presidio
+				DURATION = -1
 			}
-			if = { 
-				limit = { 775 = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } }
-				if = {
-					limit = { 
-						775 = { owner = { is_colonizer_tech_group = no } }
-					}
-					hidden_effect = {
-						775 = {
-							owner = { save_global_event_target_as = native_move country_event = { id = orion_seize.1 days = 0 } }
-							random_empty_neighbor_province = { 
-								change_religion = event_target:native_move
-								change_culture = event_target:native_move
-								add_core = event_target:native_move			
-								cede_province = event_target:native_move
-							}
-							change_religion = ROOT	
-							change_culture = castillian
-							add_territorial_core = ROOT
-						}	
-					}
-					775 = { 
-						cede_province = ROOT 
-					}
-				}
-				else_if = {
-					limit = { 
-						775 = { owner = { is_colonizer_tech_group = yes } } 
-					}
-					if = { 
-						limit = {
-							761 = { owner = { is_colonizer_tech_group = no } }
-						}
-						hidden_effect = {
-							761 = { 
-								owner = { save_global_event_target_as = native_move country_event = { id = orion_seize.1 days = 0 } }
-								random_empty_neighbor_province = { 
-									change_religion = event_target:native_move
-									change_culture = event_target:native_move
-									add_core = event_target:native_move			
-									cede_province = event_target:native_move
-								}
-								clear_global_event_target = native_move
-								change_religion = ROOT	
-								change_culture = castillian
-								add_territorial_core = ROOT
-							}
-						}
-						761 = {
-							cede_province = ROOT 
-						}	
-					}
-					775 = { add_permanent_claim = ROOT }
-				}
-			}
-			if = { 
-				limit = { 778 = { is_empty = yes } }
-				hidden_effect = {
-					778 = {
-						change_religion = ROOT	
-						change_culture = castillian
-						add_territorial_core = ROOT
-					}
-				}
-				778 = { cede_province = ROOT }
-			}
-			if = { 
-				limit = { 778 = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } }
-				if = {
-					limit = { 
-						778 = { owner = { is_colonizer_tech_group = no } }
-					}
-					hidden_effect = {
-						778 = {
-							owner = { save_global_event_target_as = native_move country_event = { id = orion_seize.1 days = 0 } }
-							random_empty_neighbor_province = { 
-								change_religion = event_target:native_move
-								change_culture = event_target:native_move
-								add_core = event_target:native_move			
-								cede_province = event_target:native_move
-							}
-							change_religion = ROOT	
-							change_culture = castillian
-							add_territorial_core = ROOT
-						}	
-					}
-					778 = { 
-						cede_province = ROOT 
-					}
-				}
-				else_if = {
-					limit = { 
-						778 = { owner = { is_colonizer_tech_group = yes } } 
-					}
-					if = { 
-						limit = {
-							761 = { owner = { is_colonizer_tech_group = no } }
-						}
-						hidden_effect = {
-							761 = { 
-								owner = { save_global_event_target_as = native_move country_event = { id = orion_seize.1 days = 0 } }
-								random_empty_neighbor_province = { 
-									change_religion = event_target:native_move
-									change_culture = event_target:native_move
-									add_core = event_target:native_move			
-									cede_province = event_target:native_move
-								}
-								clear_global_event_target = native_move
-								change_religion = ROOT	
-								change_culture = castillian
-								add_territorial_core = ROOT
-							}
-						}
-						761 = {
-							cede_province = ROOT 
-						}	
-					}
-					778 = { add_permanent_claim = ROOT }
-				}
-			}
-		}
+		}	
 	}
 	
-	spa_colonize_laplata = {
+	spa_veragua = {
 		icon = mission_colonial
-		required_missions = { spa_discover_laplata }
+		required_missions = { spa_panama }
 		position = 13
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_la_plata
-				colonial_region = colonial_chile
-				colonial_region = colonial_paraguay
-			}
+			province_id = 828
 		}
 		
+		
 		trigger = {
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 20
-				OR = {
-					colonial_region = colonial_la_plata
-					colonial_region = colonial_chile
-					colonial_region = colonial_paraguay
-				}
-			}	
+			dip_power = 50
+			treasury = 100
+			828 = { has_discovered = ROOT }
 		}
 		
 		effect = {
-			add_dip_power = 25 
-			778 = {	
-				add_province_modifier = { 
-					name = "spa_audiencia"
-					duration = -1
-				}
+			add_dip_power = -50
+			discovery_mission_cede = {
+				PROVINCE_ID = 828
+				COST = 100
+				TRADE_GOOD = gold
+				MODIFIER = spa_presidio
+				DURATION = -1
 			}
-			776 = {	
-				add_province_modifier = { 
-					name = "spa_audiencia"
-					duration = -1
-				}
-			}
-			colonial_la_plata = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_chile = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_paraguay = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-		}
+		}	
 	}
-	
-	spa_form_laplata = {
-		icon = mission_alliances
-		required_missions = { spa_colonize_laplata spa_bolivia }
+
+	spa_costa_rica = {
+		icon = mission_colonial
+		required_missions = { spa_veragua }
 		position = 14
 		
 		provinces_to_highlight = {
-			OR = {
-				colonial_region = colonial_patagonia
-			}
+			province_id = 828
 		}
 		
+		
 		trigger = {
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 12
-				OR = {
-					colonial_region = colonial_patagonia
-				}
-				is_city = yes
-			}
-			
+			dip_power = 50
+			treasury = 100
+			828 = { has_discovered = ROOT }
 		}
 		
 		effect = {
-			add_dip_power = 50
-			colonial_patagonia = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+			add_dip_power = -50
+			discovery_mission_cede = {
+				PROVINCE_ID = 828
+				COST = 100
+				TRADE_GOOD = gold
+				MODIFIER = spa_presidio
+				DURATION = -1
+			}
+		}	
+	}
+
+	spa_nicaragua = {
+		icon = mission_colonial
+		required_missions = { spa_costa_rica spa_honduras }
+		position = 15
+		
+		provinces_to_highlight = {
+			province_id = 828
+		}
+		
+		
+		trigger = {
+			dip_power = 50
+			treasury = 100
+			828 = { has_discovered = ROOT }
+		}
+		
+		effect = {
+			add_dip_power = -50
+			discovery_mission_cede = {
+				PROVINCE_ID = 828
+				COST = 100
+				TRADE_GOOD = gold
+				MODIFIER = spa_presidio
+				DURATION = -1
+			}
+		}	
+	}
+
+	spa_potosi = {
+		icon = mission_cannons_firing
+		required_missions = { spa_cuzco }
+		position = 17
+		
+		provinces_to_highlight = {
+			spa_honduras_provinces = yes
+		}
+		
+		trigger = { 
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_every_highlighted 
+				SCOPE=every
+				PROVINCES=spa_honduras_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
 			}
 		}
-	}
 	
+		effect = {
+
+		}
+	}
+
+	spa_antofagasta = {
+		icon = mission_cannons_firing
+		required_missions = { spa_potosi spa_atacama_coast }
+		position = 19
+		
+		provinces_to_highlight = {
+			spa_honduras_provinces = yes
+		}
+		
+		trigger = { 
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_every_highlighted 
+				SCOPE=every
+				PROVINCES=spa_honduras_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+
+		}
+	}
+
+	spa_settle_bolivia = {
+		icon = mission_cannons_firing
+		required_missions = { spa_antofagasta }
+		position = 20
+		
+		provinces_to_highlight = {
+			spa_honduras_provinces = yes
+		}
+		
+		trigger = { 
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_every_highlighted 
+				SCOPE=every
+				PROVINCES=spa_honduras_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+	
+		effect = {
+
+		}
+	}
 }
 #slot 7
 spa_slot_7 = {
@@ -2223,12 +2636,13 @@ spa_slot_7 = {
 		}
 		
 		trigger = { 
-			treasury = 50
 			discover_mission_trigger = {
 				TOOLTIP=spa_chart_cuba.tooltip
 				SCOPE=any
 				PROVINCES=cuba_colonial_provinces
 			}
+			treasury = 100
+			has_idea = quest_for_the_new_world
 		}
 	
 		effect = {
@@ -2238,6 +2652,25 @@ spa_slot_7 = {
 				TRADE_GOOD = ir_fruit
 				MODIFIER = mark_of_discovery
 				DURATION = 3650
+			}
+			discovery_mission_cede = {
+				PROVINCE_ID = 486
+				COST = 50
+				TRADE_GOOD = sugar
+				MODIFIER = spa_presidio
+				DURATION = 3650
+			}
+			#discovery_mission_cede = {
+			#	PROVINCE_ID = 484 # HAVANA disabling for now
+			#	COST = 50
+			#	TRADE_GOOD = sugar
+			#	MODIFIER = mark_of_discovery
+			#	DURATION = 3650
+			#}
+			assign_colony_reserve = {
+				PROVINCES = cuba_colonial_provinces
+				MODIFIER = spa_colony
+				DURATION = 9125
 			}
 		}
 	}
@@ -2252,24 +2685,21 @@ spa_slot_7 = {
 		}
 		
 		trigger = { 
-			treasury = 50
-			dip_power = 50
-			
+		#	dip_power = 50
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted 
+				SCOPE=every
+				PROVINCES=cuba_colonial_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
 		}
 	
 		effect = {
-			add_dip_power = -50
-			discovery_mission_cede = {
-				PROVINCE_ID = 484
-				COST = 50
-				TRADE_GOOD = sugar
-				MODIFIER = mark_of_discovery
-				DURATION = 3650
-			}
+		#	add_dip_power = -50
 			assign_group_prov_modifier = {
 				PROVINCES = cuba_colonial_provinces
-				TYPE = empty
-				MODIFIER = spa_colony
+				TYPE = city
+				MODIFIER = spa_plantation
 				DURATION = -1
 			}
 		}
@@ -2281,402 +2711,319 @@ spa_slot_7 = {
 		position = 10
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_yucatan
-				province_id = 2637
-				province_id = 840
-				province_id = 843
-				province_id = 2636
-			}
+			spa_discover_yucatan_provinces = yes
 		}
 		
 		trigger = { 
-			colonial_yucatan = { type = all has_discovered = ROOT }
-			840 = { has_discovered = ROOT }
-			2637 = { has_discovered = ROOT }
-			843 = { has_discovered = ROOT }
-			2636 = { has_discovered = ROOT }
-			has_idea = quest_for_the_new_world
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=spa_discover_yucatan_provinces
+			}
 		}
 	
 		effect = {
-			add_dip_power = 25
-			if = { 
-				limit = { 840 = { is_empty = yes } }
-				hidden_effect = {
-					840 = {
-						change_religion = ROOT	
-						change_culture = castillian
-						add_territorial_core = ROOT	
-					}
-				}
-				840 = { 
-					cede_province = ROOT 
-					add_province_modifier = {
-						name = "spa_audiencia"
-						duration = -1
-					}
-				}
+			define_conquistador = {
+				name = "Hernán Cortes"
+				shock = 5
+				fire = 1
+				manuever = 3
+				siege = 2
 			}
-			if = { 
-				limit = { 840 = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } }
-				if = {
-					limit = { 
-						840 = { owner = { is_colonizer_tech_group = no } }
-					}
-					hidden_effect = {
-						840 = {
-							owner = { country_event = { id = orion_seize.1 days = 0 } }
-							change_religion = ROOT	
-							change_culture = castillian
-							add_territorial_core = ROOT
-						}	
-					}
-					840 = { 
-						cede_province = ROOT 
-						add_province_modifier = {
-							name = "spa_audiencia"
-							duration = -1
-						}
-					}
-				}
-				else_if = {
-					limit = { 
-						840 = { owner = { is_colonizer_tech_group = yes } } 
-					}
-					840 = { add_permanent_claim = ROOT }
-				}
-			}
-			if = { 
-				limit = { 2637 = { is_empty = yes } }
-				hidden_effect = {
-					2637 = {
-						change_religion = ROOT	
-						change_culture = castillian
-						add_territorial_core = ROOT	
-					}
-				}
-				2637 = { 
-					cede_province = ROOT 
-					add_province_modifier = {
-						name = "spa_audiencia"
-						duration = -1
-					}
-				}
-			}
-			if = { 
-				limit = { 2637 = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } }
-				if = {
-					limit = { 
-						2637 = { owner = { is_colonizer_tech_group = no } }
-					}
-					hidden_effect = {
-						2637 = {
-							owner = { country_event = { id = orion_seize.1 days = 0 } }
-							change_religion = ROOT	
-							change_culture = castillian
-							add_territorial_core = ROOT
-						}	
-					}
-					2637 = { 
-						cede_province = ROOT 
-						add_province_modifier = {
-							name = "spa_audiencia"
-							duration = -1
-						}
-					}
-				}
-				else_if = {
-					limit = { 
-						2637 = { owner = { is_colonizer_tech_group = yes } } 
-					}
-					2637 = { add_permanent_claim = ROOT }
-				}
-			}
-			colonial_mexico = { 
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			colonial_yucatan = { 
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			colonial_guatemala = { 
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
+			#claims on yucatan
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = spa_yucatan_provinces
+				TYPE = permanent_claim
 			}
 		}
-	}	
-	
+	}
 
-    spa_cortes = {
-		icon = mission_cannons_firing
+	spa_seize_merida = {
+		icon = mission_unite_home_region
 		required_missions = { spa_discover_yucatan }
 		position = 11
 		
 		provinces_to_highlight = {
-			OR = {
-				province_id = 2647
-				province_id = 852
-				province_id = 849
-				province_id = 850
-			}
+			spa_merida_provinces = yes
 		}
 		
 		trigger = { 
-			if = { 
-				limit = { 2647 = { owner = { ai = yes } } }
-				2647 = {
-					OR = {
-						country_or_non_sovereign_subject_holds = ROOT
-						custom_trigger_tooltip = {
-							tooltip = control_prov.tooltip
-							OR = {
-								controlled_by = ROOT
-								controller = { is_subject_of = ROOT NOT = { is_subject_of_type = tributary_state } }
-							}
-						}
-					}
-				} 
-			}
-			else_if = { 
-				limit = { 2647 = { owner = { ai = no } } }
-				2647 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
-			if = { 
-				limit = { 852 = { owner = { ai = yes } } }
-				852 = {
-					OR = {
-						country_or_non_sovereign_subject_holds = ROOT
-						custom_trigger_tooltip = {
-							tooltip = control_prov.tooltip
-							OR = {
-								controlled_by = ROOT
-								controller = { is_subject_of = ROOT NOT = { is_subject_of_type = tributary_state } }
-							}
-						}
-					}
-				} 
-			}
-			else_if = { 
-				limit = { 852 = { owner = { ai = no } } }
-				852 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
-			if = { 
-				limit = { 849 = { owner = { ai = yes } } }
-				849 = {
-					OR = {
-						country_or_non_sovereign_subject_holds = ROOT
-						custom_trigger_tooltip = {
-							tooltip = control_prov.tooltip
-							OR = {
-								controlled_by = ROOT
-								controller = { is_subject_of = ROOT NOT = { is_subject_of_type = tributary_state } }
-							}
-						}
-					}
-				} 
-			}
-			else_if = { 
-				limit = { 849 = { owner = { ai = no } } }
-				849 = { country_or_non_sovereign_subject_holds = ROOT }
-			}
-			if = { 
-				limit = { 850 = { owner = { ai = yes } } }
-				850 = {
-					OR = {
-						country_or_non_sovereign_subject_holds = ROOT
-						custom_trigger_tooltip = {
-							tooltip = control_prov.tooltip
-							OR = {
-								controlled_by = ROOT
-								controller = { is_subject_of = ROOT NOT = { is_subject_of_type = tributary_state } }
-							}
-						}
-					}
-				} 
-			}
-			else_if = { 
-				limit = { 850 = { owner = { ai = no } } }
-				850 = { country_or_non_sovereign_subject_holds = ROOT }
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
+				PROVINCES=spa_merida_provinces
 			}
 		}
 	
 		effect = {
-			every_province = {
-				limit = {
-					controller = { is_subject_of = ROOT }
-					OR = {
-						province_id = 852
-						province_id = 2647
-						province_id = 849
-						province_id = 850
-					}
-				}
-				change_controller = ROOT
+			control_mission_cede = {
+				PROVINCES = spa_merida_provinces
 			}
-			add_mil_power = 50
-			852 = {
-			 	add_province_modifier = {
-					name = "spa_audiencia"
+			2633 = {
+				add_province_modifier = {
+					name = spa_presidio
 					duration = -1
-				}
-			}
-			colonial_mexico = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
 				}
 			}
 		}
 	}	
-		
-	
-	spa_mexico = {
-		icon = mission_colonial
-		required_missions = { spa_cortes }
+
+	spa_yucatan = {
+		icon = mission_cannons_firing
+		required_missions = { spa_seize_merida }
 		position = 12
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_mexico
-				colonial_region = colonial_ngalicia
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			spa_yucatan_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 18
-				colonial_region = colonial_mexico
-			}	
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 3
-				colonial_region = colonial_ngalicia
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted
+				PROVINCES=spa_yucatan_provinces
+				OWNER_TYPE=country_or_non_sovereign_holds
 			}
 		}
 	
 		effect = {
-			add_dip_power = 25
-			add_mil_power = 25
-			2621 = {	
-				add_province_modifier = { 
-					name = "spa_audiencia"
-					duration = -1
-				}
-			}
-			colonial_mexico = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_ngalicia = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = spa_kiche_provinces
+				TYPE = permanent_claim
 			}
 		}
-	}
-	
-	spa_colonize_coahuila = {
-		icon = mission_colonial
-		required_missions = { spa_mexico }
+	}	
+
+	spa_conquer_kiche = {
+		icon = mission_cannons_firing
+		required_missions = { spa_yucatan }
 		position = 13
-				
+		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_coahuila
-				
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			spa_kiche_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 5
-				colonial_region = colonial_coahuila
-			}	
-			
+			conquest_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_holds_highlighted
+				PROVINCES=spa_kiche_provinces
+				OWNER_TYPE=country_or_non_sovereign_holds
+			}
 		}
 	
 		effect = {
-			add_dip_power = 25
-			colonial_coahuila = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
+
 		}
 	}
-	
-	spa_conquer_tejas = {
-		icon = mission_colonial
-		required_missions = { spa_colonize_coahuila }
+
+	spa_honduras = {
+		icon = mission_cannons_firing
+		required_missions = { spa_conquer_kiche }
 		position = 14
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_texas
-				
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			spa_honduras_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 18
-				colonial_region = colonial_texas
-			}	
-			
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_every_highlighted 
+				SCOPE=every
+				PROVINCES=spa_honduras_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
 		}
 	
 		effect = {
-			colonial_texas = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+
+		}
+	}
+
+	spa_baja_cali = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_sinaloa }
+		position = 16
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+
+	spa_explore_california = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_baja_cali }
+		position = 17
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+
+	spa_s_cali = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_explore_california }
+		position = 18
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+
+	spa_central_valley = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_s_cali }
+		position = 19
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+
+	spa_n_cali = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_central_valley }
+		position = 20
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+
+	spa_oregon = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_n_cali spa_great_basin }
+		position = 21
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
 	
-	spa_conquer_louisiana = {
-		icon = mission_colonial
-		required_missions = { spa_conquer_tejas spa_form_mexico }
-		position = 15
+	spa_pacifico_norte = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_oregon }
+		position = 22
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_louisiana
-				
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			yucatan_colonial_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 20
-				colonial_region = colonial_louisiana
-			}	
-			
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
 		}
 	
 		effect = {
-			add_mil_power = 50
-			colonial_louisiana = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
@@ -2838,14 +3185,7 @@ spa_slot_8 = {
 			}
 		}
 		effect = {
-			eastern_mediterrenean_islands_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			cyprus_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
+			
 		}
 	}
 	
@@ -2873,52 +3213,53 @@ spa_slot_8 = {
 				PROVINCE_ID = 489
 				COST = 50
 				TRADE_GOOD = gold
-				MODIFIER = mark_of_discovery
-				DURATION = 3650
+				MODIFIER = spa_presidio
+				DURATION = -1
+			}
+			add_country_modifier = {
+				name = "spa_hispaniola_discovered"
+				duration = 7300
 			}
 			define_explorer = {
 				name = "Bartolomew Columbus"
    				shock = 2
    				fire = 2
-   				manuever = 4
+   				manuever = 3
    				siege = 1
 			}
-			add_country_modifier = {
-				name = "spa_hispaniola_discovered"
-				duration = 7300
+			assign_colony_reserve = {
+				PROVINCES = hispaniola_colonial_provinces
+				MODIFIER = spa_colony
+				DURATION = 9125
 			}
 		}
 	}
 	
 	
 	spa_colonize_hispaniola = {
-		icon = mission_establish_high_seas_navy
+		icon = mission_colonial
 		required_missions = { spa_hispaniola }
 		position = 9
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_hispaniola
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			hispaniola_colonial_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 8
-				colonial_region = colonial_hispaniola
-				is_city = yes
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				SCOPE=every
+				PROVINCES=hispaniola_colonial_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
 			}	
 		}
 	
 		effect = {
-			add_dip_power = 25
-			colonial_hispaniola = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+			assign_group_prov_modifier = {
+				PROVINCES = hispaniola_colonial_provinces
+				TYPE = city
+				MODIFIER = spa_plantation
+				DURATION = -1
 			}
 		}
 	}
@@ -2929,337 +3270,351 @@ spa_slot_8 = {
 		position = 10
 		
 		provinces_to_highlight = {
-			OR = {
-				region = carribeans_region
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			caribbean_colonial_provinces = yes
 		}
 		
 		trigger = {
-			carribeans_region = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-				is_city = yes
-			}
+			dip_power = 100
 		}
 		
 		effect = {
-			add_prestige = 25
-			add_years_of_income = 5
-			add_country_modifier = {
-				name = "por_spice_trade"
-				duration = 9125
+			add_dip_power = -100 
+			add_prestige = 10
+			assign_colony_reserve = {
+				PROVINCES = caribbean_colonial_provinces
+				MODIFIER = spa_colony
+				DURATION = 7300
 			}
 		}
 	}
 
-	
-	spa_conquer_yucatan = {
-		icon = mission_cannons_firing
+	spa_veracruz = {
+		icon = mission_establish_high_seas_navy
 		required_missions = { spa_discover_yucatan }
 		position = 11
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_yucatan
-				colonial_region = colonial_guatemala
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-			is_city = yes
+			yucatan_colonial_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 8
-				colonial_region = colonial_yucatan
-				is_city = yes
-			}	
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 10
-				colonial_region = colonial_guatemala
-				is_city = yes
+			treasury = 100
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
 		}
 	
 		effect = {
-			tooltip = { honduras_area = { cede_province = ROOT } nicaragua_area = { cede_province = ROOT } }
-			hidden_effect = {
-				every_province = {
-					limit = { OR = { area = honduras_area area = nicaragua_area } }
-					if = { 
-						limit = { is_empty = yes }
-						add_territorial_core = ROOT	
-						cede_province = ROOT
-					}
-					else_if = {
-						limit = { is_colony = yes country_or_non_sovereign_subject_holds = ROOT  }
-						add_colonysize = 999
-					}
-					else_if = { 
-						limit = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-						add_permanent_claim = ROOT
-					}
-				}	
+			discovery_mission_cede = {
+				PROVINCE_ID = 2647
+				COST = 100
+				TRADE_GOOD = sugar
+				MODIFIER = spa_presidio
+				DURATION = -1
+			}
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
+
+	spa_tlaxcala = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_veracruz }
+		position = 12
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
 	
-	spa_upper_mexico = {
-		icon = mission_colonial
-		required_missions = { spa_mexico }
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+
+	spa_cortes = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_tlaxcala }
 		position = 13
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_durango
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			yucatan_colonial_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 6
-				colonial_region = colonial_durango
-			}	
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
 		}
 	
 		effect = {
-			add_dip_power = 25
-			tooltip = { colonial_durango = { cede_province = ROOT } }
-			hidden_effect = {
-				every_province = {
-					limit = { OR = { colonial_region = colonial_durango } }
-					if = { 
-						limit = { is_empty = yes }
-						add_territorial_core = ROOT	
-						cede_province = ROOT
-					}
-					else_if = {
-						limit = { is_colony = yes country_or_non_sovereign_subject_holds = ROOT  }
-						add_colonysize = 999
-					}
-					else_if = { 
-						limit = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-						add_permanent_claim = ROOT
-					}
-				}	
-			}
-			2621 = {	
-				add_province_modifier = { 
-					name = "spa_audiencia"
-					duration = -1
-				}
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
-	
-	spa_form_mexico = {
-		icon = mission_alliances
-		required_missions = { spa_upper_mexico spa_colonize_coahuila }
+
+	spa_tarascans = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_cortes }
 		position = 14
 		
 		provinces_to_highlight = {
-			OR = {
-				colonial_region = colonial_coahuila
-				colonial_region = colonial_mexico
-				colonial_region = colonial_ngalicia
-				colonial_region = colonial_durango
-				colonial_region = colonial_yucatan
-				colonial_region = colonial_guatemala
-			}
+			yucatan_colonial_provinces = yes
 		}
 		
-		trigger = {
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 50
-				OR = {
-					colonial_region = colonial_coahuila
-					colonial_region = colonial_mexico
-					colonial_region = colonial_ngalicia
-					colonial_region = colonial_durango
-					colonial_region = colonial_yucatan
-					colonial_region = colonial_guatemala
-				}
-				is_city = yes
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
-			
 		}
-		
+	
 		effect = {
-			add_dip_power = 50
-			colonial_mexico = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_ngalicia = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_coahuila = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_durango = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_yucatan = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_guatemala = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
+
+	spa_sinaloa = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_tarascans }
+		position = 15
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
 	
-	spa_colonize_taiwan = {
-		icon = mission_colonial
-		required_missions = { spa_discover_spice_isles }
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+
+	spa_sonora = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_sinaloa }
+		position = 16
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+
+	spa_colorado_river = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_sonora }
 		position = 17
 		
 		provinces_to_highlight = {
-			area = taiwan_area
+			yucatan_colonial_provinces = yes
 		}
 		
-		trigger = {
-			taiwan_area = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-				is_city = yes
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
 		}
-		
+	
 		effect = {
-			add_dip_power = 25
-			738 = { 
-				add_province_modifier = {
-					name = "spa_presidio"
-					duration = -1
-				}
-			}
-			add_country_modifier = {
-				name = "taiwan_conquered"
-				duration = 7300
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
-	
-	spa_colonize_guam = {
-		icon = mission_colonial
-		required_missions = { spa_colonize_taiwan }
+
+	spa_arizona = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_colorado_river spa_el_paso }
 		position = 18
 		
 		provinces_to_highlight = {
-			province_id = 1015
+			yucatan_colonial_provinces = yes
 		}
 		
-		trigger = {
-			1015 = {
-				country_or_non_sovereign_subject_holds = ROOT
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
 		}
-		
+	
 		effect = {
-			add_dip_power = 25
-			add_mil_power = 25
-			1015 = { 
-				add_province_modifier = {
-					name = "spa_presidio"
-					duration = -1
-				}
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
-	
-	spa_colonize_australia = {
-		icon = mission_colonial
-		required_missions = { spa_circumnavigation }
+
+	spa_great_salt_lake = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_arizona }
 		position = 19
 		
 		provinces_to_highlight = {
-			OR = {
-				colonial_region = colonial_australia
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			yucatan_colonial_provinces = yes
 		}
 		
-		trigger = {
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 18
-				OR = {
-					colonial_region = colonial_australia
-					is_city = yes 
-				}
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
 		}
-		
+	
 		effect = {
-			add_dip_power = 50
-			colonial_australia = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			add_country_modifier = {
-				name = "eng_australian_colony"
-				duration = 18250
-			}
 			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
 		}
 	}
-	
-	spa_new_zeeland = {
-		icon = mission_empire
-		required_missions = { spa_colonize_australia }
+
+	spa_great_basin = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_great_salt_lake }
 		position = 20
 		
 		provinces_to_highlight = {
-			OR = {
-				colonial_region = colonial_nz
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			yucatan_colonial_provinces = yes
 		}
 		
-		trigger = {
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 16
-				OR = {
-					colonial_region = colonial_nz
-				}
-				is_city = yes
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
 		}
-		
+	
 		effect = {
-			add_dip_power = 50
-			colonial_nz = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+
+	spa_new_orleans = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_texas }
+		position = 22
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
+			}
+		}
+	}
+	
+	spa_louisiana = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_new_orleans }
+		position = 23
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
@@ -3455,500 +3810,282 @@ spa_slot_9 = {
 		}
 	}
 	
-
-
 	spa_discover_florida = {
 		icon = mission_establish_high_seas_navy
 		required_missions = { spa_puerto_rico }
 		position = 8
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_florida
-			}
+			spa_florida_provinces = yes
 		}
 		
 		trigger = { 
-			colonial_florida = { type = all has_discovered = ROOT }
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_florida.tooltip
+				SCOPE=any
+				PROVINCES=spa_florida_provinces
+			}
+			treasury = 75
 			has_idea = quest_for_the_new_world
 		}
 	
 		effect = {
-			add_dip_power = 25
-			if = { 
-				limit = { 927 = { is_empty = yes } }
-				hidden_effect = {
-					927 = {
-						change_religion = ROOT	
-						change_culture = ROOT
-						add_territorial_core = ROOT
-					}
-				}
-				927 = { cede_province = ROOT }
+			discovery_mission_cede = {
+				PROVINCE_ID = 927
+				COST = 75
+				TRADE_GOOD = gold
+				MODIFIER = spa_presidio
+				DURATION = -1
 			}
-			if = { 
-				limit = { 927 = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } }
-				if = {
-					limit = { 
-						927 = { owner = { is_colonizer_tech_group = no } }
-					}
-					hidden_effect = {
-						927 = {
-							owner = { save_global_event_target_as = native_move country_event = { id = orion_seize.1 days = 0 } }
-							random_empty_neighbor_province = { 
-								change_religion = event_target:native_move
-								change_culture = event_target:native_move
-								add_core = event_target:native_move			
-								cede_province = event_target:native_move
-							}
-							clear_global_event_target = native_move
-							change_religion = ROOT	
-							change_culture = ROOT
-							add_territorial_core = ROOT
-						}	
-					}
-					927 = { 
-						cede_province = ROOT 
-					}
-				}
-				else_if = {
-					limit = { 
-						927 = { owner = { is_colonizer_tech_group = yes } } 
-					}
-					if = { 
-						limit = {
-							2536 = { owner = { is_colonizer_tech_group = no } }
-						}
-						hidden_effect = {
-							2536 = { 
-								owner = { save_global_event_target_as = native_move country_event = { id = orion_seize.1 days = 0 } }
-								random_empty_neighbor_province = { 
-									change_religion = event_target:native_move
-									change_culture = event_target:native_move
-									add_core = event_target:native_move			
-									cede_province = event_target:native_move
-								}
-								clear_global_event_target = native_move
-								change_religion = ROOT	
-								change_culture = ROOT
-								add_territorial_core = ROOT
-							}
-						}
-						2536 = {
-							cede_province = ROOT 
-						}	
-					}
-					else_if = { 
-						limit = {
-							2535 = { owner = { is_colonizer_tech_group = no } }
-						}
-						hidden_effect = {
-							2535 = { 
-								owner = { save_global_event_target_as = native_move country_event = { id = orion_seize.1 days = 0 } }
-								random_empty_neighbor_province = { 
-									change_religion = event_target:native_move
-									change_culture = event_target:native_move
-									add_core = event_target:native_move			
-									cede_province = event_target:native_move
-								}
-								clear_global_event_target = native_move
-								change_religion = ROOT	
-								change_culture = ROOT
-								add_territorial_core = ROOT
-							}
-						}
-						2535 = {
-							cede_province = ROOT 
-						}	
-					}
-					927 = { add_permanent_claim = ROOT }
-				}
+			assign_colony_reserve = {
+				PROVINCES = spa_florida_provinces
+				MODIFIER = spa_colony
+				DURATION = 9125
 			}
 		}
 	}
-	
+
 	spa_colonize_florida = {
 		icon = mission_colonial
 		required_missions = { spa_discover_florida }
 		position = 8
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_florida
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			spa_florida_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 5
-				colonial_region = colonial_florida
-				is_city = yes
+			colonize_mission_trigger = {
+				TOOLTIP=colonize_conquer_highlighted
+				SCOPE=every
+				PROVINCES=spa_florida_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
 			}	
 		}
 	
 		effect = {
-			add_dip_power = 50
-			colonial_florida = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+			assign_group_prov_modifier = {
+				PROVINCES = spa_florida_provinces
+				TYPE = city
+				MODIFIER = spa_plantation
+				DURATION = -1
 			}
 		}
 	}
 	
 	
-	spa_colonize_cali = {
-		icon = mission_colonial
-		required_missions = { spa_mexico }
-		position = 13
-		
-		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_california
-				colonial_region = colonial_deseret
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		
-		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 20
-				OR = {
-					colonial_region = colonial_california
-					colonial_region = colonial_deseret
-				}
-			}	
-		}
-	
-		effect = {
-			add_dip_power = 50
-			tooltip = { colonial_california = { cede_province = ROOT } colonial_deseret = { cede_province = ROOT } }
-			hidden_effect = {
-				every_province = {
-					limit = { OR = { colonial_region = colonial_california colonial_region = colonial_deseret } }
-					if = { 
-						limit = { is_empty = yes }
-						add_territorial_core = ROOT	
-						cede_province = ROOT
-					}
-					else_if = {
-						limit = { is_colony = yes country_or_non_sovereign_subject_holds = ROOT  }
-						add_colonysize = 999
-					}
-					else_if = { 
-						limit = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-						add_permanent_claim = ROOT
-					}
-				}	
-			}
-		}
-	}
-	
-	
-	spa_contest_oregon = {
-		icon = mission_colonial
-		required_missions = { spa_colonize_cali }
-		position = 14
-		
-		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_oregon
-				colonial_region = colonial_columbia
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
-		}
-		
-		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 30
-				OR = {
-					colonial_region = colonial_oregon
-					colonial_region = colonial_columbia
-				}
-			}	
-		}
-	
-		effect = {
-			add_dip_power = 50
-			colonial_oregon = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-			colonial_columbia = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
-			}
-		}
-	}
-	
-	
-	spa_colonize_alaska = {
-		icon = mission_colonial
-		required_missions = { spa_contest_oregon }
+	spa_zacatecas = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_tarascans }
 		position = 15
 		
 		provinces_to_highlight = {
-			OR = { 
-				colonial_region = colonial_alaska
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			yucatan_colonial_provinces = yes
 		}
 		
 		trigger = { 
-			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-				value = 20
-				colonial_region = colonial_alaska
-			}	
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
 		}
 	
 		effect = {
-			add_dip_power = 50
-			colonial_alaska = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { OR = { has_province_modifier = soft_wasteland_1 has_province_modifier = soft_wasteland_2 has_province_modifier = soft_wasteland_3 }} is_empty = yes }
-				add_permanent_province_modifier = {
-					name = "spa_colony"
-					duration = 3650
-				}
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
-	
-	spa_discover_spice_isles = {
+
+	spa_durango = {
 		icon = mission_establish_high_seas_navy
-		required_missions = {  }
+		required_missions = { spa_zacatecas }
 		position = 16
 		
 		provinces_to_highlight = {
-			OR = { 
-				province_id = 2696
-				province_id = 649
-				province_id = 650
-				
-			}
+			yucatan_colonial_provinces = yes
 		}
 		
 		trigger = { 
-			649 = { has_discovered = ROOT }
-			650 = { has_discovered = ROOT }
-			2696 = { has_discovered = ROOT }
-			has_idea = quest_for_the_new_world
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
+			}
 		}
 	
 		effect = {
-			add_dip_power = 25 
-			hidden_effect = {
-				discover_province = 645 
-				discover_province = 2696 
-				discover_province = 2717 
-				discover_province = 2725
-				discover_province = 1401
-				discover_province = 1409
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
-			if = { 
-				limit = { TID = { exist = yes ai = yes } 650 = { owned_by = TID } }
-				create_subject = { 
-					subject_type = colony
-					subject = TID
-				}
-				TID = { country_event = { id = orion_colonial.5 days = 0 } }
-			}
-					
-			if = { 
-				limit = { 2696 = { is_empty = yes } }
-				hidden_effect = {
-					2696 = {
-						change_trade_goods = spices
-						add_territorial_core = ROOT
-					}
-				}
-				2696 = { 
-					cede_province = ROOT 
-					add_province_modifier = {
-						name = "spa_presidio"
-						duration = -1
-					}
-				}
-			}
-			if = { 
-				limit = { 2696 = { is_city = yes  NOT = { country_or_non_sovereign_subject_holds = ROOT } } }
-				if = {
-					limit = { 
-						2696 = { owner = { is_colonizer_tech_group = no } }
-					}
-					hidden_effect = {
-						2696 = {
-							owner = { country_event = { id = orion_seize.1 days = 0 } }	
-							change_trade_goods = spices
-							add_territorial_core = ROOT	
-						}	
-					}
-					2696 = { 
-						cede_province = ROOT 
-						add_province_modifier = {
-							name = "spa_presidio"
-							duration = -1
-						}
-					}
-				}
-				else_if = {
-					limit = { 
-						2696 = { owner = { is_colonizer_tech_group = yes } } 
-					}
-					2696 = { add_permanent_claim = ROOT }
-				}
-			}
-			add_years_of_income = 2.5
 		}
 	}
-	
-	spa_colonize_samoa = {
-		icon = mission_colonial
-		required_missions = { spa_discover_spice_isles }
+
+	spa_el_paso = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_durango }
 		position = 17
 		
 		provinces_to_highlight = {
-			province_id = 1243
+			yucatan_colonial_provinces = yes
 		}
 		
-		trigger = {
-			1243 = {
-				country_or_non_sovereign_subject_holds = ROOT
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
 		}
-		
+	
 		effect = {
-			add_dip_power = 25
-			1243 = { 
-				add_province_modifier = {
-					name = "spa_presidio"
-					duration = -1
-				}
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
-	
-	spa_circumnavigation = {
+
+	spa_cross_rio_grande = {
 		icon = mission_establish_high_seas_navy
-		required_missions = { spa_colonize_samoa }
+		required_missions = { spa_el_paso }
 		position = 18
 		
 		provinces_to_highlight = {
-			OR = {
-				area = west_micronesia_area
-				area = polynesia_area
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
-		
-		
-		trigger = {
-			west_micronesia_area = { type = all has_discovered = ROOT }
-			polynesia_area = { type = all has_discovered = ROOT }
-			has_idea = quest_for_the_new_world	
-		}
-		
+	
 		effect = {
-			add_country_modifier = {
-				name = "circumnavigation"
-				duration = 730
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
-			create_explorer = 80
 		}
 	}
-	
-	spa_colonize_hawaii = {
-		icon = mission_colonial
-		required_missions = { spa_circumnavigation }
+
+	spa_galveston = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_cross_rio_grande }
 		position = 19
 		
 		provinces_to_highlight = {
-			OR = {
-				province_id = 1240
-				province_id = 5029 
-				province_id = 5817 
-				province_id = 5818 
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
-		
-		
-		trigger = {
-			1240 = { country_or_non_sovereign_subject_holds = ROOT is_city = yes }
-			5029 = { country_or_non_sovereign_subject_holds = ROOT is_city = yes }
-			5817 = { country_or_non_sovereign_subject_holds = ROOT is_city = yes }
-			5818 = { country_or_non_sovereign_subject_holds = ROOT is_city = yes }
-		}
-		
+	
 		effect = {
-			1240 = {
-				add_province_modifier = {
-					name = "spa_plantation"
-					duration = -1
-				}
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
-			5029 = {
-				add_province_modifier = {
-					name = "spa_plantation"
-					duration = -1
-				}
+		}
+	}
+
+	spa_san_antonio = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_galveston }
+		position = 20
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
-			5817 = {
-				add_province_modifier = {
-					name = "spa_plantation"
-					duration = -1
-				}
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
-			5818 = {
-				add_province_modifier = {
-					name = "spa_plantation"
-					duration = -1
-				}
+		}
+	}
+
+	spa_texas = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_san_antonio }
+		position = 21
+		
+		provinces_to_highlight = {
+			yucatan_colonial_provinces = yes
+		}
+		
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
-			hidden_effect = {
-				1240 = { change_trade_goods = coffee }
-				5029 = { change_trade_goods = gems }
-				5817 = { change_trade_goods = sugar }
-				5818 = { change_trade_goods = tropical_wood }
+		}
+	
+		effect = {
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}
 	
-	spa_polynesia = {
-		icon = mission_empire
-		required_missions = { spa_colonize_hawaii spa_outpost_pacific }
-		position = 20
+	spa_upper_texas = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { spa_texas }
+		position = 22
 		
 		provinces_to_highlight = {
-			OR = {
-				region = oceanea_region
-			}
-			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			yucatan_colonial_provinces = yes
 		}
 		
-		
-		trigger = {
-			oceanea_region = { 
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT
-				is_city = yes
+		trigger = { 
+			discover_mission_trigger = {
+				TOOLTIP=spa_discover_yucatan.tooltip
+				SCOPE=any
+				PROVINCES=yucatan_colonial_provinces
 			}
 		}
-		
+	
 		effect = {
-			add_prestige = 10
-			add_years_of_income = 2
-			add_country_modifier = {
-				name = "sun_never_sets"
-				duration = 36500
+			
+			custom_tooltip = spa_yucatan_claims.tooltip
+			assign_core_claim = {
+				PROVINCES = yucatan_colonial_provinces
+				TYPE = permanent_claim
 			}
 		}
 	}

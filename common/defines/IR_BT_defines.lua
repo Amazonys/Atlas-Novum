@@ -83,6 +83,9 @@ NDefines.NDiplomacy.IMPERIAL_CITY_IA = 0.01 -- from 0.001
 NDefines.NDiplomacy.HRE_FOREIGN_CONTROL_PENALTY = -0.005 -- from -0.001
  -- Great powers
 NDefines.NDiplomacy.NUM_OF_GREAT_POWERS = 12
+  -- charter
+NDefines.NDiplomacy.CHARTER_COMPANY_BASE_COST = 2000 -- from 1000
+NDefines.NDiplomacy.CHARTER_COMPANY_MINIMUM_COST = 1000 -- from 100
 
  --NCountry changes
 NDefines.NCountry.EXPLOIT_ADM_INCOME = 30			-- from 60
@@ -99,17 +102,14 @@ NDefines.NCountry.CORRUPTION_FROM_BANNERS = 0.5
 NDefines.NCountry.NOMAD_DEVELOPMENT_SCALE = 1200			-- from 600     I dont actually know how this works     Might have it reversed better check later
 NDefines.NCountry.CULTURAL_UNION_MIN_DEV = 2000			-- from 1000
 NDefines.NCountry.MIN_DEV_FOR_FREE_CITY = 20			-- from 10
-NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_2 = 500			-- from 300
-NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_3 = 2000			-- from 1000
-NDefines.NCountry.ADDITIONAL_MIN_DEVELOPMENT_FOR_GOV_RANK_X = 3000			-- from 500     Probably unused but just throwing in here as a reminder in case I decide to do some wacky stuff later
 NDefines.NCountry.RANDOM_LUCKY_DEVELOPMENT_WEIGHT = 0.2			-- from 0p4
 NDefines.NCountry.MIN_DEV_FOR_OLD_GREAT_POWER = 300			-- from 100
 NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 40			-- from 20
-NDefines.NCountry.PS_MAKE_PROVINCE_CORE = 5			-- from 10
+NDefines.NCountry.PS_MAKE_PROVINCE_CORE = 10			-- from 10
 NDefines.NCountry.PS_MOVE_CAPITAL_EXTRA = 100			-- from 50
-NDefines.NCountry.PS_CHANGE_CULTURE = 5			-- from 10
-NDefines.NCountry.PS_IMPROVE_PROVINCE_BASE = 25			-- from 50
-NDefines.NCountry.PS_IMPROVE_PROVINCE_CAPITAL_DISCOUNT = 0.025			-- from 0p05
+NDefines.NCountry.PS_CHANGE_CULTURE = 10			-- from 10
+NDefines.NCountry.PS_IMPROVE_PROVINCE_BASE = 42			-- from 50 # ANSWER TO LIFE THE UNIVERSE AND EVERYTHING
+NDefines.NCountry.PS_IMPROVE_PROVINCE_CAPITAL_DISCOUNT = 0.05			-- from 0p05
 NDefines.NCountry.OVEREXTENSION_FACTOR = 0.5			-- from 1p0
 NDefines.NCountry.MONTHS_TO_CHANGE_CULTURE = 5			-- from 10
 NDefines.NCountry.RAZE_PROVINCE_POWER_PER_DEVELOPMENT = 10			-- from 25p0
@@ -118,8 +118,8 @@ NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 5.0			-- from 2p5
 NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.02			-- from 0p05
 NDefines.NCountry.MERCHANT_REPUBLIC_SIZE_LIMIT = 50
 NDefines.NCountry.PS_BOOST_MILITARIZATION = 30			-- Same logic as above new provinces cause faster decline thus need lower cost ideally I can find a better solution later Base 50
-NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.15	-- from 0.3
-NDefines.NCountry.REVOLT_SIZE_BASE = 2	-- from 4
+NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.1	-- from 0.3
+NDefines.NCountry.REVOLT_SIZE_BASE = 3	-- from 4
 NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03			-- % each tech increases size of rebels by this percent.
 NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
  --Colonial
@@ -223,7 +223,9 @@ NDefines.NAI.DIPLOMATIC_ACTION_CLAIM_THRONE_DEVELOPMENT_FACTOR = 0.5			-- from 1
 NDefines.NAI.DIPLOMATIC_ACTION_AGITATE_FOR_LIBERTY_DEVELOPMENT_FACTOR = 0.15			-- from 0p25
 NDefines.NAI.DIPLOMATIC_ACTION_SUPPORT_HEIR_DEVELOPMENT_FACTOR = 1			-- from 2
 NDefines.NAI.DIPLOMATIC_ACTION_TRIBUTARY_ACCEPTANCE_PER_DEVELOPMENT = -0.25			-- from -0p5
-NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 0.1			-- from 3 THANK GOD
+NDefines.NAI.CHARTER_COMPANY_BASE_RELUCTANCE = 0						-- from -3; Base reluctance to giving away provinces in charter company diplo action
+NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 3				-- from 3; How much development needed to add one reluctance
+	
  -- Condotierri
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_BASE_MULT = 33 -- AI scoring for offer condottieri, base scale.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_MONTHLY_PARTICIPATION_RATE = -0.3 --Base monthly decay in participation. Related to multipliers for war participation (but doesn't depend on number of regiments, so raw multiplier matters).
