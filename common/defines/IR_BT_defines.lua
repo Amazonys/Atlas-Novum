@@ -12,12 +12,12 @@ NDefines.NDiplomacy.AE_ATTACKER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_DEFENDER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_PROVINCE_CAP = 50			-- from 30
  -- Peace AE
-NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.35			-- from 0p75
-NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.25			-- from 0p5
-NDefines.NDiplomacy.PO_FORM_PU_AE = 0.05			-- from 0p1
-NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.05			-- from 0p25
-NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.25			-- from 0p5
-NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.25			-- from 0p33
+NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.4			-- from 0p75
+NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.3			-- from 0p5
+NDefines.NDiplomacy.PO_FORM_PU_AE = 0.1			-- from 0p1
+NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.1			-- from 0p25
+NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.3			-- from 0p5
+NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.3			-- from 0p33
  -- Peace Prestige
 NDefines.NDiplomacy.PO_ANNEX_PRESTIGE = 0.15			-- from 0p25
 NDefines.NDiplomacy.PO_DEMAND_PROVINCES_PRESTIGE = 0.2			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Directly demanding provinces should be slightly rarer and harder now so offsetting larger penalties minorly with prestige
@@ -43,6 +43,9 @@ NDefines.NDiplomacy.PEACE_COST_RELEASE_VASSAL = 0.6		-- from 0p5
 NDefines.NDiplomacy.PEACE_COST_CONVERSION = 0.1		-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   I know people love their beliefs and resist religious change but the absurdly high price of this made it only possible against very small tags where it was usually preferable to just annex   Now this might be useful
 NDefines.NDiplomacy.PEACE_COST_RELEASE = 1			-- from 2
 NDefines.NDiplomacy.ANNEX_DIP_COST_PER_DEVELOPMENT = 4 -- from 8
+
+NDefines.NDiplomacy.PEACE_COST_DEMAND_NON_OCCUPIED_PROVINCE_MULT = 1.5
+NDefines.NDiplomacy.PEACE_COST_DEMAND_CAPITAL_MULT = 2
  --End of Peace Costs
  -- AE
 NDefines.NDiplomacy.AE_OTHER_CONTINENT = 5 -- from 10
