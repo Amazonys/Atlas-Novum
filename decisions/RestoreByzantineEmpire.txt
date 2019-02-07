@@ -3,7 +3,6 @@ country_decisions = {
 	restore_byzantine_empire = {
 		major = yes
 		potential = {
-			was_never_end_game_tag_trigger = yes
 			normal_or_historical_nations = yes
 			NOT = { has_country_flag = formed_byzantium_flag }
 			OR = {
@@ -13,9 +12,14 @@ country_decisions = {
 			NOT = { exists = BYZ }
 			NOT = { tag = HLR }
 			NOT = { tag = ROM }
+			#Byz_resurgence added
+			NOT = { exists = ROM }
+			#Byz_resurgence added
+			NOT = { tag = LTE }
 			NOT = { tag = TUR }
 			culture_group = byzantine
 			religion = orthodox
+			#Byz_resurgence adjusted: Theme system requirements.
 			num_of_owned_provinces_with = {
 				value = 5
 				OR = {
@@ -26,14 +30,13 @@ country_decisions = {
 					area = naples_area
 					area = sicily_area
 					area = erzurum_area
+					#Byz Resurgence Added Vaspurakaania
+					area = north_kurdistan_area
 					area = cyprus_area
-					province_id = 3249
-					province_id = 5183
-					province_id = 2313
-					province_id = 5170
-					province_id = 2410
-					province_id = 285
-					province_id = 3245
+					AND = {
+							area = lower_danube_area
+							NOT = { province_id = 1756 }
+						}
 				}
 				is_core = ROOT
 			}	#Requires at least 5 provinces to see the decision
@@ -47,21 +50,24 @@ country_decisions = {
 				area = naples_area
 				area = sicily_area
 				area = erzurum_area
+				#Byz Resurgence Added Vaspurakaania
+				area = north_kurdistan_area
 				area = cyprus_area
-				province_id = 3249
-				province_id = 5183
-				province_id = 2313
-				province_id = 5170
-				province_id = 2410
-				province_id = 285
-				province_id = 3245
+				AND = {
+					area = lower_danube_area
+					NOT = { province_id = 1756 }
+				}
 			}
-			NOT = { owned_by = ROOT }
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+			}
 		}
 		allow = {
 			owns_core_province = 148 # Thessaloniki
 			owns_core_province = 151 # Constantinople
 			#This replaces the various specific provinces required, leaving Constantinople and Thessaloniki, though, as the two primary cities of the empire
+			#Byz_resurgence adjusted: Adjusted to that of the Theme System requirements.
 			num_of_owned_provinces_with = {
 				value = 30
 				OR = {
@@ -72,34 +78,45 @@ country_decisions = {
 					area = naples_area
 					area = sicily_area
 					area = erzurum_area
+					#Byz Resurgence Added Vaspurakaania
+					area = north_kurdistan_area
 					area = cyprus_area
-					province_id = 3249
-					province_id = 5183
-					province_id = 2313
-					province_id = 5170
-					province_id = 2410
-					province_id = 285
-					province_id = 3245
+					AND = {
+						area = lower_danube_area
+						NOT = { province_id = 1756 }
+					}
 				}
-				is_core = ROOT
-			}	#Need to recover at least 30 provinces (roughly 1/5) of the Empire (154 or so) under Basil II required to restablish the empire
+			}	#Need to recover at least 30 provinces that were historically part of the Empire
 			is_at_war = no
 			is_free_or_tributary_trigger = yes
 			is_nomad = no
 		}
 		effect = {
-			151 = { move_capital_effect = yes } # Constantinople
+			151 = {
+				move_capital_effect = yes
+			}
 			change_tag = BYZ
 			swap_non_generic_missions = yes
-			every_province = {
-				limit = {
-					OR = {
-						region = balkan_region
-						region = anatolia_region
-					}	#Removed the long and tedious list of various specific provinces in favour of a region and area based approach. For permanent claims, going for just the two regions for now
-					NOT = { is_core = BYZ }
+			#Byz_resurgence adjusted: Adjusted to the same claims granted upon reestablishing Theme System.
+			custom_tooltip = byzantine_claims_tooltip
+			hidden_effect = {
+				every_province = {
+					limit = {
+						NOT = { owned_by = ROOT }
+						OR = {
+							area = western_aegean_area
+							area = northern_greece_area
+							area = morea_area
+							area = macedonia_area
+							area = thrace_area
+							area = aegean_archipelago_area
+							area = eastern_mediterrenean_islands_area
+							area = cyprus_area
+							region = anatolia_region
+						}
+					}
+					add_permanent_claim = BYZ
 				}
-				add_permanent_claim = BYZ
 			}
 			random_owned_province = {
 				limit = { culture = greek }
@@ -120,17 +137,6 @@ country_decisions = {
 			}
 			if = {
 				limit = {
-					is_part_of_hre = yes
-				}
-				every_owned_province = {
-					limit = {
-						is_part_of_hre = yes
-					}
-					set_in_empire = no
-				}
-			}
-			if = {
-				limit = {
 					NOT = { has_global_flag = constantinople_restored }
 				}
 				151 = {
@@ -145,6 +151,7 @@ country_decisions = {
 				}
 				set_global_flag = constantinople_restored
 			}
+			remove_non_electors_emperors_from_empire_effect = yes
 			if = {
 				limit = { has_global_flag = hagia_sophia_now_mosque }
 				clr_global_flag = hagia_sophia_now_mosque
