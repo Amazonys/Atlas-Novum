@@ -1,0 +1,895 @@
+
+##### CUSTOM MAP MODE EFFECTS
+
+smm_clear_vars = {
+	set_variable = { which = smm_type value = 0 }
+	set_variable = { which = smm_scope value = 0 }
+	set_variable = { which = smm_scale value = 0 }
+	set_variable = { which = smm_colors value = 0 }
+	if = {
+		limit = {
+			has_country_flag = smm_active
+		}
+		clr_country_flag = smm_active
+	}
+	if = {
+		limit = {
+			has_country_flag = smm_custom
+		}
+		clr_country_flag = smm_custom
+	}
+	smm_flag_helper_clr = { num=32 }
+	smm_flag_helper_clr = { num=16 }
+	smm_flag_helper_clr = { num=8 }
+	smm_flag_helper_clr = { num=4 }
+}
+smm_scale_event_check = {
+	if = {
+		limit = {
+			check_variable = { which = smm_set_custom_var value = 5 }
+		}
+		smm_set_custom = { slot=5 }
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_set_custom_var value = 4 }
+		}
+		smm_set_custom = { slot=4 }
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_set_custom_var value = 3 }
+		}
+		smm_set_custom = { slot=3 }
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_set_custom_var value = 2 }
+		}
+		smm_set_custom = { slot=2 }
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_set_custom_var value = 1 }
+		}
+		smm_set_custom = { slot=1 }
+	}
+	else = {
+		smm_recalc_mapmode = yes
+		clr_country_flag = smm_values
+	}
+}
+
+smm_unpack_custom = { # Gets all five saved country mapmode data for localisations
+	smm_decompress = { slot=1 colors=colors_1 scale=scale_1 scope=scope_1 type=type_1 res=smm1 }
+	smm_decompress = { slot=2 colors=colors_2 scale=scale_2 scope=scope_2 type=type_2 res=smm2 }
+	smm_decompress = { slot=3 colors=colors_3 scale=scale_3 scope=scope_3 type=type_3 res=smm3 }
+	smm_decompress = { slot=4 colors=colors_4 scale=scale_4 scope=scope_4 type=type_4 res=smm4 }
+	smm_decompress = { slot=5 colors=colors_5 scale=scale_5 scope=scope_5 type=type_5 res=smm5 }
+}
+
+smm_unpackend_custom = { # Removes variables from smm_unpack_custom
+	smm_unpackend_custom_helper = { num=1 }
+	smm_unpackend_custom_helper = { num=2 }
+	smm_unpackend_custom_helper = { num=3 }
+	smm_unpackend_custom_helper = { num=4 }
+	smm_unpackend_custom_helper = { num=5 }
+	smm_clear_slot_flags = yes
+}
+smm_unpackend_custom_helper = { #num
+	set_variable = { which = smm_colors_$num$ value = 0 }
+	set_variable = { which = smm_scale_$num$ value = 0 }
+	set_variable = { which = smm_scope_$num$ value = 0 }
+	set_variable = { which = smm_type_$num$ value = 0 }
+	if = {
+		limit = {
+			has_country_flag = smm$num$_32
+		}
+		clr_country_flag = smm$num$_32
+	}
+	if = {
+		limit = {
+			has_country_flag = smm$num$_16
+		}
+		clr_country_flag = smm$num$_16
+	}
+	if = {
+		limit = {
+			has_country_flag = smm$num$_8
+		}
+		clr_country_flag = smm$num$_8
+	}
+	if = {
+		limit = {
+			has_country_flag = smm$num$_4
+		}
+		clr_country_flag = smm$num$_4
+	}
+	if = {
+		limit = {
+			has_country_flag = smm$num$_custom
+		}
+		clr_country_flag = smm$num$_custom
+	}
+}
+
+smm_compress = { #slot #colors #scale #scope #type #res ## compresses variable data into one variable: var = A,ABB,CCD.DEE - ORIGINAL DATA LOST
+	set_variable = { which = smm_custom_slot_$slot$ value = 0 }
+	trigger_switch = {
+		on_trigger = has_country_flag
+		$res$_32 = {
+			change_variable = { which = smm_custom_slot_$slot$ value = 500000 }
+		}
+		$res$_16 = {
+			change_variable = { which = smm_custom_slot_$slot$ value = 400000 }
+		}
+		$res$_8 = {
+			change_variable = { which = smm_custom_slot_$slot$ value = 300000 }
+		}
+		$res$_4 = {
+			change_variable = { which = smm_custom_slot_$slot$ value = 200000 }
+		}
+		$res$_other = {
+			change_variable = { which = smm_custom_slot_$slot$ value = 100000 }
+		}
+	}
+	multiply_variable = { which = smm_$type$ value = 0.001 }
+	multiply_variable = { which = smm_$scope$ value = 0.1 }
+	multiply_variable = { which = smm_$scale$ value = 10 }
+	multiply_variable = { which = smm_$colors$ value = 1000 }
+	change_variable = { which = smm_custom_slot_$slot$ which = smm_$type$ }
+	change_variable = { which = smm_custom_slot_$slot$ which = smm_$scope$ }
+	change_variable = { which = smm_custom_slot_$slot$ which = smm_$scale$ }
+	change_variable = { which = smm_custom_slot_$slot$ which = smm_$colors$ }
+	set_variable = { which = smm_$type$ value = 0 }
+	set_variable = { which = smm_$scope$ value = 0 }
+	set_variable = { which = smm_$scale$ value = 0 }
+	set_variable = { which = smm_$colors$ value = 0 }
+}
+
+smm_decompress = { #slot #colors #scale #scope #type #res ## decompresses data from one variable: var = A,ABB,CCD.DEE - lossless
+	if = {
+		limit = {
+			check_variable = { which = smm_custom_slot_$slot$ value = 0.001 }
+		}
+		set_variable = { which = smm which = smm_custom_slot_$slot$ }
+		set_variable = { which = smm_res which = smm }
+		multiply_variable = { which = smm_res value = 0.001 }
+		multiply_variable = { which = smm_res value = 0.001 }
+		multiply_variable = { which = smm_res value = 0.01 }
+		multiply_variable = { which = smm_res value = 10000 }
+		multiply_variable = { which = smm_res value = 10000 }
+		subtract_variable = { which = smm which = smm_res }
+		if = {
+			limit = {
+				check_variable = { which = smm_res value = 500000 }
+			}
+			set_country_flag = $res$_32
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_res value = 400000 }
+			}
+			set_country_flag = $res$_16
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_res value = 300000 }
+			}
+			set_country_flag = $res$_8
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_res value = 200000 }
+			}
+			set_country_flag = $res$_4
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_res value = 100000 }
+			}
+			set_country_flag = $res$_other
+		}
+		set_variable = { which = smm_res value = 0 }
+	
+		set_variable = { which = smm_$colors$ which = smm }
+		multiply_variable = { which = smm_$colors$ value = 0.001 }
+		multiply_variable = { which = smm_$colors$ value = 0.001 }
+		multiply_variable = { which = smm_$colors$ value = 1000 }
+		multiply_variable = { which = smm_$colors$ value = 1000 }
+		subtract_variable = { which = smm which = smm_$colors$ }
+		multiply_variable = { which = smm_$colors$ value = 0.001 }
+		
+		set_variable = { which = smm_$scale$ which = smm }
+		multiply_variable = { which = smm_$scale$ value = 0.1 }
+		multiply_variable = { which = smm_$scale$ value = 0.001 }
+		multiply_variable = { which = smm_$scale$ value = 10000 }
+		subtract_variable = { which = smm which = smm_$scale$ }
+		multiply_variable = { which = smm_$scale$ value = 0.1 }
+		
+		set_variable = { which = smm_$scope$ which = smm }
+		multiply_variable = { which = smm_$scope$ value = 0.01 }
+		multiply_variable = { which = smm_$scope$ value = 100 }
+		subtract_variable = { which = smm which = smm_$scope$ }
+		multiply_variable = { which = smm_$scope$ value = 10 }
+		
+		set_variable = { which = smm_$type$ which = smm }
+		multiply_variable = { which = smm_$type$ value = 1000 }
+		set_variable = { which = smm value = 0 }
+	}
+	else = {
+		set_country_flag = smm_no_slot_$slot$
+	}
+}
+smm_clear_slot_flags = { ## clears no_slot flags if necessary
+	if = {
+		limit = {
+			has_country_flag = smm_no_slot_1
+		}
+		clr_country_flag = smm_no_slot_1
+	}
+	if = {
+		limit = {
+			has_country_flag = smm_no_slot_2
+		}
+		clr_country_flag = smm_no_slot_2
+	}
+	if = {
+		limit = {
+			has_country_flag = smm_no_slot_3
+		}
+		clr_country_flag = smm_no_slot_3
+	}
+	if = {
+		limit = {
+			has_country_flag = smm_no_slot_4
+		}
+		clr_country_flag = smm_no_slot_4
+	}
+	if = {
+		limit = {
+			has_country_flag = smm_no_slot_5
+		}
+		clr_country_flag = smm_no_slot_5
+	}
+}
+smm_recalc_this_mapmode = { ## moves local mapmode data to AAA and recalculates mapmode
+	trigger_switch = {
+		on_trigger = has_country_flag
+		smm_32 = {
+			AAA = {
+				smm_flag_helper_set = { num=32 }
+				smm_flag_helper_clr = { num=16 }
+				smm_flag_helper_clr = { num=8 }
+				smm_flag_helper_clr = { num=4 }
+			}
+		}
+		smm_16 = {
+			AAA = {
+				smm_flag_helper_clr = { num=32 }
+				smm_flag_helper_set = { num=16 }
+				smm_flag_helper_clr = { num=8 }
+				smm_flag_helper_clr = { num=4 }
+			}
+		}
+		smm_8 = {
+			AAA = {
+				smm_flag_helper_clr = { num=32 }
+				smm_flag_helper_clr = { num=16 }
+				smm_flag_helper_set = { num=8 }
+				smm_flag_helper_clr = { num=4 }
+			}
+		}
+		smm_4 = {
+			AAA = {
+				smm_flag_helper_clr = { num=32 }
+				smm_flag_helper_clr = { num=16 }
+				smm_flag_helper_clr = { num=8 }
+				smm_flag_helper_set = { num=4 }
+			}
+		}
+	}
+	AAA = {
+		set_variable = { which = smm_type which = PREV }
+		set_variable = { which = smm_scope which = PREV }
+		set_variable = { which = smm_scale which = PREV }
+		set_variable = { which = smm_colors which = PREV }
+		smm_recalc_mapmode_1 = yes
+		smm_recalc_mapmode_2 = yes
+		smm_recalc_mapmode_3 = yes
+		smm_recalc_mapmode_4 = yes
+	}
+}
+smm_flag_helper_set = { #num ## sets smm flag if necessary
+	if = {
+		limit = {
+			NOT = {
+				has_country_flag = smm_$num$
+			}
+		}
+		set_country_flag = smm_$num$
+	}
+}
+smm_flag_helper_clr = { #num ## clears smm flag if necessary
+	if = {
+		limit = {
+			has_country_flag = smm_$num$
+		}
+		clr_country_flag = smm_$num$
+	}
+}
+smm_recalc_mapmode = { ## recalculates mapmode in AAA
+	AAA = {
+		smm_recalc_mapmode_1 = yes
+		smm_recalc_mapmode_2 = yes
+		smm_recalc_mapmode_3 = yes
+		smm_recalc_mapmode_4 = yes
+	}
+}
+smm_recalc_mapmode_1 = { ## resets mapmode according to smm_scope variable - part 1 of 4: Finding the scope
+	if = {  ## set smm province flag in all affected provinces
+		limit = {
+			check_variable = { which = smm_scope value = 8 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_scope value = 12 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_scope value = 14 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm_scope value = 15 }
+					}
+					#15
+				}
+				else = {
+					#14
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm_scope value = 13 }
+				}
+				#13
+			}
+			else = {
+				#12
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_scope value = 10 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_scope value = 11 }
+				}
+				#11
+			}
+			else = {
+				#10
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_scope value = 9 }
+			}
+			#9
+		}
+		else = {
+			#8
+			north_america = {
+				set_province_flag = smm
+			}
+			south_america = {
+				set_province_flag = smm
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_scope value = 4 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_scope value = 6 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_scope value = 7 }
+				}
+				#7
+				sub_sahara = {
+					set_province_flag = smm
+				}
+			}
+			else = {
+				#6
+				mena = {
+					set_province_flag = smm
+				}
+				central_asia = {
+					set_province_flag = smm
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_scope value = 5 }
+			}
+			#5
+			oceania = {
+				set_province_flag = smm
+			}
+			southeast_asia = {
+				set_province_flag = smm
+			}
+		}
+		else = {
+			#4
+			indian_continent = {
+				set_province_flag = smm
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_scope value = 2 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_scope value = 3 }
+			}
+			#3
+			east_asia = {
+				set_province_flag = smm
+			}
+			north_asia = {
+				set_province_flag = smm
+			}
+		}
+		else = {
+			#2
+			europe = {
+				set_province_flag = smm
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_scope value = 1 }
+		}
+		#1
+		ROOT = {
+			every_owned_province = {
+				limit = {
+					NOT = { is_wasteland = yes }
+				}
+				set_province_flag = smm
+			}
+		}
+	}
+	else = {
+		#0
+		every_province = {
+			limit = {
+				NOT = { is_wasteland = yes }
+			}
+			set_province_flag = smm
+		}
+	}
+}
+smm_recalc_mapmode_2 = { ## resets mapmode according to smm_type variable - part 2 of 4: Getting the value
+	if = {  ## do smm_scale_get_maxmin or directly set smm_display_x values in AAA
+		limit = {
+			check_variable = { which = smm_type value = 16 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_type value = 24 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_type value = 28 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm_type value = 30 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm_type value = 31 }
+						}
+						#31
+					}
+					else = {
+						#30
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm_type value = 29 }
+					}
+					#29
+				}
+				else = {
+					#28
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm_type value = 26 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm_type value = 27 }
+					}
+					#27
+				}
+				else = {
+					#26
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm_type value = 25 }
+				}
+				#25
+			}
+			else = {
+				#24
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_type value = 20 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_type value = 22 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm_type value = 23 }
+					}
+					#23
+				}
+				else = {
+					#22
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm_type value = 21 }
+				}
+				#21
+			}
+			else = {
+				#20
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_type value = 18 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_type value = 19 }
+				}
+				#19
+			}
+			else = {
+				#18
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_type value = 17 }
+			}
+			#17
+		}
+		else = {
+			#16
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_type value = 8 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_type value = 12 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_type value = 14 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm_type value = 15 }
+					}
+					#15
+				}
+				else = {
+					#14
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm_type value = 13 }
+				}
+				#13
+			}
+			else = {
+				#12
+				every_province = {
+					limit = {
+						has_province_flag = smm
+					}
+					export_to_variable = { which = calcvar_L value = development }
+				}
+				smm_scale_get_maxmin = { var=calcvar_L }
+				every_province = {
+					set_variable = { which = calcvar_L value = 0 }
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_type value = 10 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_type value = 11 }
+				}
+				#11
+				every_province = {
+					limit = {
+						has_province_flag = smm
+					}
+					export_to_variable = { which = calcvar_L value = unrest }
+				}
+				smm_scale_get_maxmin = { var=calcvar_L }
+				every_province = {
+					set_variable = { which = calcvar_L value = 0 }
+				}
+				
+			}
+			else = {
+				#10
+				every_province = {
+					limit = {
+						has_province_flag = smm
+					}
+					export_to_variable = { which = calcvar_L value = local_autonomy }
+				}
+				smm_scale_get_maxmin = { var=calcvar_L }
+				every_province = {
+					set_variable = { which = calcvar_L value = 0 }
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_type value = 9 }
+			}
+			#9
+		}
+		else = {
+			#8
+			every_province = {
+				limit = {
+					has_province_flag = smm
+				}
+				export_to_variable = { which = calcvar_L value = province_trade_power }
+			}
+			smm_scale_get_maxmin = { var=calcvar_L }
+			every_province = {
+				set_variable = { which = calcvar_L value = 0 }
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_type value = 4 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_type value = 6 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_type value = 7 }
+				}
+				#7
+				smm_scale_get_maxmin = { var=farm_efficiency } #
+			}
+			else = {
+				#6
+				every_province = {
+					limit = {
+						has_province_flag = smm
+					}
+					set_variable = { which = calcvar_L which = wealth_urban_as_asset }
+					change_variable = { which = calcvar_L which = wealth_urban_fluid }
+				}
+				smm_scale_get_maxmin = { var=calcvar_L }
+				every_province = {
+					set_variable = { which = calcvar_L value = 0 }
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_type value = 5 }
+			}
+			#5
+		}
+		else = {
+			#4
+			every_province = {
+				limit = {
+					has_province_flag = smm
+				}
+				set_variable = { which = calcvar_L which = total_pop }
+				multiply_variable = { which = calcvar_L value = 100 }
+				divide_variable = { which = calcvar_L which = prov_size }
+			}
+			smm_scale_get_maxmin = { var=calcvar_L }
+			every_province = {
+				set_variable = { which = calcvar_L value = 0 }
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_type value = 2 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_type value = 3 }
+			}
+			#3
+			smm_scale_get_maxmin = { var=rural_pop }
+		}
+		else = {
+			#2
+			smm_scale_get_maxmin = { var=total_pop }
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_type value = 1 }
+		}
+		#1
+		smm_scale_get_maxmin = { var=x_coord }
+	}
+	else = {
+		#0
+		smm_scale_get_maxmin = { var=y_coord }
+	}
+}
+smm_recalc_mapmode_3 = { ## resets mapmode according to smm_scale variable - part 3 of 4: Calculating the correct scale
+	if = {  ## do smm_scale_x_y_z ##### add country flags for special(skip)/4/8/16/32
+		limit = {
+			check_variable = { which = smm_scale value = 4 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_scale value = 6 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_scale value = 7 }
+				}
+				#7
+			}
+			else = {
+				#6
+				smm_scale_linear = yes
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_scale value = 5 }
+			}
+			#5
+			smm_scale_vari_ex = { log=0.6 }
+		}
+		else = {
+			#4
+			smm_scale_vari_ex = { log=1 }
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_scale value = 2 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_scale value = 3 }
+			}
+			#3
+			smm_scale_vari_ex = { log=3 }
+		}
+		else = {
+			#2
+			smm_scale_vari_ex = { log=7 }
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_scale value = 1 }
+		}
+		#1
+		smm_scale_vari_ex = { log=25 }
+	}
+	else = {
+		#0
+		smm_scale_vari_ex = { log=1000 }
+	}
+}
+smm_recalc_mapmode_4 = { ## resets mapmode according to smm_colors variable - part 4 of 4: Applying the colors
+	if = {  ## do smm_scale_x_apply ##### x from country flags
+		limit = {
+			check_variable = { which = smm_colors value = 4 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_colors value = 6 }
+			}
+			if = {
+				limit = {
+					check_variable = { which = smm_colors value = 7 }
+				}
+				#7
+				smm_scale_apply = { color=grw }
+			}
+			else = {
+				#6
+				smm_scale_apply = { color=rew }
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = { which = smm_colors value = 5 }
+			}
+			#5
+			smm_scale_apply = { color=blwx }
+		}
+		else = {
+			#4
+			smm_scale_apply = { color=rygx }
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_colors value = 2 }
+		}
+		if = {
+			limit = {
+				check_variable = { which = smm_colors value = 3 }
+			}
+			#3
+			smm_scale_apply = { color=gr }
+		}
+		else = {
+			#2
+			smm_scale_apply = { color=perc }
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { which = smm_colors value = 1 }
+		}
+		#1
+		smm_scale_apply = { color=blw }
+	}
+	else = {
+		#0
+		smm_scale_apply = { color=ryg }
+	}
+}

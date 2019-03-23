@@ -1,0 +1,1048 @@
+##### BASIC EFFECTS
+
+smm_update_scale = { #color #num ## assigns scale number trade good to province if necessary
+#	if = {
+#		limit = {
+#			NOT = {
+#				OR = {
+#					trade_goods = smm_$color$_$num$
+#					trade_goods = smmg_$color$_$num$
+#				}
+#			}
+#		}
+#		if = {
+#			limit = {
+#				has_province_flag = gold
+#			}
+#			change_trade_goods = smmg_$color$_$num$
+#		}
+#		else = {
+			change_trade_goods = smm_$color$_$num$
+#		}
+#	}
+}
+smm_set_specific = { #tg
+#	if = {
+#		limit = {
+#			NOT = {
+#				OR = {
+#					trade_goods = smm_$tg$
+#					trade_goods = smmg_$tg$
+#				}
+#			}
+#		}
+#		if = {
+#			limit = {
+#				has_province_flag = gold
+#			}
+#			change_trade_goods = smmg_$tg$
+#		}
+#		else = {
+			change_trade_goods = $tg$
+#		}
+#	}
+}
+
+##### MAPMODE APPLICATION EFFECTS
+
+smm_scale_get_maxmin = { #var ## retrieve maximum & minimum values from a scope
+	every_province = {
+		limit = {
+			has_province_flag = smm
+		}
+		set_variable = { which = smm which = $var$ }
+	}
+	set_variable = { which = smm value = -2147483.647 }
+	every_province = {
+		limit = {
+			has_province_flag = smm
+			check_variable = { which = smm which = PREV }
+		}
+		AAA = {
+			set_variable = { which = smm which = PREV }
+		}
+	}
+	set_variable = { which = smm_display_32 which = smm }
+	set_variable = { which = smm value = 2147483.647 }
+	every_province = {
+		limit = {
+			has_province_flag = smm
+			NOT = {
+				check_variable = { which = smm which = PREV }
+			}
+		}
+		AAA = {
+			set_variable = { which = smm which = PREV }
+		}
+	}
+	set_variable = { which = smm_display_0 which = smm }
+	set_variable = { which = smm value = 0 }
+}
+smm_scale_4_vari = { #var #color #scope ## calculates 4-step values between two given values, simple division
+	AAA = {
+		set_variable = { which = smm_display which = smm_display_32 }
+		subtract_variable = { which = smm_display which = smm_display_0 }
+		divide_variable = { which = smm_display value = 33 }
+		subtract_variable = { which = smm_display_32 which = smm_display }
+		
+		multiply_variable = { which = smm_display value = 8 }
+
+		set_variable = { which = smm_display_8 which = smm_display_0 }
+		change_variable = { which = smm_display_8 which = smm_display }
+		set_variable = { which = smm_display_24 which = smm_display_32 }
+		subtract_variable = { which = smm_display_24 which = smm_display }
+		multiply_variable = { which = smm_display value = 2 }
+		set_variable = { which = smm_display_16 which = smm_display_0 }
+		change_variable = { which = smm_display_16 which = smm_display }
+
+		every_province = {
+			limit = {
+				has_province_flag = smm
+			}
+			set_variable = { which = smm_display_24 which = PREV }
+			if = {
+				limit = {
+					check_variable = { which = $var$ which = smm_display_24 }
+				}
+				set_variable = { which = smm_display_32 which = PREV }
+				if = {
+					limit = {
+						check_variable = { which = $var$ which = smm_display_32 }
+					}
+					smm_update_scale = { color=$color$ num=32 }
+				}
+				else = {
+					smm_update_scale = { color=$color$ num=24 }
+				}
+				set_variable = { which = smm_display_32 value = 0 }
+			}
+			else = {
+				set_variable = { which = smm_display_16 which = PREV }
+				if = {
+					limit = {
+						check_variable = { which = $var$ which = smm_display_16 }
+					}
+					smm_update_scale = { color=$color$ num=16 }
+				}
+				else = {
+					set_variable = { which = smm_display_8 which = PREV }
+					if = {
+						limit = {
+							check_variable = { which = $var$ which = smm_display_8 }
+						}
+						smm_update_scale = { color=$color$ num=8 }
+					}
+					else = {
+						smm_update_scale = { color=$color$ num=0 }
+					}
+					set_variable = { which = smm_display_8 value = 0 }
+				}
+				set_variable = { which = smm_display_16 value = 0 }
+			}
+			set_variable = { which = smm_display_24 value = 0 }
+		}
+	}
+}
+smm_vari_ex_calc = { #log ## calculates logarithmic comparison scale between max/min values and 32-0
+	multiply_variable = { which = smm_display_32 value = 0.97 } ## give it some space at the top
+		## smm_display_X = e((X * (ln(smm_display_32 - smm_display_0 + $log$) - ln($log$)) / 32) + ln($log$)) + smm_display_0 - $log$
+	set_variable = { which = smm_change value = $log$ }
+	ln_funct_re = { type=which inp=smm_change return=smm_changelog }
+	set_variable = { which = smm_scale_calc which = smm_display_32 }
+	subtract_variable = { which = smm_scale_calc which = smm_display_0 }
+	change_variable = { which = smm_scale_calc which = smm_change }
+	ln_funct_re = { type=which inp=smm_scale_calc return=smm_scale_calc }
+	subtract_variable = { which = smm_scale_calc which = smm_changelog }
+	divide_variable = { which = smm_scale_calc value = 32 }
+}
+smm_ex_log = { #num #log ## calculates actual value for a scale value from log calculation
+	set_variable = { which = smm_display_$num$ value = $num$ }
+	multiply_variable = { which = smm_display_$num$ which = smm_scale_calc }
+	change_variable = { which = smm_display_$num$ which = smm_changelog }
+	e_funct_re = { type=which expnt=smm_display_$num$ prec=4 return=smm_display_$num$ }
+	change_variable = { which = smm_display_$num$ which = smm_display_0 }
+	subtract_variable = { which = smm_display_$num$ value = $log$ }
+}
+
+smm_vari_ex0_calc = { #log ###log is variable ## calculates logarithmic comparison scale, with 0 as base
+	multiply_variable = { which = smm_display_32 value = 0.97 } ## give it some space at the top
+		## smm_display_X = e((X * (ln(smm_display_32 + $log$) - ln($log$)) / 32) + ln($log$)) - $log$
+	set_variable = { which = smm_change which = $log$ }
+	ln_funct_re = { type=which inp=smm_change return=smm_changelog }
+	set_variable = { which = smm_scale_calc which = smm_display_32 }
+	change_variable = { which = smm_scale_calc which = smm_change }
+	ln_funct_re = { type=which inp=smm_scale_calc return=smm_scale_calc }
+	subtract_variable = { which = smm_scale_calc which = smm_changelog }
+	divide_variable = { which = smm_scale_calc value = 32 }
+}
+smm_ex0_log = { #num #log ## calculates actual value for a scale value from log calculation
+	set_variable = { which = smm_display_$num$ value = $num$ }
+	multiply_variable = { which = smm_display_$num$ which = smm_scale_calc }
+	change_variable = { which = smm_display_$num$ which = smm_changelog }
+	e_funct_re = { type=which expnt=smm_display_$num$ prec=4 return=smm_display_$num$ }
+	subtract_variable = { which = smm_display_$num$ value = $log$ }
+}
+
+smm_vari_exadj_calc = { #log ## calculates logarithmic comparison scale between max/min values and 32-0, log adjusts to value range
+	multiply_variable = { which = smm_display_32 value = 0.97 } ## give it some space at the top
+		## smm_display_X = e((X * (ln(smm_display_32 - smm_display_0 + $log$) - ln($log$)) / 32) + ln($log$)) + smm_display_0 - $log$
+	set_variable = { which = smm_scale_calc which = smm_display_32 }
+	subtract_variable = { which = smm_scale_calc which = smm_display_0 }
+	set_variable = { which = smm_change value = $log$ }
+	multiply_variable = { which = smm_change which = smm_scale_calc }
+	ln_funct_re = { type=which inp=smm_change return=smm_changelog }
+	change_variable = { which = smm_scale_calc which = smm_change }
+	ln_funct_re = { type=which inp=smm_scale_calc return=smm_scale_calc }
+	subtract_variable = { which = smm_scale_calc which = smm_changelog }
+	divide_variable = { which = smm_scale_calc value = 32 }
+}
+
+smm_scale_vari_ex = { #log ## calculates variable exponential values, log is the steepness
+	smm_vari_ex_calc = { log=$log$ }
+	smm_ex_log = { num=8 log=$log$ }
+	smm_ex_log = { num=16 log=$log$ }
+	smm_ex_log = { num=24 log=$log$ }
+	if = {
+		limit = {
+			OR = {
+				has_country_flag = smm_32
+				has_country_flag = smm_16
+				has_country_flag = smm_8
+			}
+		}
+		smm_ex_log = { num=4 log=$log$ }
+		smm_ex_log = { num=12 log=$log$ }
+		smm_ex_log = { num=20 log=$log$ }
+		smm_ex_log = { num=28 log=$log$ }
+		if = {
+			limit = {
+				NOT = {
+					has_country_flag = smm_8
+				}
+			}
+			smm_ex_log = { num=2 log=$log$ }
+			smm_ex_log = { num=6 log=$log$ }
+			smm_ex_log = { num=10 log=$log$ }
+			smm_ex_log = { num=14 log=$log$ }
+			smm_ex_log = { num=18 log=$log$ }
+			smm_ex_log = { num=22 log=$log$ }
+			smm_ex_log = { num=26 log=$log$ }
+			smm_ex_log = { num=30 log=$log$ }
+			if = {
+				limit = {
+					has_country_flag = smm_32
+				}
+				smm_ex_log = { num=1 log=$log$ }
+				smm_ex_log = { num=3 log=$log$ }
+				smm_ex_log = { num=5 log=$log$ }
+				smm_ex_log = { num=7 log=$log$ }
+				smm_ex_log = { num=9 log=$log$ }
+				smm_ex_log = { num=11 log=$log$ }
+				smm_ex_log = { num=13 log=$log$ }
+				smm_ex_log = { num=15 log=$log$ }
+				smm_ex_log = { num=17 log=$log$ }
+				smm_ex_log = { num=19 log=$log$ }
+				smm_ex_log = { num=21 log=$log$ }
+				smm_ex_log = { num=23 log=$log$ }
+				smm_ex_log = { num=25 log=$log$ }
+				smm_ex_log = { num=27 log=$log$ }
+				smm_ex_log = { num=29 log=$log$ }
+				smm_ex_log = { num=31 log=$log$ }
+			}
+		}
+	}
+}
+
+smm_scale_linear = { ## calculates a linear value spread between 0 and 32
+	set_variable = { which = smm which = smm_display_32 }
+	subtract_variable = { which = smm which = smm_display_0 }
+	
+	multiply_variable = { which = smm value = 0.48 }
+	smm_scale_linear_helper = { num1=16 num2=0 }
+	
+	multiply_variable = { which = smm value = 0.5 }
+	smm_scale_linear_helper = { num1=8 num2=0 }
+	smm_scale_linear_helper = { num1=24 num2=16 }
+	
+	if = {
+		limit = {
+			OR = {
+				has_country_flag = smm_32
+				has_country_flag = smm_16
+				has_country_flag = smm_8
+				
+			}
+		}
+		multiply_variable = { which = smm value = 0.5 }
+		smm_scale_linear_helper = { num1=4 num2=0 }
+		smm_scale_linear_helper = { num1=12 num2=8 }
+		smm_scale_linear_helper = { num1=20 num2=16 }
+		smm_scale_linear_helper = { num1=28 num2=24 }
+		if = {
+			limit = {
+				NOT = {
+					has_country_flag = smm_8
+				}
+			}
+			multiply_variable = { which = smm value = 0.5 }
+			smm_scale_linear_helper = { num1=2 num2=0 }
+			smm_scale_linear_helper = { num1=6 num2=4 }
+			smm_scale_linear_helper = { num1=10 num2=8 }
+			smm_scale_linear_helper = { num1=14 num2=12 }
+			smm_scale_linear_helper = { num1=18 num2=16 }
+			smm_scale_linear_helper = { num1=22 num2=20 }
+			smm_scale_linear_helper = { num1=26 num2=24 }
+			smm_scale_linear_helper = { num1=30 num2=28 }
+			if = {
+				limit = {
+					has_country_flag = smm_32
+				}
+				multiply_variable = { which = smm value = 0.5 }
+				smm_scale_linear_helper = { num1=1 num2=0 }
+				smm_scale_linear_helper = { num1=3 num2=2 }
+				smm_scale_linear_helper = { num1=5 num2=4 }
+				smm_scale_linear_helper = { num1=7 num2=6 }
+				smm_scale_linear_helper = { num1=9 num2=8 }
+				smm_scale_linear_helper = { num1=11 num2=10 }
+				smm_scale_linear_helper = { num1=13 num2=12 }
+				smm_scale_linear_helper = { num1=15 num2=14 }
+				smm_scale_linear_helper = { num1=17 num2=16 }
+				smm_scale_linear_helper = { num1=19 num2=18 }
+				smm_scale_linear_helper = { num1=21 num2=20 }
+				smm_scale_linear_helper = { num1=23 num2=22 }
+				smm_scale_linear_helper = { num1=25 num2=24 }
+				smm_scale_linear_helper = { num1=27 num2=26 }
+				smm_scale_linear_helper = { num1=29 num2=28 }
+				smm_scale_linear_helper = { num1=31 num2=30 }
+			}
+		}
+	}
+	set_variable = { which = smm value = 0 }
+}
+smm_scale_linear_helper = {
+	set_variable = { which = smm_display_$num1$ which = smm_display_$num2$ }
+	change_variable = { which = smm_display_$num1$ which = smm }
+}
+
+smm_scale_apply = { #color ## applies SMM color according to scale prefix and "smm" value
+	trigger_switch = {
+		on_trigger = has_country_flag
+		smm_32 = {
+			smm_scale_32_apply = { color=$color$ }
+		}
+		smm_16 = {
+			smm_scale_16_apply = { color=$color$ }
+		}
+		smm_8 = {
+			smm_scale_8_apply = { color=$color$ }
+		}
+		smm_4 = {
+			smm_scale_4_apply = { color=$color$ }
+		}
+#		smm_other = {
+#		}
+	}
+}
+smm_scale_4_apply = { #color ## see base effect
+	every_province = {
+		limit = {
+			NOT = {
+				has_province_flag = smm
+			}
+		}
+		smm_set_specific = { tg=default }
+	}
+	every_province = {
+		limit = {
+			has_province_flag = smm
+		}
+		clr_province_flag = smm
+		AAA = {
+			set_variable = { which = smm which = PREV }
+			if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_16 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_24 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_32 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=32 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=24 } }
+					}
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=16 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_8 }
+				}
+				PREV = { smm_update_scale = { color=$color$ num=8 } }
+			}
+			else = {
+				PREV = { smm_update_scale = { color=$color$ num=0 } }
+			}
+		}
+		set_variable = { which = smm value = 0 }
+	}
+	set_variable = { which = smm value = 0 }
+}
+smm_scale_8_apply = { #color ## see base effect
+	every_province = {
+		limit = {
+			NOT = {
+				has_province_flag = smm
+			}
+		}
+		smm_set_specific = { tg=default }
+	}
+	every_province = {
+		limit = {
+			has_province_flag = smm
+		}
+		clr_province_flag = smm
+		AAA = {
+			set_variable = { which = smm which = PREV }
+			if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_16 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_24 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_28 }
+						}
+						if = {
+							limit = {
+								check_variable = { which = smm which = smm_display_32 }
+							}
+							PREV = { smm_update_scale = { color=$color$ num=32 } }
+						}
+						else = {
+							PREV = { smm_update_scale = { color=$color$ num=28 } }
+						}
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=24 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_20 }
+					}
+					PREV = { smm_update_scale = { color=$color$ num=20 } }
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=16 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_8 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_12 }
+					}
+					PREV = { smm_update_scale = { color=$color$ num=12 } }
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=8 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_4 }
+				}
+				PREV = { smm_update_scale = { color=$color$ num=4 } }
+			}
+			else = {
+				PREV = { smm_update_scale = { color=$color$ num=0 } }
+			}
+		}
+		set_variable = { which = smm value = 0 }
+	}
+	set_variable = { which = smm value = 0 }
+}
+smm_scale_16_apply = { #color ## see base effect
+	every_province = {
+		limit = {
+			NOT = {
+				has_province_flag = smm
+			}
+		}
+		smm_set_specific = { tg=default }
+	}
+	every_province = {
+		limit = {
+			has_province_flag = smm
+		}
+		clr_province_flag = smm
+		AAA = {
+			set_variable = { which = smm which = PREV }
+			if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_16 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_24 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_28 }
+						}
+						if = {
+							limit = {
+								check_variable = { which = smm which = smm_display_30 }
+							}
+							if = {
+								limit = {
+									check_variable = { which = smm which = smm_display_32 }
+								}
+								PREV = { smm_update_scale = { color=$color$ num=32 } }
+							}
+							else = {
+								PREV = { smm_update_scale = { color=$color$ num=30 } }
+							}
+						}
+						else = {
+							PREV = { smm_update_scale = { color=$color$ num=28 } }
+						}
+					}
+					else_if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_26 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=26 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=24 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_20 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_22 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=22 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=20 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_18 }
+					}
+					PREV = { smm_update_scale = { color=$color$ num=18 } }
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=16 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_8 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_12 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_14 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=14 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=12 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_10 }
+					}
+					PREV = { smm_update_scale = { color=$color$ num=10 } }
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=8 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_4 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_6 }
+					}
+					PREV = { smm_update_scale = { color=$color$ num=6 } }
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=4 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_2 }
+				}
+				PREV = { smm_update_scale = { color=$color$ num=2 } }
+			}
+			else = {
+				PREV = { smm_update_scale = { color=$color$ num=0 } }
+			}
+		}
+		set_variable = { which = smm value = 0 }
+	}
+	set_variable = { which = smm value = 0 }
+}
+smm_scale_32_apply = { #color ## see base effect
+	every_province = {
+		limit = {
+			NOT = {
+				has_province_flag = smm
+			}
+		}
+		smm_set_specific = { tg=default }
+	}
+	every_province = {
+		limit = {
+			has_province_flag = smm
+		}
+		clr_province_flag = smm
+		AAA = {
+			set_variable = { which = smm which = PREV }
+			if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_16 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_24 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_28 }
+						}
+						if = {
+							limit = {
+								check_variable = { which = smm which = smm_display_30 }
+							}
+							if = {
+								limit = {
+									check_variable = { which = smm which = smm_display_31 }
+								}
+								if = {
+									limit = {
+										check_variable = { which = smm which = smm_display_32 }
+									}
+									PREV = { smm_update_scale = { color=$color$ num=32 } }
+								}
+								else = {
+									PREV = { smm_update_scale = { color=$color$ num=31 } }
+								}
+							}
+							else = {
+								PREV = { smm_update_scale = { color=$color$ num=30 } }
+							}
+						}
+						else_if = {
+							limit = {
+								check_variable = { which = smm which = smm_display_29 }
+							}
+							PREV = { smm_update_scale = { color=$color$ num=29 } }
+						}
+						else = {
+							PREV = { smm_update_scale = { color=$color$ num=28 } }
+						}
+					}
+					else_if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_26 }
+						}
+						if = {
+							limit = {
+								check_variable = { which = smm which = smm_display_27 }
+							}
+							PREV = { smm_update_scale = { color=$color$ num=27 } }
+						}
+						else = {
+							PREV = { smm_update_scale = { color=$color$ num=26 } }
+						}
+					}
+					else_if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_25 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=25 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=24 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_20 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_22 }
+						}
+						if = {
+							limit = {
+								check_variable = { which = smm which = smm_display_23 }
+							}
+							PREV = { smm_update_scale = { color=$color$ num=23 } }
+						}
+						else = {
+							PREV = { smm_update_scale = { color=$color$ num=22 } }
+						}
+					}
+					else_if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_21 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=21 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=20 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_18 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_19 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=19 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=18 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_17 }
+					}
+					PREV = { smm_update_scale = { color=$color$ num=17 } }
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=16 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_8 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_12 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_14 }
+						}
+						if = {
+							limit = {
+								check_variable = { which = smm which = smm_display_15 }
+							}
+							PREV = { smm_update_scale = { color=$color$ num=15 } }
+						}
+						else = {
+							PREV = { smm_update_scale = { color=$color$ num=14 } }
+						}
+					}
+					else_if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_13 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=13 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=12 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_10 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_11 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=11 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=10 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_9 }
+					}
+					PREV = { smm_update_scale = { color=$color$ num=9 } }
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=8 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_4 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_6 }
+					}
+					if = {
+						limit = {
+							check_variable = { which = smm which = smm_display_7 }
+						}
+						PREV = { smm_update_scale = { color=$color$ num=7 } }
+					}
+					else = {
+						PREV = { smm_update_scale = { color=$color$ num=6 } }
+					}
+				}
+				else_if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_5 }
+					}
+					PREV = { smm_update_scale = { color=$color$ num=5 } }
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=4 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_2 }
+				}
+				if = {
+					limit = {
+						check_variable = { which = smm which = smm_display_3 }
+					}
+					PREV = { smm_update_scale = { color=$color$ num=3 } }
+				}
+				else = {
+					PREV = { smm_update_scale = { color=$color$ num=2 } }
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = { which = smm which = smm_display_1 }
+				}
+				PREV = { smm_update_scale = { color=$color$ num=1 } }
+			}
+			else = {
+				PREV = { smm_update_scale = { color=$color$ num=0 } }
+			}
+		}
+		set_variable = { which = smm value = 0 }
+	}
+	set_variable = { which = smm value = 0 }
+}
+
+#### MATH STUFFS
+
+### Added return variable names to KJH's math effects ###
+
+# Parameter: type, inp, return
+# Result: return
+# Use Feyman's method with precalculated log table to calculate ln
+ln_funct_re = {
+	set_variable = { which = inp $type$ = $inp$ }
+	
+	if = {
+		limit = {
+			NOT = { check_variable = { which = inp value = 0.001 } }
+		}
+		set_variable = { which = $return$ value = 0 }
+		change_variable = { which = err.math.ln.undef value = 1 }
+	}
+	else = {
+		set_variable = { which = $return$ value = 0 }
+		
+		set_variable = { which = scale value = 10000 }
+	
+		set_variable = { which = k value = 0 }
+		set_variable = { which = k_div which = scale }
+		
+		# Normalize inp so that 1 <= inp <= 2
+		while = {
+			limit = {
+				check_variable = { which = inp value = 2.001 }
+			}
+			multiply_variable = { which = inp value = 0.5 }
+			
+			# ln 2 ~ 0.693
+			change_variable = { which = $return$ value = 6931.472 }
+		}
+		while = {
+			limit = {
+				NOT = { check_variable = { which = inp value = 1 } }
+			}
+			multiply_variable = { which = inp value = 2 }
+			
+			# ln 2 ~ 0.693
+			subtract_variable = { which = $return$ value = 6931.472 }
+		}
+		
+		multiply_variable = { which = inp which = scale }
+		
+		while = {
+			limit = {
+				NOT = { check_variable = { which = k value = 10 } } # precision = 10
+			}
+			change_variable = { which = k value = 1 }
+			multiply_variable = { which = k_div value = 0.5 }
+			
+			set_variable = { which = t_m_ln which = scale }
+			change_variable = { which = t_m_ln which = k_div }
+			
+			if = {
+				limit = {
+					check_variable = { which = inp which = t_m_ln }
+				}
+				divide_variable = { which = inp which = t_m_ln }
+				multiply_variable = { which = inp which = scale }
+				
+				lt_funct = {
+					type=which
+					lt_ind=k
+				}
+				
+				change_variable = { which = $return$ which = lt_val }
+			}
+			
+			set_variable = { which = t_m_ln value = 0 }
+		}
+		
+		divide_variable = { which = $return$ value = 10000 }
+		
+		
+		set_variable = { which = scale value = 0 }
+
+		set_variable = { which = k value = 0 }
+		set_variable = { which = k_div value = 0 }
+		set_variable = { which = lt_val value = 0 }
+	}
+	
+	set_variable = { which = inp value = 0 }
+}
+# Parameters: type, expnt, prec, return
+# Result: return
+# Use Brothers method to calculate e
+e_funct_re = {
+	set_variable = { which = math.e.expnt $type$ = $expnt$ }
+	set_variable = { which = $return$ value = 1 }
+	
+	if = {	# No point doing the calc, since pdx
+		limit = {
+			NOT = { check_variable = { which = math.e.expnt value = -6.999 } }
+		}
+		set_variable = { which = $return$ value = 0 }
+	}
+	else = {
+		# Reduce the range of expnt so that it is greater than equal to 0 and lesser than 1
+		# Brothers method yields extremely low error for low exponent
+		# Even with low precision
+		while = {
+			limit = {
+				check_variable = { which = math.e.expnt value = 1 }
+			}
+			subtract_variable = { which = math.e.expnt value = 1 }
+			
+			# e^1 ~ 2.718
+			multiply_variable = { which = $return$ value = 2.718 }
+		}
+		while = {
+			limit = {
+				NOT = { check_variable = { which = math.e.expnt value = 0 } }
+			}
+			change_variable = { which = math.e.expnt value = 1 }
+			
+			# e^1 ~ 2.718
+			divide_variable = { which = $return$ value = 2.718 }
+		}
+		
+		# Use brothers formula now that exponent is between 0 and 1
+		set_variable = { which = math.e.sm value = 1 }
+		
+		if = {
+			limit = {
+				NOT = { is_variable_equal = { which = math.e.expnt value = 0 } }
+			}
+			set_variable = { which = math.e.sq which = math.e.expnt }
+			multiply_variable = { which = math.e.sq which = math.e.expnt }
+			
+			set_variable = { which = math.e.fct value = 2 }
+			set_variable = { which = math.e.fctl value = 2 }
+			
+			set_variable = { which = math.e.a1 which = math.e.sq }
+			set_variable = { which = math.e.a2 which = math.e.expnt }
+			set_variable = { which = math.e.a3 value = 2 }
+			
+			set_variable = { which = math.e.tmp which = math.e.a2 }
+			multiply_variable = { which = math.e.tmp which = math.e.a3 }
+			change_variable = { which = math.e.tmp which = math.e.a1 }
+			divide_variable = { which = math.e.tmp which = math.e.fct }
+			
+			change_variable = { which = math.e.sm which = math.e.tmp }
+			
+			set_variable = { which = math.e.prec value = $prec$ }
+			subtract_variable = { which = math.e.prec value = 1 }	# The above procedure is precision 1
+			
+			while = {
+				limit = {
+					check_variable = { which = math.e.prec value = 1 }
+				}
+				subtract_variable = { which = math.e.prec value = 1 }
+				
+				change_variable = { which = math.e.fctl value = 1 }
+				multiply_variable = { which = math.e.fct which = math.e.fctl }
+				change_variable = { which = math.e.fctl value = 1 }
+				multiply_variable = { which = math.e.fct which = math.e.fctl }
+				
+				multiply_variable = { which = math.e.a1 which = math.e.sq }
+				multiply_variable = { which = math.e.a2 which = math.e.sq }
+				change_variable = { which = math.e.a3 value = 2 }
+				
+				set_variable = { which = math.e.tmp which = math.e.a2 }
+				multiply_variable = { which = math.e.tmp which = math.e.a3 }
+				change_variable = { which = math.e.tmp which = math.e.a1 }
+				divide_variable = { which = math.e.tmp which = math.e.fct }
+				
+				change_variable = { which = math.e.sm which = math.e.tmp }
+			}
+		}
+		multiply_variable = { which = $return$ which = math.e.sm }
+		set_variable = { which = math.e.sm value = 0 }
+		set_variable = { which = math.e.tmp value = 0 }
+		set_variable = { which = math.e.a1 value = 0 }
+		set_variable = { which = math.e.a2 value = 0 }
+		set_variable = { which = math.e.a3 value = 0 }
+		set_variable = { which = math.e.fctl value = 0 }
+		set_variable = { which = math.e.fct value = 0 }
+		set_variable = { which = math.e.prec value = 0 }
+		set_variable = { which = math.e.sq value = 0 }
+	}
+	set_variable = { which = math.e.expnt value = 0 }
+}
