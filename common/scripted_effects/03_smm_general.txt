@@ -184,12 +184,17 @@ smm_ex0_log = { #num #log ## calculates actual value for a scale value from log 
 }
 
 smm_vari_exadj_calc = { #log ## calculates logarithmic comparison scale between max/min values and 32-0, log adjusts to value range
-	multiply_variable = { which = smm_display_32 value = 0.97 } ## give it some space at the top
 		## smm_display_X = e((X * (ln(smm_display_32 - smm_display_0 + $log$) - ln($log$)) / 32) + ln($log$)) + smm_display_0 - $log$
 	set_variable = { which = smm_scale_calc which = smm_display_32 }
 	subtract_variable = { which = smm_scale_calc which = smm_display_0 }
-	set_variable = { which = smm_change value = $log$ }
-	multiply_variable = { which = smm_change which = smm_scale_calc }
+	set_variable = { which = smm_subtractor which = smm_scale_calc }
+	multiply_variable = { which = smm_subtractor value = 0.03 } ## give it some space at the top
+	subtract_variable = { which = smm_scale_calc which = smm_subtractor }
+	subtract_variable = { which = smm_display_32 which = smm_subtractor }
+	set_variable = { which = smm_subtractor value = 0 }
+	set_variable = { which = smm_change which = smm_scale_calc }
+	divide_variable = { which = smm_change value = 2.718 } ## ~e
+	multiply_variable = { which = smm_change value = $log$ }
 	ln_funct_re = { type=which inp=smm_change return=smm_changelog }
 	change_variable = { which = smm_scale_calc which = smm_change }
 	ln_funct_re = { type=which inp=smm_scale_calc return=smm_scale_calc }
@@ -198,7 +203,7 @@ smm_vari_exadj_calc = { #log ## calculates logarithmic comparison scale between 
 }
 
 smm_scale_vari_ex = { #log ## calculates variable exponential values, log is the steepness
-	smm_vari_ex_calc = { log=$log$ }
+	smm_vari_exadj_calc = { log=$log$ }
 	smm_ex_log = { num=8 log=$log$ }
 	smm_ex_log = { num=16 log=$log$ }
 	smm_ex_log = { num=24 log=$log$ }
@@ -256,6 +261,7 @@ smm_scale_vari_ex = { #log ## calculates variable exponential values, log is the
 smm_scale_linear = { ## calculates a linear value spread between 0 and 32
 	set_variable = { which = smm which = smm_display_32 }
 	subtract_variable = { which = smm which = smm_display_0 }
+	multiply_variable = { which = smm_display_32 value = 0.96 }
 	
 	multiply_variable = { which = smm value = 0.48 }
 	smm_scale_linear_helper = { num1=16 num2=0 }
@@ -350,7 +356,7 @@ smm_scale_4_apply = { #color ## see base effect
 				has_province_flag = smm
 			}
 		}
-		smm_set_specific = { tg=default }
+		smm_set_specific = { tg=smm_default }
 	}
 	every_province = {
 		limit = {
@@ -402,7 +408,7 @@ smm_scale_8_apply = { #color ## see base effect
 				has_province_flag = smm
 			}
 		}
-		smm_set_specific = { tg=default }
+		smm_set_specific = { tg=smm_default }
 	}
 	every_province = {
 		limit = {
@@ -482,7 +488,7 @@ smm_scale_16_apply = { #color ## see base effect
 				has_province_flag = smm
 			}
 		}
-		smm_set_specific = { tg=default }
+		smm_set_specific = { tg=smm_default }
 	}
 	every_province = {
 		limit = {
@@ -618,7 +624,7 @@ smm_scale_32_apply = { #color ## see base effect
 				has_province_flag = smm
 			}
 		}
-		smm_set_specific = { tg=default }
+		smm_set_specific = { tg=smm_default }
 	}
 	every_province = {
 		limit = {
