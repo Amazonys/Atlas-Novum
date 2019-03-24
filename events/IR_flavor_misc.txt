@@ -395,3 +395,346 @@ country_event = { #Burgundian Stadtholderate Empowerment - Holland
 		#}
 	}
 }
+
+
+country_event = { #King of Orleans
+	id = IR_flavor_misc.10
+	title = "IR_flavor_misc.10.t"
+	desc = "IR_flavor_misc.10.d"
+	picture = COURT_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = FRA
+		tag = ORL
+		is_year = 1490
+		NOT = { has_country_flag = IR_flavor_misc.9_happened }
+	}
+
+	mean_time_to_happen = {
+		months = 20
+        #modifier = {
+        #    factor = 20
+       #     has_country_flag = IR_flavor_misc.9.b_happened
+       # }
+	}
+		
+	option = {
+		name = "IR_flavor_misc.10.a"
+		#ai_chance = { factor = 90 }
+		if = { limit = { tag = FRA } 
+		FRA = {
+			define_ruler = {
+			name = "Louis XII"
+			dynasty = "Valois"
+			birth_date = 1462.6.27
+			adm = 2
+			dip = 3
+			mil = 2
+			culture = ROOT
+			religion = ROOT
+			}
+		inherit = ORL
+		}
+		}
+		if = { limit = { tag = ORL } 
+		ORL = {
+		inherit = FRA 
+		change_tag = FRA
+		}
+		}
+		#set_country_flag = IR_flavor_misc.10_happened
+	}
+	#option = {
+	#	name = "IR_flavor_misc.9.b"
+	#	ai_chance = { factor = 10 }
+	#	set_country_flag = IR_flavor_misc.9.b_happened
+	#	#HOL = { 
+	#	#}
+	#}
+}
+
+country_event = { #Modified triggers to fire Surrender of Maine after England tries to loose them
+	id = IR_flavor_misc.11
+	title = "IR_flavor_misc.11.t"
+	desc = "IR_flavor_misc.11.d"
+	picture = SIEGE_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = ENG
+		exists = FRA
+		NOT = { is_year = 1450 }
+		NOT = { alliance_with = FRA }
+		NOT = { war_with = FRA }
+		NOT = { truce_with = FRA }
+		OR = {
+		177 = {
+			NOT = {
+			OR = {
+			owned_by = ENG
+			owned_by = FRA
+			}
+			}
+			previous_owner = ENG
+			}
+		10620 = {
+			NOT = {
+			OR = {
+			owned_by = ENG
+			owned_by = FRA
+			}
+			}
+			previous_owner = ENG
+			}
+		10621 = {
+			NOT = {
+			OR = {
+			owned_by = ENG
+			owned_by = FRA
+			}
+			}
+			previous_owner = ENG
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+
+	option = {
+		name = "IR_flavor_misc.11.a"
+	}
+	immediate = {
+		ENG = { country_event = { id = flavor_fra.6 days = 0 } }
+	}
+}
+
+country_event = {
+	id = IR_flavor_misc.12
+	title = "IR_flavor_misc.12.t"
+	desc = "IR_flavor_misc.12.d"
+	picture = DEATH_OF_HEIR_eventPicture
+	
+	major = yes
+	
+	trigger = {
+		tag = BUR
+	#	ai = yes
+	#	was_player = no
+		NOT = { has_country_flag = burgundian_succession_crisis }
+		is_at_war = yes
+		is_free_or_tributary_trigger = yes
+		is_emperor = no
+		government = monarchy
+		has_regency = no
+		is_female = no
+		is_year = 1475
+		NOT = { is_year = 1510 }
+		capital_scope = {
+			continent = europe
+		}
+		FRA = {
+			exists = yes
+			is_free_or_tributary_trigger = yes
+			num_of_cities = 8
+			is_neighbor_of = BUR
+		}
+		emperor = {
+			exists = yes
+			NOT = { war_with = FRA }
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 300
+		modifier = {
+			factor = 1.1
+			luck = yes
+		}
+		modifier = {
+			factor = 0.75
+			has_heir = no
+		}
+		modifier = {
+			factor = 0.75
+			is_monarch_leader = yes
+		}
+		modifier = {
+			factor = 0.75
+			is_heir_leader = yes
+		}
+		modifier = {
+			factor = 0.85
+			NOT = { war_score = 0 }
+		}
+		modifier = {
+			factor = 0.75
+			NOT = { war_score = -25 }
+		}
+		modifier = {
+			factor = 0.75
+			NOT = { war_score = -50 }
+		}
+		modifier = {
+			factor = 0.5
+			NOT = { war_score = -75 }
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = burgundian_succession_crisis
+			add_ruler_modifier = {
+				name = burgundian_succession_crisis
+			}
+
+			#GO THROUGH AND CHECK FOR ELIGIBLE RECIPIENTS. France can only get second part by being emperor.
+			#Emperor?
+			if = {
+				limit = {
+					emperor = {
+						exists = yes
+					#	num_of_cities = 4
+					}
+				}
+				set_country_flag = bur_emperor_eligible
+			}
+			#Any HRE monarchy married to BUR? SPA/CAS? Emperor can trigger this one, too.
+			if = {
+				limit = {
+					any_country = {
+						marriage_with = ROOT
+						num_of_cities = 4
+						NOT = {
+							tag = FRA
+						}
+					}
+				}
+				set_country_flag = bur_marriage_eligible
+			}
+			#IR replaced a bunch and removed Spain, BUR transfered through War of Comuneros now
+
+			#ROLL FOR WHO GETS THE SECOND PART
+			#Every possibility
+			if = {
+				limit = {
+					has_country_flag = bur_emperor_eligible
+					has_country_flag = bur_marriage_eligible
+				}
+				random_list = {
+					95 = {
+						set_country_flag = bur_emperor_inherits
+					}
+					5 = {
+						set_country_flag = bur_marriage_inherits
+					}
+				}
+			}
+			#No emperor
+			if = {
+				limit = {
+					NOT = { has_country_flag = bur_emperor_eligible }
+					has_country_flag = bur_marriage_eligible
+				}
+				set_country_flag = bur_marriage_inherits
+			}
+			#No marriage
+			if = {
+				limit = {
+					has_country_flag = bur_emperor_eligible
+					NOT = { has_country_flag = bur_marriage_eligible }
+				}
+				set_country_flag = bur_emperor_inherits
+			}
+			#No possible inheritor
+			if = {
+				limit = {
+					NOT = { has_country_flag = bur_emperor_eligible }
+					NOT = { has_country_flag = bur_marriage_eligible }
+				}
+				set_country_flag = bur_retains_independence
+			}
+			#DONE CHOOSING INHERITANCE RECEPIENT
+			#CHOOSE WHICH MARRIAGE INHERITS
+			if = {
+				limit = {
+					has_country_flag = bur_marriage_inherits
+				}
+				if = {
+					limit = {
+						emperor = {
+							marriage_with = ROOT
+						}
+						emperor = {
+							num_of_cities = 8
+						}
+					}
+					emperor = {
+						set_country_flag = bur_marriage_successor
+					}
+				}
+				if = {
+					limit = {
+						NOT = {
+							any_country = {
+								has_country_flag = bur_marriage_successor
+							}
+						}
+					}
+					random_country = {
+						limit = {
+							marriage_with = ROOT
+							is_part_of_hre = yes
+							num_of_cities = 4
+							NOT = { tag = FRA }
+						}
+						set_country_flag = bur_marriage_successor
+					}
+				}
+				if = {
+					limit = {
+						NOT = {
+							any_country = {
+								is_part_of_hre = yes
+								marriage_with = ROOT
+								num_of_cities = 4
+								NOT = {
+									tag = FRA
+								}
+							}
+						}
+					}
+					clr_country_flag = bur_marriage_inherits
+					set_country_flag = bur_retains_independence
+				}
+			}
+			#DONE CHOOSING MARRIAGE INHERITOR
+		}
+	}
+	
+	option = {
+		name = "flavor_bur.EVTOPTA1"
+		if = {
+			limit = {
+				has_heir = yes
+				has_female_heir = no
+			}
+			kill_heir = yes
+		}
+		tooltip = {
+			kill_ruler = yes
+		}
+		hidden_effect = {
+			define_ruler = {
+				regency = yes
+			}
+		}
+		FRA = {
+			country_event = { id = flavor_bur.3 }
+		}
+	}
+}
