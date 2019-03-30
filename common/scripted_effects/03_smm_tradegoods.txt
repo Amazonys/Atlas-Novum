@@ -9,10 +9,12 @@ smm_update_value_mod = { #value
 					has_province_modifier = smm_tv_$value$
 				}
 			}
-			add_permanent_province_modifier = {
-				name = smm_tv_$value$
-				duration = -1
-				hidden = yes
+			hidden_effect = {
+				add_province_modifier = {
+					name = smm_tv_$value$
+					duration = -1
+					hidden = yes
+				}
 			}
 		}
 		subtract_variable = { which = smm_tv value = $value$ }
@@ -24,46 +26,247 @@ smm_update_value_mod = { #value
 		remove_province_modifier = smm_tv_$value$
 	}
 }
-smm_update_tg_mod = { #type
+smm_do_tradegood_calc = {
+	set_variable = { which = smm_tv value = 0 }
+	set_variable = { which = smm_tv_disp value = 0 }
+	set_variable = { which = smm_total_prod value = 0 }
+	export_to_variable = { which = smm_prod_goods value = base_production }
+	multiply_variable = { which = smm_prod_goods value = 0.1 }
+	smm_goods_effect = { effect=smm_prod_calc }
+	smm_update_value_mod = { value=655.36 }
+	smm_update_value_mod = { value=327.68 }
+	smm_update_value_mod = { value=163.84 }
+	smm_update_value_mod = { value=81.92 }
+	smm_update_value_mod = { value=40.96 }
+	smm_update_value_mod = { value=20.48 }
+	smm_update_value_mod = { value=10.24 }
+	smm_update_value_mod = { value=5.12 }
+	smm_update_value_mod = { value=2.56 }
+	smm_update_value_mod = { value=1.28 }
+	smm_update_value_mod = { value=0.64 }
+	smm_update_value_mod = { value=0.32 }
+	smm_update_value_mod = { value=0.16 }
+	smm_update_value_mod = { value=0.08 }
+	smm_update_value_mod = { value=0.04 }
+	smm_update_value_mod = { value=0.02 }
+	smm_update_value_mod = { value=0.01 }
+}
+smm_do_tradegood_calc_special = {
+	set_variable = { which = smm_tv value = 0 }
+	set_variable = { which = smm_tv_disp value = 0 }
+	set_variable = { which = smm_total_prod value = 0 }
+	export_to_variable = { which = smm_prod_goods value = base_production }
+	multiply_variable = { which = smm_prod_goods value = 0.1 }
+	smm_goods_effect = { effect=smm_prod_calc_special }
+	smm_update_value_mod = { value=655.36 }
+	smm_update_value_mod = { value=327.68 }
+	smm_update_value_mod = { value=163.84 }
+	smm_update_value_mod = { value=81.92 }
+	smm_update_value_mod = { value=40.96 }
+	smm_update_value_mod = { value=20.48 }
+	smm_update_value_mod = { value=10.24 }
+	smm_update_value_mod = { value=5.12 }
+	smm_update_value_mod = { value=2.56 }
+	smm_update_value_mod = { value=1.28 }
+	smm_update_value_mod = { value=0.64 }
+	smm_update_value_mod = { value=0.32 }
+	smm_update_value_mod = { value=0.16 }
+	smm_update_value_mod = { value=0.08 }
+	smm_update_value_mod = { value=0.04 }
+	smm_update_value_mod = { value=0.02 }
+	smm_update_value_mod = { value=0.01 }
+}
+smm_prod_calc = { #type
 	if = {
 		limit = {
-			check_variable = { which = smm_$type$_prod value = 0.01 }
+			has_province_flag = smm_$type$
 		}
+		set_variable = { which = smm_$type$_price which = PREV }
+		set_variable = { which = smm_$type$_prod_disp which = smm_prod_goods }
+		change_variable = { which = smm_total_prod which = smm_$type$_prod_disp }
+		set_variable = { which = smm_$type$_prod which = smm_prod_goods }
+		multiply_variable = { which = smm_$type$_prod which = smm_$type$_price }
+		change_variable = { which = smm_tv_disp which = smm_$type$_prod }
+
 		if = {
 			limit = {
-				NOT = {
+				check_variable = { which = smm_$type$_prod value = 0.01 }
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_province_modifier = smm_$type$
+						#has_province_modifier = smm_default
+					}
+				}
+				add_permanent_province_modifier = {
+					name = smm_$type$
+					#name = smm_default
+					duration = -1
+				}
+				subtract_variable = { which = smm_$type$_prod value = 0.01 }
+				change_variable = { which = smm_tv which = smm_$type$_prod }
+				change_variable = { which = smm_$type$_prod value = 0.01 }
+			}
+			else = {
+				change_variable = { which = smm_tv which = smm_$type$_prod }
+			}
+		}
+		else = {
+			set_variable = { which = smm_$type$_prod value = 0 }
+			if = {
+				limit = {
 					has_province_modifier = smm_$type$
 				}
+				remove_province_modifier = smm_$type$
 			}
-			add_permanent_province_modifier = {
-				name = smm_$type$
-				duration = -1
-			}
-			subtract_variable = { which = smm_$type$_prod value = 0.01 }
-			subtract_variable = { which = smm_tv value = 0.01 }
 		}
-		change_variable = { which = smm_tv which = smm_$type$_prod }
 	}
-	else = {
-		set_variable = { which = smm_$type$_prod value = 0 }
+}
+smm_prod_calc_special = { #type
+	if = {
+		limit = {
+			has_province_flag = smm_$type$
+		}
+		set_variable = { which = smm_$type$_price_save which = smm_$type$_price }
+		set_variable = { which = smm_$type$_prod_disp which = smm_prod_goods }
+		change_variable = { which = smm_total_prod which = smm_$type$_prod_disp }
+		set_variable = { which = smm_$type$_prod which = smm_prod_goods }
+		multiply_variable = { which = smm_$type$_prod which = smm_$type$_price }
+		change_variable = { which = smm_tv_disp which = smm_$type$_prod }
+
 		if = {
 			limit = {
-				has_province_modifier = smm_$type$
+				check_variable = { which = smm_$type$_prod value = 0.01 }
 			}
-			remove_province_modifier = smm_$type$
+			if = {
+				limit = {
+					NOT = {
+						has_province_modifier = smm_$type$
+						#has_province_modifier = smm_default
+					}
+				}
+				add_permanent_province_modifier = {
+					name = smm_$type$
+					#name = smm_default
+					duration = -1
+				}
+				subtract_variable = { which = smm_$type$_prod value = 0.01 }
+				change_variable = { which = smm_tv which = smm_$type$_prod }
+				change_variable = { which = smm_$type$_prod value = 0.01 }
+			}
+			else = {
+				change_variable = { which = smm_tv which = smm_$type$_prod }
+			}
 		}
+		else = {
+			set_variable = { which = smm_$type$_prod value = 0 }
+			if = {
+				limit = {
+					has_province_modifier = smm_$type$
+				}
+				remove_province_modifier = smm_$type$
+			}
+		}
+		set_variable = { which = smm_$type$_price which = smm_$type$_price_save }
+		set_variable = { which = smm_$type$_price_save value = 0 }
 	}
 }
-#smm_prod_calc = { #type
-#}
-smm_price_init = { #type
-	set_variable = { which = smm_$type$_price which = PREV }
+smm_set_price = { #type
+	set_variable = { which = smm_$type$_price_store which = PREV }
+	set_variable = { which = smm_$type$_price which = smm_$type$_price_store }
+	set_variable = { which = smm_$type$_price_store value = 0 }
 }
-smm_price_factor = { #type
-	set_variable = { which = smm_$type$_prod which = smm_prod_goods }
-	set_variable = { which = smm_$type$_prod_disp which = smm_prod_goods }
-	set_variable = { which = smm_$type$_prod_disp2 which = smm_prod_goods }
-	multiply_variable = { which = smm_$type$_prod_disp which = smm_$type$_price }
-	subtract_variable = { which = smm_$type$_price value = 1 }
-	multiply_variable = { which = smm_$type$_prod which = smm_$type$_price }
+smm_goods_effect = { #effect
+	$effect$ = { type=grain }
+	$effect$ = { type=wine }
+	$effect$ = { type=wool }
+	$effect$ = { type=cloth }
+	$effect$ = { type=fish }
+	$effect$ = { type=fur }
+	$effect$ = { type=salt }
+	$effect$ = { type=naval }
+	$effect$ = { type=copper }
+	$effect$ = { type=gold }
+	$effect$ = { type=iron }
+	$effect$ = { type=slaves }
+	$effect$ = { type=ivory }
+	$effect$ = { type=tea }
+	$effect$ = { type=chinaware }
+	$effect$ = { type=spices }
+	$effect$ = { type=coffee }
+	$effect$ = { type=cotton }
+	$effect$ = { type=sugar }
+	$effect$ = { type=tobacco }
+	$effect$ = { type=cocoa }
+	$effect$ = { type=silk }
+	$effect$ = { type=dyes }
+	$effect$ = { type=wood }
+	$effect$ = { type=livestock }
+	$effect$ = { type=incense }
+	$effect$ = { type=glass }
+	$effect$ = { type=paper }
+	$effect$ = { type=gems }
+	$effect$ = { type=coal }
+	$effect$ = { type=beer }
+	$effect$ = { type=literature }
+	$effect$ = { type=rice }
+	$effect$ = { type=whales }
+	$effect$ = { type=silver }
+	$effect$ = { type=potatoes }
+	$effect$ = { type=maize }
+	$effect$ = { type=millet }
+	$effect$ = { type=fruit }
+	$effect$ = { type=apiculture }
+	$effect$ = { type=olives }
+	$effect$ = { type=dates }
+	$effect$ = { type=marble }
+}
+smm_goods_effect_1 = { #effect #data1
+	$effect$ = { type=grain data1=$data1$ }
+	$effect$ = { type=wine data1=$data1$ }
+	$effect$ = { type=wool data1=$data1$ }
+	$effect$ = { type=cloth data1=$data1$ }
+	$effect$ = { type=fish data1=$data1$ }
+	$effect$ = { type=fur data1=$data1$ }
+	$effect$ = { type=salt data1=$data1$ }
+	$effect$ = { type=naval data1=$data1$ }
+	$effect$ = { type=copper data1=$data1$ }
+	$effect$ = { type=gold data1=$data1$ }
+	$effect$ = { type=iron data1=$data1$ }
+	$effect$ = { type=slaves data1=$data1$ }
+	$effect$ = { type=ivory data1=$data1$ }
+	$effect$ = { type=tea data1=$data1$ }
+	$effect$ = { type=chinaware data1=$data1$ }
+	$effect$ = { type=spices data1=$data1$ }
+	$effect$ = { type=coffee data1=$data1$ }
+	$effect$ = { type=cotton data1=$data1$ }
+	$effect$ = { type=sugar data1=$data1$ }
+	$effect$ = { type=tobacco data1=$data1$ }
+	$effect$ = { type=cocoa data1=$data1$ }
+	$effect$ = { type=silk data1=$data1$ }
+	$effect$ = { type=dyes data1=$data1$ }
+	$effect$ = { type=wood data1=$data1$ }
+	$effect$ = { type=livestock data1=$data1$ }
+	$effect$ = { type=incense data1=$data1$ }
+	$effect$ = { type=glass data1=$data1$ }
+	$effect$ = { type=paper data1=$data1$ }
+	$effect$ = { type=gems data1=$data1$ }
+	$effect$ = { type=coal data1=$data1$ }
+	$effect$ = { type=beer data1=$data1$ }
+	$effect$ = { type=literature data1=$data1$ }
+	$effect$ = { type=rice data1=$data1$ }
+	$effect$ = { type=whales data1=$data1$ }
+	$effect$ = { type=silver data1=$data1$ }
+	$effect$ = { type=potatoes data1=$data1$ }
+	$effect$ = { type=maize data1=$data1$ }
+	$effect$ = { type=millet data1=$data1$ }
+	$effect$ = { type=fruit data1=$data1$ }
+	$effect$ = { type=apiculture data1=$data1$ }
+	$effect$ = { type=olives data1=$data1$ }
+	$effect$ = { type=dates data1=$data1$ }
+	$effect$ = { type=marble data1=$data1$ }
+}
+smm_set_zero_1 = { #type #data1
+	set_variable = { which = smm_$type$_$data1$ value = 0 }
 }
