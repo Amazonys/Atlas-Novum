@@ -2,7 +2,7 @@
  -- DO NOT CHANGE OR REPLACE WITHOUT PERMISSION PLEASE
   -- NGame changes
 NDefines.NGame.END_DATE = "1836.1.2" --from 1821.1.2
-NDefines.NGame.MAX_COLONIAL_NATIONS = 250 -- idk what this was before
+NDefines.NGame.MAX_COLONIAL_NATIONS = 250 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
 
   --NDiplomacy changes   note subsections
 NDefines.NDiplomacy.FAVORS_LAND_DIVIDER = 4			-- from 2      note inversed value
@@ -178,9 +178,9 @@ NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
 
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0,				-- How much a missionary costs in itself
-NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5,	-- How much this is ncreased from development
-NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5,		-- How much this is ncreased from local autonomy
-NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5,			-- The local autonomy is added to this base in the formula.
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is ncreased from development
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5	-- How much this is ncreased from local autonomy
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local autonomy is added to this base in the formula.
  --Colonial nations
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
