@@ -176,6 +176,11 @@ NDefines.NEconomy.GOLD_MINE_SIZE_PRIMITIVES = 20
 NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided by this factor, do not set to zero!
  --Monopoly bonus
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
+
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0,				-- How much a missionary costs in itself
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5,	-- How much this is ncreased from development
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5,		-- How much this is ncreased from local autonomy
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5,			-- The local autonomy is added to this base in the formula.
  --Colonial nations
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
@@ -212,6 +217,18 @@ NDefines.NMilitary.INF_SUPPRESSION = 0.5					-- The amount of reduction to unres
 NDefines.NMilitary.CAV_SUPPRESSION = 0.75						-- The amount of reduction to unrest for each friendly cavalry regiment in a province
 NDefines.NMilitary.ART_SUPPRESSION = 0.25					-- The amount of reduction to unrest for each friendly artillery regiment in a province
 NDefines.NMilitary.ARMY_DRILL_YEARLY_DECAY = -0.05
+ --- navy changes
+ 
+NDefines.NMilitary.NAVAL_BASE_ENGAGEMENT_WIDTH = 10   		-- Number of ships that can fire per round
+NDefines.NMilitary.HEAVY_SHIP_COMBAT_WIDTH = 3
+NDefines.NMilitary.LIGHT_SHIP_COMBAT_WIDTH = 1
+NDefines.NMilitary.GALLEY_COMBAT_WIDTH = 2
+NDefines.NMilitary.TRANSPORT_COMBAT_WIDTH = 1
+NDefines.NMilitary.NAVAL_CASUALTY_MIN_MORALE_DAMAGE = 0.6 -- was 0.2
+NDefines.NMilitary.CAPTURED_SHIP_STRENGTH = 0.5 -- was 0.3
+NDefines.NMilitary.CAPTURED_SHIP_MORALE = 0.25 -- was 0.3
+NDefines.NMilitary.NAVAL_MISSION_REGION_MIN_PROVINCES_IN_RANGE = 6
+NDefines.NMilitary.MONTHLY_REPAIR = 0.05                            -- was 0.1 Ship repair speed
 
 
  --NAI changes
@@ -257,6 +274,7 @@ NDefines.NReligion.AUTHORITY_FROM_DEVELOPMENT = 0.01			-- from 0p02
 NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 20			-- from 10
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 400			-- from 200
 NDefines.NReligion.HARMONY_LOSS_PER_DEV_CONVERTED = 0.5			-- from 1
+NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 4 --was 3
 
  --NNationDesigner changes
 NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.25			-- from 0p5
