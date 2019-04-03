@@ -177,11 +177,11 @@ NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided
  --Monopoly bonus
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
 
-NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0,				-- How much a missionary costs in itself
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is ncreased from development
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5	-- How much this is ncreased from local autonomy
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local autonomy is added to this base in the formula.
- --Colonial nations
+ --Colonial nations44
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
  --NMilitary changes
