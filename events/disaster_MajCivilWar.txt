@@ -17,37 +17,24 @@ country_event = {
 	immediate = {
 		hidden_effect = {
 			add_stability = -3
-			629 = {
-				spawn_rebels = {
-					type = 	nationalist_rebels
-					religion = sunni
-					size = 3
-					friend = DMK
-					win = yes
-				}
+			every_province = {
+				limit = { is_core = DMK owned_by = ROOT }
+				cede_province = DMK
 			}
-			2690 = {
-				spawn_rebels = {
-					type = 	nationalist_rebels
-					religion = sunni
-					size = 3
-					friend = DMK
-					win = yes
-				}
+			create_subject = {
+				subject_type = tributary_state
+				subject = DMK
 			}
-			release = DMK
 			DMK = { 
 				add_years_of_income = 2
-				add_yearly_manpower = 2
+				add_yearly_manpower = 3
 				capital_scope = { 
 					build_to_forcelimit = { 
 						infantry = 0.8
 						cavalry = 0.2
 					}
 				}
-				save_global_event_target_as = defender_civil_war_1 
 			}
-			ROOT = { save_global_event_target_as = attacker_civil_war_1 }
 		}
 	#	set_country_flag = maj_civil_war.1_happened
 	}
@@ -55,11 +42,7 @@ country_event = {
 	
 	option = {
 		name = "maj_civil_war.1.a" #Our enemies will not break us!
-		add_prestige = -15
-		declare_war_with_cb = {
-			who = DMK
-			casus_belli = cb_IR_civil_war
-		}
+		country_event = { id = maj_civil_war.4 days = 90 random = 30 }
 	}
 }
 
@@ -168,31 +151,27 @@ country_event = {
 	picture = BORDER_TENSION_eventPicture
 
 	is_triggered_only = yes
-	fire_only_once = yes
-
-	mean_time_to_happen = {
-		days = 1
-	}
 	
 
 	option = {		#We cannot do anything!
+		ai_chance = { factor = 50 }
 		name = "maj_civil_war.4.a"
-		629 = { add_core = DMK
-			cede_province = DMK }
+		every_province = {
+			limit = { OR = { is_core = ROOT is_claim = ROOT } owned_by = DMK }
+			remove_core = ROOT
+		}
+		add_truce_with = DMK
+		collapse_nation = yes
 	}
 	option = {		#Demak is ours!
+		ai_chance = { factor = 50 }
 		name = "maj_civil_war.4.b"
-		random_owned_province = {
-			limit = {
-			OR = { is_core = DMK
-				religion_group = muslim
-				}	
-			}
-			spawn_rebels = {
-				type = 	nationalist_rebels
-				religion = sunni
-				size = 3
-			}
+		DMK = { save_global_event_target_as = defender_civil_war_1 }
+		ROOT = { save_global_event_target_as = attacker_civil_war_1 }
+		set_global_flag = civil_war_1
+		declare_war_with_cb = {
+			who = DMK
+			casus_belli = cb_IR_civil_war
 		}
 	}
 }
@@ -210,28 +189,41 @@ country_event = {
 		days = 1
 	}
 	
+	trigger = {
+		OR = {
+			tag = DMK
+			tag = MAJ
+		}
+		MAJ = { has_disaster = majapahit_civil_war }
+		any_owned_province = {
+			is_core = JEP
+		}
+	}
+	
 
 	option = {		#We cannot do anything!
+		ai_chance = { factor = 95 }
 		name = "maj_civil_war.5.a"
-		random_owned_province = {
+		every_owned_province = {
 			limit = {
-			religion_group = muslim
+				religion_group = muslim
+				is_capital = no
+				is_core = JEP
 			}
-			add_core = DMK
-		    cede_province = DMK
+		    cede_province = JEP
 		}
 	}
 	option = {		#Their disobedience will not be tolerated
+		ai_chance = { factor = 5 }
 		name = "maj_civil_war.5.b"
 		random_owned_province = {
 			limit = {
-				religion_group = muslim
-                        }
-	        add_core = DMK
+				religion_group = muslim is_core = JEP
+            }
 			spawn_rebels = {
 				type = 	nationalist_rebels
 				religion = sunni
-				size = 1
+				size = 2
 			}
 		}
 	}
@@ -252,21 +244,24 @@ country_event = {
 	
 	option = {		#We will return
 		name = "maj_civil_war.6.a"
-		random_owned_province = {
+		every_owned_province = {
 			limit = {
-			religion = hinduism
-			is_capital = no
+				religion = hinduism
+				is_capital = no
+				is_core = BLM
 			}
-			add_core = BLM
 		    cede_province = BLM
+		}
+		create_subject = {
+			subject_type = fief
+			subject = BLM
 		}
 	}
 	option = {		#Bring them back into the fold!
 		name = "maj_civil_war.6.b" 
+		add_prestige = 5
 		random_owned_province = {
-			limit = {
-				religion = hinduism
-                    }
+			limit = { religion = hinduism is_core = BLM }
 			spawn_rebels = {
 				type = 	nationalist_rebels
 				religion = hinduism
@@ -374,4 +369,5 @@ country_event = {
 			set_province_flag = maj_pretender
 		}
 	}
+}
 }
