@@ -6,8 +6,9 @@ NDefines.NGame.MAX_COLONIAL_NATIONS = 250 -- apparently pdx limited to 100 anywa
 
   --NDiplomacy changes   note subsections
 NDefines.NDiplomacy.FAVORS_LAND_DIVIDER = 4			-- from 2      note inversed value
-NDefines.NDiplomacy.VASSALIZE_BASE_DEVELOPMENT_CAP = 400			-- from 100, doubled after dev doubling, because this is annoying.
-NDefines.NDiplomacy.MARCH_BASE_DEVELOPMENT_CAP = 400			-- from 200
+NDefines.NDiplomacy.VASSALIZE_BASE_DEVELOPMENT_CAP = 300			-- from 100, doubled after dev doubling, because this is annoying.
+NDefines.NDiplomacy.MARCH_BASE_DEVELOPMENT_CAP = 300			-- from 200
+NDefines.NDiplomacy.MARCH_DEVELOPMENT_FRACTION = 0.33
 NDefines.NDiplomacy.AE_ATTACKER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_DEFENDER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_PROVINCE_CAP = 50			-- from 30

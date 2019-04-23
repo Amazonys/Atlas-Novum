@@ -31,33 +31,6 @@
 # po_humiliate
 # po_enforce_rebel_demands
 
-#cb_italian_wars = {
-#	valid_for_subject = no
-
-#	is_triggered_only = yes
-	
-#	attacker_disabled_po = {
-#		po_demand_provinces
-	#	po_revoke_cores
-	#	po_release_vassals
-	#	po_release_annexed
-	#	po_return_cores
-#		po_become_vassal
-#		po_become_tributary_state
-#		po_form_personal_union
-	#   po_gold
-	#   po_concede_defeat
-	#   po_annul_treaties
-	##	po_war_reparations
-#	    po_change_government
-#	    po_revoke_elector
-#	    po_trade_power
-#	    po_steer_trade
-#	    po_humiliate
-#	}
-
-#	war_goal = italian_wars_wargoal
-#}
 
 cb_IR_civil_war = {
 	is_triggered_only = yes
@@ -132,28 +105,57 @@ cb_succession_war = {
 	war_goal = succession_wargoal
 }
 
-cb_hre_vassal = {
+cb_fief_vassal = {
 	valid_for_subject = no
 
 	prerequisites = {
-		NOT = { government_rank = 4 }
 		current_age = age_of_discovery
-		is_part_of_hre = yes
 		is_fief_domain_tech = yes
 		is_subject = no
-		FROM = {
-			NOT = { num_of_cities = ROOT }
-			NOT = { num_of_cities = 9 }
-			NOT = { is_subject_of = ROOT }
-			is_subject = no
-			is_part_of_hre = yes
-			is_elector = no
-			NOT = { has_reform = imperial_city }
-			is_emperor = no
-			NOT = { government_rank = 4 }
-			religion_group = ROOT
-			is_neighbor_of = ROOT
-			is_fief_domain_tech = yes
+		has_institution = feudalism
+		if = {
+			limit = { is_part_of_hre = yes }
+			FROM = {
+				NOT = { num_of_cities = ROOT }
+				NOT = { num_of_cities = 9 }
+				NOT = { is_subject_of = ROOT }
+				is_subject = no
+				is_part_of_hre = yes
+				is_elector = no
+				NOT = { has_reform = imperial_city }
+				is_emperor = no
+				religion_group = ROOT
+				is_neighbor_of = ROOT
+				is_fief_domain_tech = yes
+			}
+		}
+		else_if = {
+			limit = { religion_group = muslim }
+			FROM = {
+				NOT = { num_of_cities = ROOT }
+				NOT = { num_of_cities = 9 }
+				NOT = { is_subject_of = ROOT }
+				is_subject = no
+				OR = {
+					religion_group = ROOT
+					culture_group = ROOT
+				}
+				is_neighbor_of = ROOT
+				is_fief_domain_tech = yes
+			}
+		}
+		else = {
+			FROM = {
+				NOT = { num_of_cities = ROOT }
+				NOT = { num_of_cities = 9 }
+				NOT = { is_subject_of = ROOT }
+				is_subject = no
+				culture_group = ROOT
+				religion_group = ROOT
+				is_neighbor_of = ROOT
+				is_part_of_hre = no
+				is_fief_domain_tech = yes
+			}
 		}
 	}
 
@@ -180,24 +182,61 @@ cb_hre_vassal = {
 	war_goal = take_capital_fief
 }
 
-cb_fief_vassal = {
+cb_transfer_fiefs = {
 	valid_for_subject = no
+	
+	#is_triggered_only = yes
 
 	prerequisites = {
-		is_part_of_hre = no
-		current_age = age_of_discovery
+		OR = { current_age = age_of_discovery current_age = age_of_reformation }
 		is_fief_domain_tech = yes
 		is_subject = no
-		FROM = {
-			NOT = { num_of_cities = ROOT }
-			NOT = { num_of_cities = 9 }
-			NOT = { is_subject_of = ROOT }
-			is_subject = no
-			is_part_of_hre = no
-			culture_group = ROOT
-			religion_group = ROOT
-			is_neighbor_of = ROOT
-			is_fief_domain_tech = yes
+		has_institution = feudalism
+		if = {
+			limit = { is_part_of_hre = yes }
+			FROM = {
+				is_subject = no
+				is_part_of_hre = yes
+				has_institution = feudalism
+				is_fief_domain_tech = yes
+				any_subject_country = {
+					is_subject_of_type = fief
+					is_part_of_hre = yes
+					religion_group = ROOT
+					is_neighbor_of = ROOT
+				}
+			}
+		}
+		else_if = {
+			limit = { religion_group = muslim }
+			FROM = {
+				is_subject = no
+				has_institution = feudalism
+				is_fief_domain_tech = yes
+				any_subject_country = {
+					is_subject_of_type = fief
+					OR = {
+						religion_group = ROOT
+						culture_group = ROOT
+					}
+					is_neighbor_of = ROOT
+
+				}
+			}
+		}
+		else = {
+			FROM = {
+				is_subject = no
+				has_institution = feudalism
+				is_fief_domain_tech = yes
+				is_part_of_hre = no
+				any_subject_country = { 
+					is_subject_of_type = fief
+					culture_group = ROOT
+					religion_group = ROOT
+					is_neighbor_of = ROOT
+				}
+			}
 		}
 	}
 
@@ -212,7 +251,7 @@ cb_fief_vassal = {
 		po_form_personal_union
 	#   po_gold
 	#   po_concede_defeat
-	#   po_annul_treaties
+	    po_annul_treaties
 	##	po_war_reparations
 	    po_change_government
 	    po_revoke_elector
@@ -221,29 +260,25 @@ cb_fief_vassal = {
 	    po_humiliate
 	}
 	
-	war_goal = take_capital_fief
+	war_goal = superiority_fiefs
 }
 
 cb_make_domain = {
 	valid_for_subject = no
 
 	prerequisites = {
-		OR = {
-			government_rank = 4
-			government_rank = 5
-		}
+		OR = { current_age = age_of_absolutism current_age = age_of_revolutions } #is_great_power = yes
 		is_fief_domain_tech = yes
 		is_subject = no
 		FROM = {
+			is_great_power = no
 			is_fief_domain_tech = yes
-			NOT = { num_of_cities = ROOT }
 			is_subject = no
-			OR = {
-				government_rank = 1
-				government_rank = 2
-				government_rank = 3
-			}
 			is_neighbor_of = ROOT
+			OR = {
+				government_rank = 3
+				government_rank = 4
+			}
 			NOT = { OR = { culture_group = ROOT is_part_of_hre = yes } }
 		}
 	}
@@ -271,32 +306,22 @@ cb_make_domain = {
 }
 
 
-cb_transfer_domain = {
+cb_transfer_march = {
 	valid_for_subject = no
 	
 	#is_triggered_only = yes
 
 	prerequisites = {
-		OR = {
-			government_rank = 4
-			government_rank = 5
-		}
 		is_fief_domain_tech = yes
 		is_subject = no
 		FROM = {
 			is_subject = no
-			OR = {
-				government_rank = 4
-				government_rank = 5
-			}
 			is_fief_domain_tech = yes
+			is_rival = yes
 			any_subject_country = { 
-				NOT = { num_of_cities = ROOT }
-				NOT = { is_subject_of = ROOT }
-				is_subject_of_type = dominion
+				is_subject_of_type = march
 				is_neighbor_of = ROOT
 				is_fief_domain_tech = yes
-				NOT = { OR = { culture_group = ROOT is_part_of_hre = yes } }
 			}
 		}
 	}
@@ -321,54 +346,26 @@ cb_transfer_domain = {
 	    po_humiliate
 	}
 	
-	war_goal = superiority_domains
+	war_goal = superiority_march
 }
 
-cb_transfer_fiefs = {
+cb_merchant_tributary = {
+
 	valid_for_subject = no
-	
-	#is_triggered_only = yes
 
 	prerequisites = {
-		current_age = age_of_discovery
-		is_fief_domain_tech = yes
 		is_subject = no
-		if = {
-			limit = { is_part_of_hre = yes }
-			NOT = { government_rank = 4 }
-			FROM = {
-				is_subject = no
-				NOT = { government_rank = 4 }
-				any_subject_country = { 
-					NOT = { num_of_cities = ROOT }
-					NOT = { num_of_cities = 9 }
-					NOT = { is_subject_of = ROOT }
-					is_subject_of_type = fief
-					is_part_of_hre = yes
-					religion_group = ROOT
-					is_neighbor_of = ROOT
-					is_fief_domain_tech = yes
-				}
-			}
+		OR = { 
+			has_reform = merchant_kingdom
+			has_reform = mandala_reform
 		}
-		else = {
-			FROM = {
-				is_subject = no
-				any_subject_country = { 
-					NOT = { num_of_cities = ROOT }
-					NOT = { num_of_cities = 9 }
-					NOT = { is_subject_of = ROOT }
-					is_subject_of_type = fief
-					is_part_of_hre = no
-					culture_group = ROOT
-					religion_group = ROOT
-					is_neighbor_of = ROOT
-					is_fief_domain_tech = yes
-				}
-			}
+		FROM = { is_subject = no }
+		OR = {
+			is_neighbor_of = FROM
+			FROM = { capital_scope = { range = ROOT } }
 		}
 	}
-
+	
 	attacker_disabled_po = {
 		po_demand_provinces
 	#	po_revoke_cores
@@ -376,7 +373,7 @@ cb_transfer_fiefs = {
 	#	po_release_annexed
 	#	po_return_cores
 		po_become_vassal
-		po_become_tributary_state
+	#	po_become_tributary_state
 		po_form_personal_union
 	#   po_gold
 	#   po_concede_defeat
@@ -389,7 +386,31 @@ cb_transfer_fiefs = {
 	    po_humiliate
 	}
 	
-	war_goal = superiority_fiefs
+	
+	war_goal = take_capital_force_tributary
+}
+
+
+cb_tapu_wars = {
+
+	valid_for_subject = no
+
+	prerequisites = {
+		has_dlc = "El Dorado"
+		religion = tapu
+		is_free_or_tributary_trigger = yes
+		is_religion_reformed = no
+		is_subject = no
+		FROM = {
+			is_subject = no
+		}
+		OR = {
+			is_neighbor_of = FROM
+			FROM = { capital_scope = { range = ROOT } }
+		}
+	}
+
+	war_goal = take_capital_force_tributary
 }
 
 cb_dutch_independence_war = {
