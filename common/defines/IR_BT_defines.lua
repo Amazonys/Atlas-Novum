@@ -181,6 +181,9 @@ NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided
  --Monopoly bonus
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
 
+ --Necessary
+--NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable 
+
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is ncreased from development
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5	-- How much this is ncreased from local autonomy
