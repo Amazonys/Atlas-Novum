@@ -126,9 +126,9 @@ NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.1	-- from 0.3
 NDefines.NCountry.REVOLT_SIZE_BASE = 3	-- from 4
 NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03			-- % each tech increases size of rebels by this percent.
 NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
-NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_INCREASE = 0	-- Per % of relative development granted to the estate
-NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_DECREASE = 0		-- Per % of relative development revoked from the estate
-NDefines.NCountry.ESTATE_PROVINCE_POWER = 0				-- Per % of non overseas development in the country they manage
+--NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_INCREASE = 0	-- Per % of relative development granted to the estate
+--NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_DECREASE = 0		-- Per % of relative development revoked from the estate
+--NDefines.NCountry.ESTATE_PROVINCE_POWER = 0				-- Per % of non overseas development in the country they manage
  --Colonial
 NDefines.NCountry.MAX_CROWN_COLONIES = 3
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
