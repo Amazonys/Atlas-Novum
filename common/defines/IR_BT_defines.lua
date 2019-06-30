@@ -202,7 +202,7 @@ NDefines.NMilitary.FORTRESS_COST = 0.2			-- Beyond Typus added so many new provi
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
 NDefines.NMilitary.GARRISON_SIZE = 1000							-- GARRISON_SIZE
-NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 3	
+NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 1	
  --Unit Speeds
 NDefines.NMilitary.INFANTRY_SPEED = 0.6					
 NDefines.NMilitary.CAVALRY_SPEED = 0.8							
