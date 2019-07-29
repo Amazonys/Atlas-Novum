@@ -5,7 +5,7 @@ country_decisions = {
 # Post-Discovery Formables	 
 
 # 	Spain	 
-	ir_spain_nation = {
+	ir_spain_nation = { #MODIFIED TO SIGNIFY THE UNION OF ARAGON AND CASTILLE
 		major = yes
 		potential = {
 			NOT = { has_country_flag = formed_spain_flag }
@@ -31,12 +31,37 @@ country_decisions = {
 			}
 		}
 		provinces_to_highlight = {
-			spa_core_provinces = yes
+			spa_core_provinces = yes 
+			#aragon_region = yes
+			#castille_region = yes
 		}
 		allow = {
-			tier_2_formable_trigger = {
-				PROVINCES=spa_core_provinces
-				AMOUNT=60
+			if = { limit = { OR = { tag = CAS tag = LON  #Potentially other castillian or leonese tags
+				} }
+				tier_2_formable_trigger = {
+					PROVINCES=aragon_region
+					AMOUNT=20 #20/33 
+				}
+				#cities_formable_trigger = {
+				#	PROVINCES=aragon_core_cities
+				#}
+				220 = { country_or_non_sovereign_subject_holds = CAS }
+				333 = { country_or_non_sovereign_subject_holds = CAS }
+				214 = { country_or_non_sovereign_subject_holds = CAS }
+				213 = { country_or_non_sovereign_subject_holds = CAS }
+			}
+			if = { limit = { tag = ARA } 
+				tier_2_formable_trigger = {
+					PROVINCES=castille_region
+					AMOUNT=40 #40/69
+				}
+				#cities_formable_trigger = {
+				#	PROVINCES=castille_core_cities
+				#}
+				1746 = { country_or_non_sovereign_subject_holds = ARA }
+				217 = { country_or_non_sovereign_subject_holds = ARA }
+				219 = { country_or_non_sovereign_subject_holds = ARA }
+				208 = { country_or_non_sovereign_subject_holds = ARA }
 			}
 			NOT = { current_age = age_of_discovery }
 			is_at_war = no
@@ -44,6 +69,21 @@ country_decisions = {
 		effect = {
 			swap_non_generic_missions = yes
 			#Integrate dominions and unions
+			hidden_effect = { #INTEGRATE LEONESE THINGS
+			LON = {
+				every_subject_country = { 
+					limit = { OR = { is_subject_of_type = personal_union is_subject_of_type = dominion } }
+					ROOT = { inherit = PREV } 
+				}
+				every_subject_country = {
+					limit = { OR = { is_subject_of_type = fief AND = { is_subject_of_type = dominion capital_scope = { region = iberia_region }}} }
+					every_owned_province = {
+						add_core = LON
+						cede_province = LON
+					}
+				}
+				}
+			}
 			every_subject_country = { 
 				limit = { OR = { is_subject_of_type = personal_union is_subject_of_type = dominion } }
 				ROOT = { inherit = PREV } 
@@ -5081,5 +5121,45 @@ bt_najd_formation = {
 			factor = 1
 		}
 	}
+	
+# 	Tier 2 
+	ir_integrate_fiefs = { #MODIFIED TO SIGNIFY THE UNION OF ARAGON AND CASTILLE
+		major = yes
+		potential = {
+			#OR = {
+			has_institution = renaissance
+			#}
+		}
+		allow = {
+			total_development = 300
+			NOT = { current_age = age_of_discovery }
+			is_at_war = no
+		}
+		effect = {
+			# integrate fiefs
+			custom_tooltip = integrate_fiefs.tooltip
+			hidden_effect = {
+				every_subject_country = {
+					limit = { is_subject_of_type = fief }
+					every_owned_province = {
+						add_core = ROOT
+						cede_province = ROOT
+					}
+				}
+			}
+			#set_empire_rank = { TOOLTIP = ir_upgrade_to_empire } 
+			add_country_modifier = {
+				name = centralization_modifier
+				duration = 7300
+			}
+			add_prestige = 10
+		}
+		ai_will_do = {
+			factor = 1
+		}
+		ai_importance = 400 #
+	}
+	
+	
 #END	
 }
