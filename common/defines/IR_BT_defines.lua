@@ -1,7 +1,7 @@
  -- IR + BT defines
  -- DO NOT CHANGE OR REPLACE WITHOUT PERMISSION PLEASE
   -- NGame changes
-NDefines.NGame.END_DATE = "1836.1.2" --from 1821.1.2
+NDefines.NGame.END_DATE = "1872.1.2" --from 1821.1.2
 NDefines.NGame.MAX_COLONIAL_NATIONS = 250 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
 
   --NDiplomacy changes   note subsections
