@@ -108,7 +108,7 @@ NDefines.NCountry.CULTURAL_UNION_MIN_DEV = 2000			-- from 1000
 NDefines.NCountry.MIN_DEV_FOR_FREE_CITY = 20			-- from 10
 NDefines.NCountry.RANDOM_LUCKY_DEVELOPMENT_WEIGHT = 0.2			-- from 0p4
 NDefines.NCountry.MIN_DEV_FOR_OLD_GREAT_POWER = 300			-- from 100
-NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 40			-- from 20
+NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 30 -- 40	    from 20
 NDefines.NCountry.PS_MAKE_PROVINCE_CORE = 10			-- from 10
 NDefines.NCountry.PS_MOVE_CAPITAL_EXTRA = 100			-- from 50
 NDefines.NCountry.PS_CHANGE_CULTURE = 10			-- from 10
@@ -155,9 +155,9 @@ NDefines.NCountry.DISINHERIT_PRESTIGE_HIT = -50 -- from -50
 NDefines.NCountry.DISINHERIT_PRESTIGE_THRESHOLD = 50 -- from 0
  -- ranks
 NDefines.NCountry.CULTURAL_UNION_MIN_RANK = 5
-NDefines.NCountry.HRE_RANK = 5
-NDefines.NCountry.HRE_MAX_RANK = 3
-NDefines.NCountry.HRE_MAX_RANK_ELECTOR = 3
+NDefines.NCountry.HRE_RANK = 5 --Empire
+NDefines.NCountry.HRE_MAX_RANK = 3 --Duchy
+NDefines.NCountry.HRE_MAX_RANK_ELECTOR = 4 --king
 NDefines.NCountry.SUBJECT_MAX_RANK = 4
 NDefines.NCountry.PRESTIGE_GAIN_FOR_GOV_RANK_2 = 5
 NDefines.NCountry.PRESTIGE_GAIN_FOR_GOV_RANK_3 = 10
@@ -295,3 +295,6 @@ NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.25			-- from 0p5
 NDefines.NNationDesigner.PRODUCTION_COST_MODIFIER = 0.25			-- from 0p5
 NDefines.NNationDesigner.MANPOWER_COST_MODIFIER = 0.25			-- from 0p5
 NDefines.NNationDesigner.MAX_GOVERNMENT_RANK = 5 -- was 3
+
+--Culture Penalties
+STATE_MAINTENANCE_CULTURE_FACTOR = 0.0		-- non accepted culture
