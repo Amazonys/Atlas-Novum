@@ -259,7 +259,10 @@ NDefines.NAI.DIPLOMATIC_ACTION_SUPPORT_HEIR_DEVELOPMENT_FACTOR = 1			-- from 2
 NDefines.NAI.DIPLOMATIC_ACTION_TRIBUTARY_ACCEPTANCE_PER_DEVELOPMENT = -0.25			-- from -0p5
 NDefines.NAI.CHARTER_COMPANY_BASE_RELUCTANCE = 0						-- from -3; Base reluctance to giving away provinces in charter company diplo action
 NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 3				-- from 3; How much development needed to add one reluctance
-	
+
+--DEVELOPMENT
+NDefines.NAI.DEVELOPMENT_CAP_BASE = 10	-- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
+NDefines.NAI.DEVELOPMENT_CAP_MULT = 2
  -- Condotierri
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_BASE_MULT = 33 -- AI scoring for offer condottieri, base scale.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_MONTHLY_PARTICIPATION_RATE = -0.3 --Base monthly decay in participation. Related to multipliers for war participation (but doesn't depend on number of regiments, so raw multiplier matters).
