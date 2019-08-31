@@ -250,7 +250,7 @@ NDefines.NMilitary.MONTHLY_REPAIR = 0.05                            -- was 0.1 S
 
 
  --NAI changes
-NDefines.NAI.DEVELOPMENT_CAP_BASE = 20			-- from 10
+NDefines.NAI.DEVELOPMENT_CAP_BASE = 50			-- from 10
 NDefines.NAI.PEACE_TERMS_RELEASE_ANNEXED_SIZE_MULT = 0.005			-- from 0p01
 
 NDefines.NAI.DIPLOMATIC_ACTION_VASSALIZE_DEVELOPMENT_FACTOR = 10			-- from 20
@@ -265,7 +265,7 @@ NDefines.NAI.CHARTER_COMPANY_BASE_RELUCTANCE = 0						-- from -3; Base reluctanc
 NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 3				-- from 3; How much development needed to add one reluctance
 
 --DEVELOPMENT
-NDefines.NAI.DEVELOPMENT_CAP_BASE = 10	-- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
+--NDefines.NAI.DEVELOPMENT_CAP_BASE = 10	-- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
 NDefines.NAI.DEVELOPMENT_CAP_MULT = 2
  -- Condotierri
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_BASE_MULT = 33 -- AI scoring for offer condottieri, base scale.
