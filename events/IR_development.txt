@@ -12,25 +12,29 @@ province_event = {
 		is_city = yes
 		has_global_flag = IR_dev_cap_init
 		NOT = { devastation = 25 }
-		check_variable = {
-			which = IR_prov_dev_cap
-			which = IR_prov_dev
+		NOT = { 
+			check_variable = {
+				which = IR_prov_dev
+				which = IR_prov_dev_cap
+			}
 		}
-		check_variable = {
-			which = IR_prov_pop_cap
-			which = trigger_value:base_manpower
+		NOT = { 
+			check_variable = {
+				which = IR_prov_pop
+				which = IR_prov_pop_cap
+			}
 		}
 	}
 	
 	mean_time_to_happen = {
 		months = 180
-		modifier = {
-			factor = 20
-			check_variable = {
-				which = trigger_value:base_manpower
-				which = IR_prov_pop_cap
-			}
-		}
+		#modifier = {
+		#	factor = 20
+		#	check_variable = {
+		#		which = trigger:base_manpower
+		#		which = IR_prov_pop_cap
+		#	}
+		#}
 		modifier = {
 			factor = 0.9
 			check_variable = {
@@ -54,7 +58,7 @@ province_event = {
 		}
 		
 		modifier = {
-			factor = 0.5
+			factor = 0.75
 			is_prosperous = yes
 		}
 		modifier = {
@@ -89,6 +93,250 @@ province_event = {
 		name = "setup.exit" 
 		ai_chance = { factor = 100 }
 		add_base_manpower = 1
+		hidden_effect = {
+			set_variable = {
+				which = IR_prov_dev_cap
+    			value = 60
+			}
+			set_variable = {
+				which = IR_prov_dev_cost
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_pop_cap
+    			value = 0
+			}
+			set_variable = {
+				which = IR_prov_dev
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_wealth
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_infrastructure
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_pop
+    			value = 1
+			}
+			#Export to pop cap 
+    		export_to_variable = {
+        		variable_name = IR_prov_wealth
+        		value = trigger_value:base_tax
+    		}
+			export_to_variable = {
+        		variable_name = IR_prov_infrastructure
+        		value = trigger_value:base_production
+    		}
+			export_to_variable = {
+        		variable_name = IR_prov_pop
+        		value = trigger_value:base_manpower
+    		}
+			#set province dev level
+    		export_to_variable = {
+        		variable_name = IR_prov_dev
+        		value = trigger_value:development
+    		}
+			#get province dev cost ratio for cap
+    		export_to_variable = {
+    			variable_name = IR_prov_dev_cost
+    			value = modifier:local_development_cost
+    		}
+    		change_variable = {
+       			which = IR_prov_dev_cost
+        		value = 1
+   			}
+   			#divide cap by cost 1.XX (set in on_actions)
+   			divide_variable = {
+   				which = IR_prov_dev_cap
+   				which = IR_prov_dev_cost
+   			}
+			#ADD WEALTH AND INFRASTRUCTURE TO GET POP CAP
+			change_variable = {
+   				which = IR_prov_pop_cap
+   				which = IR_prov_wealth
+   			}
+			change_variable = {
+   				which = IR_prov_pop_cap
+   				which = IR_prov_infrastructure
+   			}
+			subtract_variable = {
+   				which = IR_prov_pop_cap
+   				value = 1.002
+   			}
+		}
+	} 
+} 
+
+#Population decline (by devastation for now)
+province_event = { 
+	id = IR_development.2
+	title = "IR_development.2.t"
+	desc = "IR_development.2.d"
+	picture = BATTLE_eventPicture
+	
+	trigger = {
+		#always = no
+		is_city = yes
+		has_global_flag = IR_dev_cap_init
+		devastation = 25
+		#NOT = { 
+		#	check_variable = {
+		#		which = IR_prov_dev
+		#		which = IR_prov_dev_cap
+		#	}
+		#}
+		#NOT = { 
+		#	check_variable = {
+		#		which = IR_prov_pop
+		#		which = IR_prov_pop_cap
+		#	}
+		#}
+	}
+	
+	mean_time_to_happen = {
+		months = 180
+		#modifier = {
+		#	factor = 20
+		#	check_variable = {
+		#		which = trigger:base_manpower
+		#		which = IR_prov_pop_cap
+		#	}
+		#}
+		modifier = {
+			factor = 0.9
+			devastation = 25
+		}
+		modifier = {
+			factor = 0.9
+			devastation = 50
+		}
+		modifier = {
+			factor = 0.9
+			devastation = 75
+		}
+		modifier = {
+			factor = 0.5
+			devastation = 100
+		}
+		
+		modifier = {
+			factor = 1000
+			OR = {
+				is_prosperous = yes
+				NOT = { devastation = 25 }
+			}
+		}
+		modifier = {
+			factor = 0.9
+			has_building = town
+		}
+		modifier = {
+			factor = 0.8
+			has_building = city
+		}
+		modifier = {
+			factor = 0.7
+			has_building = metropolis
+		}
+		#modifier = {
+		#	factor = 0.9
+		#	OR = { trade_goods = grain trade_goods = ir_rice trade_goods = ir_potatoes trade_goods = ir_maize trade_goods = ir_fruit trade_goods = ir_millet trade_goods = livestock trade_goods = fish trade_goods = wine }
+		#}
+		#modifier = { 
+		#	factor = 0.8
+		#	OR = { trade_goods = cloth trade_goods = glass trade_goods = salt trade_goods = iron trade_goods = copper trade_goods = paper trade_goods = naval_supplies trade_goods = silk trade_goods = chinaware }
+		#}
+		#modifier = {
+		#	factor = 0.7
+		#	OR = { trade_goods = ir_silver trade_goods = gold }
+		#}
+	}
+
+	hidden = yes
+
+	option = {
+		name = "setup.exit" 
+		ai_chance = { factor = 100 }
+		add_base_manpower = -1
+		hidden_effect = {
+			set_variable = {
+				which = IR_prov_dev_cap
+    			value = 60
+			}
+			set_variable = {
+				which = IR_prov_dev_cost
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_pop_cap
+    			value = 0
+			}
+			set_variable = {
+				which = IR_prov_dev
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_wealth
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_infrastructure
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_pop
+    			value = 1
+			}
+			#Export to pop cap 
+    		export_to_variable = {
+        		variable_name = IR_prov_wealth
+        		value = trigger_value:base_tax
+    		}
+			export_to_variable = {
+        		variable_name = IR_prov_infrastructure
+        		value = trigger_value:base_production
+    		}
+			export_to_variable = {
+        		variable_name = IR_prov_pop
+        		value = trigger_value:base_manpower
+    		}
+			#set province dev level
+    		export_to_variable = {
+        		variable_name = IR_prov_dev
+        		value = trigger_value:development
+    		}
+			#get province dev cost ratio for cap
+    		export_to_variable = {
+    			variable_name = IR_prov_dev_cost
+    			value = modifier:local_development_cost
+    		}
+    		change_variable = {
+       			which = IR_prov_dev_cost
+        		value = 1
+   			}
+   			#divide cap by cost 1.XX (set in on_actions)
+   			divide_variable = {
+   				which = IR_prov_dev_cap
+   				which = IR_prov_dev_cost
+   			}
+			#ADD WEALTH AND INFRASTRUCTURE TO GET POP CAP
+			change_variable = {
+   				which = IR_prov_pop_cap
+   				which = IR_prov_wealth
+   			}
+			change_variable = {
+   				which = IR_prov_pop_cap
+   				which = IR_prov_infrastructure
+   			}
+			subtract_variable = {
+   				which = IR_prov_pop_cap
+   				value = 0.002
+   			}
+		}
 	} 
 } 
 
