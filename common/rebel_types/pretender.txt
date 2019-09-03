@@ -1,6 +1,8 @@
 ######################################################################
 # Throne Pretender rebels.
 ######################################################################
+
+#To find what's been added by the mod, search #Byz_resurgence added
 pretender_rebels = {
 	
 	color = { 179 51 51 }
@@ -35,6 +37,25 @@ pretender_rebels = {
 	
 	spawn_chance = {
 		factor = 1
+		#Byz_resurgence added: In case of Theme capital, it should not spawn noble rebels, but pretenders should unrest get too high.
+		modifier = {
+			factor = 20
+			has_estate = estate_strategoi
+		}
+		#Byz_resurgence added: If the Military Coup disaster fires, adjust so there's plenty of chance for pretenders to rise.
+		modifier = {
+			factor = 20
+			owner = {
+				has_disaster = estate_strategoi_disaster
+			}
+		}
+		#Byz_resurgence added: If the Succession Crisis disaster fires, adjust so there's plenty of chance for pretenders to rise.
+		modifier = {
+			factor = 20
+			owner = {
+				has_disaster = succession_crisis
+			}
+		}
 		modifier = {
 			factor = 0
 			owner = {
@@ -172,24 +193,24 @@ pretender_rebels = {
 			factor = 3
 			owner = {
 				is_lesser_in_union = yes
-				NOT = { is_subject_of_type = dominion }
 				NOT = { legitimacy = 75 }
+				NOT = { is_subject_of_type = dominion }
 			}
 		}
 		modifier = {
 			factor = 3
 			owner = {
 				is_lesser_in_union = yes
-				NOT = { is_subject_of_type = dominion }
 				NOT = { legitimacy = 50 }
+				NOT = { is_subject_of_type = dominion }
 			}
 		}
 		modifier = {
 			factor = 3
 			owner = {
 				is_lesser_in_union = yes
-				NOT = { is_subject_of_type = dominion }
 				NOT = { legitimacy = 25 }
+				NOT = { is_subject_of_type = dominion }
 			}
 		}
 		modifier = {
@@ -285,7 +306,7 @@ pretender_rebels = {
 			limit = {
 				has_states_general_mechanic = yes
 			}
-			change_statists_vs_orangists = 200
+			change_statists_vs_orangists = 1
 		}
 		if = {
 			limit = { religion = inti }
@@ -317,13 +338,20 @@ pretender_rebels = {
 						has_reform = tribal_federation
 						has_reform = feudal_theocracy
 						has_reform = mamluk_government
-						is_subject_of_type = dominion #AMYZ IR
+						government = tribal
+						#Byz_resurgence added: Added Byzantine unique government to this list
+						government = roman_autocracy_legacy
 					}
 				}
 			}
 			change_government = REB
 			set_legacy_government = despotic_monarchy
 		}
+		set_country_flag = no_new_succession_crisis_if_pretender_rebels #This is used in the event that triggers from the on_action to ensure that you don't get new pretenders if these pretenders are happening because of a succession crisis.
+		define_ruler = {
+			rebel = yes
+		}
+		clr_country_flag = no_new_succession_crisis_if_pretender_rebels
 		if = {
 			limit = { NOT = { is_subject_of_type = dominion } }
 			set_country_flag = no_new_succession_crisis_if_pretender_rebels #This is used in the event that triggers from the on_action to ensure that you don't get new pretenders if these pretenders are happening because of a succession crisis.
@@ -352,6 +380,12 @@ pretender_rebels = {
 			country_event = { id = internal_conflicts.8 }
 			end_disaster = internal_conflicts
 		}
+		#if = { #Coming back to this
+		#	limit = { has_disaster = castilian_civil_war }
+		#	set_country_flag = cas_civil_war_rebels_won
+		#	country_event = { id = castilian_civil_war.100 }
+		#	end_disaster = castilian_civil_war
+		#}
 		if = {
 			limit = { has_disaster = time_of_troubles }
 			country_event = { id = time_of_troubles.10 }
@@ -362,5 +396,20 @@ pretender_rebels = {
 			country_event = { id = english_civil_war.100 }
 			end_disaster = english_civil_war
 		}
+		#Byz_resurgence added: Clears Succession Crisis upon enforcing demands.
+		if = {
+			limit = { has_disaster = succession_crisis }
+			end_disaster = succession_crisis
+			clr_country_flag = had_byz_succ_crisis
+			country_event = { id = succession_crisis.36 }
+		}
+		#Byz_resurgence added: Clears Military Coup upon enforcing demands.
+		if = {
+			limit = { has_disaster = estate_strategoi_disaster }
+			end_disaster = estate_strategoi_disaster
+			clr_country_flag = byz_current_ruler_is_not_deposed
+			country_event = { id = strategoi_estate_events.22 }
+		}
+		
 	}
 }

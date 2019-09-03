@@ -180,8 +180,10 @@ country_event = { #3 The Cimmerian Bosporus
 	picture = SHIP_SAILING_eventPicture
 		
 	immediate = {
-		save_event_target_as = cimmerian_bosporus_owner
-		set_country_flag = had_cimmerian_bosporus_event
+		hidden_effect = {
+			save_event_target_as = cimmerian_bosporus_owner
+			set_country_flag = had_cimmerian_bosporus_event
+		}
 	}
 	
 	trigger = {
@@ -835,13 +837,12 @@ country_event = { #11 City of the World's Desire
 	major = yes
 	
 	trigger = {
-		has_global_flag = integrated_byz_events_used #To prevent this firing when non-integrated events are used
 		tag = TUR
 		151 = { 
 			owned_by = BYZ 
 		}
 		BYZ = {
-			NOT = { num_of_cities = 10 }
+			NOT = { num_of_cities = 20 }
 		} 
 		is_year = 1450
 		NOT = { war_with = BYZ }
@@ -889,9 +890,6 @@ country_event = { #11 City of the World's Desire
 		}
 		
 		add_prestige = 10
-		northern_thrace_area = {
-			add_claim = TUR
-		}
 		thrace_area = {
 			add_claim = TUR
 		}
@@ -1576,88 +1574,302 @@ country_event = { #22 The Turks have been repelled!
 	}
 }
 
-
-
-#####################################
-#Chariot race work in progress stuff#
-#####################################
-
-#Ok, I'm going to explain this now. First there'll be an event to restore the Constantinopolitan Hippodrome sometime after Constantinople recovers. (Implemented)
-#If you do that, you'll also get an event shortly after sacking Venice that you've returned the Triumphal Quadriga. (Implemented)
-#Once you've done that as well, you'll get an event every 4 years in which you hold chariot races. (WIP)
-#You can choose to hold them privately, allowing only your factions to compete. You can also choose to send an invitation to your allies, increasing relations.
-#The gains are decided through a random list, also WIP, in the scripted effects section. It basically shuffles through different options, all being different events that will be declared below.
-#Finally, once you've embraced the Enlightenment, you can choose to restore the Olympic Games, which will cancel the chariot races event, replacing it with Olympic Games instead. 
-#Here you can also choose to invite other non-allied nations, and whether to join in will depend on Byzantium's relations to the nation,
-#as well as what religion they follow and some railroading on what tags they are (PAP and HLR will never join unless Byzantium is Catholic).
-
-# country_event = { #x The quadrennial Chariot Race
-	# id = resurgent_BYZ.x
-	# title = "resurgent_BYZ.x.t"
-	# desc = "resurgent_BYZ.x.d"
-	# picture = CONSTANTINOPLE_eventPicture
-
-	# trigger = {
-		# has_global_flag = constantinople_restored
-		# is_byz_or_hellenic_rome_trigger = yes
-		# capital = 151
-		# 151 = {
-			# has_province_modifier = byz_hippodrome_restored
-		# }
-		# OR = {
-			# NOT = { has_country_flag = byz_had_recent_chariot_race }
-			# had_country_flag = { flag = byz_had_recent_chariot_race days = 1460 }
-		# }
-		# always = no #Because this event is not finished.
-	# }
+country_event = { #23 The Purchase of Amastris - Trebizonder Proposal
+	id = resurgent_BYZ.23
+	title = "resurgent_BYZ.23.t" 
+	desc = "resurgent_BYZ.23.d"
+	picture = BURGHER_ESTATE_eventPicture
 	
-	# mean_time_to_happen = {
-		# months = 6
-	# }
+	major = yes
 	
-	# option = { #Only allow internal participants
-		# name = "resurgent_BYZ.x.a"
-		# ai_chance = { factor = 25 }
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			save_global_event_target_as = byz_country_to_sell_to
+		}
+	}
+	
+	trigger = {
+		tag = TRE
+		exists = GEN
+		GEN = { 
+			capital_scope = {
+				region = italy_region
+			}
+			owns_or_non_sovereign_subject_of = 2299 #Amastris
+		}
+	}
+	
+	option = { #Attempt the purchase
+		name = "resurgent_BYZ.14.a"
+		ai_chance = { factor = 33 } #The Byzantines did not look down all too much on the Genoese, actually
+		GEN = {
+			country_event = {
+				id = resurgent_BYZ.24
+				days = 5
+				random = 5
+			}
+		}
+		custom_tooltip = chios_purchase_effects_if_signs_treaty
+		tooltip = {
+			add_years_of_income = -0.50
+			capital_scope = {
+				add_trade_modifier = {
+					who = GEN
+					duration = -1
+					power = 20
+					key = ceded_amastris_for_trade_privileges
+				}
+			}
+			GEN = {
+				add_opinion = {
+					who = TRE 
+					modifier = byz_granted_trade
+				}
+			}
+			2299 = {
+				remove_core = GEN
+				remove_core = GZR
+				add_core = ROOT
+				cede_province = ROOT
+			}
+		}
 		
-		# add_legitimacy = 5
-		# byz_chariot_race_effect = {
-			# SAME_RELIGION = no
-			# HEATHEN_RELIGION = no
-		# }
-	# }
-	
-	# option = { #Stretch out the hand to [ROOT.Religion.GetName] nations
-		# name = "resurgent_BYZ.x.b"
-		# ai_chance = { factor = 25 }
 		
-	# }
-	
-	
-	
-	# option = { #Promise the [estate_nobles.GetName] compensation
-		# name = resurgent_BYZ.x.e 
-		# ai_chance = {
-			# factor = 75
-		# }
-		# highlight = yes
-		# trigger = {
-			# ruler_has_personality = flexible_negotiator_personality
-		# }
-		# required_personality = flexible_negotiator_personality
+	}
+	option = { #Do not
+		name = "resurgent_BYZ.14.b"
+		ai_chance = { factor = 66 }
 		
-		# add_years_of_income = -0.25
-		# add_estate_loyalty = {
-			# estate = estate_nobles
-			# loyalty = 10
-		# }
-		# add_estate_influence_modifier = {
-			# estate = estate_strategoi
-			# desc = EST_VAL_SIDED_WITH_THE_STRATEGOI
-			# influence = 10
-			# duration = 3650
-		# }
-	# }
-# }
+		add_mercantilism = 1
+		GEN = {
+			add_opinion = {
+				who = TRE
+				modifier = byz_denied_trade
+			}
+		}
+	}
+	option = { #Negotiate an offer they cannot refuse!
+		name = "resurgent_BYZ.14.c"
+		ai_chance = { factor = 1000 }
+		highlight = yes
+		trigger = {
+			ruler_has_personality = charismatic_negotiator_personality
+			GEN = { ai = yes } #To prevent the player getting gimped.
+		}
+		required_personality = charismatic_negotiator_personality
+		
+		add_years_of_income = -0.35
+		capital_scope = {
+			add_trade_modifier = {
+				who = GEN
+				duration = -1
+				power = 30
+				key = ceded_chios_for_trade_privileges
+			}
+		}
+		GEN = {
+			add_opinion = {
+				who = TRE 
+				modifier = byz_granted_trade
+			}
+		}
+		2299 = {
+			remove_core = GEN
+			remove_core = GZR
+			add_core = ROOT
+			cede_province = ROOT
+		}
+	}
+}
+
+country_event = { #24 The Purchase of Amastris - Genoese response
+	id = resurgent_BYZ.24
+	title = "resurgent_BYZ.24.t" 
+	desc = "resurgent_BYZ.24.d"
+	picture = BURGHER_ESTATE_eventPicture
+		
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		tag = GEN
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = { #Accept the purchase
+		name = "resurgent_BYZ.15.a"
+		ai_chance = { 
+			factor = 50 
+			modifier = {
+				factor = 5
+				has_opinion = {
+					who = event_target:byz_country_to_sell_to #I don't know if PREV works here, so just to be safe.
+					value = 50
+				}
+			}
+		}
+		
+		add_mercantilism = 1
+		add_years_of_income = 0.5
+		330 = {
+			add_trade_modifier = {
+				who = GEN
+				duration = -1
+				power = 20
+				key = ceded_amastris_for_trade_privileges
+			}
+		}
+		reverse_add_opinion = {
+			who = TRE 
+			modifier = byz_granted_trade
+		}
+		2299 = {
+			remove_core = GEN
+			remove_core = GZR
+			add_core = event_target:byz_country_to_sell_to
+			cede_province = event_target:byz_country_to_sell_to
+		}
+		event_target:byz_country_to_sell_to = {
+			country_event = {
+				id = resurgent_BYZ.25
+			}
+		}
+		clear_global_event_target  = byz_country_to_sell_to
+	}
+	option = { #Do not
+		name = "resurgent_BYZ.15.b"
+		ai_chance = { factor = 50 }
+		
+		event_target:byz_country_to_sell_to = {
+			country_event = {
+				id = resurgent_BYZ.26
+			}
+		}
+		clear_global_event_target  = byz_country_to_sell_to
+		reverse_add_opinion = {
+			who = TRE 
+			modifier = byz_denied_trade
+		}
+	}
+	option = { #Make a counter-proposal
+		name = "resurgent_BYZ.15.c"
+		ai_chance = { factor = 1000 }
+		highlight = yes
+		trigger = {
+			ruler_has_personality = entrepreneur_personality
+			GEN = { ai = yes } #To prevent the player getting gimped.
+		}
+		required_personality = entrepreneur_personality
+		
+		add_years_of_income = 1
+		capital_scope = {
+			add_trade_modifier = {
+				who = GEN
+				duration = -1
+				power = 30
+				key = ceded_chios_for_trade_privileges
+			}
+		}
+		GEN = {
+			add_opinion = {
+				who = TRE 
+				modifier = byz_granted_trade
+			}
+		}
+		2299 = {
+			remove_core = GEN
+			add_core = ROOT
+			cede_province = ROOT
+		}
+		event_target:byz_country_to_sell_to = {
+			country_event = {
+				id = resurgent_BYZ.16
+			}
+		}
+		clear_global_event_target  = byz_country_to_sell_to
+	}
+}
+
+country_event = { #25 The Genoese Accept our Offer!
+	id = resurgent_BYZ.25
+	title = "resurgent_BYZ.25.t"
+	desc = "resurgent_BYZ.25.d"
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		tag = event_target:byz_country_to_sell_to
+	}
+	
+	option = { #Great!
+		name = "resurgent_BYZ.16.a"
+		ai_chance = { factor = 1 }
+			
+		add_years_of_income = -0.50
+		tooltip = {
+			GEN = {
+				add_opinion = {
+					who = TRE 
+					modifier = byz_granted_trade
+				}
+			}
+			capital_scope = {
+				add_trade_modifier = {
+					who = GEN
+					duration = -1
+					power = 30
+					key = ceded_amastris_for_trade_privileges
+				}
+			}
+			2299 = {
+				remove_core = GEN
+				remove_core = GZR
+				add_core = event_target:byz_country_to_sell_to
+				cede_province = event_target:byz_country_to_sell_to
+			}
+		}
+		
+	}
+}
+
+country_event = { #26 The Genoese Decline our Offer...
+	id = resurgent_BYZ.26
+	title = "resurgent_BYZ.26.t"
+	desc = "resurgent_BYZ.26.d"
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		tag = event_target:byz_country_to_sell_to
+	}
+	
+	option = { #I guess we'll have to take it by force...
+		name = "resurgent_BYZ.17.a"
+		ai_chance = { factor = 1 }
+		
+		tooltip = {
+			add_opinion = {
+				who = GEN 
+				modifier = byz_denied_trade
+			}
+		}
+		
+	}
+}
 
 country_event = { #32 The city of Ailia and the Jews
 	id = resurgent_BYZ.32
