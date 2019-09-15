@@ -211,7 +211,7 @@ NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 2
 NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -1
 NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.02			-- 100 revanschism is -2 a year.
 NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -3.4
-NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -0.5
+NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -0.8
  --Unit Speeds
 NDefines.NMilitary.INFANTRY_SPEED = 0.6					
 NDefines.NMilitary.CAVALRY_SPEED = 0.8							
