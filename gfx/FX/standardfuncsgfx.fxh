@@ -161,6 +161,29 @@ float4 GetFoWColor( float3 vPos, in sampler2D FoWTexture)
 {
 	return tex2D( FoWTexture, float2( ( ( vPos.x + 0.5f ) / MAP_SIZE_X ) * FOW_POW2_X, ( (vPos.z + 0.5f ) / MAP_SIZE_Y) * FOW_POW2_Y ) );
 }
+float4 GetProvinceColor( float2 Coord, in sampler2D IndirectionMap, in sampler2D ColorMap, float2 ColorMapSize )
+{
+	float2 ColorIndex = tex2D( IndirectionMap, Coord ).xy;
+	return tex2D( ColorMap, float2( ColorIndex.x, ( ( ColorIndex.y * 255.0 ) / ( ColorMapSize.y - 1 ) ) ) ); // Assume ColorMapSize.x is 256
+}
+
+float4 GetProvinceColorSampled( float2 Coord, in sampler2D IndirectionMap, float2 IndirectionMapSize, in sampler2D ColorMap, float2 ColorMapSize )
+{
+	float2 Pixel = Coord * IndirectionMapSize + 0.5;
+	float2 InvTextureSize = 1.0 / IndirectionMapSize;
+
+	float2 FracCoord = frac( Pixel );
+	Pixel = floor( Pixel ) / IndirectionMapSize - InvTextureSize / 2.0;
+
+	float4 C11 = GetProvinceColor( Pixel, IndirectionMap, ColorMap, ColorMapSize );
+	float4 C21 = GetProvinceColor( Pixel + float2( InvTextureSize.x, 0.0 ), IndirectionMap, ColorMap, ColorMapSize );
+	float4 C12 = GetProvinceColor( Pixel + float2( 0.0, InvTextureSize.y ), IndirectionMap, ColorMap, ColorMapSize );
+	float4 C22 = GetProvinceColor( Pixel + InvTextureSize, IndirectionMap, ColorMap, ColorMapSize );
+
+	float4 x1 = lerp( C11, C21, FracCoord.x );
+	float4 x2 = lerp( C12, C22, FracCoord.x );
+	return lerp( x1, x2, FracCoord.y );
+}
 
 float GetTI( float4 vFoWColor )
 {
