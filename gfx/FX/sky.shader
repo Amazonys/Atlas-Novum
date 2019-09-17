@@ -60,7 +60,9 @@ VertexShader =
 		{
 			VS_OUTPUT_SKY VertexOut;
 			VertexOut.position = float4( VertexIn.position, 1.0f, 1.0f );
-			VertexOut.pos = VertexOut.position.xyz;
+			float4 position = mul( InvViewProjMatrix, VertexOut.position );
+			position.xyz /= position.w;
+			VertexOut.pos = position.xyz;
 			return VertexOut;
 		}
 	]]
@@ -76,7 +78,10 @@ PixelShader =
 	[[
 		float4 main( VS_OUTPUT_SKY Input ) : PDX_COLOR
 		{
-			return float4(1.0f,1.0f,1.0f,1.0f);
+			float3 color = texCUBE( ReflectionCubeMap, normalize( Input.pos - vCamPos ) ).rgb;
+			float3 fog = ApplyDistanceFog( color.rgb, Input.pos );
+			color = lerp( fog, color, saturate( Input.pos.y / 300.0f ) );
+			return float4( ComposeSpecular( color, 0.0f ), 1.0f );
 		}
 	]]
 
