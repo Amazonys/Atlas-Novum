@@ -157,6 +157,10 @@ float3 ApplyDistanceFog( float3 vColor, float3 vPos )
 	return lerp( vColor, FOG_COLOR, saturate( vMin ) * vFogFactor );
 }
 
+float4 GetFoWColor( float3 vPos, in sampler2D FoWTexture)
+{
+	return tex2D( FoWTexture, float2( ( ( vPos.x + 0.5f ) / MAP_SIZE_X ) * FOW_POW2_X, ( (vPos.z + 0.5f ) / MAP_SIZE_Y) * FOW_POW2_Y ) );
+}
 float4 GetProvinceColor( float2 Coord, in sampler2D IndirectionMap, in sampler2D ColorMap, float2 ColorMapSize )
 {
 	float2 ColorIndex = tex2D( IndirectionMap, Coord ).xy;
@@ -181,11 +185,6 @@ float4 GetProvinceColorSampled( float2 Coord, in sampler2D IndirectionMap, float
 	return lerp( x1, x2, FracCoord.y );
 }
 
-float4 GetFoWColor( float3 vPos, in sampler2D FoWTexture)
-{
-	return tex2D( FoWTexture, float2( ( ( vPos.x + 0.5f ) / MAP_SIZE_X ) * FOW_POW2_X, ( (vPos.z + 0.5f ) / MAP_SIZE_Y) * FOW_POW2_Y ) );
-}
-
 float GetTI( float4 vFoWColor )
 {
 	return vFoWColor.r;
@@ -199,9 +198,9 @@ float4 GetTIColor( float3 vPos, in sampler2D TITexture )
 
 float GetFoW( float3 vPos, float4 vFoWColor, in sampler2D FoWDiffuse )
 {
-	float vFoWDiffuse = tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 256.0f + vFoWOpacity_Time.y * 0.02f ).r;
-	vFoWDiffuse = sin( ( vFoWDiffuse + frac( vFoWOpacity_Time.y * 0.1f ) ) * 6.28318531f ) * 0.1f;
-	float vShade = vFoWDiffuse + 0.5f;
+	//float vFoWDiffuse = 0.1f;//tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 256.0f).r;
+	//vFoWDiffuse = sin(vFoWDiffuse * 6.28318531f ) * 0.1f;
+	float vShade = 0.5f;
 	float vIsFow = vFoWColor.a;
 	return lerp( 1.0f, saturate( vIsFow + vShade ), vFoWOpacity_Time.x );
 }
@@ -220,31 +219,17 @@ const static float3 SNOW_WATER_COLOR = float3( 0.5f, 0.7f, 0.7f );
 
 float GetSnow( float4 vFoWColor )
 {
-	return lerp( vFoWColor.b, vFoWColor.g, vFoWOpacity_Time.z );
+	return lerp( vFoWColor.b, vFoWColor.g, vFoWOpacity_Time.z ); //Get winter;
 }
 
 float3 ApplySnow( float3 vColor, float3 vPos, inout float3 vNormal, float4 vFoWColor, in sampler2D FoWDiffuse, float3 vSnowColor )
 {
 	float vSnowFade = saturate( vPos.y - SNOW_START_HEIGHT );
-	float vNormalFade = saturate( saturate( vNormal.y - SNOW_NORMAL_START ) * 10.0f );
-
-	float vNoise = tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 100.0f  ).r;
-	float vSnowTexture = tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 10.0f  ).r;
-	
 	float vIsSnow = GetSnow( vFoWColor );
+	float vSnow = saturate( saturate( 1.0f - ( 1.0f - vIsSnow ) ) * 5.0f );
+	float vFrost = saturate( saturate( 1.0f + 0.5f ) - ( 1.0f - vIsSnow ) );
 	
-	//Increase snow on ridges
-	vNoise += saturate( vPos.y - SNOW_RIDGE_START_HEIGHT )*( saturate( (vNormal.y-0.9f) * 1000.0f )*vIsSnow );
-	vNoise = saturate( vNoise );
-	
-	float vSnow = saturate( saturate( vNoise - ( 1.0f - vIsSnow ) ) * 5.0f );
-	float vFrost = saturate( saturate( vNoise + 0.5f ) - ( 1.0f - vIsSnow ) );
-	
-	vColor = lerp( vColor, vSnowColor * ( 0.9f + 0.1f * vSnowTexture), saturate( vSnow + vFrost ) * vSnowFade * vNormalFade * ( saturate( vIsSnow*2.25f ) ) );	
-	
-	vNormal.y += 1.0f * saturate( vSnow + vFrost ) * vSnowFade * vNormalFade;
-	vNormal = normalize( vNormal );
-	
+	vColor = lerp( vColor, vSnowColor, saturate( vSnow + vFrost ) * vSnowFade * ( saturate( vIsSnow*2.25f ) ) );
 	return vColor;
 }
 
