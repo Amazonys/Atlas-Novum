@@ -1,13 +1,18 @@
  -- IR + BT defines
  -- DO NOT CHANGE OR REPLACE WITHOUT PERMISSION PLEASE
   -- NGame changes
-NDefines.NGame.END_DATE = "1836.1.2" --from 1821.1.2
-NDefines.NGame.MAX_COLONIAL_NATIONS = 250 -- idk what this was before
+NDefines.NGame.END_DATE = "1872.1.2" --from 1821.1.2
+NDefines.NGame.MAX_COLONIAL_NATIONS = 250 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
+NDefines.NGame.MAX_CLIENT_STATES = 50		-- Max is 100 -- TODO: Lower this to 75 after 1.18 (used to start at K75 for some reason)
+NDefines.NGame.MAX_ESTATE_COUNTRIES = 10			 -- 50				-- Max is 100
+NDefines.NGame.MAX_TRADING_CITIES = 10 -- 75	-- Max is 100
+NDefines.NGame.MAX_CUSTOM_COUNTRIES = 50 -- 75				-- Max is 100
 
   --NDiplomacy changes   note subsections
 NDefines.NDiplomacy.FAVORS_LAND_DIVIDER = 4			-- from 2      note inversed value
-NDefines.NDiplomacy.VASSALIZE_BASE_DEVELOPMENT_CAP = 400			-- from 100, doubled after dev doubling, because this is annoying.
-NDefines.NDiplomacy.MARCH_BASE_DEVELOPMENT_CAP = 400			-- from 200
+NDefines.NDiplomacy.VASSALIZE_BASE_DEVELOPMENT_CAP = 300			-- from 100, doubled after dev doubling, because this is annoying.
+NDefines.NDiplomacy.MARCH_BASE_DEVELOPMENT_CAP = 300			-- from 200
+NDefines.NDiplomacy.MARCH_DEVELOPMENT_FRACTION = 0.33
 NDefines.NDiplomacy.AE_ATTACKER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_DEFENDER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_PROVINCE_CAP = 50			-- from 30
@@ -95,9 +100,9 @@ NDefines.NCountry.EXPLOIT_ADM_INCOME = 30			-- from 60
 NDefines.NCountry.EXPLOIT_DIP_SAILORS = 3			-- from 6
 NDefines.NCountry.EXPLOIT_MIL_MANPOWER = 3			-- from 6
 NDefines.NCountry.EXPLOIT_COOLDOWN_MONTHS = 120			-- from 240
-NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 2.5			-- from 5
-NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 20			-- from 10
-NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 60			-- from 30
+NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 0			-- from 5
+NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 0			-- from 10
+NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 0			-- from 30
 NDefines.NCountry.EMBRACE_INSTITUTION_COST = 1.25			-- from 2p5
 NDefines.NCountry.CORRUPTION_COST = 0.025			-- from 0p05
 NDefines.NCountry.STATE_MAINTENANCE_DEV_FACTOR = 0.005			-- from 0p007
@@ -107,12 +112,12 @@ NDefines.NCountry.CULTURAL_UNION_MIN_DEV = 2000			-- from 1000
 NDefines.NCountry.MIN_DEV_FOR_FREE_CITY = 20			-- from 10
 NDefines.NCountry.RANDOM_LUCKY_DEVELOPMENT_WEIGHT = 0.2			-- from 0p4
 NDefines.NCountry.MIN_DEV_FOR_OLD_GREAT_POWER = 300			-- from 100
-NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 40			-- from 20
+NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 30 -- 40	    from 20
 NDefines.NCountry.PS_MAKE_PROVINCE_CORE = 10			-- from 10
 NDefines.NCountry.PS_MOVE_CAPITAL_EXTRA = 100			-- from 50
 NDefines.NCountry.PS_CHANGE_CULTURE = 10			-- from 10
-NDefines.NCountry.PS_IMPROVE_PROVINCE_BASE = 42			-- from 50 # ANSWER TO LIFE THE UNIVERSE AND EVERYTHING
-NDefines.NCountry.PS_IMPROVE_PROVINCE_CAPITAL_DISCOUNT = 0.05			-- from 0p05
+NDefines.NCountry.PS_IMPROVE_PROVINCE_BASE = 0			-- from 50 # ANSWER TO LIFE THE UNIVERSE AND EVERYTHING
+NDefines.NCountry.PS_IMPROVE_PROVINCE_CAPITAL_DISCOUNT = 0.02			-- from 0p05
 NDefines.NCountry.OVEREXTENSION_FACTOR = 0.5			-- from 1p0
 NDefines.NCountry.MONTHS_TO_CHANGE_CULTURE = 5			-- from 10
 NDefines.NCountry.RAZE_PROVINCE_POWER_PER_DEVELOPMENT = 10			-- from 25p0
@@ -125,6 +130,9 @@ NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.1	-- from 0.3
 NDefines.NCountry.REVOLT_SIZE_BASE = 3	-- from 4
 NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03			-- % each tech increases size of rebels by this percent.
 NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
+--NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_INCREASE = 0	-- Per % of relative development granted to the estate
+--NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_DECREASE = 0		-- Per % of relative development revoked from the estate
+--NDefines.NCountry.ESTATE_PROVINCE_POWER = 0				-- Per % of non overseas development in the country they manage
  --Colonial
 NDefines.NCountry.MAX_CROWN_COLONIES = 3
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
@@ -151,17 +159,19 @@ NDefines.NCountry.DISINHERIT_PRESTIGE_HIT = -50 -- from -50
 NDefines.NCountry.DISINHERIT_PRESTIGE_THRESHOLD = 50 -- from 0
  -- ranks
 NDefines.NCountry.CULTURAL_UNION_MIN_RANK = 5
-NDefines.NCountry.HRE_RANK = 5
-NDefines.NCountry.HRE_MAX_RANK = 3
-NDefines.NCountry.HRE_MAX_RANK_ELECTOR = 3
+NDefines.NCountry.HRE_RANK = 5 --Empire
+NDefines.NCountry.HRE_MAX_RANK = 3 --Duchy
+NDefines.NCountry.HRE_MAX_RANK_ELECTOR = 4 --king
 NDefines.NCountry.SUBJECT_MAX_RANK = 4
 NDefines.NCountry.PRESTIGE_GAIN_FOR_GOV_RANK_2 = 5
 NDefines.NCountry.PRESTIGE_GAIN_FOR_GOV_RANK_3 = 10
 NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_2 = 10
 NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_3 = 25
 -- NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_4 = ?
-NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_2 = 150
+NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_2 = 75
 NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_3 = 300
+NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_4 = 800
+NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_5 = 2000
 -- NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_4 = ?
 NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_X = 50
 NDefines.NCountry.ADDITIONAL_MIN_DEVELOPMENT_FOR_GOV_RANK_X = 300
@@ -176,19 +186,32 @@ NDefines.NEconomy.GOLD_MINE_SIZE_PRIMITIVES = 20
 NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided by this factor, do not set to zero!
  --Monopoly bonus
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
- --Colonial nations
+
+ --Necessary
+--NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable 
+
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is ncreased from development
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5	-- How much this is ncreased from local autonomy
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local autonomy is added to this base in the formula.
+ --Colonial nations44
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
  --NMilitary changes
-NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 2.5			-- from 5     I dont actually know how this works     Might have it reversed better check later
+NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 5			-- from 5     I dont actually know how this works     Might have it reversed better check later
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 40			-- from 50
 NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.125			-- from 0p25
-NDefines.NMilitary.FORTRESS_COST = 0.2			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
+NDefines.NMilitary.FORTRESS_COST = 0.15			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
 NDefines.NMilitary.GARRISON_SIZE = 1000							-- GARRISON_SIZE
-NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 3	
+NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 2	
+ -- Devastation
+NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -1
+NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.02			-- 100 revanschism is -2 a year.
+NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -3.4
+NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -0.8
  --Unit Speeds
 NDefines.NMilitary.INFANTRY_SPEED = 0.6					
 NDefines.NMilitary.CAVALRY_SPEED = 0.8							
@@ -212,10 +235,22 @@ NDefines.NMilitary.INF_SUPPRESSION = 0.5					-- The amount of reduction to unres
 NDefines.NMilitary.CAV_SUPPRESSION = 0.75						-- The amount of reduction to unrest for each friendly cavalry regiment in a province
 NDefines.NMilitary.ART_SUPPRESSION = 0.25					-- The amount of reduction to unrest for each friendly artillery regiment in a province
 NDefines.NMilitary.ARMY_DRILL_YEARLY_DECAY = -0.05
+ --- navy changes
+ 
+NDefines.NMilitary.NAVAL_BASE_ENGAGEMENT_WIDTH = 10   		-- Number of ships that can fire per round
+NDefines.NMilitary.HEAVY_SHIP_COMBAT_WIDTH = 3
+NDefines.NMilitary.LIGHT_SHIP_COMBAT_WIDTH = 1
+NDefines.NMilitary.GALLEY_COMBAT_WIDTH = 2
+NDefines.NMilitary.TRANSPORT_COMBAT_WIDTH = 1
+NDefines.NMilitary.NAVAL_CASUALTY_MIN_MORALE_DAMAGE = 0.6 -- was 0.2
+NDefines.NMilitary.CAPTURED_SHIP_STRENGTH = 0.5 -- was 0.3
+NDefines.NMilitary.CAPTURED_SHIP_MORALE = 0.25 -- was 0.3
+NDefines.NMilitary.NAVAL_MISSION_REGION_MIN_PROVINCES_IN_RANGE = 6
+NDefines.NMilitary.MONTHLY_REPAIR = 0.05                            -- was 0.1 Ship repair speed
 
 
  --NAI changes
-NDefines.NAI.DEVELOPMENT_CAP_BASE = 20			-- from 10
+NDefines.NAI.DEVELOPMENT_CAP_BASE = 50			-- from 10
 NDefines.NAI.PEACE_TERMS_RELEASE_ANNEXED_SIZE_MULT = 0.005			-- from 0p01
 
 NDefines.NAI.DIPLOMATIC_ACTION_VASSALIZE_DEVELOPMENT_FACTOR = 10			-- from 20
@@ -228,7 +263,10 @@ NDefines.NAI.DIPLOMATIC_ACTION_SUPPORT_HEIR_DEVELOPMENT_FACTOR = 1			-- from 2
 NDefines.NAI.DIPLOMATIC_ACTION_TRIBUTARY_ACCEPTANCE_PER_DEVELOPMENT = -0.25			-- from -0p5
 NDefines.NAI.CHARTER_COMPANY_BASE_RELUCTANCE = 0						-- from -3; Base reluctance to giving away provinces in charter company diplo action
 NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 3				-- from 3; How much development needed to add one reluctance
-	
+
+--DEVELOPMENT
+--NDefines.NAI.DEVELOPMENT_CAP_BASE = 10	-- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
+NDefines.NAI.DEVELOPMENT_CAP_MULT = 2
  -- Condotierri
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_BASE_MULT = 33 -- AI scoring for offer condottieri, base scale.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_MONTHLY_PARTICIPATION_RATE = -0.3 --Base monthly decay in participation. Related to multipliers for war participation (but doesn't depend on number of regiments, so raw multiplier matters).
@@ -257,9 +295,13 @@ NDefines.NReligion.AUTHORITY_FROM_DEVELOPMENT = 0.01			-- from 0p02
 NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 20			-- from 10
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 400			-- from 200
 NDefines.NReligion.HARMONY_LOSS_PER_DEV_CONVERTED = 0.5			-- from 1
+NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 4 --was 3
 
  --NNationDesigner changes
 NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.25			-- from 0p5
 NDefines.NNationDesigner.PRODUCTION_COST_MODIFIER = 0.25			-- from 0p5
 NDefines.NNationDesigner.MANPOWER_COST_MODIFIER = 0.25			-- from 0p5
 NDefines.NNationDesigner.MAX_GOVERNMENT_RANK = 5 -- was 3
+
+--Culture Penalties
+STATE_MAINTENANCE_CULTURE_FACTOR = 0.0		-- non accepted culture

@@ -35,39 +35,52 @@ po_transfer_fiefs = {
 	requires_is_allowed = yes # If set to "yes", treaty will only be visible when explicitly allowed by casus belli. If not, it will be available but cost diplomatic power.
 	
 	is_visible = { # Defaults to equivalent of "always = yes"
-		current_age = age_of_discovery
+		OR = { current_age = age_of_discovery current_age = age_of_reformation }
 		is_fief_domain_tech = yes
+		is_subject = no
+		has_institution = feudalism
 		if = {
 			limit = { is_part_of_hre = yes }
-			NOT = { government_rank = 4 }
 			FROM = {
 				is_subject = no
-				NOT = { government_rank = 4 }
-				any_subject_country = { 
-					NOT = { num_of_cities = ROOT }
-					NOT = { num_of_cities = 9 }
-					NOT = { is_subject_of = ROOT }
+				is_part_of_hre = yes
+				has_institution = feudalism
+				is_fief_domain_tech = yes
+				any_subject_country = {
 					is_subject_of_type = fief
 					is_part_of_hre = yes
 					religion_group = ROOT
 					is_neighbor_of = ROOT
-					is_fief_domain_tech = yes
+				}
+			}
+		}
+		else_if = {
+			limit = { religion_group = muslim }
+			FROM = {
+				is_subject = no
+				has_institution = feudalism
+				is_fief_domain_tech = yes
+				any_subject_country = {
+					is_subject_of_type = fief
+					OR = {
+						religion_group = ROOT
+						culture_group = ROOT
+					}
+					is_neighbor_of = ROOT
+
 				}
 			}
 		}
 		else = {
 			FROM = {
 				is_subject = no
+				has_institution = feudalism
+				is_fief_domain_tech = yes
 				any_subject_country = { 
-					NOT = { num_of_cities = ROOT }
-					NOT = { num_of_cities = 9 }
-					NOT = { is_subject_of = ROOT }
 					is_subject_of_type = fief
-					is_part_of_hre = no
 					culture_group = ROOT
 					religion_group = ROOT
 					is_neighbor_of = ROOT
-					is_fief_domain_tech = yes
 				}
 			}
 		}
@@ -75,42 +88,53 @@ po_transfer_fiefs = {
 	is_allowed = { # Defaults to equivalent of "always = yes"
 		custom_trigger_tooltip = {
 		tooltip = fief.tooltip
-		if = {
-			limit = { is_part_of_hre = yes }
-			NOT = { government_rank = 4 }
-			FROM = {
-				is_subject = no
-				NOT = { government_rank = 4 }
-				any_subject_country = { 
-					NOT = { num_of_cities = ROOT }
-					NOT = { num_of_cities = 9 }
-					NOT = { is_subject_of = ROOT }
-					is_subject_of_type = fief
+			if = {
+				limit = { is_part_of_hre = yes }
+				FROM = {
+					is_subject = no
 					is_part_of_hre = yes
-					religion_group = ROOT
-					is_neighbor_of = ROOT
+					has_institution = feudalism
 					is_fief_domain_tech = yes
-					capital_scope = { controlled_by = ROOT }
+					any_subject_country = {
+						is_subject_of_type = fief
+						is_part_of_hre = yes
+						religion_group = ROOT
+						is_neighbor_of = ROOT
+						capital_scope = { controlled_by = ROOT }
+					}
 				}
 			}
-		}
-		else = {
-			FROM = {
-				is_subject = no
-				any_subject_country = { 
-					NOT = { num_of_cities = ROOT }
-					NOT = { num_of_cities = 9 }
-					NOT = { is_subject_of = ROOT }
-					is_subject_of_type = fief
-					is_part_of_hre = no
-					culture_group = ROOT
-					religion_group = ROOT
-					is_neighbor_of = ROOT
+			else_if = {
+				limit = { religion_group = muslim }
+				FROM = {
+					is_subject = no
+					has_institution = feudalism
 					is_fief_domain_tech = yes
-					capital_scope = { controlled_by = ROOT }
+					any_subject_country = {
+						is_subject_of_type = fief
+						OR = {
+							religion_group = ROOT
+							culture_group = ROOT
+						}
+						is_neighbor_of = ROOT
+						capital_scope = { controlled_by = ROOT }
+					}
 				}
 			}
-		}
+			else = {
+				FROM = {
+					is_subject = no
+					has_institution = feudalism
+					is_fief_domain_tech = yes
+					any_subject_country = { 
+						is_subject_of_type = fief
+						culture_group = ROOT
+						religion_group = ROOT
+						is_neighbor_of = ROOT
+						capital_scope = { controlled_by = ROOT }
+					}
+				}
+			}
 		}
 	}
 	effect = { # Defaults to empty effect (which makes error log entry but is safe)
@@ -122,24 +146,53 @@ po_transfer_fiefs = {
     					modifier = took_fief
 					}
 				}
-				add_opinion = {
-    				who = ROOT
-    				modifier = forced_fief
+			}
+		}
+		
+		if = {
+			limit = { is_part_of_hre = yes FROM = { is_part_of_hre = yes } }
+			FROM = {
+				every_subject_country = {
+					limit = { 
+						is_subject_of_type = fief
+						is_part_of_hre = yes
+						religion_group = ROOT
+						is_neighbor_of = ROOT
+						capital_scope = { controlled_by = ROOT }
+					}
+					country_event = { id = orion_seize.5 days = 0 }
 				}
 			}
 		}
-		FROM = { 
-			every_subject_country = {
-				limit = {
-					NOT = { num_of_cities = ROOT }
-					NOT = { num_of_cities = 9 }
-					NOT = { is_subject_of = ROOT }
-					is_subject_of_type = fief
-					is_neighbor_of = ROOT
-					is_fief_domain_tech = yes
-					capital_scope = { controlled_by = ROOT }
-				}	
-				country_event = { id = orion_seize.5 days = 0 }
+		else_if = {
+			limit = { religion_group = muslim }
+			FROM = {
+				every_subject_country = {
+					limit = { 
+						is_subject_of_type = fief
+						OR = {
+							religion_group = ROOT
+							culture_group = ROOT
+						}
+						is_neighbor_of = ROOT
+						capital_scope = { controlled_by = ROOT }
+					}
+					country_event = { id = orion_seize.5 days = 0 }
+				}
+			}
+		}
+		else = {
+			FROM = {
+				every_subject_country = { 
+					limit = {
+						is_subject_of_type = fief
+						culture_group = ROOT
+						religion_group = ROOT
+						is_neighbor_of = ROOT
+						capital_scope = { controlled_by = ROOT }
+					}
+					country_event = { id = orion_seize.5 days = 0 }
+				}
 			}
 		}
 		ROOT = { save_global_event_target_as = fief_receiver }

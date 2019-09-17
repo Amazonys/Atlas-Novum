@@ -1,5 +1,5 @@
-name="[1.27] Imperialism Reinvigorated: Unstable Revived"
-archive="mod/!imperialism_dev.zip"
+name="Imperialism Reinvigorated: Unstable Build"
+path="mod/Imperialism-Reinvigorated"
 replace_path="missions"
 replace_path="decisions"
 replace_path="history"
@@ -16,5 +16,5 @@ tags={
 	"Trade"
 	"Graphics"
 }
-picture="reinvigorationpic.jpeg"
-supported_version="1.27.*.*"
+picture="IR_3.png"
+supported_version="1.28.*.*"

@@ -14,8 +14,93 @@ on_startup = {
 	initialize_schools_effect = yes #This is only used here but is used for readability of on_action file.
 	#IR	
 	set_hre_religion_treaty = no
+	if = {
+		limit = { NOT = { has_global_flag = IR_dev_cap_init } }
+		every_province = {
+			set_variable = {
+				which = IR_prov_dev_cap
+    			value = 60
+			}
+			set_variable = {
+				which = IR_prov_dev_cost
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_pop_cap
+    			value = 0
+			}
+			set_variable = {
+				which = IR_prov_dev
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_wealth
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_infrastructure
+    			value = 1
+			}
+			set_variable = {
+				which = IR_prov_pop
+    			value = 1
+			}
+			#Export to pop cap 
+    		export_to_variable = {
+        		variable_name = IR_prov_wealth
+        		value = trigger_value:base_tax
+    		}
+			export_to_variable = {
+        		variable_name = IR_prov_infrastructure
+        		value = trigger_value:base_production
+    		}
+			export_to_variable = {
+        		variable_name = IR_prov_pop
+        		value = trigger_value:base_manpower
+    		}
+			#set province dev level
+    		export_to_variable = {
+        		variable_name = IR_prov_dev
+        		value = trigger_value:development
+    		}
+			#get province dev cost ratio for cap
+    		export_to_variable = {
+    			variable_name = IR_prov_dev_cost
+    			value = modifier:local_development_cost
+    		}
+    		change_variable = {
+       			which = IR_prov_dev_cost
+        		value = 1
+   			}
+   			#divide cap by cost 1.XX (set in on_actions)
+   			divide_variable = {
+   				which = IR_prov_dev_cap
+   				which = IR_prov_dev_cost
+   			}
+			#ADD WEALTH AND INFRASTRUCTURE TO GET POP CAP
+			change_variable = {
+   				which = IR_prov_pop_cap
+   				which = IR_prov_wealth
+   			}
+			change_variable = {
+   				which = IR_prov_pop_cap
+   				which = IR_prov_infrastructure
+   			}
+			subtract_variable = {
+   				which = IR_prov_pop_cap
+   				value = 0.002
+   			}
+		}
+		set_global_flag = IR_dev_cap_init
+		
+	}
+	
 	#hre_inheritable = yes
 	#Apparently, the above vanilla code above must be included in the on_startup of any mod added on_action file, else problems arise with CoC content.... absolutely bizarre, but what can one do? Better safe than sorry.
+	#BR - from integrate_byz_events.3
+	country_event = { id = setup.99 days = 0 }
+	set_global_flag = integrated_byz_events_used
+	BYZ = { set_country_flag = rebellious_demetrios_flag }
 	#New for better addon support
 	if = {
 		limit = { NOT = { has_global_flag = beyond_typus_mod_enabled } }
@@ -34,6 +119,26 @@ on_startup = {
 		clr_global_flag = italy_out_of_HRE
 	}	#BT calls the Peace of Westphalia then end of the Italian HRE, not 1495, so delaying the global flag here without having to mess with the HAB history file for now.
 }
+
+#IR Dev Cap update every increase in dev
+# province
+on_adm_development = {
+	province_event = { id = census.2 days = 0 }
+}
+
+# province
+on_dip_development = {
+	province_event = { id = census.3 days = 0 }
+}
+
+# province
+on_mil_development = {
+	add_base_manpower = -1
+	province_event = { id = census.1 days = 0 }
+}
+
+
+
 
 # country 
 on_new_monarch = {
@@ -116,7 +221,7 @@ on_new_monarch = {
 	#Apparently, the above vanilla code below must be included in any mod, else problems arise.... absolutely bizarre, but what can one do?
 	if = {
 		limit = {
-			government = high_kingship
+			has_reform = high_kingship_legacy
 			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
 		}
 		set_country_flag = bt_tanistry_king_just_died
@@ -124,6 +229,15 @@ on_new_monarch = {
 		remove_country_modifier = bt_uncertainty_about_a_high_queen
 		country_event = { id = BeyondTypusCelticFlavour.1 days = 1 }				#New Tanist election
 		country_event = { id = BeyondTypusCelticFlavour.6 days = 1 }			#High Queen comes to power, will only fire for female rulers
+	}
+	#IR
+	if = {
+		limit = {
+			tag = TAN
+			NOT = { has_country_flag = IR_flavor_NAP.10_happened }
+			is_subject_of = NAP
+		}
+		country_event = { id = IR_flavor_NAP.10 days = 0 }
 	}
 }
 
@@ -150,11 +264,13 @@ on_monarch_death = {
 		flavor_tus.16 #Savanorola Leaves This World
 		flavor_wal.1 # Vlad the Impaler. So that he doesn't try to usurp his father.
 		flavor_nav.4 # Navarra succession event
+		#IR
+		#IR_flavor_SPA.1 # Juan Castile passing
 	}
 	#Apparently, the above vanilla code below must be included in any mod, else problems arise.... absolutely bizarre, but what can one do?
 	if = {
 		limit = {
-			government = high_kingship
+			has_reform = high_kingship
 			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
 		}
 		set_country_flag = bt_tanistry_king_just_died
@@ -210,7 +326,7 @@ on_heir_death = {
 	#Apparently, the above vanilla code below must be included in any mod, else problems arise.... absolutely bizarre, but what can one do?
 	if = {
 		limit = {
-			government = high_kingship
+			has_reform = high_kingship
 			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
 		}
 		remove_country_modifier = bt_tanistry_underaged_heir
@@ -223,7 +339,7 @@ on_heir_death = {
 #on_new_heir = {
 #	if = {
 #		limit = {
-#			government = high_kingship
+#			has_reform = high_kingship
 #			has_country_modifier = bt_tanistry_waiting_on_heir
 #			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
 #		}
@@ -232,3 +348,187 @@ on_heir_death = {
 #	}
 #}
 
+#IR
+# root = losing country, from = location
+on_siege_lost_country = {
+	
+}
+on_siege_won_province = {
+	events = {
+		synthetic_dawn.4
+	}
+}
+
+# province
+on_province_religion_converted = {
+	if = {
+		limit = {
+			religion_group = muslim
+		}
+		if = {
+			limit = { has_estate = estate_dhimmi }
+			remove_estate = estate_dhimmi
+		}
+		if = {
+			limit = { owner = { culture_group = turkish_g } }
+			if = { 
+				limit = { culture = bulgarian }
+				change_culture = torbeshi
+			}
+			if = { 
+				limit = { OR = { culture = bosnian culture = zachlumian culture = serbian } }
+				change_culture = bosniak
+			}
+			if = { 
+				limit = { culture_group = dacian }
+				change_culture = gagauz
+			}
+			if = { 
+				limit = { area = thrace_area }
+				change_culture = turkish
+			}
+		}
+		if = {
+			limit = { mindanao_common_provinces = yes }
+			change_culture = bangsamoro
+		}
+	}
+}
+
+# FROM = Previous Country, ROOT = Province
+on_company_chartered = {
+	if = {
+		limit = {
+			OR = {
+				region = bengal_region
+				region = hindusthan_region
+				region = west_india_region
+				region = deccan_region
+				region = coromandel_region
+			}
+		}
+		ROOT = {
+			owner = {
+				set_country_flag = the_coin_is_stronger_than_the_sword
+			}
+		}
+	}
+}
+
+# ROOT = Overlord, FROM = Minor #IR- Jupiter added
+on_dependency_gained = {
+	FROM = {
+		if = {
+			limit = {
+				OR = { is_subject_of_type = personal_union is_subject_of_type = dominion }
+			}
+			every_subject_country = {
+				limit = {
+					is_subject_of_type = personal_union
+				}
+				ROOT = {
+					create_subject = {
+						subject_type = personal_union
+						subject = PREV
+					}
+				}
+			}
+			every_subject_country = {
+				limit = {
+					is_subject_of_type = dominion
+				}
+				ROOT = {
+					create_subject = {
+						subject_type = dominion
+						subject = PREV
+					}
+				}
+			}
+		}
+	}
+	
+	events = {
+		dutch_republic.31 # States General falls under a PU
+	}
+}
+
+# ROOT = Overlord, FROM = Minor
+on_dependency_lost = {
+
+}
+
+# ROOT = New vassal, FROM = Overlord
+on_create_vassal = {
+	if = {
+		limit = {
+			tag = PAP
+		}
+		change_government = theocracy
+		add_government_reform = papacy_reform
+		adopt_reform_progress = FROM
+	}
+}
+
+# ROOT = Country establishing it
+# First province in state is set
+on_holy_order_established = {
+
+}
+
+# When a minority is expelled to a colony
+# THIS = Colony, ROOT = Colony, FROM = Home province
+on_minority_expelled = {
+
+}
+
+# THIS = Raiding country, FROM = Sea province
+on_raid_coast = {
+	if = {
+		limit = {
+			has_faction = pr_buccaneers
+		}
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = 1
+		}
+	}
+}
+
+# ROOT = Tag that captured the flagship, FROM = Tag that lost the flagship
+on_flagship_captured = {
+	FROM = {
+		set_country_flag = captured_flagship_country_flag
+	}
+	ROOT = {
+		country_event = { id = flagship_events.2 }
+		set_country_flag = trophy_hunter_flag
+	}
+	FROM = {
+		country_event = { id = flagship_events.1 }
+	}
+}
+
+# ROOT = Tag that destroyed the flagship, FROM = Tag that lost the flagship
+on_flagship_destroyed = {
+	FROM = {
+		set_country_flag = sunk_flagship_country_flag
+	}
+	ROOT = {
+		country_event = { id = flagship_events.4 }
+	}
+	FROM = {
+		country_event = { id = flagship_events.3 }
+	}
+}
+
+# this = Released country, FROM = Releasing country
+on_country_released = {
+	if = {
+		limit = {
+			tag = PAP
+		}
+		change_government = theocracy
+		add_government_reform = papacy_reform
+		adopt_reform_progress = FROM
+	}
+}

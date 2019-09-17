@@ -12,7 +12,7 @@ control_mission_cede = {
 	}
 }
 
-discovery_mission_cede = {
+discovery_mission_cede = { #OLD CODE PENDING DELETION AFTER ALL MISSIONS CONVERTED TO NEW CODE
 	if = { 
 		limit = { $PROVINCE_ID$ = { is_empty = yes } NOT = { has_global_flag = IR_discovery_missions_disabled } }
 		hidden_effect = {
@@ -23,7 +23,7 @@ discovery_mission_cede = {
 				add_territorial_core = ROOT	
 			}
 		}
-		add_treasury = -$COST$
+		add_treasury = $COST$
 		$PROVINCE_ID$ = { 
 			cede_province = ROOT 
 			add_province_modifier = {
@@ -45,13 +45,56 @@ discovery_mission_cede = {
 					add_territorial_core = ROOT	
 				}	
 			}
-			add_treasury = -$COST$
+			add_treasury = $COST$
 			$PROVINCE_ID$ = { 
 				cede_province = ROOT 
 				add_province_modifier = {
 					name = $MODIFIER$
 					duration = $DURATION$
 				}
+			}
+		}
+		else = { #changed from #else_if
+		#	limit = { $PROVINCE_ID$ = { owner = { is_colonizer_tech_group = yes } } }
+			$PROVINCE_ID$ = { add_permanent_claim = ROOT }
+		}
+	}
+}
+
+discover_mission_cede = { # NEW CODE
+	if = { 
+		limit = { $PROVINCE_ID$ = { is_empty = yes } NOT = { has_global_flag = IR_discovery_missions_disabled } }
+		hidden_effect = {
+			$PROVINCE_ID$ = {
+				change_trade_goods = $TRADE_GOOD$
+				change_religion = ROOT	
+				change_culture = ROOT
+				add_territorial_core = ROOT	
+			}
+		}
+		add_treasury = $COST$
+		$PROVINCE_ID$ = { 
+			cede_province = ROOT 
+			add_building = $BUILDING$
+		}
+	}
+	else_if = { 
+		limit = { $PROVINCE_ID$ = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } NOT = { has_global_flag = IR_discovery_missions_disabled } }
+		if = {
+			limit = { 
+				$PROVINCE_ID$ = { owner = { is_colonizer_tech_group = no } }
+			}
+			hidden_effect = {
+				$PROVINCE_ID$ = {
+					owner = { country_event = { id = orion_seize.1 days = 0 } }
+					change_trade_goods = $TRADE_GOOD$
+					add_territorial_core = ROOT	
+				}	
+			}
+			add_treasury = $COST$
+			$PROVINCE_ID$ = { 
+				cede_province = ROOT 
+				add_building = $BUILDING$
 			}
 		}
 		else = { #changed from #else_if
@@ -69,7 +112,7 @@ discover_province_group = {
 }
 
 colony_mission_cede = {
-	add_treasury = -$COST$
+	add_treasury = $COST$
 	custom_tooltip = $TOOLTIP$
 	every_province = {
 		limit = { $PROVINCES$ = yes NOT = { owned_by = ROOT } }
@@ -142,6 +185,81 @@ assign_group_prov_modifier = {
 	}
 }
 
+#assign_group_prov_modifier = { DUPLICATE
+#	tooltip = {
+#		10034 = {
+#			add_province_modifier = {
+#				name = $MODIFIER$
+#				duration = $DURATION$
+#			}
+#		}
+#	}
+#	hidden_effect = {
+#		every_province = {
+#			limit = {
+#				$PROVINCES$ = yes
+#				is_$TYPE$ = yes
+#				NOT = { has_province_modifier = $MODIFIER$ }
+#			}
+#			add_province_modifier = {
+#				name = $MODIFIER$
+#				duration = $DURATION$
+#			}
+#		}
+#	}
+#}
+#this does not use the 10034 
+assign_group_prov_modifier_alt = {
+	#tooltip = {
+	#	10034 = {
+	#		add_province_modifier = {
+	#			name = $MODIFIER$
+	#			duration = $DURATION$
+	#		}
+	#	}
+	#}
+	#hidden_effect = {
+		every_province = {
+			limit = {
+				$PROVINCES$ = yes
+				is_$TYPE$ = yes
+				NOT = { has_province_modifier = $MODIFIER$ }
+			}
+			add_province_modifier = {
+				name = $MODIFIER$
+				duration = $DURATION$
+			}
+		}
+	#}
+}
+#Removing, permaclaims now have this effect on top of individual modifiers.
+#remove_age_lock = {
+#	tooltip = {
+#		10034 = {
+#			add_permanent_province_modifier = {
+#				name = $MODIFIER$
+#				duration = $DURATION$
+#			}
+#		}
+#	}
+#	hidden_effect = {
+#		every_province = {
+#			limit = {
+#				$PROVINCES$ = yes
+#				OR = {
+#					is_empty = yes
+#					is_colony = yes
+#				}
+#				NOT = { has_province_modifier = $MODIFIER$ }
+#			}
+#			add_permanent_province_modifier = {
+#				name = $MODIFIER$
+#				duration = $DURATION$
+#			}
+#		}
+#	}
+#} 
+#this does not use the 10034 
 assign_colony_reserve = {
 	tooltip = {
 		10034 = {
@@ -167,6 +285,33 @@ assign_colony_reserve = {
 			}
 		}
 	}
+}
+
+assign_colony_reserve_alt = {
+	#tooltip = {
+	#	10034 = {
+	#		add_permanent_province_modifier = {
+	#			name = $MODIFIER$
+	#			duration = $DURATION$
+	#		}
+	#	}
+	#}
+	#hidden_effect = {
+		every_province = {
+			limit = {
+				$PROVINCES$ = yes
+				OR = {
+					is_empty = yes
+					is_colony = yes
+				}
+				NOT = { has_province_modifier = $MODIFIER$ }
+			}
+			add_permanent_province_modifier = {
+				name = $MODIFIER$
+				duration = $DURATION$
+			}
+		}
+	#}
 }
 
 custom_subject = {
@@ -200,7 +345,10 @@ custom_subject = {
 }
 
 integrate_subject = {
-	custom_tooltip = $TOOLTIP$
+	#custom_tooltip = $TOOLTIP$
+	tooltip = { 
+		inherit = $TAG$
+	}
 	hidden_effect = {
 		every_province = {
 			limit = { owned_by = $TAG$ }
@@ -236,9 +384,32 @@ develop_region = {
 discover_region = {
 	custom_tooltip = $TOOLTIP$
 	hidden_effect = {
-		every_province = {
-			limit = { NOT = { has_discovered = ROOT } $PROVINCES$ = yes }
-			discover_province = ROOT
+		$PROVINCES$ = {
+			discover_country = ROOT
 		}
+	}
+}
+
+upgrade_gov_rank = {
+	custom_tooltip = $TOOLTIP$
+	hidden_effect = {
+		if = { limit = { government_rank = 1 } set_government_rank = 2 }
+		if = { limit = { government_rank = 2 } set_government_rank = 3 }
+		if = { limit = { government_rank = 3 } set_government_rank = 4 }
+		if = { limit = { government_rank = 4 } set_government_rank = 5 }
+	}
+}
+
+set_kingdom_rank = {
+	custom_tooltip = $TOOLTIP$
+	hidden_effect = {
+		if = { limit = { not = { government_rank = 4 } } set_government_rank = 4 }
+	}
+}
+
+set_empire_rank = {
+	custom_tooltip = $TOOLTIP$
+	hidden_effect = {
+		if = { limit = { not = { government_rank = 5 } } set_government_rank = 5 }
 	}
 }
