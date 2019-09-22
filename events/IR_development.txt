@@ -12,11 +12,9 @@ province_event = {
 		is_city = yes
 		has_global_flag = IR_dev_cap_init
 		NOT = { devastation = 25 }
-		NOT = { 
-			check_variable = {
-				which = IR_prov_dev
-				which = IR_prov_dev_cap
-			}
+		check_variable = {
+			which = IR_food
+			which = IR_consumption
 		}
 		NOT = { 
 			check_variable = {
@@ -28,34 +26,7 @@ province_event = {
 	
 	mean_time_to_happen = {
 		months = 180
-		#modifier = {
-		#	factor = 20
-		#	check_variable = {
-		#		which = trigger:base_manpower
-		#		which = IR_prov_pop_cap
-		#	}
-		#}
-		modifier = {
-			factor = 0.9
-			check_variable = {
-				which = IR_prov_pop_cap
-				value = 10
-			}
-		}
-		modifier = {
-			factor = 0.9
-			check_variable = {
-				which = IR_prov_pop_cap
-				value = 20
-			}
-		}
-		modifier = {
-			factor = 0.9
-			check_variable = {
-				which = IR_prov_pop_cap
-				value = 30
-			}
-		}
+		
 		
 		modifier = {
 			factor = 0.75
@@ -94,20 +65,110 @@ province_event = {
 		ai_chance = { factor = 100 }
 		add_base_manpower = 1
 		hidden_effect = {
-			set_variable = {
-				which = IR_prov_dev_cap
-    			value = 60
+			if = {
+				limit = {
+					has_terrain = farmlands
+				}
+				set_variable = {
+					which = IR_food
+					value = 10
+				}
+			}
+			else_if = {
+				limit = {
+					has_terrain = grasslands
+				}
+				set_variable = {
+					which = IR_food
+					value = 8
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = drylands
+						has_terrain = woods
+						has_terrain = jungle
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 6
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = marsh
+						has_terrain = steppe
+						has_terrain = hills
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 5
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = highlands
+						has_terrain = coastline
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 4
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = savannah
+						has_terrain = mountain
+						has_terrain = forest
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 3
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = coastal_desert
+						has_terrain = badlands
+						has_terrain = tundra
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 2
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = desert
+						has_terrain = glacier
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 1
+				}
 			}
 			set_variable = {
-				which = IR_prov_dev_cost
+				which = IR_production
     			value = 1
 			}
 			set_variable = {
-				which = IR_prov_pop_cap
-    			value = 0
+				which = IR_consumption
+    			value = 1
 			}
 			set_variable = {
-				which = IR_prov_dev
+				which = IR_consumption_modifier
     			value = 1
 			}
 			set_variable = {
@@ -119,8 +180,82 @@ province_event = {
     			value = 1
 			}
 			set_variable = {
+				which = IR_prov_infrastructure_cap
+    			value = 5
+			}
+			set_variable = {
 				which = IR_prov_pop
     			value = 1
+			}
+			set_variable = {
+				which = IR_prov_pop_cap
+    			value = 1
+			}
+			#IR_growth_modifier
+			export_to_variable = {
+        		variable_name = IR_production
+        		value = trigger_value:base_production
+    		}
+			change_variable = { 
+				which = IR_production
+				which = IR_food
+			}
+			change_variable = {
+				which = IR_production 
+				value = trigger_value:province_trade_power 
+			}
+			#consumption
+			export_to_variable = {
+    			variable_name = IR_consumption_modifier
+    			value = modifier:local_development_cost
+    		}
+			export_to_variable = {
+    			variable_name = IR_consumption
+    			value = trigger_value:base_manpower
+			}
+			change_variable = {
+				which = IR_consumption_modifier
+				value = 1
+			}
+			multiply_variable = {
+				which = IR_consumption
+				which = IR_consumption_modifier
+			}
+			#infrastructure cap
+			if = {
+				limit = { has_building = town }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 5
+				}
+			}
+			else_if = {
+				limit = { has_building = city }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 15
+				}
+			}
+			else_if = {
+				limit = { has_building = metropolis }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 35
+				}
+			}
+			if = {
+				limit = { has_building = road }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 5
+				}
+			}
+			else_if = {
+				limit = { has_building = railroad }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 10
+				}
 			}
 			#Export to pop cap 
     		export_to_variable = {
@@ -135,26 +270,7 @@ province_event = {
         		variable_name = IR_prov_pop
         		value = trigger_value:base_manpower
     		}
-			#set province dev level
-    		export_to_variable = {
-        		variable_name = IR_prov_dev
-        		value = trigger_value:development
-    		}
-			#get province dev cost ratio for cap
-    		export_to_variable = {
-    			variable_name = IR_prov_dev_cost
-    			value = modifier:local_development_cost
-    		}
-    		change_variable = {
-       			which = IR_prov_dev_cost
-        		value = 1
-   			}
-   			#divide cap by cost 1.XX (set in on_actions)
-   			divide_variable = {
-   				which = IR_prov_dev_cap
-   				which = IR_prov_dev_cost
-   			}
-			#ADD WEALTH AND INFRASTRUCTURE TO GET POP CAP
+			#ADD WEALTH AND INFRASTRUCTURE TO GET CARRYING CAPACITY
 			change_variable = {
    				which = IR_prov_pop_cap
    				which = IR_prov_wealth
@@ -165,7 +281,7 @@ province_event = {
    			}
 			subtract_variable = {
    				which = IR_prov_pop_cap
-   				value = 1.002
+   				value = 0.002
    			}
 		}
 	} 
@@ -183,18 +299,10 @@ province_event = {
 		is_city = yes
 		has_global_flag = IR_dev_cap_init
 		devastation = 25
-		#NOT = { 
-		#	check_variable = {
-		#		which = IR_prov_dev
-		#		which = IR_prov_dev_cap
-		#	}
-		#}
-		#NOT = { 
-		#	check_variable = {
-		#		which = IR_prov_pop
-		#		which = IR_prov_pop_cap
-		#	}
-		#}
+		check_variable = {
+			which = IR_consumption
+			which = IR_food
+		}
 	}
 	
 	mean_time_to_happen = {
@@ -263,20 +371,110 @@ province_event = {
 		ai_chance = { factor = 100 }
 		add_base_manpower = -1
 		hidden_effect = {
-			set_variable = {
-				which = IR_prov_dev_cap
-    			value = 60
+			if = {
+				limit = {
+					has_terrain = farmlands
+				}
+				set_variable = {
+					which = IR_food
+					value = 10
+				}
+			}
+			else_if = {
+				limit = {
+					has_terrain = grasslands
+				}
+				set_variable = {
+					which = IR_food
+					value = 8
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = drylands
+						has_terrain = woods
+						has_terrain = jungle
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 6
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = marsh
+						has_terrain = steppe
+						has_terrain = hills
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 5
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = highlands
+						has_terrain = coastline
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 4
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = savannah
+						has_terrain = mountain
+						has_terrain = forest
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 3
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = coastal_desert
+						has_terrain = badlands
+						has_terrain = tundra
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 2
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_terrain = desert
+						has_terrain = glacier
+					}
+				}
+				set_variable = {
+					which = IR_food
+					value = 1
+				}
 			}
 			set_variable = {
-				which = IR_prov_dev_cost
+				which = IR_production
     			value = 1
 			}
 			set_variable = {
-				which = IR_prov_pop_cap
-    			value = 0
+				which = IR_consumption
+    			value = 1
 			}
 			set_variable = {
-				which = IR_prov_dev
+				which = IR_consumption_modifier
     			value = 1
 			}
 			set_variable = {
@@ -288,8 +486,82 @@ province_event = {
     			value = 1
 			}
 			set_variable = {
+				which = IR_prov_infrastructure_cap
+    			value = 5
+			}
+			set_variable = {
 				which = IR_prov_pop
     			value = 1
+			}
+			set_variable = {
+				which = IR_prov_pop_cap
+    			value = 1
+			}
+			#IR_growth_modifier
+			export_to_variable = {
+        		variable_name = IR_production
+        		value = trigger_value:base_production
+    		}
+			change_variable = { 
+				which = IR_production
+				which = IR_food
+			}
+			change_variable = {
+				which = IR_production 
+				value = trigger_value:province_trade_power 
+			}
+			#consumption
+			export_to_variable = {
+    			variable_name = IR_consumption_modifier
+    			value = modifier:local_development_cost
+    		}
+			export_to_variable = {
+    			variable_name = IR_consumption
+    			value = trigger_value:base_manpower
+			}
+			change_variable = {
+				which = IR_consumption_modifier
+				value = 1
+			}
+			multiply_variable = {
+				which = IR_consumption
+				which = IR_consumption_modifier
+			}
+			#infrastructure cap
+			if = {
+				limit = { has_building = town }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 5
+				}
+			}
+			else_if = {
+				limit = { has_building = city }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 15
+				}
+			}
+			else_if = {
+				limit = { has_building = metropolis }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 35
+				}
+			}
+			if = {
+				limit = { has_building = road }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 5
+				}
+			}
+			else_if = {
+				limit = { has_building = railroad }
+				change_variable = {
+					which = IR_prov_infrastructure_cap 
+					value = 10
+				}
 			}
 			#Export to pop cap 
     		export_to_variable = {
@@ -304,26 +576,7 @@ province_event = {
         		variable_name = IR_prov_pop
         		value = trigger_value:base_manpower
     		}
-			#set province dev level
-    		export_to_variable = {
-        		variable_name = IR_prov_dev
-        		value = trigger_value:development
-    		}
-			#get province dev cost ratio for cap
-    		export_to_variable = {
-    			variable_name = IR_prov_dev_cost
-    			value = modifier:local_development_cost
-    		}
-    		change_variable = {
-       			which = IR_prov_dev_cost
-        		value = 1
-   			}
-   			#divide cap by cost 1.XX (set in on_actions)
-   			divide_variable = {
-   				which = IR_prov_dev_cap
-   				which = IR_prov_dev_cost
-   			}
-			#ADD WEALTH AND INFRASTRUCTURE TO GET POP CAP
+			#ADD WEALTH AND INFRASTRUCTURE TO GET CARRYING CAPACITY
 			change_variable = {
    				which = IR_prov_pop_cap
    				which = IR_prov_wealth
