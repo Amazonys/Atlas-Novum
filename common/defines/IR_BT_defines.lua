@@ -295,7 +295,7 @@ NDefines.NReligion.AUTHORITY_FROM_DEVELOPMENT = 0.01			-- from 0p02
 NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 20			-- from 10
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 400			-- from 200
 NDefines.NReligion.HARMONY_LOSS_PER_DEV_CONVERTED = 0.5			-- from 1
-NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 4 --was 3
+NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 5 --was 3
 
  --NNationDesigner changes
 NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.25			-- from 0p5
