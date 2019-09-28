@@ -1,6 +1,6 @@
 name="Imperialism Reinvigorated: Github ARCHIVE"
-path="mod/Imperialism-Reinvigorated"
-#path="mod/!improvedhistory_dev"
+#path="mod/Imperialism-Reinvigorated"
+path="mod/!improvedhistory_dev"
 replace_path="missions"
 replace_path="decisions"
 replace_path="history/advisors"
