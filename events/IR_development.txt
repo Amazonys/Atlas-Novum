@@ -9,61 +9,17 @@ province_event = {
 	
 	trigger = {
 		#always = no
-		is_city = yes
+		province_id = 1
 		has_global_flag = IR_dev_cap_init
-		NOT = { devastation = 25 }
-		check_variable = {
-			which = IR_food
-			which = IR_consumption
-		}
-		NOT = { 
-			check_variable = {
-				which = IR_prov_pop
-				which = IR_prov_pop_cap
-			}
-		}
 	}
 	
-	mean_time_to_happen = {
-		months = 180
-		
-		
-		modifier = {
-			factor = 0.75
-			is_prosperous = yes
-		}
-		modifier = {
-			factor = 0.9
-			has_building = town
-		}
-		modifier = {
-			factor = 0.8
-			has_building = city
-		}
-		modifier = {
-			factor = 0.7
-			has_building = metropolis
-		}
-		modifier = {
-			factor = 0.9
-			OR = { trade_goods = grain trade_goods = ir_rice trade_goods = ir_potatoes trade_goods = ir_maize trade_goods = ir_fruit trade_goods = ir_millet trade_goods = livestock trade_goods = fish trade_goods = wine }
-		}
-		#modifier = { 
-		#	factor = 0.8
-		#	OR = { trade_goods = cloth trade_goods = glass trade_goods = salt trade_goods = iron trade_goods = copper trade_goods = paper trade_goods = naval_supplies trade_goods = silk trade_goods = chinaware }
-		#}
-		#modifier = {
-		#	factor = 0.7
-		#	OR = { trade_goods = ir_silver trade_goods = gold }
-		#}
-	}
-
+	is_triggered_only = yes
 	hidden = yes
 
 	option = {
 		name = "setup.exit" 
 		ai_chance = { factor = 100 }
-		add_base_manpower = 1
+	#	add_base_manpower = 1
 		hidden_effect = {
 			if = {
 				limit = {
@@ -283,6 +239,46 @@ province_event = {
    				which = IR_prov_pop_cap
    				value = 1.002
    			}
+			every_province = {
+				limit = { is_city = yes }
+				change_variable = {
+					which = IR_pop_progress
+					which = IR_production
+				}
+				subtract_variable = {
+					which = IR_pop_progress
+					which = IR_consumption
+				}
+				if = {
+					limit = { check_variable = { which = IR_pop_progress value = 100 } }
+					if = {
+						limit = { 
+							check_variable = {
+								which = IR_prov_pop_cap
+								which = IR_prov_pop
+							}
+						}
+						add_base_manpower = 1
+					}
+					subtract_variable = {
+						which = IR_pop_progress
+						value = 50
+					}
+				}
+				else_if = {
+					limit = { NOT = { check_variable = { which = IR_pop_progress value = 1 } } }
+					if = {
+						limit = { base_manpower = 2 }
+						add_base_manpower = -1
+					}
+					change_variable = {
+						which = IR_pop_progress
+						value = 50
+					}
+					#EVENTUALLY WILL ADD FAMINE EVENTS
+				}
+			}
+			1 = { province_event = { id = IR_development.1 days = 365 } }
 		}
 	} 
 } 
@@ -295,7 +291,7 @@ province_event = {
 	picture = BATTLE_eventPicture
 	
 	trigger = {
-		#always = no
+		always = no
 		is_city = yes
 		has_global_flag = IR_dev_cap_init
 		devastation = 25
