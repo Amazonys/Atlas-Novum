@@ -25,4 +25,4 @@ tags={
 #Download the zip file from this github link and extract the zipfile to a similar named map (Imperialism-Reinvigorated-master) - Then put this file back in the modfolder.
 #https://github.com/Amazonys/Imperialism-Reinvigorated
 picture="IR_3.png"
-supported_version="1.29.*.*"
+supported_version="1.29.2.*"
