@@ -9,5 +9,6 @@ tags={
 	"National Ideas)"
 }
 name="Imperialism Reinvigorated: Github ARCHIVE"
-path="C:/Users/Tjeerdsma/Documents/Paradox Interactive/Europa Universalis IV/mod/Imperialism-Reinvigorated"
+#path="[INSERT YOUR DIRECTORY IF IT DOESNT WORK]mod/Imperialism-Reinvigorated"
+path="mod/Imperialism-Reinvigorated"
 supported_version="1.29.*.*"
