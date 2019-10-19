@@ -122,8 +122,6 @@ NDefines.NCountry.OVEREXTENSION_FACTOR = 0.5			-- from 1p0
 NDefines.NCountry.MONTHS_TO_CHANGE_CULTURE = 5			-- from 10
 NDefines.NCountry.RAZE_PROVINCE_POWER_PER_DEVELOPMENT = 10			-- from 25p0
 NDefines.NCountry.HORDE_UNITY_PER_RAZE = 0.25			-- from 0p5
-NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 5.0			-- from 2p5
-NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.02			-- from 0p05
 NDefines.NCountry.MERCHANT_REPUBLIC_SIZE_LIMIT = 50
 NDefines.NCountry.PS_BOOST_MILITARIZATION = 30			-- Same logic as above new provinces cause faster decline thus need lower cost ideally I can find a better solution later Base 50
 NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.1	-- from 0.3
@@ -178,6 +176,13 @@ NDefines.NCountry.ADDITIONAL_MIN_DEVELOPMENT_FOR_GOV_RANK_X = 300
 NDefines.NCountry.MAX_GOV_RANK = 5
 NDefines.NCountry.NAT_FOCUS_YEARS_RANK = 3
 
+ --SETTLEMENT
+NDefines.NCountry.SETTLEMENT_GROWTH_DEVELOPMENT_INCREASE = 0 -- How much development may increase per year if a colonist is working on Settlement Growth.
+NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 2.5 -- Affects chance of development increase per year if a colonist is working on Settlement Growth.
+NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.05 -- Minimum chance of increasing development for colonists promoting Settlement Growth
+NDefines.NCountry.SETTLEMENT_GROWTH_CHECK_INTERVAL = 365 -- Interval in days between checks for random development increase when working in Settlement Growth.
+
+
  --NEconomy
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
 NDefines.NEconomy.GOLD_MINE_DEPLETION_THRESHOLD = 5				-- Gold mines above production level or above can be depleted
@@ -186,7 +191,6 @@ NDefines.NEconomy.GOLD_MINE_SIZE_PRIMITIVES = 20
 NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided by this factor, do not set to zero!
  --Monopoly bonus
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
-
  --Necessary
 --NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable 
 
