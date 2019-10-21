@@ -9,6 +9,8 @@ replace_path="history/provinces"
 replace_path="history/wars"
 replace_path="common/colonial_regions"
 replace_path="common/trade_companies"
+picture="IR_icon.png"
+supported_version="1.29.*.*"
 tags={
 	"Missions and Decisions"
 	"Historical"
@@ -20,8 +22,3 @@ tags={
 	"Trade"
 	"Graphics"
 }
-picture="reinvigorationpic.jpeg"
-supported_version="1.29.2.*"
-
-#Download the zip file from this github link and extract the zipfile to a similar named map (Imperialism-Reinvigorated-master) - Then put this file back in the modfolder.
-#https://github.com/Amazonys/Imperialism-Reinvigorated
