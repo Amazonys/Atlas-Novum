@@ -132,7 +132,7 @@ NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 --NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_DECREASE = 0		-- Per % of relative development revoked from the estate
 --NDefines.NCountry.ESTATE_PROVINCE_POWER = 0				-- Per % of non overseas development in the country they manage
  --Colonial
-NDefines.NCountry.MAX_CROWN_COLONIES = 3
+NDefines.NCountry.MAX_CROWN_COLONIES = 2
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_RANGE = 20
 NDefines.NCountry.PS_ESTABLISH_SIBERIAN_FRONTIER = 40
