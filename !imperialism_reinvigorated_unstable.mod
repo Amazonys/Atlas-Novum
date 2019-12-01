@@ -1,5 +1,5 @@
-name="Imperialism Reinvigorated: Github ARCHIVE"
-path="mod/!improvedhistory_dev"
+name="Imperialism Reinvigorated: Github Mirror"
+path="mod\Imperialism-Reinvigorated"
 replace_path="missions"
 replace_path="decisions"
 replace_path="history/advisors"
@@ -9,8 +9,6 @@ replace_path="history/provinces"
 replace_path="history/wars"
 replace_path="common/colonial_regions"
 replace_path="common/trade_companies"
-picture="IR_icon.png"
-supported_version="1.29.*.*"
 tags={
 	"Missions and Decisions"
 	"Historical"
@@ -22,3 +20,5 @@ tags={
 	"Trade"
 	"Graphics"
 }
+picture="IR_icon.png"
+supported_version="1.29.*.*"
