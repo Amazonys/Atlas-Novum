@@ -1,5 +1,5 @@
 name="Imperialism Reinvigorated: Github Mirror"
-path="mod\Imperialism-Reinvigorated"
+path="mod/Imperialism-Reinvigorated"
 replace_path="missions"
 replace_path="decisions"
 replace_path="history/advisors"
