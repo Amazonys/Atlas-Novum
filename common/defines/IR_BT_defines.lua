@@ -131,6 +131,9 @@ NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 --NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_INCREASE = 0	-- Per % of relative development granted to the estate
 --NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_DECREASE = 0		-- Per % of relative development revoked from the estate
 --NDefines.NCountry.ESTATE_PROVINCE_POWER = 0				-- Per % of non overseas development in the country they manage
+--PROSPERITY/DEV CHANGES
+NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -1				-- monthly tick - WAS -2, ASSUME THAT THIS IS THE DEVASTATION REDUCTION, LETS SET TO -1 FOR NOW, PENDING TESTING
+NDefines.NCountry.PROSPERITY_INCREASE_SIZE= 0				-- if diceroll of d20< monarch stat, while possible ot increase - WAS 1, TURNED TO 0 CAUSE WHY SHOULD MONARCH INCREASE PROSP?? - PROBABLY SHOULD HANDLE THIS THROUGH EVENT/EDICT
  --Colonial
 NDefines.NCountry.MAX_CROWN_COLONIES = 2
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
