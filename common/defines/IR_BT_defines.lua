@@ -122,8 +122,6 @@ NDefines.NCountry.OVEREXTENSION_FACTOR = 0.5			-- from 1p0
 NDefines.NCountry.MONTHS_TO_CHANGE_CULTURE = 5			-- from 10
 NDefines.NCountry.RAZE_PROVINCE_POWER_PER_DEVELOPMENT = 10			-- from 25p0
 NDefines.NCountry.HORDE_UNITY_PER_RAZE = 0.25			-- from 0p5
-NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 5.0			-- from 2p5
-NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.02			-- from 0p05
 NDefines.NCountry.MERCHANT_REPUBLIC_SIZE_LIMIT = 50
 NDefines.NCountry.PS_BOOST_MILITARIZATION = 30			-- Same logic as above new provinces cause faster decline thus need lower cost ideally I can find a better solution later Base 50
 NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.1	-- from 0.3
@@ -133,8 +131,11 @@ NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 --NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_INCREASE = 0	-- Per % of relative development granted to the estate
 --NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_DECREASE = 0		-- Per % of relative development revoked from the estate
 --NDefines.NCountry.ESTATE_PROVINCE_POWER = 0				-- Per % of non overseas development in the country they manage
+--PROSPERITY/DEV CHANGES
+NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -1				-- monthly tick - WAS -2, ASSUME THAT THIS IS THE DEVASTATION REDUCTION, LETS SET TO -1 FOR NOW, PENDING TESTING
+NDefines.NCountry.PROSPERITY_INCREASE_SIZE= 0				-- if diceroll of d20< monarch stat, while possible ot increase - WAS 1, TURNED TO 0 CAUSE WHY SHOULD MONARCH INCREASE PROSP?? - PROBABLY SHOULD HANDLE THIS THROUGH EVENT/EDICT
  --Colonial
-NDefines.NCountry.MAX_CROWN_COLONIES = 3
+NDefines.NCountry.MAX_CROWN_COLONIES = 2
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_RANGE = 20
 NDefines.NCountry.PS_ESTABLISH_SIBERIAN_FRONTIER = 40
@@ -178,6 +179,13 @@ NDefines.NCountry.ADDITIONAL_MIN_DEVELOPMENT_FOR_GOV_RANK_X = 300
 NDefines.NCountry.MAX_GOV_RANK = 5
 NDefines.NCountry.NAT_FOCUS_YEARS_RANK = 3
 
+ --SETTLEMENT
+NDefines.NCountry.SETTLEMENT_GROWTH_DEVELOPMENT_INCREASE = 0 -- How much development may increase per year if a colonist is working on Settlement Growth.
+NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 2.5 -- Affects chance of development increase per year if a colonist is working on Settlement Growth.
+NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.05 -- Minimum chance of increasing development for colonists promoting Settlement Growth
+NDefines.NCountry.SETTLEMENT_GROWTH_CHECK_INTERVAL = 365 -- Interval in days between checks for random development increase when working in Settlement Growth.
+
+
  --NEconomy
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
 NDefines.NEconomy.GOLD_MINE_DEPLETION_THRESHOLD = 5				-- Gold mines above production level or above can be depleted
@@ -186,7 +194,6 @@ NDefines.NEconomy.GOLD_MINE_SIZE_PRIMITIVES = 20
 NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided by this factor, do not set to zero!
  --Monopoly bonus
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
-
  --Necessary
 --NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable 
 
@@ -261,8 +268,8 @@ NDefines.NAI.DIPLOMATIC_ACTION_CLAIM_THRONE_DEVELOPMENT_FACTOR = 0.5			-- from 1
 NDefines.NAI.DIPLOMATIC_ACTION_AGITATE_FOR_LIBERTY_DEVELOPMENT_FACTOR = 0.15			-- from 0p25
 NDefines.NAI.DIPLOMATIC_ACTION_SUPPORT_HEIR_DEVELOPMENT_FACTOR = 1			-- from 2
 NDefines.NAI.DIPLOMATIC_ACTION_TRIBUTARY_ACCEPTANCE_PER_DEVELOPMENT = -0.25			-- from -0p5
-NDefines.NAI.CHARTER_COMPANY_BASE_RELUCTANCE = 0						-- from -3; Base reluctance to giving away provinces in charter company diplo action
-NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 3				-- from 3; How much development needed to add one reluctance
+NDefines.NAI.CHARTER_COMPANY_BASE_RELUCTANCE = -1000						-- from -3; Base reluctance to giving away provinces in charter company diplo action - essentially disabled
+NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 1				-- from 3; How much development needed to add one reluctance
 
 --DEVELOPMENT
 --NDefines.NAI.DEVELOPMENT_CAP_BASE = 10	-- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
@@ -295,7 +302,7 @@ NDefines.NReligion.AUTHORITY_FROM_DEVELOPMENT = 0.01			-- from 0p02
 NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 20			-- from 10
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 400			-- from 200
 NDefines.NReligion.HARMONY_LOSS_PER_DEV_CONVERTED = 0.5			-- from 1
-NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 4 --was 3
+NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 5 --was 3
 
  --NNationDesigner changes
 NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.25			-- from 0p5

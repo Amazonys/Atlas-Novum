@@ -1,6 +1,5 @@
-
+#ON ACTIONS ARE NOT MODULAR, ONLY ONE OVERWRITE WILL LOAD PER MOD - ANY MODMODS MUST ADAPT THIS FILE
 on_startup = {
-	#Apparently, the below vanilla code below must be included in the on_startup of any mod added on_action file, else problems arise with CoC content.... absolutely bizarre, but what can one do? Better safe than sorry.
 	events = {
 		muslim_school_events.20 #Pick School
 	}
@@ -12,96 +11,48 @@ on_startup = {
 		remove_country_modifier = tur_janissary
 	}
 	initialize_schools_effect = yes #This is only used here but is used for readability of on_action file.
-	#IR	
+	#IR	INIT
 	set_hre_religion_treaty = no
-	if = {
-		limit = { NOT = { has_global_flag = IR_dev_cap_init } }
-		every_province = {
-			set_variable = {
-				which = IR_prov_dev_cap
-    			value = 60
-			}
-			set_variable = {
-				which = IR_prov_dev_cost
-    			value = 1
-			}
-			set_variable = {
-				which = IR_prov_pop_cap
-    			value = 0
-			}
-			set_variable = {
-				which = IR_prov_dev
-    			value = 1
-			}
-			set_variable = {
-				which = IR_prov_wealth
-    			value = 1
-			}
-			set_variable = {
-				which = IR_prov_infrastructure
-    			value = 1
-			}
-			set_variable = {
-				which = IR_prov_pop
-    			value = 1
-			}
-			#Export to pop cap 
-    		export_to_variable = {
-        		variable_name = IR_prov_wealth
-        		value = trigger_value:base_tax
-    		}
-			export_to_variable = {
-        		variable_name = IR_prov_infrastructure
-        		value = trigger_value:base_production
-    		}
-			export_to_variable = {
-        		variable_name = IR_prov_pop
-        		value = trigger_value:base_manpower
-    		}
-			#set province dev level
-    		export_to_variable = {
-        		variable_name = IR_prov_dev
-        		value = trigger_value:development
-    		}
-			#get province dev cost ratio for cap
-    		export_to_variable = {
-    			variable_name = IR_prov_dev_cost
-    			value = modifier:local_development_cost
-    		}
-    		change_variable = {
-       			which = IR_prov_dev_cost
-        		value = 1
-   			}
-   			#divide cap by cost 1.XX (set in on_actions)
-   			divide_variable = {
-   				which = IR_prov_dev_cap
-   				which = IR_prov_dev_cost
-   			}
-			#ADD WEALTH AND INFRASTRUCTURE TO GET POP CAP
-			change_variable = {
-   				which = IR_prov_pop_cap
-   				which = IR_prov_wealth
-   			}
-			change_variable = {
-   				which = IR_prov_pop_cap
-   				which = IR_prov_infrastructure
-   			}
-			subtract_variable = {
-   				which = IR_prov_pop_cap
-   				value = 0.002
-   			}
-		}
-		set_global_flag = IR_dev_cap_init
-		
+	#if = { #EVENTUAL PREVARNA START
+	#	limit = { start_date = 1444.11.10 NOT = { has_global_flag = IR_dev_cap_init } }
+	#	1 = { province_event = { id = IR_development.1 days = 52 } }
+	#	set_global_flag = IR_dev_init
+	#}
+	#every_province = {
+	#	limit = { is_city = yes }
+	#	set_variable = {
+	#		which = IR_prov_pop_progress
+	#		value = 1
+	#	}
+	#	IR_check_dev_variables = yes
+	#}
+	#if = { #STANDARD START
+	#	limit = { start_date = 1444.11.11 NOT = { has_global_flag = IR_dev_cap_init } }
+	#	1 = { province_event = { id = IR_development.1 days = 51 } }
+	#	every_province = {
+	#		limit = { is_city = yes }
+	#		IR_check_dev_variables = yes
+	#	}
+		set_global_flag = IR_dev_init
+	#}
+	#if = { #NATIVE START
+	#	limit = { start_date = 1444.11.12 NOT = { has_global_flag = IR_dev_cap_init } }
+	#	1 = { province_event = { id = IR_development.1 days = 50 } }
+	#	set_global_flag = IR_dev_init
+	#}
+	#if = { #MP BALANCE START
+	#	limit = { start_date = 1444.11.15 NOT = { has_global_flag = IR_dev_cap_init } }
+	#	1 = { province_event = { id = IR_development.1 days = 47 } }
+	#	set_global_flag = IR_dev_init
+	#}
+	if = { 
+		limit = { ai = no }
+		country_event = { id = setup.99 days = 0 }
 	}
-	
-	#hre_inheritable = yes
-	#Apparently, the above vanilla code above must be included in the on_startup of any mod added on_action file, else problems arise with CoC content.... absolutely bizarre, but what can one do? Better safe than sorry.
-	#BR - from integrate_byz_events.3
-	country_event = { id = setup.99 days = 0 }
+	#BR INIT
 	set_global_flag = integrated_byz_events_used
 	BYZ = { set_country_flag = rebellious_demetrios_flag }
-	#New for better addon support
+	#BT INIT
 	if = {
 		limit = { NOT = { has_global_flag = beyond_typus_mod_enabled } }
 		set_global_flag = beyond_typus_mod_enabled
@@ -123,12 +74,65 @@ on_startup = {
 #IR Dev Cap update every increase in dev
 # province
 on_adm_development = {
-	province_event = { id = census.2 days = 0 }
+	#province_event = { id = census.2 days = 0 }
+	ROOT = { hidden_effect = { IR_check_dev_variables = yes } }
+	owner = { add_adm_power = -25 }
+	if = { 
+		limit = { base_tax = 1 NOT = { base_tax = 12 } }
+		owner = { add_treasury = -25 }
+	}
+	if = { 
+		limit = { base_tax = 12 NOT = { base_tax = 22 } }
+		owner = { add_treasury = -50 }
+	}
+	if = { 
+		limit = { base_tax = 22 NOT = { base_tax = 32 } }
+		owner = { add_treasury = -75 }
+	}
+	if = { 
+		limit = { base_tax = 32 NOT = { base_tax = 42 } }
+		owner = { add_treasury = -100 }
+	}
+	if = { 
+		limit = { base_tax = 42 NOT = { base_tax = 52 } }
+		owner = { add_treasury = -125 }
+	}
+	if = { 
+		limit = { base_tax = 52 }
+		owner = { add_treasury = -150 }
+	}
 }
 
 # province
 on_dip_development = {
-	province_event = { id = census.3 days = 0 }
+	#province_event = { id = census.3 days = 0 }
+	ROOT = { hidden_effect = { IR_check_dev_variables = yes } }
+	owner = { add_dip_power = -25 }
+	owner = { add_mil_power = -25 }
+	if = { 
+		limit = { base_production = 1 NOT = { base_production = 12 } }
+		owner = { add_treasury = -50 }
+	}
+	if = { 
+		limit = { base_production = 12 NOT = { base_production = 22 } }
+		owner = { add_treasury = -100 }
+	}
+	if = { 
+		limit = { base_production = 22 NOT = { base_production = 32 } }
+		owner = { add_treasury = -150 }
+	}
+	if = { 
+		limit = { base_production = 32 NOT = { base_production = 42 } }
+		owner = { add_treasury = -200 }
+	}
+	if = { 
+		limit = { base_production = 42 NOT = { base_production = 52 } }
+		owner = { add_treasury = -250 }
+	}
+	if = { 
+		limit = { base_production = 52 }
+		owner = { add_treasury = -300 }
+	}
 }
 
 # province
@@ -384,13 +388,26 @@ on_province_religion_converted = {
 				change_culture = gagauz
 			}
 			if = { 
-				limit = { area = thrace_area }
+				limit = { OR = { area = thrace_area area = northern_thrace_area } }
 				change_culture = turkish
 			}
 		}
 		if = {
 			limit = { mindanao_common_provinces = yes }
 			change_culture = bangsamoro
+		}
+		if = { 
+			limit = { culture = andalucian }
+			change_culture = andalusi_culture
+		}
+	}
+	if = {
+		limit = {
+			religion_group = christian
+		}
+		if = { 
+			limit = { culture = andalusi_culture }
+			change_culture = andalucian
 		}
 	}
 }
