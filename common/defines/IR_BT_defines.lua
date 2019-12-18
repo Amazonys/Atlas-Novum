@@ -294,6 +294,10 @@ NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 4 --  was 2.5 
 
  --NGraphics changes
 NDefines.NGraphics.CITY_SPRAWL_AMOUNT = 1.0			-- from 3p0
+ --NEngine 
+NDefines.NEngine.EVENT_PROCESS_OFFSET = 30				-- Events are checked every X day per character or province (1 is ideal, but CPU heavy)
+
+
  
  --NReligion changes
 NDefines.NReligion.CONSECRATE_PATRIARCH_THRESHOLD = 60			-- from 30
