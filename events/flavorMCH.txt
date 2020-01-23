@@ -181,6 +181,7 @@ country_event = {
 }
 
 # The Revolt of the Three Feudatories
+# Rewritten by Daniel Tolman
 country_event = {
 	id = flavor_mch.5
 	title = "flavor_mch.EVTNAME5"
@@ -190,72 +191,143 @@ country_event = {
 	fire_only_once = yes
 	
 	trigger = {
+		tag = QNG
 		OR = {
-			tag = QNG
-			AND = {
-				tag = MCH
-				NOT = {
-					exists = QNG
-				}
+			YUE = {
+				is_subject_of = ROOT
+				liberty_desire = 25
 			}
+			WUU = {
+				is_subject_of = ROOT
+				liberty_desire = 25
+			}
+			CDL = {
+				is_subject_of = ROOT
+				liberty_desire = 25
+			}
+			CZH = {
+				is_subject_of = ROOT
+				liberty_desire = 25
+			}			
 		}
-		is_year = 1650
-		NOT = { is_year = 1700 }
-		num_of_cities = 2
 	}
 	
 	mean_time_to_happen = {
-		months = 200
+		years = 20
 	}
 	
 	immediate = {
 		hidden_effect = {
-			random_owned_province = {
+			if = {
 				limit = {
-					is_core = ROOT
+					CZH = {
+						is_subject_of = ROOT
+					}
 				}
-				set_province_flag = mch_revolt_feudatories_flag
+				if = {
+					limit = {
+						WUU = {
+							is_subject_of = ROOT
+						}
+					}
+					WUU = {
+						create_alliance = CZH
+					}
+				}
+				if = {
+					limit = {
+						YUE = {
+							is_subject_of = ROOT
+						}
+					}
+					YUE = {
+						create_alliance = CZH
+					}
+				}
+				if = {
+					limit = {
+						CDL = {
+							is_subject_of = ROOT
+						}
+					}
+					CDL = {
+						create_alliance = CZH
+					}
+				}
 			}
-			random_owned_province = {
-				limit = {
-					is_core = ROOT
-					NOT = { has_province_flag = mch_revolt_feudatories_flag }
+			else = {
+				random_country = {
+					limit = {
+						is_subject_of = ROOT
+						OR = {
+							tag = CZH
+							tag = WUU
+							tag = YUE
+							tag = CDL
+						}
+					}
+					save_event_target_as = three_feudatories_leader
+					set_country_flag = three_feudatories_leader_flag
 				}
-				set_province_flag = mch_revolt_feudatories_flag
-			}
-			random_owned_province = {
-				limit = {
-					is_core = ROOT
-					NOT = { has_province_flag = mch_revolt_feudatories_flag }
+				if = {
+					limit = {
+						WUU = {
+							NOT = { has_country_flag = three_feudatories_leader_flag }
+							is_subject_of = ROOT
+						}
+					}
+					WUU = {
+						create_alliance = event_target:three_feudatories_leader
+					}
 				}
-				set_province_flag = mch_revolt_feudatories_flag
+				if = {
+					limit = {
+						YUE = {
+							NOT = { has_country_flag = three_feudatories_leader_flag }
+							is_subject_of = ROOT
+						}
+					}
+					YUE = {
+						create_alliance = event_target:three_feudatories_leader
+					}
+				}
+				if = {
+					limit = {
+						CDL = {
+							NOT = { has_country_flag = three_feudatories_leader_flag }
+							is_subject_of = ROOT
+						}
+					}
+					CDL = {
+						create_alliance = event_target:three_feudatories_leader
+					}
+				}
 			}
 		}
 	}
 	
 	option = {
 		name = "flavor_mch.EVTOPTA5"
-		every_owned_province = {
+		if = {
 			limit = {
-				has_province_flag = mch_revolt_feudatories_flag
+				CZH = {
+					is_subject_of = ROOT
+				}
 			}
-			spawn_rebels = {
-				type = noble_rebels
-				size = 2
+			CZH = {
+				declare_war_with_cb = {
+					who = ROOT
+					casus_belli = cb_independence_war
+				}
 			}
-			clr_province_flag = mch_revolt_feudatories_flag
 		}
-	}
-	option = {
-		name = "flavor_mch.EVTOPTB5"
-		add_corruption = 1.5
-		every_owned_province = {
-			limit = {
-				has_province_flag = mch_revolt_feudatories_flag
-				is_capital = no
+		else = {
+			event_target:three_feudatories_leader = {
+				declare_war_with_cb = {
+					who = ROOT
+					casus_belli = cb_independence_war
+				}
 			}
-			add_local_autonomy = 100
-			clr_province_flag = mch_revolt_feudatories_flag
 		}
 	}
 }
@@ -279,17 +351,8 @@ country_event = {
 		OR = {
 			POR = { has_country_modifier = the_societas_jesu }
 			SPA = { has_country_modifier = the_societas_jesu }
-			IBE = { has_country_modifier = the_societas_jesu }
 		}
-		any_owned_province = { 
-			any_neighbor_province = { 
-				OR = { 
-					owned_by = POR 
-					owned_by = SPA
-					owned_by = IBE
-				} 
-			} 
-		}
+		any_owned_province = { any_neighbor_province = { OR = { owned_by = POR owned_by = SPA } } }
 	}
 	
 	mean_time_to_happen = {
