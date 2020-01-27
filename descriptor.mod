@@ -9,6 +9,7 @@ replace_path="history/provinces"
 replace_path="history/wars"
 replace_path="common/colonial_regions"
 replace_path="common/trade_companies"
+replace_path="common/bookmarks"
 picture="IR_icon.png"
 supported_version="1.29.*.*"
 tags={
