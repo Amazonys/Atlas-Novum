@@ -249,10 +249,26 @@ integrate_subject = {
 		inherit = $TAG$
 	}
 	hidden_effect = {
-		every_province = {
-			limit = { owned_by = $TAG$ }
-			add_territorial_core = ROOT
-			cede_province = ROOT
+		$TAG$ = {
+			every_owned_province = {
+				add_territorial_core = ROOT
+				cede_province = ROOT
+			}
+		}
+	}
+}
+
+integrate_tag = { # REPLACEMENT
+	#custom_tooltip = $TOOLTIP$
+	tooltip = { 
+		inherit = $TAG$
+	}
+	hidden_effect = {
+		$TAG$ = {
+			every_owned_province = {
+				add_territorial_core = ROOT
+				cede_province = ROOT
+			}
 		}
 	}
 }
@@ -382,16 +398,16 @@ IR_high_pop_loss = {
 
 # DEVELOPMENT
 IR_check_dev_variables = {
-	set_variable = { which = IR_production value = 0 }
+	set_variable = { which = IR_wealth_production value = 0 }
 	set_variable = { which = IR_consumption value = 0 }
 	set_variable = { which = IR_prov_pop value = 1 }
 	set_variable = { which = IR_prov_pop_cap value = 1 }
-	set_variable = { which = IR_prov_infrastructure value = 1 }
+	set_variable = { which = IR_pop_production value = 1 }
 	set_variable = { which = IR_prov_infrastructure_cap value = 5 }
 
 	#EXPORT DEV FOR CHECKS
 	export_to_variable = {
-       	variable_name = IR_production
+       	variable_name = IR_wealth_production
        	value = trigger_value:province_trade_power
    	}
     export_to_variable = {
@@ -399,7 +415,7 @@ IR_check_dev_variables = {
     	value = modifier:local_development_cost
     }
     export_to_variable = {
-    	variable_name = IR_prov_infrastructure
+    	variable_name = IR_pop_production
 		value = trigger_value:base_production
    	}
     export_to_variable = {
@@ -410,33 +426,104 @@ IR_check_dev_variables = {
 		variable_name = IR_prov_pop_cap
 		value = trigger_value:base_tax
 	}
-   	
-	#divide_variable = {
-   	#	which = IR_production
-   	#	value = 2
-   #	}
 	
+	#ADD WEALTH AND INFRASTRUCTURE TO GET CARRYING CAPACITY
+	change_variable = {
+		which = IR_prov_pop_cap
+		which = IR_pop_production
+	}
+	subtract_variable = {
+		which = IR_prov_pop_cap
+		value = 1.002
+	}
+	if = {  #SET TO 1 IF BELOW
+		limit = {
+			NOT = { check_variable = { which = IR_prov_pop_cap value = 1 } }
+		}
+		set_variable = {
+			which = IR_prov_pop_cap
+			value = 1
+		}
+	}
+	
+	# TRIGGER SWITCH FOR TERRAIN BASE WEALTH AND POP GROWTH PRODUCTION
+   	
    	trigger_switch = {
    		on_trigger = has_terrain
-   		farmlands = { change_variable = { which = IR_production value = 10 } }
-   		grasslands = { change_variable = { which = IR_production value = 8 } }
-   		drylands = { change_variable = { which = IR_production value = 7 } }
-   		woods = { change_variable = { which = IR_production value = 7 } }
-   		jungle = { change_variable = { which = IR_production value = 7 } }
-   		marsh = { change_variable = { which = IR_production value = 6 } }
-   		steppe = { change_variable = { which = IR_production value = 6 } }
-   		hills = { change_variable = { which = IR_production value = 6 } }
-   		highlands = { change_variable = { which = IR_production value = 5 } }
-   		coastline = { change_variable = { which = IR_production value = 5 } }
-   		savannah = { change_variable = { which = IR_production value = 5 } }
-   		mountain = { change_variable = { which = IR_production value = 4 } }
-   		forest = { change_variable = { which = IR_production value = 4 } }
-   		coastal_desert = { change_variable = { which = IR_production value = 3 } }
-   		badlands = { change_variable = { which = IR_production value = 2 } }
-   		tundra = { change_variable = { which = IR_production value = 1 } }
-   		desert = { change_variable = { which = IR_production value = 1 } }
-   		glacier = { change_variable = { which = IR_production value = 1 } }
+   		farmlands = { 
+			change_variable = { which = IR_wealth_production value = 10 } 
+			change_variable = { which = IR_pop_production value = 10 } 
+		}
+   		grasslands = { 
+			change_variable = { which = IR_wealth_production value = 8 } 
+			change_variable = { which = IR_pop_production value = 8 } 
+		}
+   		drylands = { 
+			change_variable = { which = IR_wealth_production value = 7 } 
+			change_variable = { which = IR_pop_production value = 7 } 
+		}
+   		woods = { 
+			change_variable = { which = IR_wealth_production value = 7 } 
+			change_variable = { which = IR_pop_production value = 7 } 
+		}
+   		jungle = { 
+			change_variable = { which = IR_wealth_production value = 6 } 
+			change_variable = { which = IR_pop_production value = 7 } 
+		}
+   		marsh = { 
+			change_variable = { which = IR_wealth_production value = 7 } 
+			change_variable = { which = IR_pop_production value = 6 } 
+		}
+   		steppe = { 
+			change_variable = { which = IR_wealth_production value = 5 } 
+			change_variable = { which = IR_pop_production value = 6 } 
+		}
+   		hills = { 
+			change_variable = { which = IR_wealth_production value = 5 } 
+			change_variable = { which = IR_pop_production value = 5 } 
+		}
+   		highlands = { 
+			change_variable = { which = IR_wealth_production value = 5 } 
+			change_variable = { which = IR_pop_production value = 4 } 
+		}
+   		coastline = { 
+			change_variable = { which = IR_wealth_production value = 6 } 
+			change_variable = { which = IR_pop_production value = 4 } 
+		}
+   		savannah = { 
+			change_variable = { which = IR_wealth_production value = 4 } 
+			change_variable = { which = IR_pop_production value = 4 } 
+		}
+   		mountain = { 
+			change_variable = { which = IR_wealth_production value = 4 } 
+			change_variable = { which = IR_pop_production value = 3 } 
+		}
+   		forest = { 
+			change_variable = { which = IR_wealth_production value = 3 } 
+			change_variable = { which = IR_pop_production value = 2 } 
+		}
+   		coastal_desert = { 
+			change_variable = { which = IR_wealth_production value = 4 } 
+			change_variable = { which = IR_pop_production value = 2 } 
+		}
+   		badlands = { 
+			change_variable = { which = IR_wealth_production value = 2 } 
+			change_variable = { which = IR_pop_production value = 2 } 
+		}
+   		tundra = { 
+			change_variable = { which = IR_wealth_production value = 2 } 
+			change_variable = { which = IR_pop_production value = 1 } 
+		}
+   		desert = { 
+			change_variable = { which = IR_wealth_production value = 3 } 
+			change_variable = { which = IR_pop_production value = 1 } 
+		}
+   		glacier = { 
+			change_variable = { which = IR_wealth_production value = 1 } 
+			change_variable = { which = IR_pop_production value = 1 } 
+		}
    	}
+	
    	
    	change_variable = {
    		which = IR_consumption
@@ -487,37 +574,42 @@ IR_check_dev_variables = {
 		} 
 	}
 	
-	#ADD WEALTH AND INFRASTRUCTURE TO GET CARRYING CAPACITY
-	change_variable = {
-		which = IR_prov_pop_cap
-		which = IR_prov_infrastructure
-	}
-	subtract_variable = {
-		which = IR_prov_pop_cap
-		value = 1.002
-	}
-	if = {  #SET TO 1 IF BELOW
-		limit = {
-			NOT = { check_variable = { which = IR_prov_pop_cap value = 1 } }
-		}
-		set_variable = {
-			which = IR_prov_pop_cap
-			value = 1
-		}
-	}
+	
 }
 
 IR_dev_calc = {
 	#IR_check_dev_variables = yes
 	change_variable = {
 		which = IR_pop_progress
-		which = IR_production
+		which = IR_pop_production
 	}
 	subtract_variable = {
 		which = IR_pop_progress
 		which = IR_consumption
 	}
+	change_variable = {
+		which = IR_wealth_progress
+		which = IR_wealth_production
+	}
+	subtract_variable = {
+		which = IR_wealth_progress
+		which = IR_consumption
+	}
 		
+	if = {
+		limit = { 
+			check_variable = { which = IR_wealth_progress value = 100 }
+		}
+		add_base_tax = 1
+		set_variable = {
+			which = IR_wealth_progress
+			value = 1
+		}
+		random = { 
+			chance = 25 
+			add_base_production = 1
+		}
+	}
 	if = {
 		limit = { 
 			check_variable = { which = IR_pop_progress value = 100 }
@@ -536,13 +628,43 @@ IR_dev_calc = {
 			province_event = { id = famine.2 days = 0 } # REPLACES FAMINE TO LINGERING OR FADING - MUST HAVE FAMINE IN PROVINCE AND POSITIVE GROWTH - OTHERWISE FAMINE WILL BECOME MORE EXTREME AS YOU LOSE GROWTH PROGRESS
 		}
 	}
-	else_if = {
+	else_if = { #IF YOU GROW AT POP CAP 
+		if = {
+		limit = { 
+			check_variable = { which = IR_pop_progress value = 100 }
+			NOT = { 
+				check_variable = {
+					which = IR_prov_pop_cap
+					which = IR_prov_pop
+				}	
+			}
+		}
+		set_variable = {
+			which = IR_pop_progress
+			value = 1
+		}
+		random = { 
+			chance = 25 
+			add_base_production = 1
+		}
+	}
+	else_if = { # FAMINE WHEN YOU LOSE GROWTH
 		limit = { base_manpower = 2 NOT = { check_variable = { which = IR_pop_progress value = 1 } } }
-		#add_base_manpower = -1 ### REMOVE IN LIEU OF FAMINE??? IF SO, MAKE FAMINE IMMEDIATE? - PER HOPE YES - TESTING
 		set_variable = {
 			which = IR_pop_progress
 			value = 99
 		}
-		province_event = { id = famine.1 days = 0 } #famine happens in the first ~1-3 months of year - may need repositioning for calc/lag and realism purposes
+		province_event = { id = famine.1 days = 0 } 
+	}
+	else_if = { # RARE CHANCE TO IMPROVE INFRASTRUCTURE IF AT 1 POP 
+		limit = { base_manpower = 1 NOT = { check_variable = { which = IR_pop_progress value = 1 } } }
+		set_variable = {
+			which = IR_pop_progress
+			value = 99
+		}
+		random = { 
+			chance = 5 
+			add_base_production = 1
+		}
 	}
 }

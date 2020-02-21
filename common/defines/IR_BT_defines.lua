@@ -132,8 +132,8 @@ NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 --NDefines.NCountry.ESTATE_PROVINCE_HAPPINESS_DECREASE = 0		-- Per % of relative development revoked from the estate
 --NDefines.NCountry.ESTATE_PROVINCE_POWER = 0				-- Per % of non overseas development in the country they manage
 --PROSPERITY/DEV CHANGES
-NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -1				-- monthly tick - WAS -2, ASSUME THAT THIS IS THE DEVASTATION REDUCTION, LETS SET TO -1 FOR NOW, PENDING TESTING
-NDefines.NCountry.PROSPERITY_INCREASE_SIZE= 0				-- if diceroll of d20< monarch stat, while possible ot increase - WAS 1, TURNED TO 0 CAUSE WHY SHOULD MONARCH INCREASE PROSP?? - PROBABLY SHOULD HANDLE THIS THROUGH EVENT/EDICT
+NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -2				-- monthly tick - WAS -2, ASSUME THAT THIS IS THE DEVASTATION REDUCTION, LETS SET TO -1 FOR NOW, PENDING TESTING
+NDefines.NCountry.PROSPERITY_INCREASE_SIZE= 1				-- if diceroll of d20< monarch stat, while possible ot increase - WAS 1, TURNED TO 0 CAUSE WHY SHOULD MONARCH INCREASE PROSP?? - PROBABLY SHOULD HANDLE THIS THROUGH EVENT/EDICT
  --Colonial
 NDefines.NCountry.MAX_CROWN_COLONIES = 2
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
@@ -181,8 +181,8 @@ NDefines.NCountry.NAT_FOCUS_YEARS_RANK = 3
 
  --SETTLEMENT
 NDefines.NCountry.SETTLEMENT_GROWTH_DEVELOPMENT_INCREASE = 0 -- How much development may increase per year if a colonist is working on Settlement Growth.
-NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 2.5 -- Affects chance of development increase per year if a colonist is working on Settlement Growth.
-NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.05 -- Minimum chance of increasing development for colonists promoting Settlement Growth
+NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 0 -- Affects chance of development increase per year if a colonist is working on Settlement Growth.
+NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0 -- Minimum chance of increasing development for colonists promoting Settlement Growth
 NDefines.NCountry.SETTLEMENT_GROWTH_CHECK_INTERVAL = 365 -- Interval in days between checks for random development increase when working in Settlement Growth.
 
 
@@ -208,7 +208,7 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local auto
 NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 5			-- from 5     I dont actually know how this works     Might have it reversed better check later
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 40			-- from 50
-NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.125			-- from 0p25
+NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.2			-- from 0p25
 NDefines.NMilitary.FORTRESS_COST = 0.15			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
