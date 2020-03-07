@@ -19,6 +19,7 @@ country_event = {
 		OR = {
 		HAB = { has_ruler = "Ladislaus Postumus" }
 		HUN = { has_ruler = "Ladislaus Postumus" }
+		}
 	}
 
 	mean_time_to_happen = {
@@ -166,7 +167,7 @@ country_event = {
 		}
 		set_country_flag = IR_flavor_HAB.3.a.happened
 	}
-	option = { #Frederick is no longer regency in HAB
+	option = { #Frederick is no longer Regent in HAB
 		name = "IR_flavor_HAB.3.b"
 		country_event = { id = IR_flavor_HAB.10 days = 1 }
 		#custom_tooltip =
@@ -193,7 +194,7 @@ country_event = { #Nobles force the release
 		months = 1
 	}
 
-	option = { #Frederick is no longer regency in HAB
+	option = { #Frederick is no longer Regent in HAB
 		name = "IR_flavor_HAB.4.a"
 	}
 	immediate = {
@@ -209,9 +210,7 @@ country_event = {
 
 	trigger = {
 		tag = HAB
-		not = { is_year = 1460 }
-		has_regency = yes 
-		#has_heir = "Ladislaus Postumus"
+		has_heir_flag = Ladislaus_Heir
 		NOT = { 
 			is_subject = yes 
 			has_country_flag = IR_flavor_HAB.10.happened
@@ -222,7 +221,7 @@ country_event = {
 		months = 30
 	}
 
-	option = { #Frederick is no longer regency in HAB
+	option = { #Frederick is no longer Regent in HAB
 		name = "IR_flavor_HAB.5.a"
 	}
 	immediate = {
@@ -258,7 +257,8 @@ country_event = {
 		ai_chance = { factor = 50 }
 		name = IR_flavor_HAB.6.a
 		define_ruler = {
-			name = "Regent János Hunyadi"
+			name = "János Hunyadi"
+			dynasty = " "
 			DIP = 5			
 			ADM = 4
 			MIL = 5
@@ -288,6 +288,7 @@ country_event = {
 			religion = ROOT
 		}
 		remove_heir = yes
+		clr_heir_flag = Ladislaus_Heir
 		every_country = {
 			limit = {
 				NOT = { tag = ROOT }
@@ -312,9 +313,9 @@ country_event = {
 		#	mil = 1
 		#	birth_date = 1440.2.22
 		#}
-		add_estate_loyalty = {
+		add_estate_loyalty = { #angers Janos Hunyadi
 			estate = estate_nobles
-			loyalty = -15
+			loyalty = -5
 		}
 	}
 }
@@ -333,8 +334,8 @@ country_event = {
 		tag = HUN
 		has_country_flag = IR_flavor_HAB.6.happened
 		HAB = {
-			has_regency = yes 
-			has_heir = "Ladislaus Postumus"
+			has_heir_flag = Ladislaus_Heir
+			is_subject_of = STY
 		}
 		NOT = {
 			has_country_flag = IR_flavor_HAB.10.happened
@@ -346,7 +347,7 @@ country_event = {
 	}
 	
 	option = { #Demand Frederick III to end Ladislaus Regency.
-		ai_chance = { factor = 50 }
+		ai_chance = { factor = 40 } #needs modifis to make sure if not at war.
 		name = IR_flavor_HAB.7.a
 		STY = {
 			country_event = { id = IR_flavor_HAB.8 days = 1 }
@@ -356,10 +357,34 @@ country_event = {
 			declare_war = STY
 		}
 	}
-	option = { #Its not in our best interest.
+	option = { #Now is not the time.
 		name = IR_flavor_HAB.7.b
-		ai_chance = { factor = 50 }
+		ai_chance = { factor = 40 }
 		add_prestige = -5
+		#add_truce_with = STY
+		add_casus_belli = {
+			target = STY
+			type = cb_liberation
+			months = 48
+		}
+	}
+	option = { #Give Up on the habsburgs
+		name = IR_flavor_HAB.7.c
+		ai_chance = { factor = 20 }
+		add_stability = -1
+		remove_heir = yes
+		#Set Janos Hunyadi's children as Heirs?
+		every_country = { limit = { OR = { tag = HAB tag = STY } } 
+			add_casus_belli = {
+			target = HUN
+			type = cb_claim_throne
+			months = 48
+			}
+			add_opinion = {
+				who = root
+				modifier = hun_habsburgs_spurned
+			}
+		}
 	}
 }
 
@@ -378,7 +403,7 @@ country_event = {
 	}
 	
 	mean_time_to_happen = {
-		months = 6
+		months = 1
 	}
 	
 	option = { #Refuse to Release
@@ -428,7 +453,7 @@ country_event = {
 		if = { limit = { has_ruler = "Regent Ulrich II" }
 		exile_ruler_as = ulrich2celje
 		}
-		else_if = { limit = { has_ruler = "Regent János Hunyadi" }
+		else_if = { limit = { has_ruler = "János Hunyadi" }
 		exile_ruler_as = j_hunyadi
 		}
 	}
@@ -521,7 +546,80 @@ country_event = { #Full Release of Ladislaus from Styria
 	}
 }
 
-#Ladislaus Age Check
+#Ladislaus flagset
+
+country_event = {
+	id = IR_flavor_HAB.11
+	title = "IR_flavor_HAB.11.t"
+	desc = "IR_flavor_HAB.11.d"
+	picture = COURT_eventPicture
+
+	#hidden = yes
+
+	trigger = {
+		OR = {
+		tag = HUN
+		tag = HAB
+		}
+		has_heir = "Ladislaus Postumus"
+		NOT = {
+			has_country_flag = IR_flavor_HAB.11.happened
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = "IR_flavor_HAB.11.a"
+	}
+	
+	immediate = {
+		#hidden_effect = {
+			set_heir_flag = Ladislaus_Heir
+			set_country_flag = IR_flavor_HAB.11.happened
+		#}
+	}
+}
+
+country_event = {
+	id = IR_flavor_HAB.12
+	title = "IR_flavor_HAB.12.t"
+	desc = "IR_flavor_HAB.12.d"
+	picture = COURT_eventPicture
+
+	#hidden = yes
+
+	trigger = {
+		OR = {
+		tag = HUN
+		tag = HAB
+		}
+		has_heir_flag = Ladislaus_Heir
+		NOT = {
+			has_heir = "Ladislaus Postumus"
+			has_country_flag = IR_flavor_HAB.12.happened
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = "IR_flavor_HAB.12.a"
+	}
+	
+	immediate = {
+		#hidden_effect = {
+			clr_heir_flag = Ladislaus_Heir
+			set_country_flag = IR_flavor_HAB.12.happened
+		#}
+	}
+}
+
+#Habsburg Test Event
 country_event = {
 	id = IR_flavor_HAB.20
 	title = "IR_flavor_HAB.20.t"
