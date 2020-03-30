@@ -1,0 +1,277 @@
+country_decisions = {
+
+	restore_latin_empire = {
+		major = yes
+		potential = {
+			NOT = { has_country_flag = restored_latin_empire }
+			NOT = { exists = LTE }
+			NOT = { tag = BYZ } #Forgot to add this.
+			NOT = { capital = 151 } #Some other weird shit may happen if this is the case.
+			normal_or_historical_nations = yes
+			OR = {
+				ai = no
+				is_playing_custom_nation = no
+			}
+			religion = catholic
+			#NOT = { government = republic } #Should not be a requirement - Venice may want to restore it.
+			NOT = { government = celestial_empire }
+			OR = {
+				owns = 151
+				AND = {
+					ai = no
+					tag = KNI
+				}
+				AND = {
+					ai = no
+					tag = CYP
+				}
+				AND = { 
+					ai = no
+					tag = NAP
+					is_year = 1383 #The Anjous were given the title of Latin Emperor in 1383. However they never styled themselves with it.
+				}
+				AND = { 
+					ai = no
+					tag = PRO
+					is_year = 1383 #The Anjous were given the title of Latin Emperor in 1383. However they never styled themselves with it.
+				}
+				#Italian minors
+				AND = {
+					ai = no
+					tag = ATH
+				}
+				AND = {
+					ai = no
+					tag = NAX
+				}
+				AND = {
+					ai = no
+					tag = CEP
+				}
+				AND = {
+					ai = no
+					tag = LES
+				}
+				#Added for earlier start support
+				AND = { 
+					ai = no
+					tag = ACH
+				}
+				AND = { 
+					ai = no
+					tag = NEO
+				}
+			}
+			OR = {
+				current_age = age_of_discovery
+				current_age = age_of_reformation
+			}
+		}
+		provinces_to_highlight = {
+			OR = {
+				province_id = 151	#Constantinople
+				province_id = 149	#Adrianople
+				province_id = 7135 #Gallipoli
+			}
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+			}
+		}
+		allow = {
+			is_free_or_tributary_trigger = yes
+			is_at_war = no
+			owns_core_province = 151 #Constantinople
+			owns_core_province = 149 #Adrianople
+			owns_core_province = 7135 #Gallipoli
+			151 = {
+				is_state = yes
+			}
+		}
+		effect = {
+			add_prestige = 25
+			every_province = {
+				limit = {
+					OR = {
+						province_id = 151 #Constantinople
+						province_id = 149 #Adrianople
+						province_id = 7135 #Gallipoli
+					}
+				}
+				add_core = LTE
+			}
+			if = {
+				limit = {
+					NOT = { tag = KNI }
+					NOT = { tag = CYP }
+					NOT = { tag = PRO }
+					NOT = { tag = ATH }
+					NOT = { tag = NAX }
+					NOT = { tag = CEP }
+					NOT = { tag = LES }
+					NOT = { tag = ACH }
+					NOT = { tag = NEO }
+				}
+				release = LTE
+				LTE = { change_primary_culture = ROOT }
+				vassalize = LTE
+			}
+			if = {
+				limit = {
+					OR = {
+						tag = KNI
+						tag = CYP
+						tag = PRO
+						tag = ATH
+						tag = NAX
+						tag = CEP
+						tag = LES
+						tag = ACH
+						tag = NEO
+					}
+				}
+				remove_non_electors_emperors_from_empire_effect = yes
+				change_tag = LTE
+				if = {
+					limit = { has_custom_ideas = no }
+					country_event = { id = ideagroups.1 } #Swap Ideas
+				}
+			}
+			if = {
+				limit = {
+					NOT = { government = monarchy }
+				}
+				if = {
+					limit = {
+						has_dlc = "Dharma"
+					}
+					change_government = monarchy
+					add_government_reform = feudalism_reform
+				}
+				else = {
+					set_legacy_government = feudal_monarchy
+				}
+			}
+			if = {
+				limit = {
+					NOT = { government_rank = 3 }
+				}
+				set_government_rank = 3
+			}
+			LTE = {
+				set_capital = 151 #Constantinople
+				thrace_area = {
+					add_permanent_claim = LTE
+				}
+				7134 = {
+					add_permanent_claim = LTE
+				}
+				set_country_flag = restored_latin_empire
+			}
+			custom_tooltip = establish_latin_empire_tooltip
+			hidden_effect = {
+				add_country_modifier = {
+					name = "lte_latin_imperial_authority_tooltip"
+					duration = -1
+				}
+				set_variable = {
+					which = latinImperialAuthorityVariable
+					value = 50
+				}
+				set_variable = {
+					which = latinImperialAuthorityVariablePulser
+					value = 0
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+	
+	#Knightly Orders integrate! 
+	revoke_knightly_order_autonomy = {
+		major = yes
+		potential = {
+			tag = LTE
+			has_idea = lte_induct_knightly_orders
+			NOT = { has_country_flag = lte_absolutism_vassals_revoked }
+			#Moving these requirements off allow to avoid tooltip bloating
+			OR = {
+				current_age = age_of_absolutism
+				current_age = age_of_revolutions
+			}
+			is_nomad = no
+			is_free_or_tributary_trigger = yes
+		}
+		allow = {
+			is_at_war = no
+			variable_arithmetic_trigger = {
+				custom_tooltip = lte_latin_imperial_authority_ld_modifier_14_tooltip
+				
+				check_variable = {
+					which = latinImperialAuthorityVariable
+					value = 100
+				}
+			}
+			adm_power = 100
+			mil_power = 100
+			any_country = {
+				is_knightly_order_tag_and_knightly_order_of_root_trigger = yes
+			}
+			NOT = {
+				any_country = {
+					is_knightly_order_tag_and_knightly_order_of_root_trigger = yes
+					liberty_desire = 50
+				}
+			}
+		}
+		effect = {
+			add_adm_power = -100
+			add_mil_power = -100
+			add_prestige = 25
+			set_country_flag = lte_absolutism_vassals_revoked
+			custom_tooltip = revoke_knightly_order_autonomy_tooltip
+			hidden_effect = {
+				#Integrate all vassals here
+				every_country = {
+					limit = {
+						is_knightly_order_tag_and_knightly_order_of_root_trigger = yes
+					}
+					capital_scope = {
+						set_province_flag = byz_former_knightly_order_capital
+					}
+					ROOT = {
+						inherit = PREV
+					}
+				}
+				every_province = {
+					limit = {
+						has_province_flag = byz_former_knightly_order_capital
+					}
+					set_estate = estate_knightly_orders
+					clr_province_flag = byz_former_knightly_order_capital
+				}
+				#Remove, for when they add the ability to remove the triggered modifiers.
+				# hidden_effect = {
+					# every_province = {
+						# clear_province_triggered_modifier = lte_low_province_ld
+						# clear_province_triggered_modifier = lte_med_province_ld
+						# clear_province_triggered_modifier = lte_high_province_ld
+					# }
+				# } 
+			}
+			
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					adm_power = 200
+					mil_power = 200
+				} #To not point-starve, should an AI somehow get this far
+			}
+		}
+	}
+}

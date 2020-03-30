@@ -1,0 +1,237 @@
+namespace = BtPLegacyIrishReligious
+
+#Written by Driaocht 16-10-26
+
+# Keeping AI Ireland Catholic
+province_event = {
+	id = BtPLegacyIrishReligious.1
+	title = "BtPLegacyIrishReligious.EVTNAME1"
+	desc = "BtPLegacyIrishReligious.EVTDESC1"
+	picture = RELIGIOUS_TURMOIL_eventPicture
+
+	trigger = {
+		culture = irish
+		religion = catholic
+		owner = {
+			culture_group = british
+			religion_group = christian
+		}
+		has_missionary = yes
+		NOT = { has_province_modifier = irish_catholicism_not_allowed }
+		NOT = { has_province_modifier = irish_catholicism_allowed }
+	}	#Fires if there is a missionary active in an Irish Catholic province and the owners primary culture is British and religion is Christian
+
+	mean_time_to_happen = {
+		months = 2
+	}
+	
+	option = { # Push forward
+		name = "BtPLegacyIrishReligious.EVTOPTA1"
+		#trigger = { owner = { adm_power = 20 } }			#Removing this trigger... if a tag wants to go into neg adm power, why not let them?
+		ai_chance = {
+			factor = 35
+			modifier = {
+				factor = 0.1
+				owner = { tag = ANI }
+			}
+		}
+		add_province_modifier = {
+			name = irish_catholicism_not_allowed
+			duration = 10950
+		}
+		owner = { add_adm_power = -20 }
+	}
+	option = { # Oh well
+		name = "BtPLegacyIrishReligious.EVTOPTB1"
+		ai_chance = {
+			factor = 65
+			modifier = {
+				factor = 0.3
+				owner = { ruler_has_personality = zealot_personality }	#1.18 ruler traits influence
+			}
+			modifier = {
+				factor = 2.0
+				owner = { ruler_has_personality = tolerant_personality }	#1.18 ruler traits influence
+			}
+		}
+		add_province_modifier = {
+			name = irish_catholicism_allowed
+			duration = 10950
+		}
+	}
+}
+
+#Removing modifiers once conversion is complete or if 'Irish Caothlic' for whatever reason no longer applies
+province_event = {
+	id = BtPLegacyIrishReligious.2
+	title = "BtPLegacyIrishReligious.EVTNAME2"
+	desc = "BtPLegacyIrishReligious.EVTDESC2"
+	picture = RELIGIOUS_CONVERSION_eventPicture
+
+	trigger = {
+		OR = {
+			NOT = { culture = irish }
+			NOT = { religion = catholic }
+		}
+		OR = {
+			has_province_modifier = irish_catholicism_not_allowed
+			has_province_modifier = irish_catholicism_allowed
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = { # Good to know
+		name = "BtPLegacyIrishReligious.EVTOPTA2"
+		if = {
+			limit = { has_province_modifier = irish_catholicism_not_allowed }
+			remove_province_modifier = irish_catholicism_not_allowed
+		}
+		if = {
+			limit = { has_province_modifier = irish_catholicism_allowed }
+			remove_province_modifier = irish_catholicism_allowed
+		}
+		if = {
+			limit = {
+				OR = {
+					religion = protestant
+					religion = reformed
+				}
+			}
+			add_permanent_province_modifier = {
+				name = reformation_takes_hold_in_ireland			#We need this to prevent event #4 from converting province back to catholic
+				duration = 10950
+			}
+		}
+		owner = { add_prestige = 5 }
+	}
+}
+
+#Trying, trying, and trying to fix the centre of reformation problem in ireland (where a CoR in England or Scotland converts all of Ireland in 5 years and there is nothing to be done.) This is imperfect, as this trigger can cause the occasional conversion of an Irish province that should convert (like from a valid event). 
+#Unfortunately, I don't see a way around it and I'm tired of seeing a Reformed Ireland in 9 games out of 10 (and in the other 1, a Catholic Scotland and England). Hopefully this finally resolves the issue and isn't railroady massive overkill.
+province_event = {
+	id = BtPLegacyIrishReligious.3
+	title = "BtPLegacyIrishReligious.EVTNAME3"
+	desc = "BtPLegacyIrishReligious.EVTDESC3"
+	picture = RELIGIOUS_CONVERSION_eventPicture
+
+	trigger = {
+		culture = irish
+		OR = {
+			religion = protestant
+			religion = reformed
+		}
+		owner = {
+			primary_culture = irish
+			religion = catholic
+		}
+		region = ireland_area
+		has_province_modifier = religious_zeal_at_conv
+		NOT = { has_province_modifier = reformation_takes_hold_in_ireland }
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = { # Return to Catholicism
+		name = "BtPLegacyIrishReligious.EVTOPTA3"
+		ai_chance = { factor = 90 }
+		change_religion = catholic
+		remove_province_modifier = religious_zeal_at_conv
+		owner = {
+			add_years_of_income = -0.1
+			add_dip_power = -20			#Didn't put a trigger here, so this can take a tag into neg dip power. Not really a major issue
+			add_papal_influence = 5
+		}
+	}
+	option = { # An ahistorical push towards the reformation, or if the state can't do anything.
+		name = "BtPLegacyIrishReligious.EVTOPTB3"
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0.5
+				owner = { ruler_has_personality = zealot_personality }
+			}
+			modifier = {
+				factor = 0.5
+				owner = { ruler_has_personality = pious_personality }
+			}
+			modifier = {
+				factor = 3.0
+				owner = { ruler_has_personality = tolerant_personality }	#1.18 ruler traits influence
+			}
+		}
+		add_permanent_province_modifier = {
+			name = reformation_takes_hold_in_ireland
+			duration = 10950			#30 years, lasting until religious zeal wears off to prevent this event hitting twice in the same province.
+		}
+	}
+}
+
+#Another little event to try to keep Ireland Catholic when it should be, but without railroading. This one will hit in all provinces converted by sources OTHER THAN missionaries (id est, CoRs & events) when owned by a non Catholic
+province_event = {
+	id = BtPLegacyIrishReligious.4
+	title = "BtPLegacyIrishReligious.EVTNAME4"
+	desc = "BtPLegacyIrishReligious.EVTDESC4"
+	picture = RELIGIOUS_CONVERSION_eventPicture
+
+	trigger = {
+		culture = irish
+		OR = {
+			religion = protestant
+			religion = reformed
+		}
+		owner = {
+			OR = {
+				religion = protestant
+				religion = reformed
+			}
+		}
+		region = ireland_area
+		has_province_modifier = religious_zeal_at_conv
+		NOT = { has_province_modifier = reformation_takes_hold_in_ireland }
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = { # Return to Catholicism
+		name = "BtPLegacyIrishReligious.EVTOPTA4"
+		ai_chance = {
+			factor = 65
+			modifier = {
+				factor = 0.3
+				owner = { ruler_has_personality = zealot_personality }	#1.18 ruler traits influence
+			}
+			modifier = {
+				factor = 2.0
+				owner = { ruler_has_personality = tolerant_personality }	#1.18 ruler traits influence
+			}
+		}
+		change_religion = catholic
+		remove_province_modifier = religious_zeal_at_conv
+		add_province_modifier = {
+			name = irish_catholicism_allowed
+			duration = 10950
+		}
+	}
+	option = { # An ahistorical push towards the reformation
+		name = "BtPLegacyIrishReligious.EVTOPTB4"
+		ai_chance = {
+			factor = 35
+			modifier = {
+				factor = 0.1
+				owner = { tag = ANI }
+			}
+		}
+		add_permanent_province_modifier = {
+			name = reformation_takes_hold_in_ireland
+			duration = 10950			#30 years, lasting until religious zeal wears off to prevent this event hitting twice in the same province.
+		}
+		owner = { add_adm_power = -20 }
+	}
+}

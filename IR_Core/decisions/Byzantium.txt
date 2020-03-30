@@ -1,0 +1,488 @@
+country_decisions = {
+	#All of the below should be seen as governmental decisions that the player can take.
+	
+	#Theme System
+	reestablish_the_theme_system = {
+		major = yes
+		potential = {
+			has_idea_group = new_BYZ_ideas #Because this caused issues with custom nations.
+			is_byz_or_hellenic_rome_trigger = yes
+			NOT = { has_country_modifier = br_theme_system }
+			num_of_cities = 10
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			NOT = { has_dlc = "Dharma" } #Because the Theme System is now a government reform.
+		}
+		provinces_to_highlight = {
+			OR = {
+				region = balkan_region
+				region = anatolia_region
+			}
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+			}
+		}
+		allow = {
+			is_at_war = no
+			has_idea = reinstitute_the_pronoia
+			owns_core_province = 148 # Thessaloniki
+			owns_core_province = 151 # Constantinople
+			OR = {
+				adm = 5
+				mil = 5
+				consort_adm = 5
+				consort_mil = 5
+				army_reformer = 3
+			}
+			adm_power = 100
+			mil_power = 100
+			num_of_owned_provinces_with = {
+				value = 100
+				OR = {
+					region = balkan_region
+					region = anatolia_region
+				}
+			}	#Need to recover at least 100 provinces in the original regions of the Theme System.
+		}
+		effect = {
+			#Removed all themes renaming - It is a very non-EU4 way of doing it in my opinion, rather being a relic of EU3.
+			add_adm_power = -100
+			add_mil_power = -100
+			add_country_modifier = {
+				name = "br_theme_system"
+				duration = -1
+			}
+			add_prestige = 10
+			custom_tooltip = byz_themata_tooltip
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					adm_power = 200
+					mil_power = 200
+				} #To not point-starve, should an AI somehow get this far
+			}
+		}
+	}
+	
+	#All Exarch establishments are found in exarches.txt
+	#Exarches galore!
+	reestablish_the_exarch_system = {
+		major = yes
+		potential = {
+			has_idea_group = new_BYZ_ideas #Because this caused issues with custom nations.
+			is_byz_or_hellenic_rome_trigger = yes
+			num_of_cities = 200
+			NOT = { has_country_modifier = the_exarch_system }
+			num_of_owned_provinces_with = {
+				value = 25
+				NOT = {
+					region = balkan_region
+					region = anatolia_region
+				}
+			}
+			#Moving these requirements off allow to avoid tooltip bloating
+			is_nomad = no
+			is_free_or_tributary_trigger = yes
+		}
+		allow = {
+			is_at_war = no
+			OR = {
+				adm = 6
+				mil = 6
+				consort_adm = 6
+				consort_mil = 6
+				provincial_governor = 3 #Strategoi-specific advisor at this point.
+			}
+			adm_power = 100
+			mil_power = 100
+			num_of_owned_provinces_with = {
+				value = 50
+				NOT = {
+					region = balkan_region
+					region = anatolia_region
+				}
+			}
+		}
+		effect = {
+			add_adm_power = -100
+			add_mil_power = -100
+			add_country_modifier = {
+				name = "the_exarch_system"
+				duration = -1
+			}
+			add_prestige = 25
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					adm_power = 200
+					mil_power = 200
+				} #To not point-starve, should an AI somehow get this far
+			}
+		}
+	}
+	
+	#Exarches integrate! 
+	reduce_exarch_autonomy = {
+		major = yes
+		potential = {
+			has_idea_group = new_BYZ_ideas #Because this caused issues with custom nations.
+			is_byz_or_hellenic_rome_trigger = yes
+			has_country_modifier = the_exarch_system
+			NOT = { has_country_flag = revoked_exarch_autonomy }
+			#Moving these requirements off allow to avoid tooltip bloating
+			OR = {
+				current_age = age_of_absolutism
+				current_age = age_of_revolutions
+			}
+			absolutism = 50
+			is_nomad = no
+			is_free_or_tributary_trigger = yes
+		}
+		allow = {
+			is_at_war = no
+			OR = {
+				adm = 6
+				mil = 6
+				consort_adm = 6
+				consort_mil = 6
+			}
+			absolutism = 65
+			adm_power = 100
+			mil_power = 100
+			any_country = {
+				is_exarch_tag_and_exarch_of_root_trigger = yes
+			}
+			NOT = {
+				any_country = {
+					is_exarch_tag_and_exarch_of_root_trigger = yes
+					liberty_desire = 50
+				}
+			}
+		}
+		effect = {
+			add_adm_power = -100
+			add_mil_power = -100
+			add_prestige = 25
+			hidden_effect = {
+				every_province = {
+					add_province_triggered_modifier = exarch_territory_modifier
+					add_province_triggered_modifier = exarch_seat_modifier_med_dev
+					add_province_triggered_modifier = exarch_seat_modifier_high_dev
+					add_province_triggered_modifier = exarch_seat_modifier_very_high_dev
+				}
+			}
+			set_country_flag = revoked_exarch_autonomy
+			custom_tooltip = byz_revoke_exarch_autonomy_tooltip
+			hidden_effect = {
+				#Integrate all vassals here
+				every_country = {
+					limit = {
+						is_exarch_tag_and_exarch_of_root_trigger = yes
+					}
+					capital_scope = {
+						set_province_flag = byz_former_exarch_capital
+					}
+					ROOT = {
+						inherit = PREV
+					}
+				}
+				every_province = {
+					limit = {
+						has_province_flag = byz_former_exarch_capital
+					}
+					set_estate = estate_exarches
+					clr_province_flag = byz_former_exarch_capital
+				}
+			}
+			
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					adm_power = 200
+					mil_power = 200
+				} #To not point-starve, should an AI somehow get this far
+			}
+		}
+	}
+	
+	#Decisions taken from Renovatio Imperii, but adjusted somewhat as the ideas are now completely changed. Used with permission
+	reform_varangian_guard = {
+		potential = {
+			has_idea_group = new_BYZ_ideas #Because this caused issues with custom nations.
+			is_byz_or_hellenic_rome_trigger = yes
+			NOT = { has_country_modifier = varangian_guard }
+		}
+		allow = {
+			has_idea = basilics_law
+			mil_power = 100
+			mil = 5
+		}
+		effect = {
+			add_years_of_income = -1
+			add_mil_power = -100
+			add_country_modifier = {
+				name = "varangian_guard"
+				duration = -1
+			}	
+			capital_scope = {
+				area = {
+					add_province_modifier = {
+						name = varangians
+						duration = -1
+				}
+			}
+		}
+	}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	sole_autocrat_of_romans = {
+		potential = {
+			has_idea_group = new_BYZ_ideas #Because this caused issues with custom nations.
+			is_byz_or_hellenic_rome_trigger = yes
+			num_of_cities = 40
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+			NOT = { has_country_modifier = the_absolutism } #Blocking the decision from being taken more than once.
+		}
+		allow = {
+			is_at_war = no
+			current_age = age_of_absolutism
+			owns = 151 # Constantinople
+			owns = 118 # Rome
+			total_development = 1000
+			stability = 3
+			has_idea = basilics_law
+			#adm_power = 100
+		}
+		effect = {
+			#add_adm_power = -100
+			add_country_modifier = {
+				name = the_absolutism
+				duration = -1
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+
+	#I've added this with some regret. To be honest, there is a reason why the Exarchate was based in Ravenna: That city is essentially surrounded by a swamp, making it much easier to defend.
+	#Rome, on the other hand, sits quite open. It is horrible for defenses, which is really bad if you intend on making it your capital.
+	#I kind of want to make a decision to move the capital to Ravenna instead, leaving the city to the clergy and its Patriarch instead.
+	#Alternatively, one could move the seat to Mediolanum, however that capital was quite short-lived I think.
+	#Instead I could make an event that rebuilds Rome, granting the "rome restored" flag.
+	
+	#Rome = 118
+	#Ravenna = 114
+	#Mediolanum = 104
+	
+	#Capital move.
+	byz_move_capital_to_rome = { 
+		potential = {
+			has_idea_group = new_BYZ_ideas #Because this caused issues with custom nations.
+			normal_or_historical_nations = yes
+			is_byz_or_hellenic_rome_trigger = yes
+			owns = 118 #Rome
+			NOT = { capital = 118 }
+			NOT = { exists = RVN } #The Exarchate of Ravenna is not allowed to exist.
+		}
+		allow = {
+		is_at_war = no
+			118 = { 
+				owned_by = ROOT
+				religion = ROOT
+			}
+			num_of_owned_provinces_with = {
+				value = 100
+				continent = europe
+			}
+			#To give a reason as to why the capital should be moved - I.e the empire being more euro-centric.
+			#TODO: Make tooltip nicer
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = byz_rival
+					any_rival_country = {
+						capital_scope = {
+							continent = europe
+						}
+						#To see if rival is mutual
+						is_rival = ROOT
+					}
+				}
+				calc_true_if = { #With all of France, Iberia, Italy, Balkans, Dacia, & Carniola you get 300 provinces. I personally think it's then fair to expect 200 provinces in Europe this way.
+					all_province = {
+						continent = europe
+						OR = {
+							owned_by = ROOT
+							owner = {
+								is_subject_of = ROOT 
+								NOT = { is_subject_of_type = tributary_state }
+							}
+						}
+					}
+					amount = 200
+				}
+			}
+		}
+		effect = {
+			set_capital = 118
+			if = {
+				limit = { NOT = { has_global_flag = roma_restored } }
+				118 = {
+					add_base_tax = 4
+					add_base_production = 4
+					add_base_manpower = 3
+					change_culture = ROOT
+				}
+				set_global_flag = roma_restored
+			}
+			set_global_flag = chose_rome_as_capital
+		}
+	}
+	
+	#Renovatio Imperii
+	restore_roman_empire_byzantium = {
+	    major = yes
+		potential = {
+			has_idea_group = new_BYZ_ideas #Because this caused issues with custom nations.
+		    normal_or_historical_nations = yes
+			tag = BYZ
+			religion_group = christian
+			NOT = { exists = ROM }
+			OR = {
+				ai = no
+				num_of_cities = 20
+			}
+			is_colonial_nation = no
+			NOT = { has_global_flag = roman_empire_restored }
+			is_subject = no
+			is_nomad = no
+		}
+		allow = {
+			OR = {
+				legitimacy = 90
+				republican_tradition = 90
+			}
+			prestige = 50
+			is_at_war = no
+			if = {
+				limit = { religion = orthodox }
+				custom_trigger_tooltip = {
+					tooltip = restore_roman_empire_byzantium_pentarchy_tooltip
+					has_country_modifier = pentarchy_mod
+				}
+			}
+			else = { #Because some people actually play catholic Byzantium?!
+				118 = { 
+					owned_by = ROOT
+					religion = ROOT
+				}
+				151 = { 
+					owned_by = ROOT
+					religion = ROOT
+				}
+				2313 = {
+					owned_by = ROOT
+					religion = ROOT
+				}
+				379 = { 
+					owned_by = ROOT
+					religion = ROOT 
+				}
+				358 = { 
+					owned_by = ROOT
+					religion = ROOT 
+				}
+			}
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = restore_roman_empire_byzantium_dismantle_hre_tooltip
+					NOT = { hre_size = 1 }
+					NOT = { exists = HLR } #Added
+				}
+				AND = { #Byzantium is the emperor
+					is_emperor = yes
+					hre_reform_level = 6
+					imperial_influence = 50
+				}
+			}
+			
+		}
+		effect = {
+			change_tag = ROM
+			if = {
+				limit = { NOT = { government_rank = 3 } }
+				set_government_rank = 3
+			}
+			add_country_modifier = {
+				name = "centralization_modifier"
+				duration = 7300
+			}
+			if = { #Holy Byzantine Empire
+				limit = { is_emperor = yes }
+				country_event = {
+					id = holy_byzantine_empire.1
+				}
+			}
+			#swap_ideas = yes
+			add_prestige = 50
+			set_global_flag = roman_empire_restored
+		}
+		ai_will_do = { factor = 1 }
+		ai_importance = 400
+	}	
+
+	#Patriarch of Mecca & Medina, as it was not part of the Pentarchy itself.
+	establish_the_patriarch_of_mecca_medina = {
+		potential = {
+			religion = orthodox
+			OR = {
+				owns = 384
+				owns = 385
+			} #Mecca or Medina
+			NOT = { has_country_flag = established_patriarch_of_mecca_medina }
+			is_free_or_tributary_trigger = yes
+			is_nomad = no
+		}
+		allow = {
+			is_at_war = no
+			384 = {
+				owned_by = ROOT
+				religion = ROOT
+			}
+			385 = {
+				owned_by = ROOT
+				religion = ROOT
+			}
+			advisor = theologian
+			stability = 1
+		}
+		effect = {
+			add_prestige = 10
+			add_patriarch_authority = 0.2
+			385 = {
+				add_province_modifier = {
+					name = "patriarch_mecca_medina"
+					duration = -1
+				}
+			}
+			set_country_flag = established_patriarch_of_mecca_medina
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+}

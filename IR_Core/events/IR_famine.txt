@@ -1,0 +1,291 @@
+namespace = famine
+
+#FAMINE EVENTS FOR WHEN CONSUMPTION > GROWTH
+#ONCE A FAMINE OCCURS IT WILL EITHER FADE OR LINGER, WITH MORE SEVERE FAMINE MORE LIKELY TO LINGER
+
+province_event = {
+	id = famine.1
+	title = "famine.1.t"
+	desc = "famine.1.d"
+	picture = FAMINE_eventPicture
+	
+	is_triggered_only = yes
+	#fire_only_once = yes
+	#hidden = yes
+	
+	trigger = { 
+		is_city = yes 
+		has_global_flag = IR_dev_init 
+		IR_famine_free = yes
+	}
+	
+	#immediate = { 
+	#	hidden_effect = { IR_check_dev_variables = yes }
+	#}
+	
+	option = { 
+		name = "famine.1.a"
+		trigger = { NOT = { OR = { has_province_modifier = famine_1 has_province_modifier = famine_2 has_province_modifier = famine_3 has_province_modifier = famine_4 } } } 
+		random_list = {
+			70 = {
+				add_permanent_province_modifier = {
+					name = famine_1
+					duration = -1
+				}
+				IR_low_pop_loss = yes
+			}
+			15 = {
+				add_permanent_province_modifier = {
+					name = famine_2
+					duration = -1
+				}
+				IR_low_pop_loss = yes
+			}
+			10 = {
+				add_permanent_province_modifier = {
+					name = famine_3
+					duration = -1
+				}
+				IR_mid_pop_loss = yes
+			}
+			5 = {
+				add_permanent_province_modifier = {
+					name = famine_4
+					duration = -1
+				}
+				IR_mid_pop_loss = yes
+			}
+		}
+	}
+	option = { 
+		name = "famine.1.b"
+		trigger = { OR = { has_province_modifier = famine_1 has_province_modifier = famine_2 has_province_modifier = famine_3 has_province_modifier = famine_4 }  }
+		trigger_switch = {
+			on_trigger = has_province_modifier
+			famine_1 = {
+				remove_province_modifier = famine_1
+				random_list = {
+					75 = {
+						add_permanent_province_modifier = {
+							name = famine_2
+							duration = -1
+						}
+						IR_low_pop_loss = yes
+					}
+					15 = {
+						add_permanent_province_modifier = {
+							name = famine_3
+							duration = -1
+						}
+						IR_mid_pop_loss = yes
+					}
+					10 = {
+						add_permanent_province_modifier = {
+							name = famine_4
+							duration = -1
+						}
+						IR_mid_pop_loss = yes
+					}
+				}
+			}
+			famine_2 = {
+				remove_province_modifier = famine_2
+				random_list = {
+					80 = {
+						add_permanent_province_modifier = {
+							name = famine_3
+							duration = -1
+						}
+						IR_mid_pop_loss = yes
+					}
+					20 = {
+						add_permanent_province_modifier = {
+							name = famine_4
+							duration = -1
+						}
+						IR_mid_pop_loss = yes
+					}
+				}
+			}
+			famine_3 = {
+				remove_province_modifier = famine_3
+				add_permanent_province_modifier = {
+					name = famine_4
+					duration = -1
+				}
+				IR_mid_pop_loss = yes
+			}
+			famine_4 = {
+				remove_province_modifier = famine_4
+				add_permanent_province_modifier = {
+					name = lingering_famine
+					duration = 730
+				}
+				IR_high_pop_loss = yes
+			}
+		}
+	}
+}
+
+#RECOVERY - PROGRESS > 100 TRIGGERED - ONLY 1 & 2, NOT 3 & 4
+province_event = {
+	id = famine.2
+	title = "famine.2.t"
+	desc = "famine.2.d"
+	picture = FAMINE_eventPicture
+	
+	is_triggered_only = yes
+	#fire_only_once = yes
+	#hidden = yes
+	
+	trigger = { 
+		is_city = yes 
+		has_global_flag = IR_dev_init 
+		OR = { has_province_modifier = famine_1 has_province_modifier = famine_2 }
+		NOT = { OR = { has_province_modifier = fading_famine has_province_modifier = lingering_famine } }
+	}
+	
+	#mean_time_to_happen = {
+	#	months = 240
+	#}
+	
+	option = { 
+		name = "famine.2.a"
+		trigger_switch = {
+			on_trigger = has_province_modifier
+			famine_1 = {
+				remove_province_modifier = famine_1
+				random_list = {
+					90 = {
+						add_permanent_province_modifier = {
+							name = fading_famine
+							duration = 365
+						}
+					}
+					10 = {
+						add_permanent_province_modifier = {
+							name = lingering_famine
+							duration = 730
+						}
+					}
+				}
+			}
+			famine_2 = {
+				remove_province_modifier = famine_2
+				random_list = {
+					75 = {
+						add_permanent_province_modifier = {
+							name = fading_famine
+							duration = 365
+						}
+					}
+					25 = {
+						add_permanent_province_modifier = {
+							name = lingering_famine
+							duration = 730
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+#RECOVERY - MTTH TRIGGERED FOR 1, 2, 3, & 4
+province_event = {
+	id = famine.3
+	title = "famine.2.t"
+	desc = "famine.2.d"
+	picture = FAMINE_eventPicture
+	
+	#is_triggered_only = yes
+	#fire_only_once = yes
+	#hidden = yes
+	
+	trigger = { 
+		#always = no 
+		is_city = yes 
+		has_global_flag = IR_dev_init 
+		OR = { has_province_modifier = famine_1 has_province_modifier = famine_2 has_province_modifier = famine_3 has_province_modifier = famine_4 }
+		NOT = { OR = { has_province_modifier = fading_famine has_province_modifier = lingering_famine } }
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+	
+	option = { 
+		name = "famine.2.a"
+		trigger_switch = {
+			on_trigger = has_province_modifier
+			famine_1 = {
+				remove_province_modifier = famine_1
+				random_list = {
+					80 = {
+						add_permanent_province_modifier = {
+							name = fading_famine
+							duration = 365
+						}
+					}
+					20 = {
+						add_permanent_province_modifier = {
+							name = lingering_famine
+							duration = 730
+						}
+					}
+				}
+			}
+			famine_2 = {
+				remove_province_modifier = famine_2
+				random_list = {
+					60 = {
+						add_permanent_province_modifier = {
+							name = fading_famine
+							duration = 365
+						}
+					}
+					40 = {
+						add_permanent_province_modifier = {
+							name = lingering_famine
+							duration = 730
+						}
+					}
+				}
+			}
+			famine_3 = {
+				remove_province_modifier = famine_3
+				random_list = {
+					40 = {
+						add_permanent_province_modifier = {
+							name = fading_famine
+							duration = 365
+						}
+					}
+					60 = {
+						add_permanent_province_modifier = {
+							name = lingering_famine
+							duration = 730
+						}
+					}
+				}
+			}
+			famine_4 = {
+				remove_province_modifier = famine_4
+				random_list = {
+					20 = {
+						add_permanent_province_modifier = {
+							name = fading_famine
+							duration = 365
+						}
+					}
+					80 = {
+						add_permanent_province_modifier = {
+							name = lingering_famine
+							duration = 730
+						}
+					}
+				}
+			}
+		}
+	}
+}
