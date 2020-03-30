@@ -1,5 +1,5 @@
 name="Imperialism Reinvigorated: Github ARCHIVE"
-path="mod/!improvedhistory_dev"
+path="C:/Users/Amyzonis/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/IR_Core"
 replace_path="missions"
 replace_path="decisions"
 replace_path="history/advisors"
