@@ -8,8 +8,8 @@ control_mission_cede = {
 			
 		}
 		if = { 	
-			limit = { war_with = owner }
-			white_peace = owner
+			limit = { owner = { war_with = ROOT } }
+			owner = { white_peace = ROOT }
 		}
 		cede_province = ROOT
 	}
@@ -418,7 +418,7 @@ IR_check_dev_variables = {
 	#EXPORT DEV FOR CHECKS
 	export_to_variable = {
        	variable_name = IR_wealth_production
-       	value = modifier:trade_goods_size
+       	value = trigger_value:province_trade_power
    	}
     export_to_variable = {
     	variable_name = IR_consumption
@@ -439,6 +439,11 @@ IR_check_dev_variables = {
     export_to_variable = {
 		variable_name = IR_prov_pop_cap
 		value = trigger_value:base_tax
+	}
+	
+	divide_variable = {
+		which = IR_wealth_production
+		value = 2
 	}
 	
 	#ADD WEALTH AND INFRASTRUCTURE TO GET CARRYING CAPACITY
@@ -465,56 +470,56 @@ IR_check_dev_variables = {
    	trigger_switch = {
    		on_trigger = has_terrain
    		farmlands = { 
-			change_variable = { which = IR_wealth_production value = 9 } 
-			change_variable = { which = IR_pop_production value = 9 } 
-		}
-   		grasslands = { 
 			change_variable = { which = IR_wealth_production value = 8 } 
 			change_variable = { which = IR_pop_production value = 8 } 
 		}
+   		grasslands = { 
+			change_variable = { which = IR_wealth_production value = 7 } 
+			change_variable = { which = IR_pop_production value = 7 } 
+		}
    		drylands = { 
-			change_variable = { which = IR_wealth_production value = 7 } 
-			change_variable = { which = IR_pop_production value = 7 } 
-		}
-   		woods = { 
-			change_variable = { which = IR_wealth_production value = 7 } 
-			change_variable = { which = IR_pop_production value = 7 } 
-		}
-   		jungle = { 
 			change_variable = { which = IR_wealth_production value = 6 } 
-			change_variable = { which = IR_pop_production value = 7 } 
-		}
-   		marsh = { 
-			change_variable = { which = IR_wealth_production value = 7 } 
 			change_variable = { which = IR_pop_production value = 6 } 
 		}
-   		hills = { 
+   		woods = { 
 			change_variable = { which = IR_wealth_production value = 5 } 
 			change_variable = { which = IR_pop_production value = 5 } 
 		}
-   		coastline = { 
-			change_variable = { which = IR_wealth_production value = 6 } 
+   		jungle = { 
+			change_variable = { which = IR_wealth_production value = 4 } 
+			change_variable = { which = IR_pop_production value = 5 } 
+		}
+   		marsh = { 
+			change_variable = { which = IR_wealth_production value = 5 } 
 			change_variable = { which = IR_pop_production value = 4 } 
+		}
+   		hills = { 
+			change_variable = { which = IR_wealth_production value = 4 } 
+			change_variable = { which = IR_pop_production value = 5 } 
+		}
+   		coastline = { 
+			change_variable = { which = IR_wealth_production value = 5 } 
+			change_variable = { which = IR_pop_production value = 3 } 
 		}
 		steppe = { 
 			change_variable = { which = IR_wealth_production value = 3 } 
-			change_variable = { which = IR_pop_production value = 4 } 
+			change_variable = { which = IR_pop_production value = 5 } 
 		}
 		highlands = { 
-			change_variable = { which = IR_wealth_production value = 4 } 
+			change_variable = { which = IR_wealth_production value = 3 } 
 			change_variable = { which = IR_pop_production value = 4 } 
 		}
    		savannah = { 
 			change_variable = { which = IR_wealth_production value = 3 } 
-			change_variable = { which = IR_pop_production value = 4 } 
-		}
-   		mountain = { 
-			change_variable = { which = IR_wealth_production value = 4 } 
 			change_variable = { which = IR_pop_production value = 3 } 
 		}
-   		forest = { 
+   		mountain = { 
 			change_variable = { which = IR_wealth_production value = 3 } 
 			change_variable = { which = IR_pop_production value = 2 } 
+		}
+   		forest = { 
+			change_variable = { which = IR_wealth_production value = 2 } 
+			change_variable = { which = IR_pop_production value = 3 } 
 		}
    		coastal_desert = { 
 			change_variable = { which = IR_wealth_production value = 4 } 
@@ -623,6 +628,7 @@ IR_dev_calc = {
 		which = IR_consumption
 	}
 		
+	#WEALTH CALC
 	if = {
 		limit = { 
 			check_variable = { which = IR_wealth_progress value = 100 }
@@ -637,6 +643,26 @@ IR_dev_calc = {
 			add_base_production = 1
 		}
 	}
+	else_if = { # lose wealth
+		limit = { base_tax = 2 NOT = { check_variable = { which = IR_wealth_progress value = 1 } } }
+		set_variable = {
+			which = IR_wealth_progress
+			value = 99
+		}
+		add_base_tax = -1
+	}
+	else_if = { # lose wealth RARE CHANCE TO IMPROVE INFRASTRUCTURE - HARDSHIP BREEDS INNOVATION
+		limit = { base_tax = 1 NOT = { base_tax = 2 } NOT = { check_variable = { which = IR_wealth_progress value = 1 } } }
+		set_variable = {
+			which = IR_wealth_progress
+			value = 99
+		}
+		random = { 
+			chance = 5 
+			add_base_production = 1
+		}
+	}
+	#POP CALC
 	if = {
 		limit = { 
 			check_variable = { which = IR_pop_progress value = 100 }
@@ -683,8 +709,8 @@ IR_dev_calc = {
 		}
 		province_event = { id = famine.1 days = 0 } 
 	}
-	else_if = { # RARE CHANCE TO IMPROVE INFRASTRUCTURE IF AT 1 POP 
-		limit = { base_manpower = 1 NOT = { check_variable = { which = IR_pop_progress value = 1 } } }
+	else_if = { # RARE CHANCE TO IMPROVE INFRASTRUCTURE IF AT 1 POP - HARDSHIP BREEDS INNOVATION
+		limit = { base_manpower = 1 NOT = { base_manpower = 2 } NOT = { check_variable = { which = IR_pop_progress value = 1 } } }
 		set_variable = {
 			which = IR_pop_progress
 			value = 99
