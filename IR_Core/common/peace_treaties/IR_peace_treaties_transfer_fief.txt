@@ -20,11 +20,11 @@ po_transfer_fiefs = {
 	power_projection = vassalized_rival # "power_projection" will only be applied if giver is your rival.
 	power_cost_base = 1.0 # Base factor for diplomatic power cost when treaty is not allowed by casus belli. Scales with war score cost.
 	prestige_base = 0.1 # Base factor for prestige gain and loss. Scales with war score cost.
-	ae_base = 0.05 # Base factor for aggressive expansion. Scales with war score cost.
+	ae_base = 0.5 # Base factor for aggressive expansion. Scales with war score cost.
 	warscore_cost = {
 		# Which of the giver's provinces' war score costs are included and by how much. All entries default to 0. Any combination of entries can be used. Try negative values at your own risk.
 		all_provinces = 0.0 # All the giver's provinces
-		no_provinces = 60.0 # This is just a constant. Equivalent to a single province with with war score cost 1
+		no_provinces = 50.0 # This is just a constant. Equivalent to a single province with with war score cost 1
 		owner_keeps = 0.0 # The provinces that are not of any of the types below
 		conquered = 0.0 # Provinces that are selected by a Demand Province treaty
 		returned_core = 0.0 # Provinces that are selected by a Return Core treaty
@@ -38,15 +38,57 @@ po_transfer_fiefs = {
 	requires_is_allowed = no # If set to "yes", treaty will only be visible when explicitly allowed by casus belli. If not, it will be available but cost diplomatic power.
 	
 	is_visible = { # Defaults to equivalent of "always = yes"
-		
+		is_fief_domain_tech = yes
+		is_subject = no
+		if = {
+			limit = { is_part_of_hre = yes }
+			FROM = {
+				is_subject = no
+				is_part_of_hre = yes
+				is_fief_domain_tech = yes
+				any_subject_country = {
+					is_subject_of_type = fief
+					is_part_of_hre = yes
+					religion_group = ROOT
+					is_neighbor_of = ROOT
+				}
+			}
+		}
+		else_if = {
+			limit = { religion_group = muslim }
+			FROM = {
+				is_subject = no
+				is_fief_domain_tech = yes
+				any_subject_country = {
+					is_subject_of_type = fief
+					OR = {
+						religion_group = ROOT
+						culture_group = ROOT
+					}
+					is_neighbor_of = ROOT
+				}
+			}
+		}
+		else = {
+			FROM = {
+				is_subject = no
+				is_fief_domain_tech = yes
+				is_part_of_hre = no
+				any_subject_country = { 
+					is_subject_of_type = fief
+					culture_group = ROOT
+					religion_group = ROOT
+					is_neighbor_of = ROOT
+				}
+			}
+		}
 	}
 	is_allowed = { # Defaults to equivalent of "always = yes"
-		always = no # DISABLING 4/1/20
 		FROM = {
 			any_subject_country = {
+				capital_scope = { }
 				is_subject_of_type = fief
 				is_fief_domain_tech = yes
-				has_institution = feudalism
 				OR = {
 					AND = {
 						religion_group = ROOT
