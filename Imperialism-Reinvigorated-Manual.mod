@@ -1,4 +1,4 @@
-name="Imperialism Reinvigorated: Manual"
+name="Imperialism Reinvigorated: Manual Install"
 replace_path="missions"
 replace_path="decisions"
 replace_path="history/advisors"
