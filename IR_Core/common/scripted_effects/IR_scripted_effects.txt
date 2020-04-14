@@ -685,20 +685,21 @@ IR_dev_calc = {
 			which = IR_pop_progress
 			value = 1
 		}
-		if = { 
-			limit = { OR = { has_province_modifier = famine_1 has_province_modifier = famine_2 } }
-			province_event = { id = famine.2 days = 0 } # REPLACES FAMINE TO LINGERING OR FADING - MUST HAVE FAMINE IN PROVINCE AND POSITIVE GROWTH - OTHERWISE FAMINE WILL BECOME MORE EXTREME AS YOU LOSE GROWTH PROGRESS
-		}
+		#if = { 
+		#	limit = { OR = { has_province_modifier = famine_1 has_province_modifier = famine_2 } }
+		#	province_event = { id = famine.2 days = 0 } # REPLACES FAMINE TO LINGERING OR FADING - MUST HAVE FAMINE IN PROVINCE AND POSITIVE GROWTH - OTHERWISE FAMINE WILL BECOME MORE EXTREME AS YOU LOSE GROWTH PROGRESS
+		#}
 	}
 	else_if = { #IF YOU GROW AT POP CAP 
 		if = {
-		limit = { 
-			check_variable = { which = IR_pop_progress value = 100 }
-			NOT = { 
-				check_variable = {
-					which = IR_prov_pop_cap
-					which = IR_prov_pop
-				}	
+			limit = { 
+				check_variable = { which = IR_pop_progress value = 100 }
+				NOT = { 
+					check_variable = {
+						which = IR_prov_pop_cap
+						which = IR_prov_pop
+					}	
+				}
 			}
 		}
 		set_variable = {
@@ -712,11 +713,12 @@ IR_dev_calc = {
 	}
 	else_if = { # FAMINE WHEN YOU LOSE GROWTH
 		limit = { base_manpower = 2 NOT = { check_variable = { which = IR_pop_progress value = 1 } } }
+		add_base_manpower = -1
 		set_variable = {
 			which = IR_pop_progress
 			value = 99
 		}
-		province_event = { id = famine.1 days = 0 } 
+		#province_event = { id = famine.1 days = 0 } 
 	}
 	else_if = { # RARE CHANCE TO IMPROVE INFRASTRUCTURE IF AT 1 POP - HARDSHIP BREEDS INNOVATION
 		limit = { base_manpower = 1 NOT = { base_manpower = 2 } NOT = { check_variable = { which = IR_pop_progress value = 1 } } }
@@ -727,6 +729,62 @@ IR_dev_calc = {
 		random = { 
 			chance = 5 
 			add_base_production = 1
+		}
+	}
+}
+
+#subjects
+IR_check_subj_variables = {
+	set_variable = { which = IR_subj_opinion value = 0 }
+	set_variable = { which = IR_subj_cohesion_growth value = 0 }
+
+	#if = { 
+	#	limit = { NOT = { overlord = { has_country_flag = overlord_of_@PREV }}}
+	#	every_known_country = { clr_country_flag = overlord_of_@PREV }	#clear previous overlord if changed hands in peace
+	#	overlord = { set_country_flag = overlord_of_@PREV }
+	#}
+	
+	#EXPORT OPINION AND TRUST
+	export_to_variable = {
+        variable_name = IR_subj_opinion
+	    value = opinion
+		#who = ROOT
+		with = overlord
+   	}
+	export_to_variable = {
+        variable_name = IR_subj_cohesion_growth
+	    value = trust
+		#who = ROOT
+		with = overlord
+   	}
+	#MODIFIER OPINION AND TRUST FOR COHESION GROWTH
+	divide_variable = {
+		which = IR_subj_opinion
+		value = 100
+	}
+	subtract_variable = {
+		which = IR_subj_cohesion_growth
+		value = 50
+	}
+	divide_variable = {
+		which = IR_subj_cohesion_growth
+		value = 5
+	}
+	change_variable = {
+		which = IR_subj_cohesion_growth
+		which = IR_subj_opinion
+	}
+}
+IR_subj_calc = {
+	change_variable = {
+		which = IR_subj_cohesion
+		which = IR_subj_cohesion_growth
+	}
+	if = {
+		limit = { check_variable = { which = IR_subject_cohesion value = 100.01 }
+		set_variable = {
+			which = IR_subj_cohesion
+			value = 100
 		}
 	}
 }
