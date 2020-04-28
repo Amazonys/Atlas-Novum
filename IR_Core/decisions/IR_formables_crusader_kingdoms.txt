@@ -1,139 +1,92 @@
 # IR REDONE CRUSADER KINGDOMS - CODE ORIGINALLY FROM BYZANTINE RESURGENCE BY DUB
-# THESE ARE THE BASE CRUSADER ENTITIES THAT WILL THEN SPAWN THE CRUSADER STATES FIEFS
+# THESE ARE THE BASE CRUSADER ENTITIES THAT WILL THEN SPAWN THE CRUSADER STATE FIEFS
 # LTE - Empire of Latinokratia
 # KOJ - Kingdom of Jerusalem
-# AEG - Kingdom of Aegyptus
+# DMC - Kingdom of Damascus
+# ALX - Kingdom of Alexandria
 # AFR - Kingdom of Africa
+# BSS - Kingdom of Bassorah
 country_decisions = {
-
-	restore_latin_empire = {
+	
+	IR_latinokratia_crusader_nation = {
 		major = yes
 		potential = {
-			NOT = { has_country_flag = restored_latin_empire }
-			NOT = { exists = LTE }
-			NOT = { tag = BYZ } #Forgot to add this.
-			NOT = { capital = 151 } #Some other weird shit may happen if this is the case.
-			normal_or_historical_nations = yes
-			OR = {
-				ai = no
-				is_playing_custom_nation = no
-			}
-			religion = catholic
-			#NOT = { government = republic } #Should not be a requirement - Venice may want to restore it.
+			NOT = { OR = { has_country_flag = formed_latinokratia_flag has_country_flag = released_latinokratia_flag } }
+			NOT = { tag = BYZ } 
+			BYZ = { exists = no }
+			NOT = { capital = 151 } 
 			NOT = { government = celestial_empire }
+			religion = catholic
 			OR = {
-				owns = 151
-				AND = {
-					ai = no
-					tag = KNI
-				}
-				AND = {
-					ai = no
-					tag = CYP
-				}
-				AND = { 
-					ai = no
-					tag = NAP
-					is_year = 1383 #The Anjous were given the title of Latin Emperor in 1383. However they never styled themselves with it.
-				}
-				AND = { 
-					ai = no
-					tag = PRO
-					is_year = 1383 #The Anjous were given the title of Latin Emperor in 1383. However they never styled themselves with it.
-				}
-				#Italian minors
-				AND = {
-					ai = no
-					tag = ATH
-				}
-				AND = {
-					ai = no
-					tag = NAX
-				}
-				AND = {
-					ai = no
-					tag = CEP
-				}
-				AND = {
-					ai = no
-					tag = LES
-				}
-				#Added for earlier start support
-				AND = { 
-					ai = no
-					tag = ACH
-				}
-				AND = { 
-					ai = no
-					tag = NEO
-				}
+				owns_core_province = 151
+				tag = KNI
+				tag = CYP
+				tag = ATH
+				tag = NAX
+				tag = CEP
+				tag = LES
+				tag = ACH
+				tag = NEG
+				tag = CIO
+				tag = CDA
+				tag = AIN
 			}
 			OR = {
 				current_age = age_of_discovery
 				current_age = age_of_reformation
 			}
+			is_free_or_tributary_trigger = yes
 		}
 		provinces_to_highlight = {
-			OR = {
-				province_id = 151	#Constantinople
-				province_id = 149	#Adrianople
-				province_id = 7135 #Gallipoli
-			}
-			OR = {
-				NOT = { owned_by = ROOT }
-				NOT = { is_core = ROOT }
-			}
+			lte_core_provinces = yes
 		}
 		allow = {
-			is_free_or_tributary_trigger = yes
-			is_at_war = no
 			owns_core_province = 151 #Constantinople
 			owns_core_province = 149 #Adrianople
-			owns_core_province = 7135 #Gallipoli
-			151 = {
-				is_state = yes
+			IR_formable_trigger = {
+				PROVINCES=lte_core_provinces
+				AMOUNT=6 #6/12 
 			}
+			is_at_war = no
 		}
 		effect = {
-			add_prestige = 25
-			every_province = {
-				limit = {
-					OR = {
-						province_id = 151 #Constantinople
-						province_id = 149 #Adrianople
-						province_id = 7135 #Gallipoli
-					}
-				}
-				add_core = LTE
-			}
+			add_prestige = 20
 			if = {
 				limit = {
 					NOT = { tag = KNI }
 					NOT = { tag = CYP }
-					NOT = { tag = PRO }
 					NOT = { tag = ATH }
 					NOT = { tag = NAX }
 					NOT = { tag = CEP }
 					NOT = { tag = LES }
 					NOT = { tag = ACH }
-					NOT = { tag = NEO }
+					NOT = { tag = NEG }
+					NOT = { tag = CIO }
+					NOT = { tag = CDA }
+					NOT = { tag = AIN }
 				}
 				release = LTE
+				create_subject = {
+					subject_type = dominion
+					subject = LTE
+				}
 				LTE = { change_primary_culture = ROOT }
-				vassalize = LTE
+				set_country_flag = released_latinokratia_flag
 			}
 			if = {
 				limit = {
 					OR = {
 						tag = KNI
 						tag = CYP
-						tag = PRO
 						tag = ATH
 						tag = NAX
 						tag = CEP
 						tag = LES
 						tag = ACH
-						tag = NEO
+						tag = NEG
+						tag = CIO
+						tag = CDA
+						tag = AIN
 					}
 				}
 				remove_non_electors_emperors_from_empire_effect = yes
@@ -143,141 +96,597 @@ country_decisions = {
 					country_event = { id = ideagroups.1 } #Swap Ideas
 				}
 			}
-			if = {
-				limit = {
-					NOT = { government = monarchy }
-				}
-				if = {
-					limit = {
-						has_dlc = "Dharma"
-					}
-					change_government = monarchy
-					add_government_reform = feudalism_reform
-				}
-				else = {
-					set_legacy_government = feudal_monarchy
-				}
-			}
-			if = {
-				limit = {
-					NOT = { government_rank = 3 }
-				}
-				set_government_rank = 3
-			}
 			LTE = {
 				set_capital = 151 #Constantinople
-				thrace_area = {
-					add_permanent_claim = LTE
-				}
-				7134 = {
-					add_permanent_claim = LTE
-				}
-				set_country_flag = restored_latin_empire
-			}
-			custom_tooltip = establish_latin_empire_tooltip
-			hidden_effect = {
-				add_country_modifier = {
-					name = "lte_latin_imperial_authority_tooltip"
-					duration = -1
-				}
-				set_variable = {
-					which = latinImperialAuthorityVariable
-					value = 50
-				}
-				set_variable = {
-					which = latinImperialAuthorityVariablePulser
-					value = 0
-				}
-			}
-		}
-		ai_will_do = {
-			factor = 0
-		}
-	}
-	
-	#Knightly Orders integrate! 
-	revoke_knightly_order_autonomy = {
-		major = yes
-		potential = {
-			tag = LTE
-			has_idea = lte_induct_knightly_orders
-			NOT = { has_country_flag = lte_absolutism_vassals_revoked }
-			#Moving these requirements off allow to avoid tooltip bloating
-			OR = {
-				current_age = age_of_absolutism
-				current_age = age_of_revolutions
-			}
-			is_nomad = no
-			is_free_or_tributary_trigger = yes
-		}
-		allow = {
-			is_at_war = no
-			variable_arithmetic_trigger = {
-				custom_tooltip = lte_latin_imperial_authority_ld_modifier_14_tooltip
-				
-				check_variable = {
-					which = latinImperialAuthorityVariable
-					value = 100
-				}
-			}
-			adm_power = 100
-			mil_power = 100
-			any_country = {
-				is_knightly_order_tag_and_knightly_order_of_root_trigger = yes
-			}
-			NOT = {
-				any_country = {
-					is_knightly_order_tag_and_knightly_order_of_root_trigger = yes
-					liberty_desire = 50
-				}
-			}
-		}
-		effect = {
-			add_adm_power = -100
-			add_mil_power = -100
-			add_prestige = 25
-			set_country_flag = lte_absolutism_vassals_revoked
-			custom_tooltip = revoke_knightly_order_autonomy_tooltip
-			hidden_effect = {
-				#Integrate all vassals here
-				every_country = {
-					limit = {
-						is_knightly_order_tag_and_knightly_order_of_root_trigger = yes
+				set_country_flag = formed_latinokratia_flag
+				set_government_rank = 5
+				if = {
+					limit = { NOT = { government = monarchy } }
+					if = {
+						limit = { has_dlc = "Dharma" }
+						change_government = monarchy
+						add_government_reform = feudalism_reform
 					}
-					capital_scope = {
-						set_province_flag = byz_former_knightly_order_capital
-					}
-					ROOT = {
-						inherit = PREV
+					else = {
+						set_legacy_government = feudal_monarchy
 					}
 				}
-				every_province = {
-					limit = {
-						has_province_flag = byz_former_knightly_order_capital
-					}
-					set_estate = estate_knightly_orders
-					clr_province_flag = byz_former_knightly_order_capital
+				assign_claim_core = {
+					PROVINCES=lte_core_provinces
+					TYPE=permanent_claim
 				}
-				#Remove, for when they add the ability to remove the triggered modifiers.
-				# hidden_effect = {
-					# every_province = {
-						# clear_province_triggered_modifier = lte_low_province_ld
-						# clear_province_triggered_modifier = lte_med_province_ld
-						# clear_province_triggered_modifier = lte_high_province_ld
-					# }
-				# } 
 			}
-			
 		}
 		ai_will_do = {
 			factor = 1
-			modifier = {
-				factor = 0
-				NOT = {
-					adm_power = 200
-					mil_power = 200
-				} #To not point-starve, should an AI somehow get this far
+		}
+	}
+	
+	IR_jerusalem_crusader_nation = {
+		major = yes
+		potential = {
+			NOT = { OR = { has_country_flag = formed_jerusalem_flag has_country_flag = released_jerusalem_flag } }
+			NOT = { tag = KOJ } 
+			KOJ = { exists = no }
+			NOT = { capital = 379 } 
+			NOT = { government = celestial_empire }
+			religion = catholic
+			OR = {
+				owns_core_province = 379
+				tag = KNI
+				tag = CYP
+				tag = ATH
+				tag = NAX
+				tag = CEP
+				tag = LES
+				tag = ACH
+				tag = NEG
+				tag = CIO
+				tag = CDA
+				tag = AIN
 			}
+			OR = {
+				current_age = age_of_discovery
+				current_age = age_of_reformation
+			}
+			is_free_or_tributary_trigger = yes
+		}
+		provinces_to_highlight = {
+			palestine_core_provinces = yes
+		}
+		allow = {
+			owns_core_province = 5180 #Gazzah
+			owns_core_province = 379 #Jerusalem
+			owns_core_province = 1854 #Jaffa
+			IR_formable_trigger = {
+				PROVINCES=palestine_core_provinces
+				AMOUNT=5 #5/9 
+			}
+			is_at_war = no
+		}
+		effect = {
+			add_prestige = 20
+			if = {
+				limit = {
+					NOT = { tag = KNI }
+					NOT = { tag = CYP }
+					NOT = { tag = ATH }
+					NOT = { tag = NAX }
+					NOT = { tag = CEP }
+					NOT = { tag = LES }
+					NOT = { tag = ACH }
+					NOT = { tag = NEG }
+					NOT = { tag = CIO }
+					NOT = { tag = CDA }
+					NOT = { tag = AIN }
+				}
+				release = KOJ
+				create_subject = {
+					subject_type = dominion
+					subject = KOJ
+				}
+				KOJ = { change_primary_culture = ROOT }
+				set_country_flag = released_jerusalem_flag
+			}
+			if = {
+				limit = {
+					OR = {
+						tag = KNI
+						tag = CYP
+						tag = ATH
+						tag = NAX
+						tag = CEP
+						tag = LES
+						tag = ACH
+						tag = NEG
+						tag = CIO
+						tag = CDA
+						tag = AIN
+					}
+				}
+				remove_non_electors_emperors_from_empire_effect = yes
+				change_tag = KOJ
+				if = {
+					limit = { has_custom_ideas = no }
+					country_event = { id = ideagroups.1 } #Swap Ideas
+				}
+			}
+			KOJ = {
+				set_capital = 379 #Jerusalem
+				set_country_flag = formed_jerusalem_flag
+				set_government_rank = 4
+				if = {
+					limit = { NOT = { government = monarchy } }
+					if = {
+						limit = { has_dlc = "Dharma" }
+						change_government = monarchy
+						add_government_reform = feudalism_reform
+					}
+					else = {
+						set_legacy_government = feudal_monarchy
+					}
+				}
+				assign_claim_core = {
+					PROVINCES=palestine_core_provinces
+					TYPE=permanent_claim
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	IR_damascus_crusader_nation = {
+		major = yes
+		potential = {
+			NOT = { OR = { has_country_flag = formed_damascus_flag has_country_flag = released_damascus_flag } }
+			NOT = { tag = DMC } 
+			DMC = { exists = no }
+			NOT = { capital = 382 } 
+			NOT = { government = celestial_empire }
+			religion = catholic
+			OR = {
+				owns_core_province = 382
+				tag = KNI
+				tag = CYP
+				tag = ATH
+				tag = NAX
+				tag = CEP
+				tag = LES
+				tag = ACH
+				tag = NEG
+				tag = CIO
+				tag = CDA
+				tag = AIN
+			}
+			OR = {
+				current_age = age_of_discovery
+				current_age = age_of_reformation
+			}
+			is_free_or_tributary_trigger = yes
+		}
+		provinces_to_highlight = {
+			dmc_core_provinces = yes
+		}
+		allow = {
+			owns_core_province = 382 #Damascus
+			IR_formable_trigger = {
+				PROVINCES=dmc_core_provinces
+				AMOUNT=5 #3/5 
+			}
+			is_at_war = no
+		}
+		effect = {
+			add_prestige = 20
+			if = {
+				limit = {
+					NOT = { tag = KNI }
+					NOT = { tag = CYP }
+					NOT = { tag = ATH }
+					NOT = { tag = NAX }
+					NOT = { tag = CEP }
+					NOT = { tag = LES }
+					NOT = { tag = ACH }
+					NOT = { tag = NEG }
+					NOT = { tag = CIO }
+					NOT = { tag = CDA }
+					NOT = { tag = AIN }
+				}
+				release = DMC
+				create_subject = {
+					subject_type = dominion
+					subject = DMC
+				}
+				DMC = { change_primary_culture = ROOT }
+				set_country_flag = released_damascus_flag
+			}
+			if = {
+				limit = {
+					OR = {
+						tag = KNI
+						tag = CYP
+						tag = ATH
+						tag = NAX
+						tag = CEP
+						tag = LES
+						tag = ACH
+						tag = NEG
+						tag = CIO
+						tag = CDA
+						tag = AIN
+					}
+				}
+				remove_non_electors_emperors_from_empire_effect = yes
+				change_tag = DMC
+				if = {
+					limit = { has_custom_ideas = no }
+					country_event = { id = ideagroups.1 } #Swap Ideas
+				}
+			}
+			DMC = {
+				set_capital = 382 #Damascus
+				set_country_flag = formed_damascus_flag
+				set_government_rank = 4
+				if = {
+					limit = { NOT = { government = monarchy } }
+					if = {
+						limit = { has_dlc = "Dharma" }
+						change_government = monarchy
+						add_government_reform = feudalism_reform
+					}
+					else = {
+						set_legacy_government = feudal_monarchy
+					}
+				}
+				assign_claim_core = {
+					PROVINCES=dmc_core_provinces
+					TYPE=permanent_claim
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	IR_alexandria_crusader_nation = {
+		major = yes
+		potential = {
+			NOT = { OR = { has_country_flag = formed_alexandria_flag has_country_flag = released_alexandria_flag } }
+			NOT = { tag = ALX } 
+			ALX = { exists = no }
+			NOT = { capital = 358 } 
+			NOT = { government = celestial_empire }
+			religion = catholic
+			OR = {
+				owns_core_province = 358
+				tag = KNI
+				tag = CYP
+				tag = ATH
+				tag = NAX
+				tag = CEP
+				tag = LES
+				tag = ACH
+				tag = NEG
+				tag = CIO
+				tag = CDA
+				tag = AIN
+			}
+			OR = {
+				current_age = age_of_discovery
+				current_age = age_of_reformation
+			}
+			is_free_or_tributary_trigger = yes
+		}
+		provinces_to_highlight = {
+			alx_core_provinces = yes
+		}
+		allow = {
+			owns_core_province = 358 #Alexandria
+			owns_core_province = 362 #Rashid
+			IR_formable_trigger = {
+				PROVINCES=alx_core_provinces
+				AMOUNT=4 #4/7 
+			}
+			is_at_war = no
+		}
+		effect = {
+			add_prestige = 20
+			if = {
+				limit = {
+					NOT = { tag = KNI }
+					NOT = { tag = CYP }
+					NOT = { tag = ATH }
+					NOT = { tag = NAX }
+					NOT = { tag = CEP }
+					NOT = { tag = LES }
+					NOT = { tag = ACH }
+					NOT = { tag = NEG }
+					NOT = { tag = CIO }
+					NOT = { tag = CDA }
+					NOT = { tag = AIN }
+				}
+				release = ALX
+				create_subject = {
+					subject_type = dominion
+					subject = ALX
+				}
+				ALX = { change_primary_culture = ROOT }
+				set_country_flag = released_alexandria_flag
+			}
+			if = {
+				limit = {
+					OR = {
+						tag = KNI
+						tag = CYP
+						tag = ATH
+						tag = NAX
+						tag = CEP
+						tag = LES
+						tag = ACH
+						tag = NEG
+						tag = CIO
+						tag = CDA
+						tag = AIN
+					}
+				}
+				remove_non_electors_emperors_from_empire_effect = yes
+				change_tag = ALX
+				if = {
+					limit = { has_custom_ideas = no }
+					country_event = { id = ideagroups.1 } #Swap Ideas
+				}
+			}
+			ALX = {
+				set_capital = 358 #Alexandria
+				set_country_flag = formed_alexandria_flag
+				set_government_rank = 4
+				if = {
+					limit = { NOT = { government = monarchy } }
+					if = {
+						limit = { has_dlc = "Dharma" }
+						change_government = monarchy
+						add_government_reform = feudalism_reform
+					}
+					else = {
+						set_legacy_government = feudal_monarchy
+					}
+				}
+				assign_claim_core = {
+					PROVINCES=alx_core_provinces
+					TYPE=permanent_claim
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	IR_africa_crusader_nation = {
+		major = yes
+		potential = {
+			NOT = { OR = { has_country_flag = formed_africa_flag has_country_flag = released_africa_flag } }
+			NOT = { tag = AFR } 
+			AFR = { exists = no }
+			NOT = { capital = 341 } 
+			NOT = { government = celestial_empire }
+			religion = catholic
+			OR = {
+				owns_core_province = 341
+				tag = KNI
+				tag = CYP
+				tag = ATH
+				tag = NAX
+				tag = CEP
+				tag = LES
+				tag = ACH
+				tag = NEG
+				tag = CIO
+				tag = CDA
+				tag = AIN
+			}
+			OR = {
+				current_age = age_of_discovery
+				current_age = age_of_reformation
+			}
+			is_free_or_tributary_trigger = yes
+		}
+		provinces_to_highlight = {
+			afr_core_provinces = yes
+		}
+		allow = {
+			owns_core_province = 341 #Tunis
+			IR_formable_trigger = {
+				PROVINCES=afr_core_provinces
+				AMOUNT=5 #5/9 
+			}
+			is_at_war = no
+		}
+		effect = {
+			add_prestige = 20
+			if = {
+				limit = {
+					NOT = { tag = KNI }
+					NOT = { tag = CYP }
+					NOT = { tag = ATH }
+					NOT = { tag = NAX }
+					NOT = { tag = CEP }
+					NOT = { tag = LES }
+					NOT = { tag = ACH }
+					NOT = { tag = NEG }
+					NOT = { tag = CIO }
+					NOT = { tag = CDA }
+					NOT = { tag = AIN }
+				}
+				release = AFR
+				create_subject = {
+					subject_type = dominion
+					subject = AFR
+				}
+				AFR = { change_primary_culture = ROOT }
+				set_country_flag = released_africa_flag
+			}
+			if = {
+				limit = {
+					OR = {
+						tag = KNI
+						tag = CYP
+						tag = ATH
+						tag = NAX
+						tag = CEP
+						tag = LES
+						tag = ACH
+						tag = NEG
+						tag = CIO
+						tag = CDA
+						tag = AIN
+					}
+				}
+				remove_non_electors_emperors_from_empire_effect = yes
+				change_tag = AFR
+				if = {
+					limit = { has_custom_ideas = no }
+					country_event = { id = ideagroups.1 } #Swap Ideas
+				}
+			}
+			AFR = {
+				set_capital = 341 #Tunis
+				set_country_flag = formed_africa_flag
+				set_government_rank = 4
+				if = {
+					limit = { NOT = { government = monarchy } }
+					if = {
+						limit = { has_dlc = "Dharma" }
+						change_government = monarchy
+						add_government_reform = feudalism_reform
+					}
+					else = {
+						set_legacy_government = feudal_monarchy
+					}
+				}
+				assign_claim_core = {
+					PROVINCES=afr_core_provinces
+					TYPE=permanent_claim
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	IR_bassorah_crusader_nation = {
+		major = yes
+		potential = {
+			NOT = { OR = { has_country_flag = formed_bassorah_flag has_country_flag = released_bassorah_flag } }
+			NOT = { tag = BSS } 
+			BSS = { exists = no }
+			NOT = { capital = 408 } 
+			NOT = { government = celestial_empire }
+			religion = catholic
+			OR = {
+				owns_core_province = 408
+				tag = KNI
+				tag = CYP
+				tag = ATH
+				tag = NAX
+				tag = CEP
+				tag = LES
+				tag = ACH
+				tag = NEG
+				tag = CIO
+				tag = CDA
+				tag = AIN
+			}
+			OR = {
+				current_age = age_of_discovery
+				current_age = age_of_reformation
+			}
+			is_free_or_tributary_trigger = yes
+		}
+		provinces_to_highlight = {
+			bss_core_provinces = yes
+		}
+		allow = {
+			owns_core_province = 408 #Basra
+			IR_formable_trigger = {
+				PROVINCES=bss_core_provinces
+				AMOUNT=2 #2/3 
+			}
+			is_at_war = no
+		}
+		effect = {
+			add_prestige = 20
+			if = {
+				limit = {
+					NOT = { tag = KNI }
+					NOT = { tag = CYP }
+					NOT = { tag = ATH }
+					NOT = { tag = NAX }
+					NOT = { tag = CEP }
+					NOT = { tag = LES }
+					NOT = { tag = ACH }
+					NOT = { tag = NEG }
+					NOT = { tag = CIO }
+					NOT = { tag = CDA }
+					NOT = { tag = AIN }
+				}
+				release = BSS
+				create_subject = {
+					subject_type = dominion
+					subject = BSS
+				}
+				BSS = { change_primary_culture = ROOT }
+				set_country_flag = released_bassorah_flag
+			}
+			if = {
+				limit = {
+					OR = {
+						tag = KNI
+						tag = CYP
+						tag = ATH
+						tag = NAX
+						tag = CEP
+						tag = LES
+						tag = ACH
+						tag = NEG
+						tag = CIO
+						tag = CDA
+						tag = AIN
+					}
+				}
+				remove_non_electors_emperors_from_empire_effect = yes
+				change_tag = BSS
+				if = {
+					limit = { has_custom_ideas = no }
+					country_event = { id = ideagroups.1 } #Swap Ideas
+				}
+			}
+			BSS = {
+				set_capital = 408 #Basra
+				set_country_flag = formed_bassorah_flag
+				set_government_rank = 4
+				if = {
+					limit = { NOT = { government = monarchy } }
+					if = {
+						limit = { has_dlc = "Dharma" }
+						change_government = monarchy
+						add_government_reform = feudalism_reform
+					}
+					else = {
+						set_legacy_government = feudal_monarchy
+					}
+				}
+				assign_claim_core = {
+					PROVINCES=bss_core_provinces
+					TYPE=permanent_claim
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
 		}
 	}
 }
