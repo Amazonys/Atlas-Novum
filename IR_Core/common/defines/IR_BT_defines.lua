@@ -113,7 +113,7 @@ NDefines.NCountry.MIN_DEV_FOR_FREE_CITY = 20			-- from 10
 NDefines.NCountry.RANDOM_LUCKY_DEVELOPMENT_WEIGHT = 0.2			-- from 0p4
 NDefines.NCountry.MIN_DEV_FOR_OLD_GREAT_POWER = 300			-- from 100
 NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 30 -- 40	    from 20
-NDefines.NCountry.PS_MAKE_PROVINCE_CORE = 10			-- from 10
+NDefines.NCountry.PS_MAKE_PROVINCE_CORE = 5			-- from 10
 NDefines.NCountry.PS_MOVE_CAPITAL_EXTRA = 100			-- from 50
 NDefines.NCountry.PS_CHANGE_CULTURE = 10			-- from 10
 NDefines.NCountry.PS_IMPROVE_PROVINCE_BASE = 0			-- from 50 # ANSWER TO LIFE THE UNIVERSE AND EVERYTHING
@@ -146,7 +146,7 @@ NDefines.NCountry.CORE_OVERSEAS = 0.5						-- Multiplied with development, colon
 --NDefines.NCountry.CORE_SAME_REGION = 0.9						-- Multiplied with development, for colonial nations 
 --NDefines.NCountry.CORE_SAME_CONTINENT = 0.9					-- Multiplied with development, for colonial nations
 NDefines.NCountry.CORE_HAD_CLAIM = 0.1						-- Impacts MODIFIER_CORE_CREATION
-NDefines.NCountry.CORE_HAD_PERMANENT_CLAIM = 0.2
+NDefines.NCountry.CORE_HAD_PERMANENT_CLAIM = 0.25
  -- states and territories
 NDefines.NCountry.ALLOWED_TERRITORY_VS_MAX_STATES = 1.5			-- Same logic as above new provinces and areas require higher numbers 
 NDefines.NCountry.TERRITORY_PENALTY_CAP = 60			-- Same logic as above new provinces and areas require higher numbers 
