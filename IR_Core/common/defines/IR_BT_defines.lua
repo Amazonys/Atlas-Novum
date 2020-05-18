@@ -289,7 +289,7 @@ NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 15
 NDefines.NAI.PEACE_TERMS_VASSAL_BASE_MULT = 10.0 -- only applied if the AI has vassalize priority
  -- abandon union
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_BASE_FACTOR = 20 --  was 60     AI scoring to abandoning Personal Union (given high enough LD and strength).
-NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 4 --  was 2.5      Threshold in relative strength for AI to give up on Personal Union.
+NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 5 --  was 2.5      Threshold in relative strength for AI to give up on Personal Union.
 	
 
  --NGraphics changes
