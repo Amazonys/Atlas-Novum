@@ -64,6 +64,49 @@ discover_mission_cede = { # NEW CODE
 	}
 }
 
+discover_mission_cede_alt = { # NO BUILDING
+	if = { 
+		limit = { $PROVINCE_ID$ = { is_empty = yes } NOT = { has_global_flag = IR_discovery_missions_disabled } }
+		hidden_effect = {
+			$PROVINCE_ID$ = {
+				change_trade_goods = $TRADE_GOOD$
+				change_religion = ROOT	
+				change_culture = ROOT
+				add_territorial_core = ROOT	
+			}
+		}
+		add_treasury = $COST$
+		$PROVINCE_ID$ = { 
+			cede_province = ROOT 
+			#add_building = $BUILDING$
+		}
+	}
+	else_if = { 
+		limit = { $PROVINCE_ID$ = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } NOT = { has_global_flag = IR_discovery_missions_disabled } }
+		if = {
+			limit = { 
+				$PROVINCE_ID$ = { owner = { is_colonizer_tech_group = no } }
+			}
+			hidden_effect = {
+				$PROVINCE_ID$ = {
+					owner = { country_event = { id = orion_seize.1 days = 0 } }
+					change_trade_goods = $TRADE_GOOD$
+					add_territorial_core = ROOT	
+				}	
+			}
+			add_treasury = $COST$
+			$PROVINCE_ID$ = { 
+				cede_province = ROOT 
+				#add_building = $BUILDING$
+			}
+		}
+		else = { #changed from #else_if
+		#	limit = { $PROVINCE_ID$ = { owner = { is_colonizer_tech_group = yes } } }
+			$PROVINCE_ID$ = { add_permanent_claim = ROOT }
+		}
+	}
+}
+
 colony_mission_cede = {
 	add_treasury = $COST$
 	custom_tooltip = $TOOLTIP$
@@ -111,6 +154,15 @@ assign_group_trade_goods = {
 		every_province = {
 			limit = { $PROVINCES$ = yes NOT = { trade_goods = $TRADE_GOOD$ } }
 			change_trade_goods = $TRADE_GOOD$
+		}
+	#}
+}
+
+assign_group_building = {
+	#hidden_effect = {
+		every_province = {
+			limit = { $PROVINCES$ = yes NOT = { has_building = $BUILDING$ } }
+			add_building = $BUILDING$
 		}
 	#}
 }
@@ -283,10 +335,10 @@ IR_establish_subject = {
 }
 
 IR_establish_crusader_state = {
-	$CAPITAL$ = {
-		add_core = $TAG$
-		remove_core = ROOT
-	}
+	#$CAPITAL$ = {
+	#	add_core = $TAG$
+	#	remove_core = ROOT
+	#}
 	release = $TAG$
 	every_province = {
 		limit = { $PROVINCES$ = yes }
@@ -322,6 +374,10 @@ IR_establish_crusader_state = {
 		}
 		else = {
 			set_legacy_government = monastic_order_government
+		}
+		if = { 
+			limit = { $CAPITAL$ = { owned_by = ROOT } }
+			set_capital = $CAPITAL$
 		}
 		#define_ruler = {}
 		hidden_effect = { 
