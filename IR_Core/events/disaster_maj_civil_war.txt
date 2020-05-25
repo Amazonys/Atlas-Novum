@@ -22,7 +22,7 @@ country_event = {
 				cede_province = DMK
 			}
 			create_subject = {
-				subject_type = tributary_state
+				subject_type = fief
 				subject = DMK
 			}
 			DMK = { 
@@ -30,7 +30,7 @@ country_event = {
 				add_yearly_manpower = 3
 				capital_scope = { 
 					build_to_forcelimit = { 
-						infantry = 0.8
+						infantry = 0.9
 						cavalry = 0.2
 					}
 				}
@@ -55,24 +55,157 @@ country_event = {
 	
 	
 	is_triggered_only = yes
-	
-	mean_time_to_happen = {
-		days = 1
-	}
+	major = yes
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
 	
 	
 	option = {
+		trigger = { DMK = { exists = no } }
 		name = "maj_civil_war.100.a"
         set_country_flag = maj_survive_civil_war
 		clr_country_flag = civilwar_on_capital
-		add_legitimacy = 30
-		add_stability = 2
+		add_legitimacy = 50
+		add_stability = 3
 		add_years_of_income = 2
-		hidden_effect = {
-			clear_global_event_target = attacker_civil_war_1
-			clear_global_event_target = defender_civil_war_1
+		#hidden_effect = {
+		#	every_known_country = {
+		#		limit = { capital_scope = { region = indonesia_region } }
+		#		every_owned_province = {
+		#			add_claim = MAJ
+		#		}
+		#	}
+		#}
+	}
+	option = {
+		trigger = { DMK = { exists = yes } }
+		name = "maj_civil_war.100.b"
+		clr_country_flag = civilwar_on_capital
+		if = {
+			limit = { 628 = { owned_by = MAJ } }
+			change_tag = SRB
+			DMK = { 
+				create_subject = {
+					subject_type = vassal
+					subject = SRB
+				}
+			}
+			hidden_effect = {
+				every_owned_province = {
+					add_core = DMK
+				}
+			}
+		}
+		else = {
+			if = {
+				limit = { ai = no }
+				switch_tag = DMK
+			}
+			else = { 
+				every_owned_province = {
+					cede_province = DMK
+					hidden_effect = { add_core = DMK }
+				}
+			}
+		}
+		DMK = { set_country_flag = dmk_wins_civil_war country_event = { id = maj_civil_war.200 } }
+	}
+}
+
+# Demak inherits the Majapahit trade league
+country_event = {
+	id = maj_civil_war.200
+	title = "maj_civil_war.200.t"
+	desc = "maj_civil_war.200.d"
+	picture = REFORM_eventPicture
+	
+	
+	is_triggered_only = yes
+	
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
+	
+	trigger = {
+		tag = DMK
+		has_country_flag = dmk_wins_civil_war
+	}
+	
+	option = { #Send envoys declaring our thassalocracy
+		trigger = { }
+		name = "maj_civil_war.200.a"
+        set_country_flag = maj_survive_civil_war
+		clr_country_flag = civilwar_on_capital
+		add_legitimacy = 30
+		add_stability = 1
+		every_known_country = {
+			limit = { capital_scope = { OR = { region = indonesia_region region = borneo_region area = south_sulawesi_area area = mandar_area area = south_sumatra_area area = palembang_area } } }
+			country_event = { id = maj_civil_war.201 }
 		}
 	}
+}
+
+# Demak ascends
+country_event = {
+	id = maj_civil_war.201
+	title = "maj_civil_war.201.t"
+	desc = "maj_civil_war.201.d"
+	picture = SHIP_SAILING_eventPicture
+	
+	
+	is_triggered_only = yes
+	
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
+	
+	trigger = {
+		has_country_flag = dmk_wins_civil_war
+	}
+	
+	option = { #PAY TRIBUTE TO MATARAM
+		name = "maj_civil_war.201.a"
+		ai_chance = {
+			factor = 75
+			modifier = {
+				religion = sunni
+				factor = 2
+			}
+			modifier = {
+				religion = hindu
+				factor = 0.5
+			}
+		}
+		FROM = { 
+			create_subject = {
+				subject_type = tributary_state
+				subject = PREV
+			}
+		}
+       
+	}
+	option = {
+		name = "maj_civil_war.201.b"
+		ai_chance = {
+			factor = 25
+			modifier = {
+				religion = sunni
+				factor = 0.5
+			}
+			modifier = {
+				religion = hindu
+				factor = 2
+			}
+		}
+		FROM = {
+			add_casus_belli = {
+				target = PREV
+				type = cb_merchant_tributary
+				months = 240
+			}
+		}
+	}	
 }
 
 #Muslim merchants support rebels
@@ -84,9 +217,9 @@ country_event = {
 
 	is_triggered_only = yes
 
-	mean_time_to_happen = {
-		days = 1
-	}
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
 	
 
 	option = {		#Damn them!
@@ -94,7 +227,7 @@ country_event = {
 		random_owned_province = {
 			limit = { religion_group = muslim }
 			spawn_rebels = {
-				type = nationalist_rebels
+				type = religious_rebels
 				religion = sunni
 				size = 1
 			}
@@ -118,10 +251,10 @@ country_event = {
 
 	is_triggered_only = yes
 
-	mean_time_to_happen = {
-		days = 1
-	}
-	
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
+	#
 
 	option = {		#Crush them!
 		name = "maj_civil_war.3.a"
@@ -129,7 +262,7 @@ country_event = {
 			limit = {
 				religion_group = muslim
 			}
-			add_unrest = 5
+			add_unrest = 10
 		}
 	}
 	option = {		#Grant them autonomy
@@ -148,7 +281,7 @@ country_event = {
 	id = maj_civil_war.4
 	title = "maj_civil_war.4.t"
 	desc = "maj_civil_war.4.d"
-	picture = BORDER_TENSION_eventPicture
+	picture = RELIGIOUS_WAR_eventPicture
 
 	is_triggered_only = yes
 	
@@ -156,11 +289,14 @@ country_event = {
 	option = {		#We cannot do anything!
 		ai_chance = { factor = 50 }
 		name = "maj_civil_war.4.a"
-		every_province = {
-			limit = { OR = { is_core = ROOT is_claim = ROOT } owned_by = DMK }
+		every_core_province = {
+			limit = { OR = { owned_by = JEP owned_by = DMK } }
 			remove_core = ROOT
 		}
-		add_truce_with = DMK
+		every_owned_province = {
+			add_claim = DMK
+		}
+		DMK = { grant_independence = yes }
 		collapse_nation = yes
 	}
 	option = {		#Demak is ours!
@@ -173,24 +309,24 @@ country_event = {
 	}
 }
 
-#Adipati secedes
+#Jepara secedes
 country_event = {
 	id = maj_civil_war.5
 	title = "maj_civil_war.5.t"
 	desc = "maj_civil_war.5.d"
-	picture = COURT_eventPicture
+	picture = RELIGIOUS_WAR_eventPicture
 
 	is_triggered_only = yes
 
-	mean_time_to_happen = {
-		days = 1
-	}
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
 	
 	trigger = {
-		OR = {
-			tag = DMK
+		#OR = {
+			#tag = DMK
 			tag = MAJ
-		}
+		#}
 		MAJ = { has_disaster = majapahit_civil_war }
 		any_owned_province = {
 			is_core = JEP
@@ -226,18 +362,18 @@ country_event = {
 	}
 }
 
-#Province breaks away
+#Blambagan breaks away
 country_event = {
 	id = maj_civil_war.6
 	title = "maj_civil_war.6.t"
 	desc = "maj_civil_war.6.d"
-	picture = CITY_VIEW_eventPicture
+	picture = RELIGIOUS_WAR_eventPicture
 
 	is_triggered_only = yes
 
-	mean_time_to_happen = {
-		days = 1
-	}
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
 	
 	option = {		#We will return
 		name = "maj_civil_war.6.a"
@@ -268,12 +404,12 @@ country_event = {
 	}
 }
 
-#majapahit has no king
+#majapahit has no heir
 country_event = {
 	id = maj_civil_war.7
 	title = "maj_civil_war.7.t"
 	desc = "maj_civil_war.7.d"
-	picture = CITY_VIEW_eventPicture
+	picture =ASSASSINATION_eventPicture
 	fire_only_once = yes
 
 	is_triggered_only = yes
@@ -284,9 +420,9 @@ country_event = {
 		has_regency = yes
 	}
 
-	mean_time_to_happen = {
-		days = 1
-	}
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
 
 	option = {
 		name = "maj_civil_war.7.a"
@@ -318,9 +454,9 @@ country_event = {
 		}
 	}
 
-	mean_time_to_happen = {
-		days = 10
-	}
+	#mean_time_to_happen = {
+	#	days = 10
+	#}
 	immediate = {
 		if = {
 			limit = {
