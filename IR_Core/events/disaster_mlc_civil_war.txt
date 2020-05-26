@@ -1,0 +1,264 @@
+namespace = mlc_civil_war
+
+# Sultan Flees to Bintan (or alt if not owned)
+country_event = {
+	id = mlc_civil_war.1
+	title = "mlc_civil_war.1.t"
+	desc = "mlc_civil_war.1.d"
+	picture = CIVIL_WAR_eventPicture
+	
+	major = yes
+	is_triggered_only = yes
+	
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
+	
+	immediate = {
+	#	set_country_flag = mlc_civil_war.1_happened
+	}
+	
+	
+	option = {
+		trigger = { 2686 = { owned_by = ROOT } }
+		name = "mlc_civil_war.1.a" #Our enemies will not break us!
+		#country_event = { id = mlc_civil_war.4 months = 60 random = 30 }
+		add_stability = -2
+		set_capital = 2686
+		add_country_modifier = {
+			name = mlc_civil_war_timer
+			duration = 7300 #20 years
+		}
+	}
+	#option = {
+	#	trigger = { NOT = { 2686 = { owned_by = ROOT } } }
+	#	name = "mlc_civil_war.1.b" #Our enemies will not break us!
+	#	#country_event = { id = mlc_civil_war.4 months = 60 random = 30 }
+	#	add_stability = -2
+	#	set_capital = 2686
+	#	add_country_modifier = {
+	#		name = mlc_civil_war_timer
+	#		duration = 7300 #20 years
+	#	}
+	#}
+}
+
+# End of Civil War
+country_event = {
+	id = mlc_civil_war.100
+	title = "mlc_civil_war.100.t"
+	desc = {
+		trigger = { 596 = { owned_by = MLC } }
+		desc = "mlc_civil_war.100.d1"
+	}
+	desc = {
+		trigger = { 596 = { NOT = { owned_by = MLC } } }
+		desc = "mlc_civil_war.100.d2"
+	}
+	picture = ANGRY_MOB_eventPicture
+	
+	
+	is_triggered_only = yes
+	major = yes
+	#mean_time_to_happen = {
+	#	days = 1
+	#}
+	
+	
+	option = {
+		trigger = { 596 = { owned_by = MLC } }
+		name = "mlc_civil_war.100.a"
+		add_legitimacy = 50
+		add_stability = 3
+		add_years_of_income = 2
+		discover_mission_cede_alt = {
+			PROVINCE_ID = 6459
+			COST = 25
+			TRADE_GOOD = tropical_wood #MUCH BETTER IF YOU WIN
+		}
+		every_province = {
+			limit = { region = malaya_region NOT = { OR = { is_core = PREV is_claim = PREV } } }
+			add_claim = PREV
+		}
+	}
+	option = {
+		trigger = { 596 = { NOT = { owned_by = MLC } } }
+		name = "mlc_civil_war.100.b"
+		change_tag = JOH
+		release = PRK
+		2686 = { cede_province = RIA }
+		659 = { cede_province = RIA }
+		hidden_effect = {
+			PRK = { grant_independence = yes }
+			659 = { add_core = RIA }
+			RIA = {
+				discover_mission_cede_alt = {
+					PROVINCE_ID = 6459
+					COST = 0
+					TRADE_GOOD = fish
+				}
+			}
+			JOH = {
+				every_owned_province = {
+					add_claim = RIA 
+				}
+			}
+		}
+	}
+}
+ 
+
+#New Capital growth
+country_event = {
+	id = mlc_civil_war.2
+	title = "mlc_civil_war.2.t"
+	desc = "mlc_civil_war.2.d"
+	picture = MERCHANTS_TALKING_eventPicture
+
+	is_triggered_only = yes
+
+	
+	#trigger = { NOT = { has_country_flag = mlc_civil_war.2_happened } }
+	
+	#immediate = { set_country_flag = mlc_civil_war.2_happened }
+
+
+	option = {		#It was inevitable
+		name = "mlc_civil_war.2.a"
+		random_owned_province = {
+			limit = { NOT = { OR = { province_id = 2686 is_capital = yes } } base_tax = 2 base_manpower = 2 }
+			add_base_tax = -1
+			add_base_manpower = -1
+		}
+		capital_scope = {
+			add_base_tax = 1
+			add_base_production = 1
+			add_base_manpower = 1
+		}
+		if = { 
+			limit = { capital_scope = { base_manpower = 5 } }
+			add_building = town
+		}
+	}
+	option = {		#They should stay where they are
+		name = "mlc_civil_war.2.b"
+		add_legitimacy = 5
+	}
+}
+
+#Pahang reclaims land
+country_event = {
+	id = mlc_civil_war.3
+	title = "mlc_civil_war.3.t"
+	desc = "mlc_civil_war.3.d"
+	picture = RELIGIOUS_WAR_eventPicture
+
+	is_triggered_only = yes
+
+	trigger = { NOT = { has_country_flag = mlc_civil_war.3_happened } any_owned_province = { is_core = PAH } }
+	
+	immediate = { set_country_flag = mlc_civil_war.3_happened }
+
+	option = {		#We cannot do anything!
+		trigger = { PAH = { exists = yes } }
+		ai_chance = { factor = 50 }
+		name = "mlc_civil_war.3.a"
+		every_owned_province = {
+			limit = { is_core = PAH }
+			cede_province = PAH
+		}
+	}
+	option = {		#We cannot do anything!
+		trigger = { PAH = { exists = no } 598 = { owned_by = ROOT } }
+		ai_chance = { factor = 50 }
+		name = "mlc_civil_war.3.a"
+		release = PAH
+		PAH = { grant_independence = yes }
+	}
+	option = {		#Pahan is ours!
+		ai_chance = { factor = 50 }
+		name = "mlc_civil_war.3.b"
+		random_owned_province = {
+			limit = { is_core = PAH }
+			spawn_rebels = {
+				type = nationalist_rebels
+				religion = sunni
+				size = 2
+			}
+		}
+	}
+}
+
+#Siak declares independence
+country_event = {
+	id = mlc_civil_war.4
+	title = "mlc_civil_war.4.t"
+	desc = "mlc_civil_war.4.d"
+	picture = RELIGIOUS_WAR_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = { NOT = { has_country_flag = mlc_civil_war.4_happened } SAK = { exists = yes } }
+	
+	immediate = { set_country_flag = mlc_civil_war.4_happened }
+
+	option = {		#We cannot do anything!
+		ai_chance = { factor = 50 }
+		name = "mlc_civil_war.4.a"
+		every_owned_province = {
+			limit = { sumatra_common_provinces = yes NOT = { is_core = SAK } }
+			add_core = SAK
+		}
+		release = SAK
+		SAK = { grant_independence = yes }
+	}
+	option = {		#Siak is ours!
+		ai_chance = { factor = 50 }
+		name = "mlc_civil_war.4.b"
+		add_mil_power = -50
+		add_manpower = -5
+		random_owned_province = {
+			limit = { sumatra_common_provinces = yes is_core = SAK }
+			spawn_rebels = {
+				type = nationalist_rebels
+				religion = sunni
+				size = 2
+			}
+		}
+	}
+}
+
+#Malacca recaptured
+country_event = {
+	id = mlc_civil_war.200
+	title = "mlc_civil_war.200.t"
+	desc = "mlc_civil_war.200.d"
+	picture = CITY_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = { NOT = { has_country_flag = mlc_civil_war.200_happened } 596 = { owned_by = MLC } }
+	
+	immediate = { set_country_flag = mlc_civil_war.200_happened }
+
+	option = {		#The people swarm back to Malacca in celebration!
+		ai_chance = { factor = 50 }
+		name = "mlc_civil_war.200.a"
+		set_capital = 596
+		596 = {
+			add_base_tax = 4
+			add_base_production = 3
+			add_base_manpower = 3
+		}
+		if = {
+			limit = { 596 = { base_manpower = 5 } }
+			add_building = town
+		}
+		else_if = {
+			limit = { 596 = { base_manpower = 10 } }
+			hidden_effect = { remove_building = town }
+			add_building = city
+		}
+		remove_country_modifier = mlc_civil_war_timer
+	}
+}
