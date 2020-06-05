@@ -354,11 +354,9 @@ has_idea = quest_for_the_new_world
 		}
 
 		effect = { 
-				assign_group_prov_modifier_alt = {
+				assign_claim_core = {
 				PROVINCES = newfoundland_colonial_provinces
-				TYPE = city
-				MODIFIER = por_porto_maritima
-				DURATION = -1
+				TYPE = permanent_claim
 			}
 		}
 	}
@@ -1043,9 +1041,11 @@ IR_portugal_slot_3 = {
 		position = 18
 
 		trigger = { 
-	any_owned_province = { 
-continent = oceania 
-}
+		discover_mission_trigger = {
+				TOOLTIP=por_pacific_station_provinces.tooltip
+				PROVINCES=por_pacific_station_provinces
+				NUM=10
+			}
 		}
 
 		effect = { 
@@ -1055,13 +1055,12 @@ continent = oceania
 				TRADE_GOOD = naval_supplies
 				BUILDING = fort_colonial
 			}
-			add_casus_belli = {
-				target = YZW
-				type = cb_vassalize_mission
-				months = 60
-			}
+			assign_claim_core = {
+				PROVINCES = por_pacific_station_provinces
+				TYPE = permanent_claim
 		}
 	}
+}	
 
 	por_discover_caribbean = {
 		icon = mission_establish_high_seas_navy
@@ -1101,9 +1100,11 @@ continent = oceania
 		}
 
 		effect = { 
-				por_antilhas_sul_provinces = {
-				add_building = fort_colonial
-			}
+				every_owned_province = {
+				limit = { por_antilhas_sul_provinces = yes 
+					} 
+				add_building = fort_colonial 
+					}
 		}
 	}
 
@@ -1418,21 +1419,17 @@ IR_portugal_slot_4 = {
 
 		provinces_to_highlight = { mombasa_common_provinces = yes }
 
-		effect = { 
-				if = { 
-				limit = { 
-				1200 = { owned_by = ZAN} 
-				} 
-				1200 = { cede_province = POR } 
-				}
-		
-				if = { 
-				limit = { 
-				1202 = { owned_by = ZAN} 
-				} 
-				1202 = { cede_province = POR } 
-				}
+		trigger = { 
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
+				PROVINCES=mombasa_common_provinces
+			}
 		}
+
+		effect = { 
+				control_mission_cede = {
+				PROVINCES = mombasa_common_provinces}
+			}
 	}
 
 	por_grab_muscat = {
@@ -1931,7 +1928,7 @@ custom_tooltip = por_crusade_morocco_claims.tooltip
 				limit = { war_with = ZAN }
 				POR = {
 					create_subject = {
-						subject_type = vassal
+						subject_type = dominion
 						subject = ZAN
 					}
 				}
@@ -2064,7 +2061,7 @@ custom_tooltip = por_crusade_morocco_claims.tooltip
 				COST = -50
 				TRADE_GOOD = spices
 				BUILDING = fort_colonial
-			}
+				}
 			596 = { 
 				add_permanent_province_modifier = {
 					name = a_famosa
@@ -2080,31 +2077,32 @@ custom_tooltip = por_crusade_morocco_claims.tooltip
 	}
 
 	por_subjugate_johor = {
-		icon = mission_unite_home_region
-		required_missions = { por_discover_malacca }
-		position = 14
+        icon = mission_unite_home_region
+        required_missions = { por_discover_malacca }
+        position = 14
 
-		provinces_to_highlight = { is_core = JOH}
+        provinces_to_highlight = { por_subjugate_johor_provinces = YES}
 
-		trigger = { 
-			vassalize_mission_trigger = {
-				TOOLTIP=por_subjugate_johor.tooltip
-				TAG=JOH
+        trigger = { 
+            conquest_mission_trigger = {
+                TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
+                PROVINCES=por_subjugate_johor_provinces
+                OWNER_TYPE=country_or_non_sovereign_subject_holds
+            }
+            }
+
+        effect = { 
+				if = { limit = { JOH = { exists = yes } } 
+                    create_subject = { subject_type = dominion subject = JOH } }
+					else = { release = JOH create_subject = { subject_type = dominion subject = JOH } }
+				custom_tooltip = por_subjugate_johor_claims.tooltip
+				assign_claim_core = {
+                PROVINCES = malaya_common_provinces
+                TYPE = permanent_claim
+				}
 			}
-		}
-
-		effect = { 
-				#control_mission_cede = {
-			#	PROVINCES = por_subjugate_johor_provinces
-			#}
-			custom_tooltip = por_subjugate_johor_claims.tooltip
-			assign_claim_core = {
-				PROVINCES = malaya_common_provinces
-				TYPE = permanent_claim
-			}
-		}
-	}
-
+    }
+	
 	por_conquer_malaysia = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { por_subjugate_johor }
@@ -2121,7 +2119,9 @@ custom_tooltip = por_crusade_morocco_claims.tooltip
 		}
 
 		effect = { 
-	inherit = JOH
+			inherit = JOH
+			add_treasury = 250
+			add_prestige = 10
 		}
 	}
 
@@ -3505,6 +3505,10 @@ IR_portugal_slot_8 = {
 			assign_group_trade_goods = {
 				PROVINCES = sao_tome_principe_common_provinces
 				TRADE_GOOD = sugar
+			}
+			assign_claim_core = {
+                PROVINCES = 1114
+                TYPE = permanent_claim
 			}
 		}
 	}
