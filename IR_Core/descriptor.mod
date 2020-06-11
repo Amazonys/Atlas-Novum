@@ -11,7 +11,7 @@ replace_path="common/colonial_regions"
 replace_path="common/trade_companies"
 replace_path="common/bookmarks"
 picture="IR_icon.png"
-supported_version="1.29.*.*"
+supported_version="1.30.*.*"
 tags={
 	"Missions and Decisions"
 	"Historical"
