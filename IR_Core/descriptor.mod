@@ -10,6 +10,7 @@ replace_path="history/wars"
 replace_path="common/colonial_regions"
 replace_path="common/trade_companies"
 replace_path="common/bookmarks"
+replace_path="common/buildings"
 picture="IR_icon.png"
 supported_version="1.30.*.*"
 tags={
