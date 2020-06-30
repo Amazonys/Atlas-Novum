@@ -1,7 +1,17 @@
 #ON ACTIONS ARE NOT MODULAR, ONLY ONE OVERWRITE WILL LOAD PER MOD - ANY MODMODS MUST ADAPT THIS FILE
 on_startup = {
+	emperor = {
+		save_global_event_target_as = Emperor
+	}
+	if = {
+		limit = {
+			is_emperor_of_china = yes
+		}
+		save_global_event_target_as = EmperorOfChina
+	}
 	events = {
 		muslim_school_events.20 #Pick School
+#		flavor_fra.15000 #Make the French Revolution happen if starting in 1789
 	}
 	if = {
 		limit = {
@@ -11,6 +21,30 @@ on_startup = {
 		remove_country_modifier = tur_janissary
 	}
 	initialize_schools_effect = yes #This is only used here but is used for readability of on_action file.
+	if = {
+		limit = {
+			NOT = { has_country_flag = new_flavour_bav_13_has_been_triggered }
+			OR = {
+				tag = UBV
+				tag = LBV
+				tag = ING
+			}
+		}
+		set_country_flag = new_flavour_bav_13_has_been_triggered
+		country_event = { id = new_flavour_bav.13 days = 90 } #better not to allow almost instant DOWs
+	}
+	if = {
+		limit = {
+			tag = FRA
+			started_in = 1789.7.14
+			NOT = { is_year = 1790 }
+			NOT = { has_disaster = french_revolution }
+		}
+		add_disaster_progress = {
+			value = 100
+			disaster = french_revolution
+		}
+	}
 	#IR	INIT
 	set_hre_religion_treaty = no
 	if = { #STANDARD START
@@ -154,9 +188,26 @@ on_new_monarch = {
 		}
 		country_event = { id = china_events.32 }	# History of last ruler 
 	}
-	ambrosian_republic_effect = yes
+	#ambrosian_republic_effect = yes
 	succession_culture_religion_effect = yes
 	sheik_ul_islam_effect = yes
+	hab_remove_mission_mods_if_not_emperor_effect = yes
+	thu_remain_von_wettin_effect = yes
+	ladislaus_postumus_union_effect = yes
+	if = {
+		limit = {
+			tag = SAX
+			has_country_flag = sax_thuringen_split_to_happen
+			OR = {
+				NOT = { dynasty = "von Wettin" }
+				NOT = { senior_union_with = THU }
+				has_regency = yes
+			}
+		}
+		clr_country_flag = sax_thuringen_split_to_happen
+	}
+	burgundian_inheritance_start_effect = yes
+	ladislaus_postumus_king_died_effect = yes
 	events = {
 		tribal_succession.1		# Harsh anti-tribals.
 		9492 					# Remove some event modifiers
@@ -174,7 +225,6 @@ on_new_monarch = {
 		flavor_pol.3480			# The Pacta Conventa
 		protestantism_events.15	# Catholic Leaning Monarch
 		tengri_events.17		# Keep the Khojas in Power?
-		flavor_tus.15			# Savonarola Dies
 		flavor_brapru.22		# Succession of Albrecht Achilles
 		flavor_brapru.25		# Dispositio Achillea (can also trigger from flavor_brapru.22)
 		flavor_nor.27			# Proclamation in Hamar
@@ -241,9 +291,18 @@ on_monarch_death = {
 		flavor_tus.16 #Savanorola Leaves This World
 		flavor_wal.1 # Vlad the Impaler. So that he doesn't try to usurp his father.
 		flavor_nav.4 # Navarra succession event
+		flavor_sax.8 # Treaty of Leipzig
+		flavor_pap.16 # Borgia Pope
+		flavor_pap.19 # death of borgia pope
+		flavor_tus.22 # Medici Pope
+		flavor_tus.24 # death of the Medici Pope
 		#IR
 		IR_flavor_SPA.1 # Juan Castile passing
 		IR_flavor_POR.11 # Henrique passes away 
+		
+		#Tribal
+		IR_govt_tribal.1
+		IR_govt_tribal.2
 	}
 	#Apparently, the above vanilla code below must be included in any mod, else problems arise.... absolutely bizarre, but what can one do?
 	if = {
@@ -261,8 +320,8 @@ on_monarch_death = {
 	if = { 
 		limit = {
 			OR = {
-			tag = BOH
-			tag = HUN
+				tag = BOH
+				tag = HUN
 			}
 			has_reform = special_elective_reform
 		}
@@ -344,11 +403,32 @@ on_heir_death = {
 #IR
 # root = losing country, from = location
 on_siege_lost_country = {
-	
+	events = {
+		curia.8
+		papacy_events.5
+	}
 }
 on_siege_won_province = {
 	events = {
 		synthetic_dawn.4
+	}
+	if = {
+		limit = {
+			from = {
+				tag = REB
+				is_rebel_type = revolutionary_rebels
+			}
+			owner = {
+				any_owned_province = {
+					region = root
+					has_revolution_in_province = yes
+				}
+				NOT = { has_disaster = french_revolution }
+				NOT = { has_disaster = revolution }
+				NOT = { has_spawned_rebels = revolutionary_rebels }
+			}
+		}
+		owner = { country_event = { id = center_of_revolution.1600 } }
 	}
 }
 
@@ -458,6 +538,17 @@ on_dependency_lost = {
 on_create_vassal = {
 	if = {
 		limit = {
+			has_dlc = "Emperor"
+			FROM = {
+				is_revolutionary = yes
+			}
+		}
+		change_government = republic
+		add_government_reform = junior_revolutionary_republic_reform
+		set_country_flag = had_revolution
+	}
+	if = {
+		limit = {
 			tag = PAP
 		}
 		change_government = theocracy
@@ -480,8 +571,25 @@ on_create_vassal = {
 	}
 	if = {
 		limit = {
+			FROM = { has_reform = religious_permanent_revolution_reform }
+			NOT = { tag = PAP }
+		}
+		change_religion = FROM
+		adopt_reform_progress = FROM
+		add_country_modifier = {
+			name = global_holy_war_released_modifier
+			duration = 3650
+			hidden = yes
+		}
+		capital_scope = {
+			change_religion = FROM
+		}
+	}
+	if = {
+		limit = {
 			is_fief_domain_tech = yes
 			OR = { current_age = age_of_discovery current_age = age_of_reformation } 
+			FROM = { culture_group = ROOT }
 		}
 		FROM = {
 			create_subject = {
