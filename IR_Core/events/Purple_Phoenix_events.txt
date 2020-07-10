@@ -14,19 +14,21 @@ country_event = {
 		tag = BYZ
 		has_dlc = "Purple Phoenix"
 		num_of_cities = 8
-		has_idea_group = BYZ_ideas
-		NOT = { has_idea = byz_admin_power }
 		government = monarchy
-		NOT = { has_reform = steppe_horde }
+		NOT = { government = steppe_horde }
 		OR = {
 			NOT = { legitimacy = 50 }
-			has_regency = yes
+			AND = { #Not sure if consort_regency counts as regency
+				has_consort_regency = no
+				has_regency = yes 
+			}
 		}
+		NOT = { has_idea = byz_formalize_succession_laws }
 	}
-		
+	
 	title = "purple_phoenix.1.t"
 	desc = "purple_phoenix.1.d"
-		
+	
 	option = {
 		name = "purple_phoenix.1.a"
 		trigger = {
@@ -34,10 +36,71 @@ country_event = {
 		}
 		random_owned_province = {
 			pretender_rebels = 2
-		}	
+		}
+	}
+	option = { #I noticed that if this event triggers because Byzantium has a regency, but still has high enough legitimacy, this event breaks.
+		name = "purple_phoenix.1.a"
+		trigger = {
+			has_consort_regency = no
+			has_regency = yes
+		}
+		if = { #If country has general
+			limit = {
+				if = {
+					limit = {
+						NOT = {
+							is_heir_leader = yes
+							is_monarch_leader = yes
+						}
+					}
+					num_of_generals = 1
+					NOT = { num_of_generals = 2 }
+				}
+				if = {
+					limit = {
+						is_heir_leader = yes
+						NOT = { is_monarch_leader = yes }
+					}
+					num_of_generals = 2
+					NOT = { num_of_generals = 3 }
+				}
+				if = {
+					limit = {
+						is_monarch_leader = yes
+						NOT = { is_heir_leader = yes }
+					}
+					num_of_generals = 2
+					NOT = { num_of_generals = 3 }
+				}
+				if = {
+					limit = {
+						is_heir_leader = yes
+						is_monarch_leader = yes
+					}
+					num_of_generals = 3
+					NOT = { num_of_generals = 4 }
+				}
+			}
+			define_leader_to_ruler = {
+				type = general
+				adm = 1
+				dip = 1
+				mil = 3
+				claim = 50
+			}
+		}
+		else = {
+			define_ruler = {
+				adm = 1
+				dip = 1
+				mil = 3
+				claim = 50
+			}
+		}
+		
 	}
 }
- 
+
 country_event = {
 	id = purple_phoenix.2
 	
@@ -62,7 +125,7 @@ country_event = {
 	option = {
 		name = "purple_phoenix.2.a"
 		add_prestige = 10
-		add_dip_power = 50
+		add_legitimacy = 10
 	}
 }
 
@@ -90,8 +153,7 @@ country_event = {
 	option = {
 		name = "purple_phoenix.3.a"
 		add_prestige = 10
-		add_dip_power = 50
-		316 = { change_province_name = Optimatoi rename_capital = Nikomedia }
+		add_legitimacy = 10
 	}
 }
 
@@ -119,8 +181,11 @@ country_event = {
 	option = {
 		name = "purple_phoenix.4.a"
 		add_patriarch_authority = 0.2
-		add_dip_power = 50
-		2313 = { rename_capital = Antioch }
+		add_legitimacy = 10
+		add_country_modifier = {
+			name = "byz_patriarch_blessing"
+			duration = 7300
+		}
 	}
 }
 
@@ -148,7 +213,11 @@ country_event = {
 	option = {
 		name = "purple_phoenix.5.a"
 		add_patriarch_authority = 0.2
-		add_dip_power = 50
+		add_legitimacy = 10
+		add_country_modifier = {
+			name = "byz_patriarch_blessing"
+			duration = 7300
+		}
 	}
 }
 
@@ -176,7 +245,7 @@ country_event = {
 	option = {
 		name = "purple_phoenix.6.a"
 		add_prestige = 25
-		add_dip_power = 50
+		add_legitimacy = 10
 	}
 }
 
@@ -188,10 +257,9 @@ country_event = {
 	
 	picture = ORTHODOX_eventPicture
 	
-	is_triggered_only = yes
+	fire_only_once = yes
 	
 	trigger = {
-		always = no
 		tag = BYZ
 		has_dlc = "Purple Phoenix"
 		religion = orthodox
@@ -199,9 +267,17 @@ country_event = {
 		118 = { religion = orthodox }
 	}
 	
+	mean_time_to_happen = {
+		days = 7
+	}
+	
 	option = {
 		name = "purple_phoenix.7.a"
 		add_patriarch_authority = 0.2
+		add_country_modifier = {
+			name = "byz_patriarch_blessing"
+			duration = 7300
+		}
 	}
 }
 
@@ -227,6 +303,7 @@ country_event = {
 		rascia_area = { type = all NOT = { owned_by = TUR }}
 		bosnia_area = { type = all NOT = { owned_by = TUR }}
 		croatia_area = { type = all NOT = { owned_by = TUR }}
+		albania_area = { type = all NOT = { owned_by = TUR }}
 		east_adriatic_coast_area = { type = all NOT = { owned_by = TUR }}
 	}
 	
@@ -236,9 +313,13 @@ country_event = {
 	
 	option = {
 		name = "purple_phoenix.8.a"
-		add_mil_power = 50
-		add_dip_power = 50
-		add_adm_power = 50
+		add_prestige = 20
+		add_legitimacy = 10
+		add_army_tradition = 10
+		#I seriously do not like the huge amount of extra points these events give.
+		#add_mil_power = 50
+		#add_dip_power = 50
+		#add_adm_power = 50
 	}
 }
 
@@ -258,10 +339,20 @@ country_event = {
 			owns = 150
 			owns = 1764
 		}
+		northern_macedonia_area = { type = all NOT = { owned_by = TUR }}
 		bulgaria_area = { type = all NOT = { owned_by = TUR }}
+		upper_thrace_area = { type = all NOT = { owned_by = TUR }}
 		wallachia_area = { type = all NOT = { owned_by = TUR }}
+		lower_danube_area = { type = all NOT = { owned_by = TUR }}
+		
 		macedonia_area = { type = all NOT = { owned_by = TUR }}
-		albania_area = { type = all NOT = { owned_by = TUR }}
+		thrace_area = { type = all NOT = { owned_by = TUR }}
+		morea_area = { type = all NOT = { owned_by = TUR }}
+		western_aegean_area = { type = all NOT = { owned_by = TUR }}
+		northern_greece_area = { type = all NOT = { owned_by = TUR }}
+		
+		eastern_mediterrenean_islands_area = { type = all NOT = { owned_by = TUR }}
+		aegean_archipelago_area = { type = all NOT = { owned_by = TUR }}
 	}
 	
 	mean_time_to_happen = {
@@ -270,9 +361,9 @@ country_event = {
 	
 	option = {
 		name = "purple_phoenix.9.a"
-		add_mil_power = 50
-		add_dip_power = 50
-		add_adm_power = 50
+		add_prestige = 20
+		add_legitimacy = 10
+		add_army_tradition = 10
 	}
 }
 
@@ -303,9 +394,9 @@ country_event = {
 	
 	option = {
 		name = "purple_phoenix.10.a"
-		add_mil_power = 50
-		add_dip_power = 50
-		add_adm_power = 50
+		add_prestige = 35
+		add_legitimacy = 10
+		add_army_tradition = 10
 	}
 }
 
@@ -320,8 +411,10 @@ country_event = {
 	trigger = {
 		tag = BYZ
 		has_dlc = "Purple Phoenix"
-		NOT = { has_idea = byz_admin_power }
-		has_idea_group = BYZ_ideas
+		OR = {
+			has_reform = roman_bureaucracy_reform
+			government = roman_autocracy_legacy #Does this work?
+		}
 		OR = {
 			NOT = { has_country_flag = recent_BYZ_factions }
 			had_country_flag = { flag = recent_BYZ_factions days = 365 }
@@ -336,7 +429,7 @@ country_event = {
 	
 	option = {
 		name = "purple_phoenix.11.a"
-		add_mil_power = 50
+		add_faction_influence = { faction = logothete_military influence = 10 }	
 	}
 }
 
@@ -351,8 +444,10 @@ country_event = {
 	trigger = {
 		tag = BYZ
 		has_dlc = "Purple Phoenix"
-		NOT = { has_idea = byz_admin_power }
-		has_idea_group = BYZ_ideas
+		OR = {
+			has_reform = roman_bureaucracy_reform
+			government = roman_autocracy_legacy #Does this work?
+		}
 		OR = {
 			NOT = { has_country_flag = recent_BYZ_factions }
 			had_country_flag = { flag = recent_BYZ_factions days = 365 }
@@ -367,7 +462,7 @@ country_event = {
 	
 	option = {
 		name = "purple_phoenix.12.a"
-		add_mil_power = -25
+		add_faction_influence = { faction = logothete_military influence = -10 }
 	}
 }
 
@@ -381,8 +476,10 @@ country_event = {
 	trigger = {
 		tag = BYZ
 		has_dlc = "Purple Phoenix"
-		NOT = { has_idea = byz_admin_power }
-		has_idea_group = BYZ_ideas
+		OR = {
+			has_reform = roman_bureaucracy_reform
+			government = roman_autocracy_legacy #Does this work?
+		}
 		OR = {
 			NOT = { has_country_flag = recent_BYZ_factions }
 			had_country_flag = { flag = recent_BYZ_factions days = 365 }
@@ -397,7 +494,7 @@ country_event = {
 	
 	option = {
 		name = "purple_phoenix.13.a"
-		add_dip_power = 50
+		add_faction_influence = { faction = logothete_postal influence = 10 }
 	}
 }
 
@@ -411,8 +508,10 @@ country_event = {
 	trigger = {
 		tag = BYZ
 		has_dlc = "Purple Phoenix"
-		NOT = { has_idea = byz_admin_power }
-		has_idea_group = BYZ_ideas
+		OR = {
+			has_reform = roman_bureaucracy_reform
+			government = roman_autocracy_legacy #Does this work?
+		}
 		OR = {
 			NOT = { has_country_flag = recent_BYZ_factions }
 			had_country_flag = { flag = recent_BYZ_factions days = 365 }
@@ -427,8 +526,7 @@ country_event = {
 	
 	option = {
 		name = "purple_phoenix.14.a"
-		add_dip_power = -25
-	}
+		add_faction_influence = { faction = logothete_postal influence = -10 }	}
 }
 
 country_event = {
@@ -441,8 +539,10 @@ country_event = {
 	trigger = {
 		tag = BYZ
 		has_dlc = "Purple Phoenix"
-		NOT = { has_idea = byz_admin_power }
-		has_idea_group = BYZ_ideas
+		OR = {
+			has_reform = roman_bureaucracy_reform
+			government = roman_autocracy_legacy #Does this work?
+		}
 		OR = {
 			NOT = { has_country_flag = recent_BYZ_factions }
 			had_country_flag = { flag = recent_BYZ_factions days = 365 }
@@ -457,8 +557,7 @@ country_event = {
 	
 	option = {
 		name = "purple_phoenix.15.a"
-		add_adm_power = 50
-	}
+		add_faction_influence = { faction = logothete_general influence = 10 }	}
 }
 
 country_event = {
@@ -471,8 +570,10 @@ country_event = {
 	trigger = {
 		tag = BYZ
 		has_dlc = "Purple Phoenix"
-		has_idea_group = BYZ_ideas
-		NOT = { has_idea = byz_admin_power }
+		OR = {
+			has_reform = roman_bureaucracy_reform
+			government = roman_autocracy_legacy #Does this work?
+		}
 		OR = {
 			NOT = { has_country_flag = recent_BYZ_factions }
 			had_country_flag = { flag = recent_BYZ_factions days = 365 }
@@ -487,7 +588,6 @@ country_event = {
 	
 	option = {
 		name = "purple_phoenix.16.a"
-		add_adm_power = -25
-	}
+		add_faction_influence = { faction = logothete_general influence = -10 }	}
 }
  
