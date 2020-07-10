@@ -12,34 +12,92 @@ country_event = {
 	id = flavor_boh.1
 	title = flavor_boh.1.t
 	desc = flavor_boh.1.d
-	picture = CIVIL_WAR_eventPicture
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
+		}
+		picture = HUSSITE_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = CIVIL_WAR_eventPicture
+	}
 
 	fire_only_once = yes
 
 	trigger = {
-		OR = {
-			tag = BOH
-			AND = {
-				tag = GMV
-				primary_culture = czech
-				NOT = { exists = BOH }
-			}
-		}
+		tag = BOH
 		owns = 266
 		is_year = 1446
-		NOT = { is_year = 1457 }
+		NOT = { is_year = 1500 }
 		is_at_war = no
-		religion = catholic
+		OR = {
+			religion = catholic
+			religion = hussite
+		}
 		is_free_or_tributary_trigger = yes
 	}
 	
 	mean_time_to_happen = {
 		months = 17
 	}
+	immediate = {
+		hidden_effect = {
+			set_country_flag = first_hussite_king
+		}
+	}
 	
-	option = {
-		ai_chance = { factor = 90 }
+	option = { # Convert to Hussite
+		ai_chance = { factor = 10 }
 		name = flavor_boh.1.a
+		set_country_flag = hussite_regency_mission_flag
+		if = {
+			limit = {
+				has_regency = no
+			}
+			tooltip = {
+				kill_ruler = yes
+			}
+		}
+		if = {
+			limit = {
+				has_heir = yes
+			}
+			remove_heir = yes
+		}
+		change_religion = hussite
+		define_ruler = {
+			name = "Jirí"
+			dynasty = "z Podebrad"
+			adm = 5
+			dip = 4
+			mil = 3
+			religion = hussite
+			culture = czech
+			age = 25
+			fixed = yes
+		}
+		if = {
+			limit = {
+				has_states_general_mechanic = yes
+			}
+			change_statists_vs_orangists = 1
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality = zealot_personality }
+		}
+		add_reform_desire = 0.03
+	}
+	
+	option = { # Hussite King, Catholic nation - tolerance option
+		ai_chance = { factor = 90 }
+		set_country_flag = hussite_regency_mission_flag
+		name = flavor_boh.1.c
 		add_papal_influence = -100
 		if = {
 			limit = {
@@ -59,65 +117,36 @@ country_event = {
 			name = "Jirí"
 			dynasty = "z Podebrad"
 			adm = 5
-			dip = 3
+			dip = 4
 			mil = 3
+			religion = hussite
+			fixed = yes
 		}
 		if = {
 			limit = {
 				has_states_general_mechanic = yes
 			}
-			change_statists_vs_orangists = 200
+			change_statists_vs_orangists = 1
 		}
-		if = {
-			limit = {
-				has_dlc = "Rights of Man" 
-			}
-			hidden_effect = { add_ruler_personality = zealot_personality }
-		}
-		add_reform_desire = 0.03
+		add_reform_desire = 0.01
 		add_ruler_modifier = {
 			name = "boh_hussite_king"
 			duration = -1
 		}
-		#Amyz IR added
-		if = {
-			limit = { religion = catholic }
-			change_religion = hussite
-		}
-		if = {
-			limit = { MRV = { religion = catholic } }
-			hidden_effect = { MRV = { change_religion = hussite } }
-		}
-		#added to not break HRE religious peace
-		set_country_flag = boh_supported_hussites
-		set_country_flag = boh_hussites_mission_accept
 		PAP = {
 			country_event = { id = flavor_boh.9 }
 		}
-		every_known_country = {
-			limit = {
-				religion = catholic
-				is_free_or_tributary_trigger = yes
-				OR = {
-					is_neighbor_of = ROOT
-					num_of_cities = 15
-					government = theocracy
-				}
-			}
-			add_opinion = {
-				who = root
-				modifier = boh_heretic_hussite
-			}
-		}
 	}
 	
-	option = {
+	option = { # Fight them
 		name = flavor_boh.1.b
+		set_country_flag = hussite_regency_mission_flag
 		266 = {
 			spawn_rebels = {
 				type = pretender_rebels
 				size = 1
-				leader = "Jirí z Podebrad"
+				leader = "Jirí"
+				leader_dynasty = "z Podebrad"
 			}		
 		}
 		random_owned_province = {
@@ -129,10 +158,9 @@ country_event = {
 				size = 1
 			}
 		}
-		set_country_flag = boh_hussites_mission_decline
 		if = {
-			limit = { exists = PAP }
-			add_papal_influence = 5
+			limit = { religion = catholic }
+			add_papal_influence = 10
 			PAP = {
 				add_opinion = {
 					who = root
@@ -148,40 +176,78 @@ country_event = {
 	id = flavor_boh.2
 	title = flavor_boh.2.t
 	desc = flavor_boh.2.d
-	picture = COURT_eventPicture
-	
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
+		}
+		picture = HUSSITE_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = COURT_eventPicture
+	}
+
 	is_triggered_only = yes
 
 	trigger = {
+		tag = BOH
 		OR = {
-			tag = BOH
 			AND = {
-				tag = GMV
-				primary_culture = czech
-				NOT = { exists = BOH }
+				religion = catholic
+				ruler_religion = hussite
+			}
+			religion = hussite
+		}
+		has_regency = no
+		NOT = { has_ruler_flag = hussite_king }
+		NOT = { is_religion_enabled = protestant }
+		NOT = {
+			check_variable = {
+				which = hussite_changes_to_repent
+				value = 3
 			}
 		}
-		has_country_flag = boh_supported_hussites
-		NOT = { is_religion_enabled = protestant }
-		has_regency = no
+		had_country_flag = {
+			flag = first_hussite_king
+			days = 182
+		}
 	}
 	
 	immediate = {
-		every_country = {
-			limit = {
-				has_opinion_modifier = {
-					who = ROOT
-					modifier = boh_heretic_hussite
+		hidden_effect = {
+			set_ruler_flag = hussite_king
+			if = {
+				limit = {
+					NOT = {
+						check_variable = {
+							which = hussite_changes_to_repent
+							value = 1
+						}
+					}
 				}
+				set_variable = {
+					which = hussite_changes_to_repent
+					value = 1
+				}					
 			}
-			remove_opinion = {
-				who = ROOT
-				modifier = boh_heretic_hussite
+			else_if = {
+				limit = {
+					check_variable = {
+						which = hussite_changes_to_repent
+						value = 1
+					}
+				}
+				change_variable = {
+					which = hussite_changes_to_repent
+					value = 1
+				}
 			}
 		}
 	}
 	
-	option = {
+	option = { # reconciliation
 		ai_chance = {
 			factor = 90
 			modifier = {
@@ -190,7 +256,6 @@ country_event = {
 			}
 		}
 		name = flavor_boh.2.a
-		add_stability = -1
 		if = {
 			limit = { exists = PAP }
 			add_papal_influence = 5
@@ -202,18 +267,29 @@ country_event = {
 			}
 		}
 		add_reform_desire = -0.01
-		clr_country_flag = boh_supported_hussites
 		if = {
 			limit = {
-				NOT = { is_year = 1490 }
+				religion = hussite
 			}
-			random_owned_province = {
-				limit = { is_state = yes }
-				spawn_rebels = {
-					type = heretic_rebels
-					size = 2
+			change_religion = catholic
+			every_owned_province = {
+				limit = {
+					religion = hussite
 				}
+				change_religion = catholic
 			}
+		}
+		if = {
+			limit = {
+				ruler_religion = hussite
+			}
+			set_ruler_religion = catholic
+		}
+		if = {
+			limit = {
+				heir_religion = hussite
+			}
+			set_heir_religion = catholic
 		}
 	}
 	option = {
@@ -225,28 +301,25 @@ country_event = {
 			name = "boh_hussite_king"
 			duration = -1
 		}
+		add_reform_desire = 0.01
+		if = {
+			limit = {
+				religion = catholic
+			}
+			excommunicate = ROOT
+		}
+		else_if = {
+			limit = {
+				religion = hussite
+			}
+			custom_tooltip = rejected_reconciliation_tt
+			set_ruler_flag = hussite_heretic # catholics can cleanse heresy against you for 15 years
+		}
 		if = {
 			limit = {
 				exists = PAP
 			}
 			PAP = { country_event = { id = flavor_boh.9 } }
-		}
-		add_reform_desire = 0.01
-		custom_tooltip = flavor_boh.2.3
-		every_known_country = {
-			limit = {
-				religion = catholic
-				is_free_or_tributary_trigger = yes
-				OR = {
-					is_neighbor_of = ROOT
-					num_of_cities = 15
-					government = theocracy
-				}
-			}
-			add_opinion = {
-				who = root
-				modifier = boh_heretic_hussite
-			}
 		}
 	}
 }
@@ -256,22 +329,30 @@ country_event = {
 	id = flavor_boh.3
 	title = flavor_boh.3.t
 	desc = flavor_boh.3.d
-	picture = BAD_WITH_MONARCH_eventPicture
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
+		}
+		picture = HUSSITE_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	
+	fire_only_once = yes
 	
 	trigger = {
-		OR = {
-			tag = BOH
-			AND = {
-				tag = GMV
-				primary_culture = czech
-				NOT = { exists = BOH }
-			}
-		}
+		tag = BOH
 		is_year = 1465
-		has_country_modifier = boh_hussite_king
-		NOT = { has_country_flag = confederacy_of_zelena_hora }
 		owns = 265
 		owns = 2970
+		OR = {
+			religion = hussite
+			ruler_religion = hussite
+		}
 	}
 	
 	immediate = {
@@ -342,14 +423,7 @@ country_event = {
 	fire_only_once = yes
 
 	trigger = {
-		OR = {
-			tag = BOH
-			AND = {
-				tag = GMV
-				primary_culture = czech
-				NOT = { exists = BOH }
-			}
-		}
+		tag = BOH
 		owns = 266
 		is_year = 1493
 	}
@@ -374,16 +448,10 @@ country_event = {
 	fire_only_once = yes
 
 	trigger = {
-		OR = {
-			tag = BOH
-			AND = {
-				tag = GMV
-				primary_culture = czech
-				NOT = { exists = BOH }
-			}
-		}
+		tag = BOH
 		is_year = 1500
-		NOT = { ADM = 4 }
+		NOT = { is_year = 1550 }
+		NOT = { ADM = 3 }
 	}
 	
 	mean_time_to_happen = {
@@ -393,13 +461,14 @@ country_event = {
 	option = {
 		name = flavor_boh.5.a
 		ai_chance = { factor = 90 }
-		add_ruler_modifier = {
-			name = boh_strong_nobles
+		change_estate_land_share = {
+			estate = estate_nobles
+			share = 3
 		}
 	}
 	option = {
 		name = flavor_boh.5.b
-		add_stability = -3
+		add_stability = -1
 		random_owned_province = {
 			spawn_rebels = {
 				type = noble_rebels
@@ -419,14 +488,7 @@ country_event = {
 	fire_only_once = yes
 
 	trigger = {
-		OR = {
-			tag = BOH
-			AND = {
-				tag = GMV
-				primary_culture = czech
-				NOT = { exists = BOH }
-			}
-		}
+		tag = BOH
 		is_year = 1599
 		owns = 266
 	}
@@ -449,57 +511,104 @@ country_event = {
 	}	
 }
 
-# Hussite Traditions.
+# Hussite Traditions
 country_event = {
 	id = flavor_boh.7
 	title = flavor_boh.7.t
 	desc = flavor_boh.7.d
-	picture = RELIGION_eventPicture
-	
-	fire_only_once = no		#can happen repeatedly... :)
 
-	trigger = {
-		owns = 266
-		is_religion_enabled = protestant
-		religion = catholic
-		NOT = { religion_years = { protestant = 100 } }
-		NOT = { has_reform = papacy_reform }
-		any_owned_province = {
-			religion = catholic
-			culture = czech
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
 		}
-	}	
-
-	mean_time_to_happen = {
-		months = 120
-		modifier = {
-			factor = 0.75
-			num_of_religion = {
-				religion = catholic
-				value = 0.5
-			}			
+		picture = ADULT_BAPTISME_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = POPE_PREACHING_eventPicture
+	}
+	
+	is_triggered_only = yes # initially triggered by Protestant event and then by itself
+	
+	trigger = {
+		OR = {
+			tag = BOH
+			any_owned_province = {
+				religion = hussite
+			}
 		}
 	}
 	
-	option = {
-		name = flavor_boh.7.a
-		ai_chance = { factor = 90 }	
-		random_owned_province = {
+	option = { # Remain Hussite
+		ai_chance = {
+			factor = 20
+		}
+		trigger = {
+			religion = hussite
+		}
+		name = "flavor_boh.7.a"
+		if = {
 			limit = {
-				religion = catholic
-				culture = czech
+				has_dlc = "Art of War"
+			}
+			custom_tooltip = remain_hussite_tt # warning that you won't get a side for the league war
+		}
+		add_prestige = 10
+		add_church_power = 10
+	}
+	
+	option = { # Switch to Protestant
+		ai_chance = {
+			factor = 80
+		}
+		trigger = {
+			religion = hussite
+		}
+		name = "flavor_boh.7.b"
+		change_religion = protestant
+		every_owned_province = {
+			limit = {
+				religion = hussite
 			}
 			change_religion = protestant
 		}
+		if = {
+			limit = {
+				tag = BOH
+			}
+			every_country = {
+				limit = {
+					NOT = { tag = BOH }
+					OR = {
+						religion = hussite
+						any_owned_province = {
+							religion = hussite
+						}
+					}
+				}
+				country_event = {
+					id = flavor_boh.7
+					days = 3
+				}
+			}
+		}
 	}
 	
-	option = {
-		name = flavor_boh.7.b
-		ai_chance = { factor = 0 }	
+	option = { # Hussite provinces convert
 		trigger = {
-			adm_power = 10
+			NOT = { 
+				religion = hussite 
+			}
 		}
-		add_adm_power = -50
+		name = "flavor_boh.7.b"
+		every_owned_province = {
+			limit = {
+				religion = hussite
+			}
+			change_religion = protestant
+		}
 	}
 }
 
@@ -514,14 +623,7 @@ country_event = {
 	is_triggered_only = yes
 
 	trigger = {
-		OR = {
-			tag = BOH
-			AND = {
-				tag = GMV
-				primary_culture = czech
-				NOT = { exists = BOH }
-			}
-		}
+		tag = BOH
 		is_emperor = no
 		religion = catholic
 		any_owned_province = {
@@ -578,7 +680,18 @@ country_event = {
 	id = flavor_boh.9
 	title = flavor_boh.9.t
 	desc = flavor_boh.9.d
-	picture = POPE_PREACHING_eventPicture
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
+		}
+		picture = ADULT_BAPTISME_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = POPE_PREACHING_eventPicture
+	}
 	
 	is_triggered_only = yes
 
@@ -615,7 +728,18 @@ country_event = {
 	id = flavor_boh.10
 	title = flavor_boh.10.t
 	desc = flavor_boh.10.d
-	picture = POPE_PREACHING_eventPicture
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
+		}
+		picture = ADULT_BAPTISME_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = POPE_PREACHING_eventPicture
+	}
 	
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -632,7 +756,18 @@ country_event = {
 	id = flavor_boh.11
 	title = flavor_boh.11.t
 	desc = flavor_boh.11.d
-	picture = POPE_PREACHING_eventPicture
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
+		}
+		picture = ADULT_BAPTISME_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = POPE_PREACHING_eventPicture
+	}
 	
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -647,4 +782,70 @@ country_event = {
 			}
 		}
 	}
+}
+
+# New Events for Bohemia by Daniel Tolman
+
+# Compacts of Basel
+country_event = {
+	id = flavor_boh.12
+	title = flavor_boh.12.t
+	desc = flavor_boh.12.d
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
+		}
+		picture = ADULT_BAPTISME_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = POPE_PREACHING_eventPicture
+	}
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = BOH
+		is_subject = no
+		NOT = { is_year = 1450 }
+	}
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = { # religious toleration
+		name = flavor_boh.12.a
+		custom_tooltip = first_hussite_tt
+		add_country_modifier = { # tolerance heretics
+			name = "religious_peace_hussites"
+			duration = 3650
+		}
+	}
+	
+	option = { # abandon religious peace
+		name = flavor_boh.12.b
+		add_country_modifier = {
+			name = "hussite_persecution"
+			duration = 3650
+		}
+	}
+}
+
+province_event = {
+	id = flavor_boh.13
+	title = none
+	desc = none
+	picture = none
+	hidden = yes	
+	fire_only_once = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		remove_reform_center = hussite
+	}
+	
+	option = { }
 }

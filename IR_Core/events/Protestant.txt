@@ -3,7 +3,18 @@ country_event = {
 	id = 2001
 	title = "EVTNAME2001"
 	desc = "EVTDESC2001"
-	picture = RELIGION_eventPicture
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
+		}
+		picture = LUTHER_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = RELIGION_eventPicture
+	}
 	
 	major = yes
 	
@@ -12,7 +23,7 @@ country_event = {
 		religion = catholic
 		is_defender_of_faith = no	
 		NOT = { has_reform = papacy_reform }
-		reform_desire = 1.10			#BeyondTypus - More catholic tag means more reform desire. Increasing reform desire criteria from .95 to match.
+		reform_desire = 1
 		capital_scope = {
 			continent = europe
 		}
@@ -21,86 +32,42 @@ country_event = {
 				RELIGION = protestant
 			}
 		}
-		OR = {
-			primary_culture = czech
-			primary_culture = german_schlesian
-			primary_culture = schlesian
-			primary_culture = moravian
-			primary_culture = sorbian
-			
-			primary_culture = prussian
-			primary_culture = markish
-			primary_culture = pommeranian 
-			
-			primary_culture = danish
-			primary_culture = swedish
-			primary_culture = norwegian
-			
-			primary_culture = hannoverian
-			primary_culture = hessian
-			primary_culture = saxon
-			
-			culture_group = baltic
-			primary_culture = deutschbalten
-			
-			primary_culture = estonian
-			primary_culture = finnish
-		}
 	}
 	
 	mean_time_to_happen = {
-		months = 2500
+		months = 4000
 		
-		#Some new BT controls to finally get ahold of when the Reformation hits... bit heavy handed, but what can you do? Especially now that ages are controled by it.
 		modifier = {
-			factor = 99.0
-			NOT = { is_year = 1490 }
+			factor = 2
+			PAP = { is_part_of_hre = yes }
+			OR = {
+				culture_group = germanic
+				culture_group = scandinavian
+				culture_group = british
+				culture_group = west_slavic
+			}
 		}
 		modifier = {
-			factor = 8.0
-			NOT = { is_year = 1500 }
+			factor = 0.9
+			reform_desire = 1.05
 		}
 		modifier = {
-			factor = 4.0
-			NOT = { is_year = 1505 }
+			factor = 0.9
+			reform_desire = 1.10
 		}
 		modifier = {
-			factor = 2.0
-			NOT = { is_year = 1510 }
+			factor = 0.9
+			reform_desire = 1.15
 		}
 		modifier = {
-			factor = 1.2
-			NOT = { is_year = 1515 }
+			factor = 0.9
+			reform_desire = 1.20
 		}
 		modifier = {
-			factor = 0.8
-			NOT = { is_year = 1520 }
+			factor = 0.9
+			reform_desire = 1.25
 		}
-		modifier = {
-			factor = 0.5
-			NOT = { is_year = 1525 }
-		}
-		#Vanilla culture group factors moved to bottom and adjusted
-		modifier = {
-			factor = 0.95
-			reform_desire = 1.10			#BeyondTypus - More catholic tag means more reform desire. Increasing all reform desire criteria. Increasing reform desire criteria from 1.05 to match.
-		}
-		modifier = {
-			factor = 0.85
-			reform_desire = 1.20			#BeyondTypus - More catholic tag means more reform desire. Increasing all reform desire criteria. Increasing reform desire criteria from 1.10 to match.
-		}
-		modifier = {
-			factor = 0.70
-			reform_desire = 1.30			#BeyondTypus - More catholic tag means more reform desire. Increasing all reform desire criteria. Increasing reform desire criteria from 1.15 to match.
-		}
-		modifier = {
-			factor = 0.50
-			reform_desire = 1.40			#BeyondTypus - More catholic tag means more reform desire. Increasing all reform desire criteria. Increasing reform desire criteria from 1.20 to match.
-		}
-		modifier = {
-			factor = 0.25
-			reform_desire = 1.50			#BeyondTypus - More catholic tag means more reform desire. Increasing all reform desire criteria. Increasing reform desire criteria from 1.25 to match.
-		}
+		
 		modifier = {
 			factor = 0.75
 			NOT = { num_of_cities = 10 }
@@ -109,6 +76,7 @@ country_event = {
 			factor = 0.75
 			NOT = { num_of_cities = 2 }
 		}
+		
 		modifier = {
 			factor = 0.75
 			has_idea_group = innovativeness_ideas
@@ -117,6 +85,7 @@ country_event = {
 			factor = 1.25
 			has_idea_group = religious_ideas
 		}
+
 		modifier = {
 			factor = 0.95
 			NOT = { has_opinion = { who = PAP value = -50 } }
@@ -130,20 +99,33 @@ country_event = {
 			NOT = { has_opinion = { who = PAP value = -150 } }
 		}		
 		modifier = {
-			factor = 0.5
-			num_of_rebel_controlled_provinces = 1
-		}
-		modifier = {
 			factor = 2.0
 			government = theocracy
+		}
+		modifier = {
+			factor = 8.0
+			OR = {
+				NOT = { exists = PAP }
+				PAP = { is_part_of_hre = no }
+			}
+			OR = {
+				culture_group = latin
+				culture_group = iberian
+			}
+		}
+		modifier = {
+			factor = 0.75
+			PAP = { is_part_of_hre = yes }
+			is_part_of_hre = no
+			OR = {
+				culture_group = latin
+				culture_group = iberian
+			}
 		}
 	}
 
 	option = {
 		name = "EVTOPTA2001"
-		ai_chance = {
-			factor = 90
-		}
 		enable_religion = protestant
 		random_owned_province = {
 			limit = {
@@ -157,68 +139,36 @@ country_event = {
 				name = "religious_zeal_at_conv"
 				duration = 9000
 			}
-		}
-		capital_scope = {
-			change_religion = protestant
-			add_permanent_province_modifier = {
-				name = "religious_zeal_at_conv"
-				duration = 9000
+			if = {
+				limit = {
+					NOT = { is_capital = yes }
+				}
+				root = {
+					capital_scope = {
+						change_religion = protestant
+						add_permanent_province_modifier = {
+							name = "religious_zeal_at_conv"
+							duration = 9000
+						}
+					}
+				}
 			}
 		}
 		set_country_flag = "protestant_reformation" 
-	}
-	
-	option = {
-		name = "EVTOPTB2001.btpl"
-		trigger = {
-			stability = -2
-		}
-		ai_chance = {
-			factor = 10
-			modifier = {
-				factor = 1.5
-				has_opinion = { who = PAP value = 50 }
-			}
-			modifier = {
-				factor = 2.0
-				has_opinion = { who = PAP value = 100 }
-			}
-			modifier = {
-				factor = 2.5
-				has_opinion = { who = PAP value = 150 }
-			}
-			modifier = {
-				factor = 3.0
-				ruler_has_personality = zealot_personality			#1.18 ruler traits influence
-			}
-			modifier = {
-				factor = 3.0
-				ruler_has_personality = pious_personality			#1.18 ruler traits influence
-			}
-			modifier = {
-				factor = 0.5
-				ruler_has_personality = free_thinker_personality			#1.18 ruler traits influence
-			}
-			modifier = {
-				factor = 0.5
-				ruler_has_personality = sinner_personality			#1.18 ruler traits influence
-			}
-			modifier = {
-				factor = 10.0
-				government = theocracy
-			}
-		}
-		if = {
-			limit = { government = theocracy }
-			add_devotion = 10
-		}
-		add_reform_desire = 0.05
-		add_papal_influence = 10
-		add_stability = -1
-		capital_scope = {
-			add_permanent_province_modifier = {
-			 name = heresy
-			 duration = 5475
+		hidden_effect = {
+			set_global_flag = reformation_started
+			if = {
+				limit = {
+					BOH = {
+						religion = hussite
+					}
+				}
+				BOH = {
+					country_event = {
+						id = flavor_boh.7
+						days = 10
+					}
+				}
 			}
 		}
 	}

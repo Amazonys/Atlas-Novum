@@ -13,17 +13,33 @@ country_event = {
 	desc = papacy_events.1.d
 	picture = RELIGION_eventPicture
 	
+	fire_only_once = yes
+	
 	trigger = {
-		has_dlc = "Common Sense"
-		tag = PAP
-		exists = SWI
-		has_opinion = { who = SWI value = 25 }
-		reverse_has_opinion = { who = SWI value = 25 }
-		NOT = {
-			OR = {
-				has_country_modifier = pap_swiss_guard_timer
-				has_country_modifier = pap_swiss_guard
+		if = {
+			limit = {
+				has_dlc = "Emperor"
 			}
+			has_country_flag = pap_swiss_guard_mission_flag
+		}
+		else = {
+			has_dlc = "Common Sense"
+			tag = PAP
+			exists = SWI
+			has_opinion = { who = SWI value = 25 }
+			reverse_has_opinion = { who = SWI value = 25 }
+			NOT = {
+				OR = {
+					has_country_modifier = pap_swiss_guard_timer
+					has_country_modifier = pap_swiss_guard
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = enable_swiss_guard
 		}
 	}
 	
@@ -31,109 +47,12 @@ country_event = {
 		months = 200
 	}
 	
-	immediate = {
-		hidden_effect = {
-			add_country_modifier = {
-				name = pap_swiss_guard_timer
-				duration = 1825
-				hidden = yes
-			}
-		}
-	}
-	
 	option = {
 		name = papacy_events.1.a
-		SWI = {
-			country_event = {
-				id = papacy_events.2
-				tooltip = papacy_events.2.t
-			}
-		}
-	}
-	
-	option = {
-		name = papacy_events.1.b
-		add_prestige = 5
-	}
-}
-
-# Pope asks for The Swiss Guard
-country_event = {
-	id = papacy_events.2
-	title = papacy_events.2.t
-	desc = papacy_events.2.d
-	picture = RELIGION_eventPicture
-	
-	is_triggered_only = yes
-	
-	option = {
-		name = papacy_events.2.a
-		add_prestige = 10
-		add_opinion = {
-			who = FROM
-			modifier = opinion_swiss_guard
-		}
-		FROM = {
-			country_event = {
-				id = papacy_events.3
-				tooltip = papacy_events.3.t
-			}
-		}
-	}
-	
-	option = {
-		name = papacy_events.2.b
-		tooltip = {
-			reverse_add_opinion = {
-				who = PAP
-				modifier = opinion_no_swiss_guard
-			}
-		}
-		FROM = {
-			country_event = {
-				id = papacy_events.4
-				tooltip = papacy_events.4.t
-			}
-		}
-	}
-}
-
-# The Swiss Guard: Yes
-country_event = {
-	id = papacy_events.3
-	title = papacy_events.3.t
-	desc = papacy_events.3.d
-	picture = RELIGION_eventPicture
-	
-	is_triggered_only = yes
-	
-	option = {
-		name = papacy_events.3.a
-		add_opinion = {
-			who = FROM
-			modifier = opinion_swiss_guard
-		}
+		custom_tooltip = emp_pap_swiss_guard_mercs_enabled
 		add_country_modifier = {
-			name = pap_swiss_guard
-			duration = -1
-		}
-	}
-}
-
-# The Swiss Guard: No
-country_event = {
-	id = papacy_events.4
-	title = papacy_events.4.t
-	desc = papacy_events.4.d
-	picture = RELIGION_eventPicture
-	
-	is_triggered_only = yes
-	
-	option = {
-		name = papacy_events.4.a
-		add_opinion = {
-			who = FROM
-			modifier = opinion_no_swiss_guard
+			name = "pap_papal_swiss_guard"
+			duration = 7300
 		}
 	}
 }
@@ -145,22 +64,24 @@ country_event = {
 	desc = papacy_events.5.d
 	picture = RELIGION_eventPicture
 	
+	is_triggered_only = yes
+	
+	goto = 118
+	
 	trigger = {
 		has_dlc = "Common Sense"
-		tag = PAP
-		118 = { # ROME
+		FROM = {
+			province_id = 118 # Rome
 			is_capital = yes
 			NOT = {
 				controlled_by = PAP
 			}
 		}
+		tag = PAP
 		NOT = {
 			has_country_modifier = pap_passetto_di_borgo_timer
 		}
-	}
-	
-	mean_time_to_happen = {
-		months = 200
+		is_monarch_leader = no
 	}
 	
 	immediate = {
@@ -198,6 +119,10 @@ country_event = {
 	desc = papacy_events.6.d
 	picture = RELIGION_eventPicture
 	
+	goto = cardinal_nephew_province
+	
+	is_triggered_only = yes # pulse
+	
 	trigger = {
 		has_dlc = "Common Sense"
 		tag = PAP
@@ -221,8 +146,31 @@ country_event = {
 		}
 	}
 	
-	mean_time_to_happen = {
-		months = 200
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					capital_scope = {
+						region = italy_region
+					}
+					has_opinion = { who = ROOT value = 25 }
+					reverse_has_opinion = { who = ROOT value = 25 }
+					religion = catholic
+					NOT = { num_of_cardinals = 7 }
+					any_owned_province = {
+						has_cardinal = no
+					}
+				}
+				save_event_target_as = cardinal_nephew_country
+				random_owned_province = {
+					limit = {
+						has_cardinal = no
+						development = 10
+					}
+					save_event_target_as = cardinal_nephew_province
+				}
+			}
+		}
 	}
 	
 	option = {
@@ -234,28 +182,14 @@ country_event = {
 	option = {
 		name = papacy_events.6.b
 		add_devotion = -5
-		random_known_country = {
-			limit = {
-				capital_scope = {
-					region = italy_region
-				}
-				has_opinion = { who = ROOT value = 25 }
-				reverse_has_opinion = { who = ROOT value = 25 }
-				religion = catholic
-				NOT = { num_of_cardinals = 7 }
-				any_owned_province = {
-					has_cardinal = no
-				}
-			}
+		add_corruption = 0.25
+		event_target:cardinal_nephew_country = {
 			set_country_flag = pap_cardinal_nephew_flag
-			random_owned_province = {
-				limit = {
-					has_cardinal = no
-				}
-				province_event = {
-					id = papacy_events.7
-					tooltip = papacy_events.7.t
-				}
+		}
+		event_target:cardinal_nephew_province = {
+			province_event = {
+				id = papacy_events.7
+				tooltip = cardinal_nephew_tt
 			}
 		}
 	}
@@ -270,12 +204,14 @@ province_event = {
 	
 	is_triggered_only = yes
 	
+	goto = ROOT
+	
 	option = {
 		name = papacy_events.7.a
 		add_cardinal = yes
 		owner = {
 			add_papal_influence = 20
-			add_prestige = -20
+			add_prestige = -10
 			every_known_country = {
 				limit = {
 					num_of_cardinals = 1
@@ -305,7 +241,7 @@ province_event = {
 	option = {
 		name = papacy_events.7.b
 		owner = {
-			add_prestige = -5
+			add_prestige = 5
 			PAP = {
 				country_event = {
 					id = papacy_events.9
@@ -327,8 +263,6 @@ country_event = {
 	
 	option = {
 		name = papacy_events.8.a
-		add_adm_power = 100
-		add_dip_power = 100
 		tooltip = {
 			add_opinion = {
 				who = ROOT
@@ -364,6 +298,8 @@ country_event = {
 	desc = papacy_events.10.d
 	picture = RELIGION_eventPicture
 	
+	goto = 118
+	
 	trigger = {
 		has_dlc = "Common Sense"
 		tag = PAP
@@ -371,6 +307,8 @@ country_event = {
 		118 = {
 			owned_by = PAP
 			is_looted = yes
+			devastation = 10
+			controlled_by = PAP
 		}
 		NOT = {
 			has_country_modifier = pap_rome_loot_timer
@@ -392,17 +330,25 @@ country_event = {
 	}
 	
 	option = {
+		goto = 118
 		name = papacy_events.10.a
-		add_years_of_income = -0.10
+		add_years_of_income = -0.05
 		118 = {
-			add_base_manpower = 1
+			add_province_modifier = {
+				name = "roman_garisson"
+				duration = 1825
+			}
 		}
 	}
 	
 	option = {
+		goto = 118
 		name = papacy_events.10.b
 		add_years_of_income = -0.05
-		add_war_exhaustion = -2
+		add_war_exhaustion = -1
+		118 = {
+			add_devastation = -10
+		}
 	}
 }
 
@@ -413,16 +359,22 @@ country_event = {
 	desc = papacy_events.11.d
 	picture = RELIGION_eventPicture
 	
+	fire_only_once = yes
+	
+	goto = 118
+	
 	trigger = {
-		has_dlc = "Common Sense"
-		tag = PAP
-		owns = 118
-		NOT = {
-			OR = {
-				has_country_modifier = mil_vatican_library
-				has_country_modifier = dip_vatican_library
-				has_country_modifier = adm_vatican_library
+		if = {
+			limit = {
+				has_dlc = "Emperor"
 			}
+			has_country_flag = vatican_library_mission_flag
+		}
+		else = {
+			has_dlc = "Common Sense"
+			tag = PAP
+			owns = 118
+			has_institution = renaissance
 		}
 	}
 	
@@ -431,36 +383,32 @@ country_event = {
 	}
 	
 	option = {
+		goto = 118
 		name = papacy_events.11.a
-		add_adm_power = -10
-		add_years_of_income = -0.10
-		add_country_modifier = {
-			name = adm_vatican_library
-			duration = -1
+		add_adm_power = 5
+		custom_tooltip = adm_vatican_library_tt
+		118 = {
+			add_province_triggered_modifier = adm_vatican_library
 		}
 	}
 	
 	option = {
+		goto = 118
 		name = papacy_events.11.b
-		add_dip_power = -10
-		add_years_of_income = -0.10
-		add_country_modifier = {
-			name = dip_vatican_library
-			duration = -1
+		add_dip_power = 5
+		custom_tooltip = dip_vatican_library_tt
+		118 = {
+			add_province_triggered_modifier = dip_vatican_library
 		}
 	}
 	option = {
+		goto = 118
 		name = papacy_events.11.c
-		add_mil_power = -10
-		add_years_of_income = -0.10
-		add_country_modifier = {
-			name = mil_vatican_library
-			duration = -1
+		add_mil_power = 5
+		custom_tooltip = mil_vatican_library_tt
+		118 = {
+			add_province_triggered_modifier = mil_vatican_library
 		}
-	}
-	option = {
-		name = papacy_events.11.e
-		add_prestige = -5
 	}
 }
 
@@ -471,13 +419,14 @@ country_event = {
 	desc = papacy_events.12.d
 	picture = RELIGION_eventPicture
 	
+	fire_only_once = yes
+	
+	goto = 118
+	
 	trigger = {
 		has_dlc = "Common Sense"
 		tag = PAP
 		owns = 118
-		NOT = {
-			has_country_modifier = pap_sistine_chapel
-		}
 	}
 	
 	mean_time_to_happen = {
@@ -485,18 +434,15 @@ country_event = {
 	}
 	
 	option = {
+		goto = 118
 		name = papacy_events.12.a
 		add_years_of_income = -0.25
 		add_devotion = 5
-		add_country_modifier = {
-			name = pap_sistine_chapel
-			duration = -1
+		custom_tooltip = sistine_chapel_tt
+		118 = {
+			add_province_triggered_modifier = pap_sistine_chapel
 		}
 		set_country_flag = pap_sistine_chapel_flag
-	}
-	option = {
-		name = papacy_events.12.b
-		add_prestige = 5
 	}
 }
 
@@ -507,27 +453,29 @@ country_event = {
 	desc = papacy_events.13.d
 	picture = RELIGION_eventPicture
 	
+	goto = 118
+	
+	fire_only_once = yes
+	
 	trigger = {
 		has_dlc = "Common Sense"
 		tag = PAP
-		has_country_modifier = pap_sistine_chapel
 		had_country_flag = { flag = pap_sistine_chapel_flag days = 1825 }
-		NOT = {
-			OR = {
-				has_country_modifier = pap_sistinechapel_botticelli
-				has_country_modifier = pap_sistinechapel_ghirlandaio
-				has_country_modifier = pap_sistinechapel_perugino
-				has_country_modifier = pap_sistinechapel_michelangelo
-				has_country_modifier = pap_sistinechapel_decorated
-			}
-		}
+		owns = 118
 	}
 	
 	mean_time_to_happen = {
 		months = 200
 	}
 	
+	immediate = {
+		hidden_effect = {
+			set_global_flag = sistine_chapel_decorated
+		}
+	}
+	
 	option = {
+		goto = 118
 		name = papacy_events.13.a
 		trigger = {
 			NOT = {
@@ -535,13 +483,14 @@ country_event = {
 			}
 		}
 		add_years_of_income = -0.25
-		add_country_modifier = {
-			name = pap_sistinechapel_botticelli
-			duration = -1
+		custom_tooltip = pap_sistinechapel_botticelli_tt
+		118 = {
+			add_province_triggered_modifier = pap_sistinechapel_botticelli
 		}
 	}
 	
 	option = {
+		goto = 118
 		name = papacy_events.13.b
 		trigger = {
 			is_year = 1449 
@@ -550,13 +499,14 @@ country_event = {
 			}
 		}
 		add_years_of_income = -0.25
-		add_country_modifier = {
-			name = pap_sistinechapel_ghirlandaio
-			duration = -1
+		custom_tooltip = pap_sistinechapel_ghirlandaio_tt
+		118 = {
+			add_province_triggered_modifier = pap_sistinechapel_ghirlandaio
 		}
 	}
 	
 	option = {
+		goto = 118
 		name = papacy_events.13.c
 		trigger = {
 			is_year = 1446
@@ -565,12 +515,13 @@ country_event = {
 			}
 		}
 		add_years_of_income = -0.25
-		add_country_modifier = {
-			name = pap_sistinechapel_perugino
-			duration = -1
+		custom_tooltip = pap_sistinechapel_perugino_tt
+		118 = {
+			add_province_triggered_modifier = pap_sistinechapel_perugino
 		}
 	}
 	option = {
+		goto = 118
 		name = papacy_events.13.e
 		trigger = {
 			is_year = 1475 
@@ -579,21 +530,19 @@ country_event = {
 			}
 		}
 		add_years_of_income = -0.25
-		add_country_modifier = {
-			name = pap_sistinechapel_michelangelo
-			duration = -1
+		custom_tooltip = pap_sistinechapel_michelangelo_tt
+		118 = {
+			add_province_triggered_modifier = pap_sistinechapel_michelangelo
 		}
 	}
 	option = {
+		goto = 118
 		name = papacy_events.13.f
-		add_country_modifier = {
-			name = pap_sistinechapel_decorated
-			duration = -1
+		add_years_of_income = -0.25
+		custom_tooltip = pap_sistinechapel_decorated_tt
+		118 = {
+			add_province_triggered_modifier = pap_sistinechapel_decorated
 		}
-	}
-	option = {
-		name = papacy_events.13.g
-		add_prestige = 5
 	}
 }
 
@@ -612,7 +561,7 @@ country_event = {
 		NOT = {
 			has_country_modifier = pap_indulgences
 		}
-		reform_desire = 0.60			#BeyondTypus - More catholic tag means more reform desire. Increasing reform desire criteria from 0.50 to match.
+		reform_desire = 0.50
 		NOT = { is_religion_enabled = protestant }
 	}
 	
@@ -635,7 +584,7 @@ country_event = {
 			factor = 10
 		}
 		add_stability = -1
-		add_reform_desire = -0.15			#BeyondTypus - More catholic tag means more reform desire. Increasing reform desire criteria from 0.10 to match.
+		add_reform_desire = -0.05
 		add_devotion = 10
 		custom_tooltip = disables_indulgences
 		set_global_flag = pap_disables_indulgences_flag
@@ -669,7 +618,7 @@ country_event = {
 		NOT = {
 			has_country_modifier = pap_simony
 		}
-		reform_desire = 0.60			#BeyondTypus - More catholic tag means more reform desire. Increasing reform desire criteria from 0.50 to match.
+		reform_desire = 0.50
 		NOT = { is_religion_enabled = protestant }
 	}
 	
@@ -692,7 +641,7 @@ country_event = {
 			factor = 1
 		}
 		add_stability = -1
-		add_reform_desire = -0.15			#BeyondTypus - More catholic tag means more reform desire. Increasing reform desire criteria from 0.10 to match.
+		add_reform_desire = -0.05
 		add_devotion = 10
 		custom_tooltip = disables_simony
 		set_global_flag = pap_disables_simony_flag
@@ -726,7 +675,7 @@ country_event = {
 		NOT = {
 			has_country_modifier = pap_veneration_relics
 		}
-		reform_desire = 0.30			#BeyondTypus - More catholic tag means more reform desire. Increasing reform desire criteria from 0.25 to match.
+		reform_desire = 0.25
 		NOT = { is_religion_enabled = protestant }
 	}
 	
@@ -749,7 +698,7 @@ country_event = {
 			factor = 10
 		}
 		add_stability = -1
-		add_reform_desire = -0.15			#BeyondTypus - More catholic tag means more reform desire. Increasing reform desire criteria from 0.10 to match.
+		add_reform_desire = -0.05
 		add_devotion = 10
 		custom_tooltip = disables_veneration_of_relics
 		set_global_flag = pap_disables_veneration_relics_flag
@@ -810,149 +759,149 @@ country_event = {
 }
 
 # Sublimis Deus
-country_event = {
-	id = papacy_events.18
-	title = papacy_events.18.t
-	desc = papacy_events.18.d
-	picture = RELIGION_eventPicture
-	
-	trigger = {
-		has_dlc = "Common Sense"
-		tag = PAP
-		NOT = { has_country_flag = pap_condemned_slavery }
-		any_known_country = {
-			religion = catholic 
-			any_owned_province = {
-				is_colony = yes
-				OR = {
-					continent = south_america
-					continent = north_america
-				}
-			}
-		}
-	}
-	
-	mean_time_to_happen = {
-		months = 500
-		modifier = {
-			factor = 0.9
-			NOT = { is_year = 1600 }
-		}
-	}
-	
-	option = {
-		name = papacy_events.18.a
-		set_country_flag = pap_condemned_slavery
-		add_devotion = 10
-		every_known_country = {
-			limit = {
-				religion = catholic 
-				any_owned_province = {
-					is_colony = yes
-					OR = {
-						continent = south_america
-						continent = north_america
-					}
-				}
-				NOT = { has_country_modifier = pap_condemn_slavery }
-			}
-			country_event = {
-				id = papacy_events.19
-				tooltip = papacy_events.19.t
-			}
-		}
-	}
-	
-	option = {
-		name = papacy_events.18.b
-		add_stability_or_adm_power = yes
-		add_devotion = -15
-	}
-}
+#country_event = {
+#	id = papacy_events.18
+#	title = papacy_events.18.t
+#	desc = papacy_events.18.d
+#	picture = RELIGION_eventPicture
+#	
+#	trigger = {
+#		has_dlc = "Common Sense"
+#		tag = PAP
+#		NOT = { has_country_flag = pap_condemned_slavery }
+#		any_known_country = {
+#			religion = catholic 
+#			any_owned_province = {
+#				is_colony = yes
+#				OR = {
+#					continent = south_america
+#					continent = north_america
+#				}
+#			}
+#		}
+#	}
+#	
+#	mean_time_to_happen = {
+#		months = 500
+#		modifier = {
+#			factor = 0.9
+#			NOT = { is_year = 1600 }
+#		}
+#	}
+#	
+#	option = {
+#		name = papacy_events.18.a
+#		set_country_flag = pap_condemned_slavery
+#		add_devotion = 10
+#		every_known_country = {
+#			limit = {
+#				religion = catholic 
+#				any_owned_province = {
+#					is_colony = yes
+#					OR = {
+#						continent = south_america
+#						continent = north_america
+#					}
+#				}
+#				NOT = { has_country_modifier = pap_condemn_slavery }
+#			}
+#			country_event = {
+#				id = papacy_events.19
+#				tooltip = papacy_events.19.t
+#			}
+#		}
+#	}
+#	
+#	option = {
+#		name = papacy_events.18.b
+#		add_stability_or_adm_power = yes
+#		add_devotion = -15
+#	}
+#}
 
 # The Pope Condemns Slavery
-country_event = {
-	id = papacy_events.19
-	title = papacy_events.19.t
-	desc = papacy_events.19.d
-	picture = RELIGION_eventPicture
-	
-	is_triggered_only = yes
-	
-	option = {
-		name = papacy_events.19.a #Accept the Papal Bull
-		add_papal_influence = 5
-		add_country_modifier = {
-			name = pap_condemn_slavery
-			duration = 3650
-		}
-		PAP = {
-			add_opinion = {
-				who = ROOT
-				modifier = opinion_condemn_slavery
-			}
-			country_event = {
-				id = papacy_events.20
-				tooltip = papacy_events.20.t
-			}
-		}
-	}
-	
-	option = {
-		name = papacy_events.19.b #Refuse and Continue the practice
-		add_papal_influence = -5
-		PAP = {
-			add_opinion = {
-				who = ROOT
-				modifier = opinion_allows_slavery
-			}
-			country_event = {
-				id = papacy_events.21
-				tooltip = papacy_events.21.t
-			}
-		}
-	}
-}
+#country_event = {
+#	id = papacy_events.19
+#	title = papacy_events.19.t
+#	desc = papacy_events.19.d
+#	picture = RELIGION_eventPicture
+#	
+#	is_triggered_only = yes
+#	
+#	option = {
+#		name = papacy_events.19.a #Accept the Papal Bull
+#		add_papal_influence = 5
+#		add_country_modifier = {
+#			name = pap_condemn_slavery
+#			duration = 3650
+#		}
+#		PAP = {
+#			add_opinion = {
+#				who = ROOT
+#				modifier = opinion_condemn_slavery
+#			}
+#			country_event = {
+#				id = papacy_events.20
+#				tooltip = papacy_events.20.t
+#			}
+#		}
+#	}
+#	
+#	option = {
+#		name = papacy_events.19.b #Refuse and Continue the practice
+#		add_papal_influence = -5
+#		PAP = {
+#			add_opinion = {
+#				who = ROOT
+#				modifier = opinion_allows_slavery
+#			}
+#			country_event = {
+#				id = papacy_events.21
+#				tooltip = papacy_events.21.t
+#			}
+#		}
+#	}
+#}
 
 # COUNTRY accepts
-country_event = {
-	id = papacy_events.20
-	title = papacy_events.20.t
-	desc = papacy_events.20.d
-	picture = RELIGION_eventPicture
-	
-	is_triggered_only = yes
-	
-	option = {
-		name = papacy_events.20.a
-		tooltip = {
-			add_opinion = {
-				who = FROM
-				modifier = opinion_condemn_slavery
-			}
-		}
-	}
-}
+#country_event = {
+#	id = papacy_events.20
+#	title = papacy_events.20.t
+#	desc = papacy_events.20.d
+#	picture = RELIGION_eventPicture
+#	
+#	is_triggered_only = yes
+#	
+#	option = {
+#		name = papacy_events.20.a
+#		tooltip = {
+#			add_opinion = {
+#				who = FROM
+#				modifier = opinion_condemn_slavery
+#			}
+#		}
+#	}
+#}
 
 # COUNTRY refuses
-country_event = {
-	id = papacy_events.21
-	title = papacy_events.21.t
-	desc = papacy_events.21.d
-	picture = RELIGION_eventPicture
-	
-	is_triggered_only = yes
-	
-	option = {
-		name = papacy_events.21.a
-		tooltip = {
-			add_opinion = {
-				who = FROM
-				modifier = opinion_allows_slavery
-			}
-		}
-	}
-}
+#country_event = {
+#	id = papacy_events.21
+#	title = papacy_events.21.t
+#	desc = papacy_events.21.d
+#	picture = RELIGION_eventPicture
+#	
+#	is_triggered_only = yes
+#	
+#	option = {
+#		name = papacy_events.21.a
+#		tooltip = {
+#			add_opinion = {
+#				who = FROM
+#				modifier = opinion_allows_slavery
+#			}
+#		}
+#	}
+#}
 
 # Witch Trials
 ## note: this chain uses confusing similar global_flags, be careful not to mix them up (pap_condemn_witchtrials_bad_flag, pap_condemn_witchtrials_good_flag, pap_allows_witchtrials_bad_flag and pap_allows_witchtrials_good_flag)
@@ -1220,7 +1169,7 @@ country_event = {
 		ai_chance = {
 			factor = 10
 		}
-		add_reform_desire = -0.15			#BeyondTypus - More catholic tag means more reform desire. Increasing reform desire criteria from 0.10 to match.
+		add_reform_desire = -0.05
 		FROM = {
 			country_event = {
 				id = papacy_events.28
