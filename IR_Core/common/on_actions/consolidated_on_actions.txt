@@ -387,18 +387,71 @@ on_heir_death = {
 	}
 }
 
-#Doesn't work for unknown reasons, so #ing it out for now.
-#on_new_heir = {
-#	if = {
-#		limit = {
-#			has_reform = high_kingship
-#			has_country_modifier = bt_tanistry_waiting_on_heir
-#			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
-#		}
-#		country_event = { id = BeyondTypusCelticFlavour.2 days = 1 }			#Male heir born/introduced			- doesn't seem to work, I'll look into this later, added a 1 day MTTH in the meantime
-#		country_event = { id = BeyondTypusCelticFlavour.3 days = 1 }			#Female heir born/introduced			- doesn't seem to work, I'll look into this later, added a 1 day MTTH in the meantime
-#	}
-#}
+on_regent = {
+	if = {
+		limit = {
+			NOT = { has_global_flag = death_of_haji_giray } #Also set in history.
+			tag = CRI
+			exists = TUR
+			is_subject = no
+			TUR = {
+				num_of_cities = ROOT
+				is_subject = no
+				num_of_ports = 1
+			}
+		}
+		country_event = { id = flavor_cri.1 } #Death of Haji Giray
+	}
+	if = {
+		limit = {
+			NOT = { has_global_flag = death_of_haji_giray } #Also set in history.
+			tag = CRI
+			OR = {
+				NOT = { exists = TUR }
+				is_subject = yes
+				TUR = { NOT = { num_of_cities = ROOT } }
+				TUR = { is_subject = yes }
+				TUR = { NOT = { num_of_ports = 1 } }
+			}
+		}
+		set_global_flag = death_of_haji_giray
+	}
+	events = {
+		tribal_succession.1	# harsh anti-tribals.
+		flavor_tim.1			#Death of Shah Rukh
+		flavor_daimyo.4			#Shiba Yoshikado
+	}
+}
+
+# country
+on_new_term_election = {
+	events = {
+		700		# Election event
+		elections.720		# Dutch Republic
+		pirates.1
+	}
+}
+
+# country
+on_death_election = {
+	if = {
+		limit = { has_reform = presidential_despot_reform }
+		remove_government_reform = presidential_despot_reform
+	}
+	if = {
+		limit = {
+			has_reform = pirate_republic_reform
+		}
+		set_country_flag = pirate_death_election
+		country_event = { id = pirates.1 }
+	}
+	events = {
+		701		# Election event
+		elections.721		# Dutch Republic
+		elections.800	# Lottery election
+		flavor_tus.16 #Savonarola Leaves This World
+	}
+}
 
 #IR
 # root = losing country, from = location
