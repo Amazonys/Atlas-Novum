@@ -243,7 +243,7 @@ NDefines.NMilitary.ARMY_DRILL_YEARLY_DECAY = -0.05
  
 NDefines.NMilitary.NAVAL_BASE_ENGAGEMENT_WIDTH = 10   		-- Number of ships that can fire per round
 NDefines.NMilitary.HEAVY_SHIP_COMBAT_WIDTH = 3
-NDefines.NMilitary.LIGHT_SHIP_COMBAT_WIDTH = 1
+NDefines.NMilitary.LIGHT_SHIP_COMBAT_WIDTH = 2
 NDefines.NMilitary.GALLEY_COMBAT_WIDTH = 2
 NDefines.NMilitary.TRANSPORT_COMBAT_WIDTH = 1
 NDefines.NMilitary.NAVAL_CASUALTY_MIN_MORALE_DAMAGE = 0.6 -- was 0.2
@@ -251,7 +251,14 @@ NDefines.NMilitary.CAPTURED_SHIP_STRENGTH = 0.5 -- was 0.3
 NDefines.NMilitary.CAPTURED_SHIP_MORALE = 0.25 -- was 0.3
 NDefines.NMilitary.NAVAL_MISSION_REGION_MIN_PROVINCES_IN_RANGE = 6
 NDefines.NMilitary.MONTHLY_REPAIR = 0.05                            -- was 0.1 Ship repair speed
-
+NDefines.NMilitary.HEAVY_SHIP_SAILORS_COST = 200					-- was 200
+NDefines.NMilitary.LIGHT_SHIP_SAILORS_COST = 100					-- was 50
+NDefines.NMilitary.GALLEY_SHIP_SAILORS_COST = 80					-- was 100
+NDefines.NMilitary.TRANSPORT_SHIP_SAILORS_COST = 50				-- was 50
+NDefines.NMilitary.HEAVY_SHIP_COST = 50							-- was 50
+NDefines.NMilitary.LIGHT_SHIP_COST = 20							-- was 20
+NDefines.NMilitary.GALLEY_COST = 15							-- was, 10
+NDefines.NMilitary.TRANSPORT_COST = 10							-- _was 12
 
  --NAI changes
 NDefines.NAI.DEVELOPMENT_CAP_BASE = 50			-- from 10
