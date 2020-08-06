@@ -103,9 +103,12 @@ NDefines.NCountry.EXPLOIT_COOLDOWN_MONTHS = 120			-- from 240
 NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 0			-- from 5
 NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 0			-- from 10
 NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 0			-- from 30
-NDefines.NCountry.EMBRACE_INSTITUTION_COST = 1.25			-- from 2p5
-NDefines.NCountry.CORRUPTION_COST = 0.025			-- from 0p05
-NDefines.NCountry.STATE_MAINTENANCE_DEV_FACTOR = 0.005			-- from 0p007
+NDefines.NCountry.EMBRACE_INSTITUTION_COST = 1.5			-- from 2p5
+NDefines.NCountry.CORRUPTION_COST = 0.02			-- from 0p05
+NDefines.NCountry.STATE_MAINTENANCE_DEV_FACTOR = 0.005	-- from 0p007
+NDefines.NCountry.STATE_MAINTENANCE_DISTANCE_FACTOR = 0.002	-- from 0p001
+NDefines.NCountry.STATE_MAINTENANCE_CONTINENT_FACTOR = 0.3	-- from 0p25
+NDefines.NCountry.STATE_MAINTENANCE_CULTURE_FACTOR = 0.15		-- from 0p25
 NDefines.NCountry.CORRUPTION_FROM_BANNERS = 0.5
 NDefines.NCountry.NOMAD_DEVELOPMENT_SCALE = 1200			-- from 600     I dont actually know how this works     Might have it reversed better check later
 NDefines.NCountry.CULTURAL_UNION_MIN_DEV = 2000			-- from 1000
@@ -314,10 +317,31 @@ NDefines.NReligion.HARMONY_LOSS_PER_DEV_CONVERTED = 0.5			-- from 1
 NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 5 --was 3
 
  --NNationDesigner changes
-NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.25			-- from 0p5
-NDefines.NNationDesigner.PRODUCTION_COST_MODIFIER = 0.25			-- from 0p5
-NDefines.NNationDesigner.MANPOWER_COST_MODIFIER = 0.25			-- from 0p5
+NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.1			-- from 0p5
+NDefines.NNationDesigner.PRODUCTION_COST_MODIFIER = 0.2			-- from 0p5
+NDefines.NNationDesigner.MANPOWER_COST_MODIFIER = 0.3			-- from 0p5
 NDefines.NNationDesigner.MAX_GOVERNMENT_RANK = 5 -- was 3
 
---Culture Penalties
-STATE_MAINTENANCE_CULTURE_FACTOR = 0.0		-- non accepted culture
+NDefines.NGovernment.RUSSIAN_ABILITY_COST = 100
+NDefines.NGovernment.RUSSIAN_ABILITY_POOL_SIZE = 150
+NDefines.NGovernment.RUSSIAN_ABILITY_BASE_GAIN = 3
+NDefines.NGovernment.RUSSIAN_ABILITY_SUDEBNIK_MIN_AUTONOMY = 10
+NDefines.NGovernment.RUSSIAN_ABILITY_SUDEBNIK_AUTONOMY_CHANGE = -10
+NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_THRESHOLD = 0.3
+NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_AI_THRESHOLD = 0.85 -- AI will use ability when revolt risk is 90%, or when they have full power
+NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_CHANGE = -0.3
+NDefines.NGovernment.RUSSIAN_ABILITY_STRELTSY_WE_CHANGE = -2
+NDefines.NGovernment.RUSSIAN_ABILITY_STRELTSY_SPAWN_SIZE = 0.2
+
+NDefines.NGovernment.IQTA_POLICY_COOLDOWN_YEARS = 20
+NDefines.NGovernment.EFFICIENT_FARMING_DUCAT_MULTIPLIER = 2
+NDefines.NGovernment.LAND_AQUISITION_MANPOWER_MULTIPLIER = 0.05
+	
+NDefines.NGovernment.GOVERNMENT_REFORM_BASE_COST = 100.0
+NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 50.0
+NDefines.NGovernment.GOVERNMENT_REFORM_YEARLY_BASE_PROGRESS = 10.0
+NDefines.NGovernment.GOVERNMENT_REFORM_HISTORIC_AUTONOMY = 0.25
+NDefines.NGovernment.GOVERNMENT_REFORM_CHANGE_PROGRESS_COST = 50.0
+NDefines.NGovernment.DICTATORSHIP_TO_MONARCHY_REFORM_PENALTY = 4
+NDefines.NGovernment.NATIVE_REFORM_REFORM_PENALTY = 2
+NDefines.NGovernment.EXPAND_ADMIN_COST = 20.0
