@@ -201,6 +201,8 @@ on_new_monarch = {
 	hab_remove_mission_mods_if_not_emperor_effect = yes
 	thu_remain_von_wettin_effect = yes
 	ladislaus_postumus_union_effect = yes
+	burgundian_inheritance_start_effect = yes
+	ladislaus_postumus_king_died_effect = yes
 	if = {
 		limit = {
 			tag = SAX
@@ -218,18 +220,15 @@ on_new_monarch = {
 			tag = NAV
 			has_country_flag = magdalena_regency_flag
 		}
-		clr_country_flag = magdalena_regency_flag
-		country_event = { id = IR_flavor_NAV.19 days = 10 }
-	}
-	if = {
-		limit = {
-			tag = NAV
-			has_country_flag = catalina_navarra_heiress_flag
+		trigger_switch = { 
+			on_trigger = has_country_flag
+			magdalena_regency_flag = {
+				clr_country_flag = magdalena_regency_flag
+				country_event = { id = IR_flavor_NAV.19 days = 10 }
+			}
+			catalina_navarra_heiress_flag = { country_event = { id = IR_flavor_NAV.20 days = 1 } }
 		}
-		country_event = { id = IR_flavor_NAV.20 days = 1 }
 	}
-	burgundian_inheritance_start_effect = yes
-	ladislaus_postumus_king_died_effect = yes
 	events = {
 		tribal_succession.1		# Harsh anti-tribals.
 		9492 					# Remove some event modifiers
@@ -341,25 +340,12 @@ on_monarch_death = {
 			tag = NAV
 			has_country_flag = john2_flag
 		}
-		NAV = {
-			country_event = { id = IR_flavor_NAV.9 days = 0 }
+		trigger_switch = { 
+			on_trigger = has_country_flag
+			john2_flag = { NAV = { country_event = { id = IR_flavor_NAV.9 days = 0 } } }
+			francis_febo_flag = { NAV = { country_event = { id = IR_flavor_NAV.18 days = 0 } } }
+			Iberian_succession_flag = {  NAV = { country_event = { id = IR_flavor_NAV.21 days = 0 } } }
 		}
-	}
-	if = {
-		limit = {
-			tag = NAV
-			has_country_flag = francis_febo_flag
-		}
-		NAV = {
-			country_event = { id = IR_flavor_NAV.18 days = 0 }
-		}
-	}
-	if = {
-		limit = {
-			tag = NAV
-			has_country_flag = Iberian_succession_flag
-		}
-		country_event = { id = IR_flavor_NAV.21 days = 0 }
 	}
 	#Apparently, the above vanilla code below must be included in any mod, else problems arise.... absolutely bizarre, but what can one do?
 	if = {
@@ -614,6 +600,115 @@ on_province_religion_converted = {
 	}
 }
 
+# province
+on_province_culture_converted = {
+}
+
+# THIS = Province, FROM = Country who Propogated
+on_convert_by_trade_policy = {
+	if = {
+		limit = {
+			trade_company_region = trade_company_moluccas
+			FROM = { is_defender_of_faith = yes }
+		}
+		FROM = {
+			if = {
+				limit = {
+					ai = no
+					NOT = { check_variable = { which = religion_propagated_in_moluccas value = 1 } }
+				}
+				set_variable = {
+					which = religion_propagated_in_moluccas value = 1
+				}
+			}
+			else_if = {
+				limit = {
+					ai = no
+					check_variable = { which = religion_propagated_in_moluccas value = 1 }
+					NOT = { check_variable = { which = religion_propagated_in_moluccas value = 6 } }
+				}
+				change_variable = {
+					which = religion_propagated_in_moluccas value = 1
+				}
+			}
+		}
+	}
+}
+
+# province
+# FROM = old owner
+on_province_owner_change = {
+	events = {
+		japan.1
+	}
+	
+	if = {
+		limit = {
+			OR = {
+				has_province_modifier = wine_bonus_prod
+				has_province_modifier = grain_bonus_prod
+			}
+			FROM = { has_reform = monastic_breweries_reform }
+			NOT = { owner = { has_reform = monastic_breweries_reform } }
+		}
+		remove_province_modifier = wine_bonus_prod
+		remove_province_modifier = grain_bonus_prod
+	}
+	
+	if = {
+		limit = {
+			NOT = {
+				OR = {
+					has_province_modifier = wine_bonus_prod
+					has_province_modifier = grain_bonus_prod
+				}
+			}
+			owner = { has_reform = monastic_breweries_reform }
+			NOT = { FROM = { has_reform = monastic_breweries_reform } }
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					trade_goods = wine
+				}
+				add_province_modifier = { 
+					name = wine_bonus_prod
+					duration = -1
+					hidden = yes
+				}
+			}
+			if = {
+				limit = {
+					trade_goods = grain
+				}
+				add_province_modifier = { 
+					name = grain_bonus_prod
+					duration = -1
+					hidden = yes
+				}
+			}
+		}
+	}
+
+	if = {
+		limit = {
+			owned_by = SRU
+			exists = ARA
+		}
+		ARA = {
+			set_country_flag = ARA_defeat_saruhan
+		}
+	}
+	if = {
+		limit = {
+			NOT = { owner = { religion_group = muslim } }
+			has_province_modifier = sufi_shrine
+		}
+		remove_province_modifier = sufi_shrine
+	}
+	on_province_owner_change_estate_privileges_effect = yes
+}
+
 # FROM = Previous Country, ROOT = Province
 on_company_chartered = {
 	if = {
@@ -694,7 +789,7 @@ on_create_vassal = {
 			tag = PAP
 		}
 		change_government = theocracy
-		add_government_reform = papacy_reform
+		#add_government_reform = papacy_reform
 		adopt_reform_progress = FROM
 	}
 	if = {
@@ -740,6 +835,29 @@ on_create_vassal = {
 			}
 		}
 	}
+}
+
+# THIS = Province
+
+on_reform_enacted = {
+}
+
+on_reform_changed = {
+}
+
+on_trade_company_investment = {
+}
+
+on_center_of_trade_upgrade = {
+
+}
+
+on_center_of_trade_downgrade = {
+
+}
+
+on_culture_promoted = {
+
 }
 
 # ROOT = Country establishing it

@@ -121,6 +121,7 @@ NDefines.NCountry.PS_MOVE_CAPITAL_EXTRA = 100			-- from 50
 NDefines.NCountry.PS_CHANGE_CULTURE = 10			-- from 10
 NDefines.NCountry.PS_IMPROVE_PROVINCE_BASE = 0			-- from 50 # ANSWER TO LIFE THE UNIVERSE AND EVERYTHING
 NDefines.NCountry.PS_IMPROVE_PROVINCE_CAPITAL_DISCOUNT = 0			-- from 0p05
+NDefines.NCountry.ESTATE_CROWNLAND_FROM_DEV = 0			-- was 0.2 --How much crownland you gain from developing a province.
 NDefines.NCountry.OVEREXTENSION_FACTOR = 0.5			-- from 1p0
 NDefines.NCountry.MONTHS_TO_CHANGE_CULTURE = 5			-- from 10
 NDefines.NCountry.RAZE_PROVINCE_POWER_PER_DEVELOPMENT = 10			-- from 25p0
