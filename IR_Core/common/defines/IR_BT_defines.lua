@@ -68,9 +68,9 @@ NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.03			
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_DEVASTATION = -2.5			-- from -5p0
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_TRIBUTARY_DEV = 0.075			-- from 0p15
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_NONTRIBUTARY_DEV = -0.15			-- from -0p3
-NDefines.NDiplomacy.TRIBUTE_BASE_ADM = 0.015			-- from 0p03
-NDefines.NDiplomacy.TRIBUTE_BASE_DIP = 0.015			-- from 0p03
-NDefines.NDiplomacy.TRIBUTE_BASE_MIL = 0.015			-- from 0p03
+NDefines.NDiplomacy.TRIBUTE_BASE_ADM = 0.03			-- from 0p03
+NDefines.NDiplomacy.TRIBUTE_BASE_DIP = 0.03			-- from 0p03
+NDefines.NDiplomacy.TRIBUTE_BASE_MIL = 0.03			-- from 0p03
  --Claims and Espionage
 NDefines.NDiplomacy.FABRICATE_CLAIM_COST = 25
 NDefines.NDiplomacy.FABRICATE_CLAIM_COST_MODIFIER_PER_CLAIM = 0.2
@@ -92,8 +92,8 @@ NDefines.NDiplomacy.HRE_FOREIGN_CONTROL_PENALTY = -0.005 -- from -0.001
  -- Great powers
 NDefines.NDiplomacy.NUM_OF_GREAT_POWERS = 12
   -- charter
-NDefines.NDiplomacy.CHARTER_COMPANY_BASE_COST = 2000 -- from 1000
-NDefines.NDiplomacy.CHARTER_COMPANY_MINIMUM_COST = 1000 -- from 100
+NDefines.NDiplomacy.CHARTER_COMPANY_BASE_COST = 5000 -- from 1000
+NDefines.NDiplomacy.CHARTER_COMPANY_MINIMUM_COST = 5000 -- from 100
 
  --NCountry changes
 NDefines.NCountry.EXPLOIT_ADM_INCOME = 30			-- from 60
@@ -277,7 +277,7 @@ NDefines.NAI.DIPLOMATIC_ACTION_CLAIM_THRONE_DEVELOPMENT_FACTOR = 0.5			-- from 1
 NDefines.NAI.DIPLOMATIC_ACTION_AGITATE_FOR_LIBERTY_DEVELOPMENT_FACTOR = 0.15			-- from 0p25
 NDefines.NAI.DIPLOMATIC_ACTION_SUPPORT_HEIR_DEVELOPMENT_FACTOR = 1			-- from 2
 NDefines.NAI.DIPLOMATIC_ACTION_TRIBUTARY_ACCEPTANCE_PER_DEVELOPMENT = -0.25			-- from -0p5
-NDefines.NAI.CHARTER_COMPANY_BASE_RELUCTANCE = -1000						-- from -3; Base reluctance to giving away provinces in charter company diplo action - essentially disabled
+NDefines.NAI.CHARTER_COMPANY_BASE_RELUCTANCE = -100						-- from -3; Base reluctance to giving away provinces in charter company diplo action - essentially disabled
 NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 1				-- from 3; How much development needed to add one reluctance
 
 --DEVELOPMENT
