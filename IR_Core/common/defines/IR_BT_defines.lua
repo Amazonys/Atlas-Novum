@@ -317,6 +317,13 @@ NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 20			-- from 10
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 400			-- from 200
 NDefines.NReligion.HARMONY_LOSS_PER_DEV_CONVERTED = 0.5			-- from 1
 NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 5 --was 3
+NDefines.NReligion.MIN_CARDINALS = 6									-- Least amount of cardinals/ Starting cardinals
+NDefines.NReligion.MAX_CARDINALS = 24									-- Max amount of cardinals
+NDefines.NReligion.MAX_CARDINALS_PER_COUNTRY = 4							-- Max cardinals in a single country
+NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 20.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
+NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 400.0							-- WAS 200 -- When a cardinal is chosen the formula is diving a countrys development by this number.
+NDefines.NReligion.NUMBER_OF_POSSIBLE_CARDINALS = 10						-- Number of cardinals from said number of most successful provinces to be randomly picked from
+
 
  --NNationDesigner changes
 NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.1			-- from 0p5
