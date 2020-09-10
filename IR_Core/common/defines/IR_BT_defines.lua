@@ -207,7 +207,7 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local auto
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
  --NMilitary changes
-NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 5			-- from 5     I dont actually know how this works     Might have it reversed better check later
+NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 10			-- from 5     I dont actually know how this works     Might have it reversed better check later
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 40			-- from 50
 NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.1			-- from 0p25
@@ -219,8 +219,8 @@ NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 2
  -- Devastation
 NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -1
 NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.02			-- 100 revanschism is -2 a year.
-NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -3.4
-NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -0.8
+NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -3.5
+NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -1
  --Unit Speeds
 NDefines.NMilitary.INFANTRY_SPEED = 0.6					
 NDefines.NMilitary.CAVALRY_SPEED = 0.8							
