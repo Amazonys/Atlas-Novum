@@ -142,6 +142,9 @@ NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_RANGE = 20
 NDefines.NCountry.PS_ESTABLISH_SIBERIAN_FRONTIER = 40
 NDefines.NCountry.PS_BUY_NATIVE_ADVANCEMENT = 400
+ --discovery
+NDefines.NCountry.PROVINCE_DISCOVERY_YEARS_TECHNOLOGY = 9999        -- was 50 -- Years until discoveries spread within technology group
+NDefines.NCountry.PROVINCE_DISCOVERY_YEARS_RELIGION = 9999       -- was 100 -- Years until discoveries spread with religion
  -- Core Costs
 NDefines.NCountry.CORE_COLONY = 0.5								-- Multiplied with development, colonized by country or overseas
 NDefines.NCountry.CORE_OVERSEAS = 0.5						-- Multiplied with development, colonized by country or overseas
