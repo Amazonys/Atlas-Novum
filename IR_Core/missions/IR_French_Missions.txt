@@ -162,10 +162,8 @@ IR_France_slot_1 = {
 		required_missions = { fra_league_weal }
 		position = 5
 
-		trigger = { 
-			capital_scope = { 
-				all_state_province = { owned_by = ROOT NOT = { local_autonomy = 1 } }
-			}
+		trigger = { 			 
+				all_state_province = { capital_scope = { owned_by = ROOT NOT = { local_autonomy = 1 } } }
 		}
 
 		effect = { 
@@ -177,11 +175,15 @@ IR_France_slot_1 = {
 		icon = mission_cannons_firing
 		required_missions = { fra_unite_lorraine }
 		position = 9
+		
+		provinces_to_highlight = {
+			fra_trois_echeves = yes
+		}
 
 		trigger = { 
 			conquest_mission_trigger = {
 				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
-				PROVINCES=fra_lorraine
+				PROVINCES=fra_trois_echeves
 				OWNER_TYPE=country_or_non_sovereign_subject_holds
 			}
 		}
@@ -197,9 +199,9 @@ IR_France_slot_1 = {
 		position = 10
 
 		trigger = { 
-			any_owned_province = { OR = { religion = anglican religion = reformed religion = protestant } }
+			#any_owned_province = { OR = { religion = anglican religion = reformed religion = protestant } }
 			#has_country_flag = FRA_wars_of_religion_ended 
-			#has_disaster
+			has_disaster = french_wars_of_religion
 		}
 
 		effect = { 
@@ -207,7 +209,7 @@ IR_France_slot_1 = {
 		}
 	}			
 
-	fra_edict_stgermain = {
+	fra_edict_stgermain = { #FIRST EDICT
 		icon = mission_rb_monopolize_the_channel
 		required_missions = { fra_wars_of_religion }
 		position = 11
@@ -396,14 +398,24 @@ IR_France_slot_2 = {
 
 		trigger = { 
 			calc_true_if = {
-				all_country = {
-					is_subject_of = FRA
+				all_subject_country = {
+					#is_subject_of = FRA
+					has_opinion = {
+						who = FRA
+						value = 200
+					}
+				}
+				amount = 5
+			}
+			calc_true_if = {
+				all_subject_country = {
+					#is_subject_of = FRA
 					has_opinion = {
 						who = FRA
 						value = 120
 					}
 				}
-				amount = 5
+				amount = 12
 			}
 		}
 
@@ -426,7 +438,12 @@ IR_France_slot_2 = {
 		}
 
 		effect = { 
-			
+			hidden_effect = {
+				country_event = {
+					id = IR_flavor_FRA.22
+					days = 0
+				}
+			}
 		}
 	}
 
@@ -436,7 +453,16 @@ IR_France_slot_2 = {
 		position = 6
 
 		trigger = { 
-			any_country = { dynasty = "von Habsburg" is_rival = FRA FRA = { is_rival = PREV } }			
+			OR = {
+				AND = {
+				event_target:fra_habsburg_rival_tag1 = { is_rival = FRA }
+				FRA = { is_rival = event_target:fra_habsburg_rival_tag1 }				
+				}
+				AND = {
+				event_target:fra_habsburg_rival_tag2 = { is_rival = FRA }
+				FRA = { is_rival = event_target:fra_habsburg_rival_tag2 }
+				}
+			}
 		}
 
 		effect = { 
@@ -537,11 +563,7 @@ IR_France_slot_2 = {
 					}
 				}
 			}
-			75 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			1880 = {
+			alsace_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
@@ -667,9 +689,12 @@ IR_France_slot_2 = {
 		}
 
 		effect = { 
-			add_country_modifier = {
-				name = "ned_fixed_garrisons"
-				duration = 7300
+			every_owned_province = {
+				limit = { area = alsace_area }
+					add_province_modifier = {
+						name = fra_maginotline.mod
+						duration = -1
+					}
 			}
 		}
 	}
@@ -681,7 +706,7 @@ IR_France_slot_2 = {
 
 		trigger = { 
 			event_mission_trigger = {
-				TOOLTIP=kingvaloisorleans.tooltip
+				TOOLTIP=catherinemedici.tooltip
 				EVENT=IR_flavor_FRA.23
 				BYPASS_DATE=1600
 			}
@@ -708,7 +733,7 @@ IR_France_slot_2 = {
 	
 	emp_fra_i_am_the_state = {
 		icon = letat_cest_moi
-		required_missions = { emp_fra_wars_of_religion }
+		required_missions = { }
 		position = 14
 		provinces_to_highlight = {
 		}
@@ -879,7 +904,7 @@ IR_France_slot_3 = {
 		}
 
 		effect = { 
-			country_event = { id = IR_flavor_FRA.2 days = 1 }
+			country_event = { id = IR_flavor_FRA.2 days = 0 }
 		}
 	}
 
@@ -889,11 +914,7 @@ IR_France_slot_3 = {
 		position = 7
 		
 		provinces_to_highlight = { 
-			#OR = {
-			any_province = {
-				owned_by = PRO
-			}
-			#}
+			province_id = 178
 		}
 
 		trigger = { 
@@ -1309,7 +1330,7 @@ IR_France_slot_4 = {
 
 	fra_secure_pyrenees = {
 		icon = mission_conquer_50_development
-		required_missions = { fra_provencal_march }
+		required_missions = { }
 		position = 8
 
 		provinces_to_highlight = { fra_basse_navarra_all = yes }
@@ -1393,7 +1414,10 @@ IR_France_slot_4 = {
 		}
 
 		effect = { 
-			#MISSING
+			country_event = {
+				id = IR_flavor_FRA.26
+				days = 0
+			}
 		}
 	}
 
@@ -1623,11 +1647,13 @@ IR_France_slot_5 = {
 		position = 1
 
 		trigger = { 
-	num_of_cavalry = 15
+			num_of_cavalry = 15
+		#nobility stuff?
 		}
 
 		effect = { 
 			add_country_modifier = { name = fra_knights_combat duration = 3650 }
+			#nobility stuff?
 		}
 	}
 
@@ -1637,17 +1663,21 @@ IR_France_slot_5 = {
 		position = 2
 
 		trigger = { 
-	army_size_percentage = 0.9 army_size = ENG
+			army_size_percentage = 0.9 army_size = ENG
 		}
 
 		effect = { 
-			#missing
+			add_country_modifier = {
+				name = "thriving_arms_industry"
+				duration = 3650 #10 years
+			}
 		}
 	}
 
 	fra_conquer_calais = {
-		icon = mission_rb_monopolize_the_channel
+		icon = mission_galleys_in_port
 		required_missions = { fra_conquer_picardy }
+		completed_by = 1558.1.7
 		position = 6
 
 		provinces_to_highlight = { fra_calais_prov = yes }
@@ -1717,57 +1747,17 @@ IR_France_slot_5 = {
 		}
 
 		effect = { 
-			add_mil_power = 25
-			if = { 
-				limit = { NOT = { government = french_monarchy } }
-				if = { 
-					limit = { HAI = { exists = no } }
-					hidden_effect = {
-						1866 = { cede_province = HAI remove_claim = ROOT  remove_core = ROOT }
-						91 = { cede_province = HAI remove_claim = ROOT  remove_core = ROOT }
-						if = {
-							limit = { HAI = { NOT = { government = french_principality } } }
-							HAI = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = HAI
-					}
-				}
-				else_if = { 
-					limit = { HAI = { exists = yes is_subject_of = ROOT is_subject_of_type = vassal NOT = { num_of_cities = 9 } } }
-					hidden_effect = { 
-						if = {
-							limit = { HAI = { NOT = { government = french_principality } } }
-							HAI = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = HAI
-					}
-				}
-				else = {
-					tooltip = {
-						create_subject = {
-							subject_type = fief
-							subject = HAI
-						}
-					}
-				}
-			}
-			93 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+			add_mil_power = 50
+			if = {
+				limit = { mission_completed = fra_conquer_liege }
+				brabant_area = { 
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT  } }
 				add_permanent_claim = ROOT
-			}
-			3066 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				}
+				limburg_area = { 
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT  } }
 				add_permanent_claim = ROOT
-			}
-			bourgogne_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }	
-				add_permanent_claim = ROOT  
+				}
 			}
 		}
 	}
@@ -2366,6 +2356,7 @@ IR_France_slot_6 = {
               #duration = 240 DOESNT WOKR?
         }
             #break_alliance = PRO  
+			add_prestige = 10
 		}
 	}
 
@@ -2429,7 +2420,7 @@ IR_France_slot_6 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
-			1743 = {
+			artesia_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
@@ -2461,7 +2452,7 @@ IR_France_slot_6 = {
 
 	fra_conquer_cambrai = {
 		icon = mission_cannons_firing
-		required_missions = { fra_conquer_artois }
+		required_missions = { }
 		position = 7
 
 		provinces_to_highlight = { fra_cambray = yes }
@@ -2475,50 +2466,15 @@ IR_France_slot_6 = {
 		}
 
 		effect = { 
-			add_mil_power = 25
-			if = { 
-				limit = { NOT = { government = french_monarchy } }
-				if = { 
-					limit = { CMB = { exists = no } }
-					hidden_effect = {
-						1743 = { cede_province = CMB remove_claim = ROOT  remove_core = ROOT }
-						if = {
-							limit = { CMB = { NOT = { government = french_principality } } }
-							CMB = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = CMB
-					}
-				}
-				else_if = { 
-					limit = { CMB = { exists = yes is_subject_of = ROOT NOT = { is_subject_of_type = fief } NOT = { num_of_cities = 9 } } }
-					hidden_effect = { 
-						if = {
-							limit = { CMB = { NOT = { government = french_principality } } }
-							CMB = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = CMB
-					}
-				}
-				else = {
-					tooltip = {
-						create_subject = {
-							subject_type = fief
-							subject = CMB
-						}
-					}
-				}
-			}
-			91 = { 
+			wallonia_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
-			1866 = { 
+			luxemburg_liege_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+			luxembourg_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
@@ -2541,54 +2497,18 @@ IR_France_slot_6 = {
 		}
 
 		effect = { 
-			add_mil_power = 25
-			if = { 
-				limit = { NOT = { government = french_monarchy } }
-				if = { 
-					limit = { LIE = { exists = no } }
-					hidden_effect = {
-						3066 = { cede_province = LIE remove_claim = ROOT  remove_core = ROOT }
-						93 = { cede_province = LIE remove_claim = ROOT  remove_core = ROOT }
-						if = {
-							limit = { LIE = { NOT = { government = french_principality } } }
-							LIE = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = LIE
-					}
-				}
-				else_if = { 
-					limit = { LIE = { exists = yes is_subject_of = ROOT is_subject_of_type = vassal NOT = { num_of_cities = 9 } } }
-					hidden_effect = { 
-						if = {
-							limit = { LIE = { NOT = { government = french_principality } } }
-							LIE = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = LIE
-					}
-				}
-				else = {
-					tooltip = {
-						create_subject = {
-							subject_type = fief
-							subject = LIE
-						}
-					}
-				}
-			}
-			94 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			1742 = { 
+			add_mil_power = 50
+			if = {
+				limit = { mission_completed = fra_conquer_hainaut }
+				brabant_area = { 
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT  } }
 				add_permanent_claim = ROOT
-			}	
+				}
+				limburg_area = { 
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT  } }
+				add_permanent_claim = ROOT
+				}
+			}
 		}
 	}
 
@@ -3172,6 +3092,7 @@ IR_France_slot_7 = {
 
 		effect = { 
 			3110 = { add_permanent_claim = FRA }
+			10182 = { add_permanent_claim = FRA }
 			if = {
 				limit = {
 					NOT = {
@@ -4081,6 +4002,46 @@ IR_France_slot_8 = {
 			}
 		}
 	}
+	
+	fra_legacy_of_william = {
+		icon = mission_cannons_firing
+		required_missions = {  }
+		position = 5
+		
+		provinces_to_highlight = {
+			fra_england_region = yes
+		}
+
+		trigger = { 
+			calc_true_if = {
+				any_province = {
+					region = british_isles_region
+					is_core = ENG
+					owned_by = FRA
+				}
+				amount = 8
+			}
+		}
+
+		effect = { 
+			add_accepted_culture = english
+			custom_tooltip = french_england.tooltip
+			hidden_effect = {
+				random_owned_province = {
+					limit = { fra_england_region = yes }
+					change_culture = french
+				}
+				random_owned_province = {
+					limit = { fra_england_region = yes }
+					change_culture = french
+				}
+				random_owned_province = {
+					limit = { fra_england_region = yes }
+					change_culture = french
+				}
+			}
+		}
+	}
 
 	fra_liberation_ireland = {
 		icon = mission_rb_conquer_leinster
@@ -4813,15 +4774,38 @@ IR_France_slot_9 = {
 		position = 5
 
 		provinces_to_highlight = {
-			province_id = 236
+			OR = {
+			fra_landing_haestings = yes
+			fra_landing_cornwall = yes
+			}
 		}
 
 		trigger = { 
-			OR = { any_owned_province = { region = british_isles_region } any_owned_province = { region = ireland_area } }
+			OR = {
+				control_mission_trigger = {
+					TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
+					PROVINCES=fra_landing_haestings
+				}
+				control_mission_trigger = {
+					TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
+					PROVINCES=fra_landing_cornwall
+				}
+			}
 		}
 
 		effect = { 
-			
+			#peace offer crises or 
+			tooltip = {
+				british_isles_region = {
+					add_permanent_claim = ROOT
+				}
+			}
+			hidden_effect = {
+				every_province = {
+					limit = { fra_england_region = yes	}
+					add_permanent_claim = ROOT
+				}
+			}
 		}
 	}
 
@@ -4901,11 +4885,9 @@ IR_France_slot_9 = {
 		}
 
 		effect = { 
-			if = { limit = { SCO = { exists = yes junior_union_with = FRA } }
-				#give cores on northumbria
-			}
-			else = {
-				#
+			country_event = {
+				id = IR_flavor_FRA.27
+				days = 0
 			}
 		}
 	}
@@ -4928,7 +4910,8 @@ IR_France_slot_9 = {
 		}
 
 		effect = { 
-			
+			add_accepted_culture = welsh
+			add_mil_power = 100
 		}
 	}
 

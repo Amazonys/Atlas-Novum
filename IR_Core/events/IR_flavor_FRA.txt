@@ -12,11 +12,11 @@ country_event = {	#Create Alençon
 	option = { #Return Feudal Lands
 		name = "IR_flavor_FRA.1.a" 
 		ai_chance = { factor = 90 }
-			1879 = { cede_province = ALE }
-			7980 = { cede_province = ALE }
-			7983 = { cede_province = ALE }
-			3083 = { cede_province = ABT }
-			10633 = { cede_province = ABT }
+			1879 = { cede_province = ALE remove_core = ROOT }
+			7980 = { cede_province = ALE remove_core = ROOT }
+			7983 = { cede_province = ALE remove_core = ROOT }
+			3083 = { cede_province = ABT remove_core = ROOT }
+			10633 = { cede_province = ABT remove_core = ROOT }
 			ALE = { add_government_reform = french_principality }
 			create_subject = {
 				subject_type = fief
@@ -48,10 +48,22 @@ country_event = {	#Return Maine
 	option = { #Exchange Maine for March
 		name = "IR_flavor_FRA.2.a" 
 		ai_chance = { factor = 90 }
-			if = { limit = { 10620 = { owned_by FRA } 177 = { owned_by FRA } } 
-				10620 = { cede_province = PRO } 177 = { cede_province = PRO }
-				create_march = PRO
-				set_country_flag = fra_maine.returned
+			custom_tooltip = returnchoice.tooltip
+			tooltip = {
+				FRA = {
+					every_owned_province = {
+						limit = { fra_maine_provinces = yes }
+						cede_province = PRO
+					}
+					create_march = PRO
+				}
+			}
+			#set_country_flag = fra_maine.returned
+			PRO = {	
+				country_event = {
+					id = IR_flavor_FRA.200
+					days = 5
+				}
 			}
 	}
 	
@@ -59,6 +71,45 @@ country_event = {	#Return Maine
 		name = "IR_flavor_FRA.2.b" 
 		ai_chance = { factor = 10 }
 		add_prestige = 5
+	}
+}
+
+country_event = {	#Return Maine
+	id = IR_flavor_FRA.200
+	title = "IR_flavor_FRA.200.t"
+	desc = "IR_flavor_FRA.200.desc"
+	picture = COURT_eventPicture
+
+	is_triggered_only = yes
+	major = yes
+	major_trigger = {
+		tag = FRA
+	}
+	
+	option = { #Exchange Maine for March
+		name = "IR_flavor_FRA.200.a" 
+		ai_chance = { factor = 90 }
+		FRA = { 
+			177 = {	cede_province = PRO remove_core = FRA }
+			10620 = { cede_province = PRO remove_core = FRA }
+			create_march = PRO
+			#set_country_flag = fra_maine.returned
+		}
+	}
+	
+	option = { #X
+		name = "IR_flavor_FRA.200.b" 
+		ai_chance = { factor = 10 }
+		custom_tooltip = france_subjugation.tooltip
+		add_prestige = 10
+		add_legitimacy = 10
+		hidden_effect = {
+			reverse_add_casus_belli = {
+				target = PRO
+				type = cb_subjugation
+				months = 24
+			}
+		}
 	}
 }
 
@@ -492,15 +543,9 @@ country_event = { #Surrendering English Owned France
 		set_country_flag = 100years.ended
 		ENG = {
 			if = { limit = { war_exhaustion = 20 } add_war_exhaustion = -10 }
-			else = {
-				if = { limit = { war_exhaustion = 15 } add_war_exhaustion = -7.5 }
-				else = {
-					if = { limit = { war_exhaustion = 10 } add_war_exhaustion = -5 }
-					else = {
-						if = { limit = { war_exhaustion = 5 } add_war_exhaustion = -2.5 }
-					}
-				}
-			}
+			else_if = { limit = { war_exhaustion = 15 } add_war_exhaustion = -7.5 }
+			else_if = { limit = { war_exhaustion = 10 } add_war_exhaustion = -5 }
+			else_if = { limit = { war_exhaustion = 5 } add_war_exhaustion = -2.5 }
 		}
 	}
 	
@@ -606,36 +651,21 @@ country_event = { #County of Flanders
 		name = "IR_flavor_FRA.21.a" 
 		if = { 
 			limit = { FLA = { exists = no } }
-				hidden_effect = {
-					flanders_area = { cede_province = FLA remove_claim = ROOT  remove_core = ROOT }
-					if = {
-						limit = { FLA = { NOT = { government = french_principality } } }
-						FLA = { change_government = french_principality }
-					}
-				}
-				create_subject = {
-					subject_type = fief
-					subject = FLA
-				}
-		}
-		if = { 
-			limit = { FLA = { exists = yes is_subject_of = ROOT is_subject_of_type = vassal NOT = { num_of_cities = 9 } } }
-			hidden_effect = { 
-				if = {
-					limit = { FLA = { NOT = { government = french_principality } } }
-					FLA = { change_government = french_principality }
-				}
+			every_owned_province = {
+				limit = { area = flanders_area }
+				cede_province = FLA remove_claim = ROOT remove_core = ROOT
 			}
 			create_subject = {
 				subject_type = fief
 				subject = FLA
 			}
 		}
-		else = {
-			tooltip = {
-				create_subject = {
-					subject_type = fief
-					subject = FLA
+		if = { 
+			limit = { FLA = { exists = yes is_subject_of = ROOT NOT = { num_of_cities = 9 } } }
+			hidden_effect = {
+				if = {
+					limit = { FLA = { NOT = { has_reform = french_principality } } }
+					FLA = { add_government_reform = french_principality }
 				}
 			}
 		}
@@ -680,7 +710,7 @@ country_event = { #Catherine de Medici
 		
 	trigger = {	
 		has_consort = no
-		has_disaster = time_of_troubles
+		has_disaster = french_wars_of_religion
 	}
 	
 	option = { #Catherine de Medici
@@ -732,5 +762,135 @@ country_event = { #Catherine Dies
 	option = { #
 		name = "IR_flavor_FRA.24.a" 
 		ai_chance = { factor = 1 }
+	}
+}
+
+country_event = { #Set Habsburg Rivals
+	id = IR_flavor_FRA.25
+	title = "IR_flavor_FRA.25.t"
+	desc = "IR_flavor_FRA.25.desc"
+	picture = COURT_eventPicture
+		
+	is_triggered_only = yes
+	hidden = yes
+	#trigger = {	
+	#}
+	
+	immediate = {
+		random_country = {
+			limit = { dynasty = "von Habsburg" is_rival = FRA }
+			save_global_event_target_as = fra_habsburg_rival_tag1
+		}
+		random_country = {
+			limit = { NOT = { tag = fra_habsburg_rival_tag1 } dynasty = "von Habsburg" is_rival = FRA }
+			save_global_event_target_as = fra_habsburg_rival_tag2
+		}
+		if = {
+			limit = { NOT = { dynasty = "von Habsburg" is_rival = FRA } }
+			country_event = {
+				id = IR_flavor_FRA.25
+				days = 730 #2 years
+			}
+		}
+	}
+	
+	option = { #
+		name = "IR_flavor_FRA.25.a" 
+		ai_chance = { factor = 1 }
+	}
+}
+
+country_event = { #Barcelona or Catalonia
+	id = IR_flavor_FRA.26
+	title = "IR_flavor_FRA.26.t"
+	desc = "IR_flavor_FRA.26.desc"
+	picture = COURT_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { #Create Republic of Catalonia
+		name = "IR_flavor_FRA.26.a" 
+		if = { 
+			limit = { CAT = { exists = no } }
+			every_owned_province = {
+				limit = { OR = { area = catalonia_area area = urgell_area } }
+				cede_province = CAT remove_claim = ROOT remove_core = ROOT
+			}
+			create_subject = {
+				subject_type = fief
+				subject = CAT
+			}
+		}
+		if = { 
+			limit = { CAT = { exists = yes is_subject_of = ROOT } }
+			#hidden_effect = {
+				if = {
+					limit = { CAT = { NOT = { government = republic } } }
+					CAT = { change_government = republic }
+				}
+			#}
+		}
+		#maybe give trading bonus?
+	}
+	
+	option = { #Create March of Barcelona
+		name = "IR_flavor_FRA.26.c" 
+		if = { 
+			limit = { CAT = { exists = no } }
+			every_owned_province = {
+				limit = { OR = { area = catalonia_area area = urgell_area } }
+				cede_province = CAT remove_claim = ROOT remove_core = ROOT
+			}
+			CAT = { override_country_name = MARCH_BARCELONA }
+			create_subject = {
+				subject_type = march
+				subject = CAT
+			}
+		}
+		if = { 
+			limit = { CAT = { exists = yes is_subject_of = ROOT } }
+			#hidden_effect = {
+				if = {
+					limit = { CAT = { NOT = { government = monarchy } } }
+					CAT = { change_government = monarchy }
+				}
+			#}
+		}
+		#maybe give trading bonus?
+	}
+	
+	option = { #Keep Provinces
+		name = "IR_flavor_FRA.26.b"
+		prestige = 10
+		add_mil_power = 25
+	}
+}
+
+country_event = { #Fate of England
+	id = IR_flavor_FRA.27
+	title = "IR_flavor_FRA.27.t"
+	desc = "IR_flavor_FRA.27.desc"
+	picture = COURT_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { #Split England between France and Scotland
+		name = "IR_flavor_FRA.27.a" 
+		northern_england_area = {
+			if = { limit = { owned_by = ROOT } cede_province = SCO }
+			else = { add_core = SCO }
+		}
+		yorkshire_area = {
+			if = { limit = { owned_by = ROOT } cede_province = SCO }
+			else = { add_core = SCO }
+		}
+		lancashire_area = {
+			if = { limit = { owned_by = ROOT } cede_province = SCO }
+			else = { add_core = SCO }
+		}
+	}
+	
+	option = { #Keep Provinces
+		name = "IR_flavor_FRA.27.b"
 	}
 }
