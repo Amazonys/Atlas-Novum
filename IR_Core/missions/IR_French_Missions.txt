@@ -75,7 +75,13 @@ IR_France_slot_1 = {
 		}
 
 		trigger = { 
-			203 = { is_strongest_trade_power = ROOT }
+			203 = { 
+				is_strongest_trade_power = ROOT 
+				trade_share = {
+					country = ROOT
+					share = 50
+				}
+			}
 		}
 
 		effect = { 
@@ -99,7 +105,13 @@ IR_France_slot_1 = {
 		}
 
 		trigger = { 
-			174 = { is_strongest_trade_power = ROOT }
+			174 = { 
+				is_strongest_trade_power = ROOT 
+				trade_share = {
+					country = ROOT
+					share = 50
+				} 
+			}				
 		}
 
 		effect = { 
@@ -392,11 +404,14 @@ IR_France_slot_2 = {
 	}
 
 	fra_league_weal = {
-		icon = mission_rb_monopolize_the_channel
+		icon = friends_in_high_places
 		required_missions = { fra_reconquer_feudal_land }
 		position = 4
 
 		trigger = { 
+			custom_trigger_tooltip = {
+				tooltip = wip.tooltip
+			}
 			calc_true_if = {
 				all_subject_country = {
 					#is_subject_of = FRA
@@ -420,7 +435,7 @@ IR_France_slot_2 = {
 		}
 
 		effect = { 
-			#not sure
+			custom_tooltip = wip.tooltip
 		}
 	}
 
@@ -448,7 +463,7 @@ IR_France_slot_2 = {
 	}
 
 	fra_rivalry_habsburg = {
-		icon = mission_rb_monopolize_the_channel
+		icon = glory_to_von_habsburg
 		required_missions = { fra_house_orleans }
 		position = 6
 
@@ -805,15 +820,50 @@ IR_France_slot_2 = {
 		required_missions = { fra_embrace_enlightenment }
 		position = 17
 
+		provinces_to_highlight = {
+			owner = {
+				is_revolution_target = yes
+			}
+		}
+
 		trigger = { 
-	has_first_revolution_started = yes
-			is_revolution_target = yes
+			OR = {
+				has_reform = revolutionary_empire_reform
+				has_reform = revolutionary_republic_reform
+				custom_trigger_tooltip = {
+					tooltip = center_of_revolution.3000.A.tt
+					has_global_flag = no_more_revolutions_ever
+				}
+				any_known_country = {
+					is_revolution_target = yes
+					war_with = ROOT
+					capital_scope = {
+						controlled_by = ROOT
+					}
+				}
+			}
 		}
 
 		effect = { 
-			add_adm_power = 100
-			add_dip_power = 100
-			add_mil_power = 100
+			if = {
+				limit = {
+					OR = {
+						has_reform = revolutionary_empire_reform
+						has_reform = revolutionary_republic_reform
+					}
+				}
+				add_revolutionary_zeal = 25
+				add_country_modifier = {
+					name = "french_revolution_mission"
+					duration = -1
+				}
+			}
+			else = {
+				add_country_modifier = {
+					name = "ger_reactionary_zeal"
+					duration = -1
+				}
+			}
 		}
 	}
 
@@ -1146,19 +1196,34 @@ IR_France_slot_3 = {
 	}
 
 	fra_sister_republics = {
-		icon = mission_have_two_subjects
+		icon = establish_client_states
 		required_missions = { fra_embrace_enlightenment }
 		position = 17
-
-		trigger = { 
-	
+		provinces_to_highlight = {
 		}
-
-		effect = { 
-			
+		trigger = {
+			calc_true_if = {
+				desc = fra_client_states_tt
+				all_country = {
+					is_colonial_nation = no
+					is_subject_of = ROOT
+					total_development = 100
+					capital_scope = {
+						continent = europe
+					}
+				}
+				amount = 3
+			}
+		}
+		effect = {
+			add_dip_power = 100
+			add_country_modifier = {
+				name = "french_client_states_mission"
+				duration = -1
+			}
 		}
 	}
-
+	
 	fra_helvetic_republic = {
 		icon = mission_rb_monopolize_the_channel
 		required_missions = { fra_sister_republics }
@@ -1244,6 +1309,16 @@ IR_France_slot_4 = {
 		required_missions = { fra_vieille_alliance }
 		position = 3
 
+		provinces_to_highlight = {
+			#OR = {
+			#SCO = { CAPITAL }
+			province_id = 248
+			#}
+			#any_provence = {
+			#owned_by = SCO 
+			#}
+		}
+
 		trigger = { 
 			OR = {
 			SCO = { 
@@ -1259,12 +1334,15 @@ IR_France_slot_4 = {
 		}
 
 		effect = { 
-			custom_tooltip = fra.scottishconsort.tooltip
-			hidden_effect = {
-				if = { limit = { SCO = { exists = yes } }
-					set_country_flag = fra_support_scotland.complete
+			if = { limit = { SCO = { exists = yes } }
+				custom_tooltip = fra.scottishconsort.tooltip
+				hidden_effect = {
+					if = { limit = { SCO = { exists = yes } }
+						set_country_flag = fra_support_scotland.complete
+					}
 				}
-			}
+				add_prestige = 25		
+			}			
 		}
 	}
 
@@ -1282,10 +1360,10 @@ IR_France_slot_4 = {
 		}
 
 		effect = { 
-			#if = { limit = { has_country_flag = x }
-			#else_if = { limit = { has_country_flag = xy }
-			#else = { limit = { } 
-			#country_event = { id = zzz }
+			add_country_modifier = {
+				name = fra_scottishmarriage.mod
+				duration = 14600
+			}
 		}
 	}
 
@@ -1764,7 +1842,7 @@ IR_France_slot_5 = {
 
 	fra_discover_caribbean = {
 		icon = mission_rb_scottish_north_sea_trade
-		required_missions = { fra_explore_seas }
+		required_missions = { }
 		position = 12
 
 		trigger = { 
@@ -3256,7 +3334,7 @@ IR_France_slot_7 = {
 
 	fra_discover_newfoundland = {
 		icon = mission_rb_cod_wars
-		required_missions = { fra_explore_seas }
+		required_missions = { }
 		position = 12
 
 		trigger = { 
@@ -4071,7 +4149,7 @@ IR_France_slot_8 = {
 	}
 
 	fra_celtic_conquest = {
-		icon = mission_rb_monopolize_the_channel
+		icon = mission_rb_conquer_leinster
 		required_missions = { fra_liberation_ireland }
 		position = 7
 
@@ -4523,68 +4601,6 @@ IR_France_slot_8 = {
 		}
 	}
 
-	fra_brazil_union = {
-		icon = mission_alliances
-		required_missions = { fra_colonize_brazilia }
-		position = 17
-
-		trigger = { 
-	num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-    value = 50
-    OR = {
-     colonial_region = colonial_amazonis
-     colonial_region = colonial_brazil
-     colonial_region = colonial_bahia
-     colonial_region = colonial_rio
-     colonial_region = colonial_pernambuco
-     colonial_region = colonial_vincente
-    }
-    is_city = yes
-   }
-		}
-
-		effect = { 
-			add_dip_power = 100
-			hidden_effect = {
-				every_province = {
-					limit = { OR = { colonial_region = colonial_brazil colonial_region = colonial_bahia colonial_region = colonial_rio colonial_region = colonial_pernambuco colonial_region = colonial_amazonis colonial_region = colonial_vincente } }
-					if = { 
-						limit = { is_empty = yes }
-						add_territorial_core = BRZ	
-						cede_province = BRZ
-						remove_core = ROOT
-					}
-					else_if = {
-						limit = { is_colony = yes country_or_non_sovereign_subject_holds = ROOT  }
-						if = { 
-							limit = { owned_by = ROOT }
-							cede_province = BRZ
-						}
-						add_colonysize = 999
-					}
-					else_if = { 
-						limit = { is_city = yes country_or_non_sovereign_subject_holds = ROOT }
-						add_territorial_core = BRZ	
-						cede_province = BRZ
-						remove_core = ROOT
-					}
-					else_if = { 
-						limit = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-						add_permanent_claim = BRZ
-					}
-				}
-				BRZ = {
-					add_liberty_desire = -50
-					set_capital = 763
-				}	
-			}
-			create_subject = {
-				subject_type = colony
-				subject = BRZ
-			}
-		}
-	}
-
 	fra_india_landfall = {
 		icon = mission_rb_conquer_bengal
 		required_missions = { fra_discover_india }
@@ -4893,7 +4909,7 @@ IR_France_slot_9 = {
 	}
 
 	fra_control_wales = {
-		icon = mission_rb_monopolize_the_channel
+		icon = mission_rb_conquer_wales
 		required_missions = { fra_fate_england }
 		position = 7
 		
@@ -4941,21 +4957,6 @@ IR_France_slot_9 = {
 				name = "france_rules_the_waves"
 				duration = -1
 			}
-		}
-	}
-
-	fra_explore_seas = {
-		icon = mission_establish_high_seas_navy
-		required_missions = {  }
-		position = 11
-
-		trigger = { 
-			has_idea = quest_for_the_new_world
-		}
-
-		effect = { 
-			#MISSING
-			#add colonial range
 		}
 	}
 
@@ -5143,6 +5144,70 @@ IR_France_slot_9 = {
 						add_permanent_claim = ROOT
 					}
 				}	
+			}
+		}
+	}
+	
+	
+
+	fra_brazil_union = {
+		icon = mission_alliances
+		required_missions = { fra_colonize_brazilia }
+		position = 18
+
+		trigger = { 
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+			value = 50
+			OR = {
+			 colonial_region = colonial_amazonis
+			 colonial_region = colonial_brazil
+			 colonial_region = colonial_bahia
+			 colonial_region = colonial_rio
+			 colonial_region = colonial_pernambuco
+			 colonial_region = colonial_vincente
+			}
+			is_city = yes
+		   }
+		}
+
+		effect = { 
+			add_dip_power = 100
+			hidden_effect = {
+				every_province = {
+					limit = { OR = { colonial_region = colonial_brazil colonial_region = colonial_bahia colonial_region = colonial_rio colonial_region = colonial_pernambuco colonial_region = colonial_amazonis colonial_region = colonial_vincente } }
+					if = { 
+						limit = { is_empty = yes }
+						add_territorial_core = BRZ	
+						cede_province = BRZ
+						remove_core = ROOT
+					}
+					else_if = {
+						limit = { is_colony = yes country_or_non_sovereign_subject_holds = ROOT  }
+						if = { 
+							limit = { owned_by = ROOT }
+							cede_province = BRZ
+						}
+						add_colonysize = 999
+					}
+					else_if = { 
+						limit = { is_city = yes country_or_non_sovereign_subject_holds = ROOT }
+						add_territorial_core = BRZ	
+						cede_province = BRZ
+						remove_core = ROOT
+					}
+					else_if = { 
+						limit = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+						add_permanent_claim = BRZ
+					}
+				}
+				BRZ = {
+					add_liberty_desire = -50
+					set_capital = 763
+				}	
+			}
+			create_subject = {
+				subject_type = colony
+				subject = BRZ
 			}
 		}
 	}
