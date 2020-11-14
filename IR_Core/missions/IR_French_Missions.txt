@@ -181,12 +181,33 @@ IR_France_slot_1 = {
 	#	effect = { 
 			#integrate something
 	#	}
-	#}
+	#}	
+	
+	fra_duchy_of_bar = {
+		icon = mission_landsknecht_soldier
+		required_missions = { }
+		position = 7
+
+		provinces_to_highlight = { OR = { province_id = 187 province_id = 10607 } }
+
+		trigger = { 
+			187 = { owned_by = ROOT is_core = ROOT }
+			10607 = { owned_by = ROOT is_core = ROOT }
+		}
+
+		effect = { 
+			every_province = {
+				limit = { fra_lorraine = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
 
 	fra_trois_echeves = {
 		icon = mission_cannons_firing
-		required_missions = { fra_unite_lorraine }
-		position = 9
+		required_missions = { fra_duchy_of_bar }
+		position = 8
 		
 		provinces_to_highlight = {
 			fra_trois_echeves = yes
@@ -217,9 +238,9 @@ IR_France_slot_1 = {
 		}
 
 		effect = { 
-			
+			custom_tooltip = extramissions.tooltip
 		}
-	}			
+	}
 
 	fra_edict_stgermain = { #FIRST EDICT
 		icon = mission_luther_theses
@@ -327,7 +348,7 @@ IR_France_slot_1 = {
 		}
 
 		effect = { 
-			
+			add_stability = 3
 		}
 	}
 
@@ -343,7 +364,8 @@ IR_France_slot_1 = {
 		}
 
 		effect = { 
-			
+			add_prestige = 10
+			add_mil_power = 100
 		}
 	}
 
@@ -357,7 +379,10 @@ IR_France_slot_1 = {
 		}
 
 		effect = { 
-			
+			add_country_modifier = {
+				id = IR_Grande_Armee
+				duration = 3650
+			}
 		}
 	}
 
@@ -486,13 +511,16 @@ IR_France_slot_2 = {
 		}
 
 		effect = { 
-			
+			add_country_modifier = {
+				id = IR_legimitacy
+				duration = 7300
+			}
 		}
 	}
-
+	
 	fra_unite_lorraine = {
-		icon = mission_cannons_firing
-		required_missions = { fra_provencal_march }
+		icon = mission_build_up_to_force_limit
+		required_missions = { fra_provencal_march fra_duchy_of_bar }
 		position = 8
 
 		provinces_to_highlight = { fra_lorraine = yes }
@@ -507,82 +535,6 @@ IR_France_slot_2 = {
 
 		effect = { 
 			add_dip_power = 25
-			if = { 
-				limit = { NOT = { government = french_monarchy } }
-				if = { 
-					limit = { MTZ = { exists = no } }
-					hidden_effect = {
-						188 = { cede_province = MTZ remove_claim = ROOT  remove_core = ROOT }
-						if = {
-							limit = { MTZ = { NOT = { government = french_principality } } }
-							MTZ = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = MTZ
-					}
-				}
-				else_if = { 
-					limit = { MTZ = { exists = yes is_subject_of = ROOT is_subject_of_type = vassal NOT = { num_of_cities = 9 } } }
-					hidden_effect = { 
-						if = {
-							limit = { MTZ = { NOT = { government = french_principality } } }
-							MTZ = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = MTZ
-					}
-				}
-				else = {
-					tooltip = {
-						create_subject = {
-							subject_type = fief
-							subject = MTZ
-						}
-					}
-				}
-			}
-			if = { 
-				limit = { NOT = { government = french_monarchy } }
-				if = { 
-					limit = { LOR = { exists = no } }
-					hidden_effect = {
-						189 = { cede_province = LOR remove_claim = ROOT  remove_core = ROOT }
-						if = {
-							limit = { LOR = { NOT = { government = french_principality } } }
-							LOR = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = LOR
-					}
-				}
-				else_if = { 
-					limit = { LOR = { exists = yes is_subject_of = ROOT is_subject_of_type = vassal NOT = { num_of_cities = 9 } } }
-					hidden_effect = { 
-						if = {
-							limit = { LOR = { NOT = { government = french_principality } } }
-							LOR = { change_government = french_principality }
-						}
-					}
-					create_subject = {
-						subject_type = fief
-						subject = LOR
-					}
-				}
-				else = {
-					tooltip = {
-						create_subject = {
-							subject_type = fief
-							subject = LOR
-						}
-					}
-				}
-			}
 			alsace_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
@@ -733,7 +685,34 @@ IR_France_slot_2 = {
 		}
 
 		effect = { 
-			
+			add_dip_power = 50
+		}
+	}
+	
+	
+	fra_venice_ambition = {
+		icon = mission_cannons_firing
+		required_missions = { fra_conquer_genoa }
+		position = 12
+
+		provinces_to_highlight = { fra_venice_prov = yes }
+
+		trigger = { 
+			conquest_mission_trigger = {
+				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
+				PROVINCES=fra_venice_prov
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+
+		effect = { 
+			if = { 
+				limit = { owns = 112 }
+					112 = { add_center_of_trade_level = 1 }
+			}
+			else = {
+				add_dip_power = 150
+			}
 		}
 	}
 
@@ -805,7 +784,7 @@ IR_France_slot_2 = {
 	}
 
 	fra_embrace_enlightenment = {
-		icon = mission_rb_monopolize_the_channel
+		icon = mission_early_modern_university
 		required_missions = {  }
 		position = 16
 
@@ -821,7 +800,7 @@ IR_France_slot_2 = {
 	}
 
 	fra_revolution = {
-		icon = mission_rb_control_state_religion
+		icon = french_revolution
 		required_missions = { fra_embrace_enlightenment }
 		position = 17
 
@@ -872,39 +851,39 @@ IR_France_slot_2 = {
 		}
 	}
 
-	fra_batavian_republic = {
-		icon = mission_rb_monopolize_the_channel
-		required_missions = { fra_sister_republics }
-		position = 18
+	#fra_batavian_republic = {
+	#	icon = mission_rb_monopolize_the_channel
+	#	required_missions = { fra_sister_republics }
+	#	position = 18
 
-		trigger = { 
-	has_first_revolution_started = yes
-			is_revolution_target = yes
-		}
+	#	trigger = { 
+	#	has_first_revolution_started = yes
+	#		is_revolution_target = yes
+	#	}
 
-		effect = { 
+	#	effect = { 
 			#MISSING
-		}
-	}
+	#	}
+	#}
 
-	fra_rhine_confederation = {
-		icon = mission_rb_trinity_college_dublin
-		required_missions = { fra_batavian_republic fra_helvetic_republic }
-		position = 19
-
-		provinces_to_highlight = { rhine_confed_prov = yes }
-
-		trigger = { 
-			control_mission_trigger = {
-				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
-				PROVINCES=rhine_confed_prov
-			}
-		}
-
-		effect = { 
-			#MISSING
-		}
-	}
+	#fra_rhine_confederation = {
+	#	icon = mission_rb_trinity_college_dublin
+	#	required_missions = { fra_batavian_republic fra_helvetic_republic }
+	#	position = 19
+	#
+	#	provinces_to_highlight = { rhine_confed_prov = yes }
+	#
+	#	trigger = { 
+	#		control_mission_trigger = {
+	#			TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
+	#			PROVINCES=rhine_confed_prov
+	#		}
+	#	}
+	
+	#	effect = { 
+	#		#MISSING
+	#	}
+	#}
 
 }
 IR_France_slot_3 = { 
@@ -1076,7 +1055,7 @@ IR_France_slot_3 = {
 	}
 
 	fra_duchy_milan = {
-		icon = mission_cannons_firing
+		icon = mission_italian_condottiere
 		required_missions = { fra_italian_wars }
 		position = 10
 
@@ -1110,7 +1089,13 @@ IR_France_slot_3 = {
 		}
 
 		effect = { 
-			#MISSING
+			if = { 
+				limit = { owns = 101 }
+					101 = { add_center_of_trade_level = 1 }
+			}
+			else = {
+				add_dip_power = 150
+			}
 		}
 	}
 
@@ -1281,16 +1266,43 @@ IR_France_slot_3 = {
 	}
 	
 	fra_helvetic_republic = {
-		icon = mission_rb_monopolize_the_channel
+		icon = helvetic_conquest
 		required_missions = { fra_sister_republics }
-		position = 18
-
-		trigger = { 
-	#notfinished
+		provinces_to_highlight = {
+			OR = {
+				area = switzerland_area
+				area = romandie_area
+				owned_by = SWI
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
 		}
-
-		effect = { 
-			#MISSING
+		trigger = {
+			OR = {
+				SWI = {
+					is_subject_of = FRA
+				}
+				AND = {
+					switzerland_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+					romandie_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					has_dlc = "Cradle of Civilization"
+				}
+				add_army_professionalism = 0.1
+			}
+			else = {
+				add_army_tradition = 20
+			}
 		}
 	}
 
@@ -1462,56 +1474,12 @@ IR_France_slot_4 = {
 		}
 	}
 
-	fra_secure_pyrenees = {
-		icon = mission_conquer_50_development
-		required_missions = { }
-		position = 8
-
-		provinces_to_highlight = { fra_basse_navarra_all = yes }
-
-		trigger = { 
-			conquest_mission_trigger = {
-				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
-				PROVINCES=fra_basse_navarra_all
-				OWNER_TYPE=country_or_non_sovereign_subject_holds
-			}
-		}
-
-		effect = { 
-			basque_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-		}
-	}
-	
-
-	fra_take_navarra = {
-		icon = mission_cannons_firing
-		required_missions = { fra_secure_pyrenees }
+	fra_roussillon = {
+		icon = mission_italian_condottiere
+		required_missions = {  }
 		position = 9
 
-		provinces_to_highlight = { fra_navarra_prov = yes }
-
-		trigger = { 
-			conquest_mission_trigger = {
-				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
-				PROVINCES=fra_navarra_prov
-				OWNER_TYPE=country_or_non_sovereign_subject_holds
-			}
-		}
-
-		effect = { 
-			add_prestige = 10
-		}
-	}
-
-	fra_roussillon = {
-		icon = mission_cannons_firing
-		required_missions = {  }
-		position = 10
-
-		provinces_to_highlight = { fra_roussillon_prov = yes }
+		provinces_to_highlight = { OR = { province_id = 197 province_id = 10635 province_id = 173 } }
 
 		trigger = { 
 			conquest_mission_trigger = {
@@ -1530,48 +1498,30 @@ IR_France_slot_4 = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
+			basque_area = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
 		}
 	}
-
-	fra_catalonia = {
+	
+	fra_take_navarra = {
 		icon = mission_cannons_firing
 		required_missions = { fra_roussillon }
-		position = 11
+		position = 10
 
-		provinces_to_highlight = { fra_catalonia_prov = yes }
-
-		trigger = { 
-			control_mission_trigger = {
-				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
-				PROVINCES=fra_catalonia_prov
-			}
-		}
-
-		effect = { 
-			country_event = {
-				id = IR_flavor_FRA.26
-				days = 0
-			}
-		}
-	}
-
-	fra_venice_ambition = {
-		icon = mission_cannons_firing
-		required_missions = { fra_conquer_genoa }
-		position = 12
-
-		provinces_to_highlight = { fra_venice_prov = yes }
+		provinces_to_highlight = { fra_navarra_prov = yes }
 
 		trigger = { 
 			conquest_mission_trigger = {
 				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
-				PROVINCES=fra_venice_prov
+				PROVINCES=fra_navarra_prov
 				OWNER_TYPE=country_or_non_sovereign_subject_holds
 			}
 		}
 
 		effect = { 
-			#MISSING
+			add_prestige = 10
 		}
 	}
 
@@ -1583,15 +1533,20 @@ IR_France_slot_4 = {
 		provinces_to_highlight = { fra_haiti = yes }
 
 		trigger = { 
-			conquest_mission_trigger = {
-				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
+			#conquest_mission_trigger = {
+			#	TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
+			#	PROVINCES=fra_haiti
+			#	OWNER_TYPE=country_or_non_sovereign_subject_holds
+			#}
+			num_colonized_mission_trigger = {
+				TOOLTIP=highlighted_colonize.tooltip
 				PROVINCES=fra_haiti
-				OWNER_TYPE=country_or_non_sovereign_subject_holds
+				NUM=5
 			}
 		}
 
 		effect = { 
-			every_province = {
+			every_owned_province = {
 				limit = { area = west_hispaniola_area }
 				change_trade_goods = sugar
 				add_province_modifier = {
@@ -1658,11 +1613,32 @@ IR_France_slot_4 = {
 			}
 		}
 	}
+	
+	fra_discover_gold_coast = {
+		icon = mission_establish_high_seas_navy
+		required_missions = {  }
+		position = 16
+
+		provinces_to_highlight = { fra_goldcoast = yes }
+
+		trigger = { 
+			has_idea = quest_for_the_new_world
+			discover_mission_trigger = {
+				TOOLTIP=fra_goldcoast.tooltip
+				PROVINCES=fra_goldcoast
+				NUM=1
+			}
+		}
+
+		effect = { 
+			add_dip_power = 100
+		}
+	}
 
 	fra_conquer_gold_coast = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { fra_discover_gold_coast }
-		position = 16
+		position = 17
 
 		provinces_to_highlight = { fra_goldcoast = yes }
 
@@ -1675,14 +1651,14 @@ IR_France_slot_4 = {
 		}
 
 		effect = { 
-			#MISSING
+			add_years_of_income = 1
 		}
 	}
 
 	fra_annex_guinea = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { fra_conquer_gold_coast }
-		position = 17
+		position = 18
 
 		provinces_to_highlight = { fra_guinea = yes }
 
@@ -1723,7 +1699,7 @@ IR_France_slot_4 = {
 	fra_annex_west_africa = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { fra_annex_guinea }
-		position = 18
+		position = 19
 
 		provinces_to_highlight = { fra_west_africa = yes }
 
@@ -1895,16 +1871,48 @@ IR_France_slot_5 = {
 			}
 		}
 	}
+	
+	
+	fra_catalonia = {
+		icon = mission_cannons_firing
+		required_missions = { fra_roussillon }
+		position = 10
+
+		provinces_to_highlight = { fra_catalonia_prov = yes }
+
+		trigger = { 
+			control_mission_trigger = {
+				TOOLTIP=country_holds_or_non_sovereign_subject_controls_highlighted
+				PROVINCES=fra_catalonia_prov
+			}
+		}
+
+		effect = { 
+			country_event = {
+				id = IR_flavor_FRA.26
+				days = 0
+			}
+		}
+	}
 
 	fra_discover_caribbean = {
 		icon = mission_rb_scottish_north_sea_trade
 		required_missions = { }
 		position = 12
 
+		provinces_to_highlight = {
+			OR = { province_id = 496 province_id = 498 }
+		}
+
 		trigger = { 
-	496 = { has_discovered = ROOT }
-   498 = { has_discovered = ROOT }
-   has_idea = quest_for_the_new_world
+			#discover_mission_trigger = {
+			#	TOOLTIP=por_sao_lorenco.tooltip
+			#	PROVINCES=madagascar_common_provinces
+			#	NUM=11
+			#}
+			496 = { has_discovered = ROOT }
+			498 = { has_discovered = ROOT }
+			has_idea = quest_for_the_new_world
 		}
 
 		effect = { 
@@ -2044,11 +2052,15 @@ IR_France_slot_5 = {
 		icon = mission_establish_high_seas_navy
 		required_missions = { fra_discover_caribbean }
 		position = 13
+		
+		provinces_to_highlight = {
+			OR = { province_id = 893 province_id = 921 }
+		}
 
 		trigger = { 
-	893 = { has_discovered = ROOT }
-   921 = { has_discovered = ROOT }
-   has_idea = quest_for_the_new_world
+			893 = { has_discovered = ROOT }
+			921 = { has_discovered = ROOT }
+			has_idea = quest_for_the_new_world
 		}
 
 		effect = { 
@@ -2204,13 +2216,17 @@ IR_France_slot_5 = {
 		required_missions = { fra_discover_mississippi }
 		position = 14
 
+		provinces_to_highlight = {
+			OR = { colonial_region = colonial_louisiana }
+		}
+
 		trigger = { 
-	num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-    value = 16
-    OR = {
-     colonial_region = colonial_louisiana
-    }
-   }
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+			value = 16
+				OR = {
+				colonial_region = colonial_louisiana
+				}
+			}
 		}
 
 		effect = { 
@@ -2236,30 +2252,20 @@ IR_France_slot_5 = {
 		}
 	}
 
-	fra_discover_gold_coast = {
-		icon = mission_establish_high_seas_navy
-		required_missions = {  }
-		position = 15
-
-		trigger = { 
-			has_idea = quest_for_the_new_world
-		}
-
-		effect = { 
-			
-		}
-	}
-
 	fra_discover_australia = {
 		icon = mission_establish_high_seas_navy
 		required_missions = {  }
-		position = 17
+		position = 16
+		
+		provinces_to_highlight = {
+			OR = { colonial_region = colonial_australia colonial_region = colonial_nz province_id = 1986 }
+		}
 
 		trigger = { 
-	colonial_australia = { has_discovered = ROOT }
-   colonial_nz = { has_discovered = ROOT }
-   1986 = { has_discovered = ROOT }
-   has_idea = quest_for_the_new_world
+			colonial_australia = { has_discovered = ROOT }
+			colonial_nz = { has_discovered = ROOT }
+			1986 = { has_discovered = ROOT }
+			has_idea = quest_for_the_new_world
 		}
 
 		effect = { 
@@ -2340,7 +2346,11 @@ IR_France_slot_5 = {
 	fra_colonize_australia = {
 		icon = mission_colonial
 		required_missions = { fra_discover_australia }
-		position = 18
+		position = 17
+		
+		provinces_to_highlight = {
+			OR = { colonial_region = colonial_australia }
+		}
 
 		trigger = { 
 	num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
@@ -2381,7 +2391,11 @@ IR_France_slot_5 = {
 	fra_colonize_nz = {
 		icon = mission_colonial
 		required_missions = { fra_colonize_australia }
-		position = 19
+		position = 18		
+		
+		provinces_to_highlight = {
+			OR = { colonial_region = colonial_australia }
+		}
 
 		trigger = { 
 	num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
@@ -2667,51 +2681,66 @@ IR_France_slot_6 = {
 				add_permanent_claim = ROOT
 			}	
 		}
-	}
-
-	fra_conquer_holland = {
-		icon = mission_cannons_firing
-		required_missions = { fra_conquer_belgique }
+	}	
+	
+	fra_secure_pyrenees = {
+		icon = mission_conquer_50_development
+		required_missions = { fra_roussillon }
 		position = 10
 
-		provinces_to_highlight = { holland_area_provinces = yes }
+		provinces_to_highlight = { pyrenees_provinces = yes }
 
 		trigger = { 
-			conquest_mission_trigger = {
-				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
-				PROVINCES=holland_area_provinces
-				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			calc_true_if = {
+				desc = ir_france_alsace_forts
+				all_owned_province = {
+					pyrenees_provinces = yes
+					if = {
+						limit = {
+							ROOT = {
+								NOT = { mil_tech = 14 }
+							}
+						}
+						has_building = fort_15th
+					}
+					else_if = {
+						limit = {
+							ROOT = {
+								AND = {
+									mil_tech = 14
+									NOT = { mil_tech = 19 }
+								}
+							}
+						}
+						has_building = fort_16th
+					}
+					else_if = {
+						limit = {
+							ROOT = {
+								AND = {
+									mil_tech = 19
+									NOT = { mil_tech = 24 }
+								}
+							}
+						}
+						has_building = fort_17th
+					}
+					else_if = {
+						limit = {
+							ROOT = {
+								mil_tech = 24
+							}
+						}
+						has_building = fort_18th
+					}
+				}
+				amount = 4
 			}
 		}
 
 		effect = { 
-			low_countries_region = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}	
-		}
-	}
-
-	fra_low_countries = {
-		icon = mission_empire
-		required_missions = { fra_conquer_holland }
-		position = 11
-
-		provinces_to_highlight = { low_countries_region_provinces = yes }
-
-		trigger = { 
-			conquest_mission_trigger = {
-				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
-				PROVINCES=low_countries_region_provinces
-				OWNER_TYPE=country_or_non_sovereign_subject_holds
-			}
-		}
-
-		effect = { 
-			add_country_modifier = {
-				name = "eng_channel_dominance"
-				duration = 7300
-			}
+			add_mil_power = 100
+			#fort maint. mod.
 		}
 	}
 
@@ -2719,6 +2748,10 @@ IR_France_slot_6 = {
 		icon = mission_establish_high_seas_navy
 		required_missions = { fra_discover_newfoundland }
 		position = 13
+		
+		provinces_to_highlight = {
+			OR = { area = maritime_islands_area area = notre_dame_mountains_area province_id = 994 province_id = 995 province_id = 5053 }
+		}
 
 		trigger = { 
 			maritime_islands_area = { type = all has_discovered = ROOT }
@@ -2876,6 +2909,10 @@ IR_France_slot_6 = {
 		icon = mission_rb_colonise_canada
 		required_missions = { fra_discover_stlawrence }
 		position = 14
+			
+		provinces_to_highlight = {
+			OR = { colonial_region = colonial_quebec }
+		}
 
 		trigger = { 
 	num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
@@ -2915,6 +2952,10 @@ IR_France_slot_6 = {
 		required_missions = { fra_colonize_quebec fra_colonize_acadia }
 		position = 15
 
+		provinces_to_highlight = {
+			OR = { colonial_region = colonial_quebec colonial_region = colonial_acadia }
+		}
+
 		trigger = { 
 	num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
 				value = 40
@@ -2935,7 +2976,7 @@ IR_France_slot_6 = {
 	fra_conquer_zanzibar = {
 		icon = mission_trade_company_region_abroad
 		required_missions = {  }
-		position = 17
+		position = 16
 
 		provinces_to_highlight = { fra_zanzibar = yes }
 
@@ -2970,8 +3011,10 @@ IR_France_slot_6 = {
 	fra_conquer_madagascar = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { fra_conquer_zanzibar }
-		position = 18
-
+		position = 17
+		
+		provinces_to_highlight = { area = sakalava_area area = betsimasaraka_area area = madagascar_highlands_area area = southern_madagascar }
+		
 		trigger = { 
 			sakalava_area = {
 				type = all
@@ -3016,6 +3059,8 @@ IR_France_slot_6 = {
 		icon = mission_establish_high_seas_navy
 		required_missions = {  }
 		position = 20
+		
+		provinces_to_highlight = { area = vietnam_area province_id = 2372 province_id = 1022 }
 
 		trigger = { 
 	vietnam_area = { type = all has_discovered = ROOT }
@@ -3101,6 +3146,8 @@ IR_France_slot_6 = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { fra_discover_indochina }
 		position = 21
+		
+		provinces_to_highlight = { area = vietnam_area area = red_river_delta_area area = champa_area }
 
 		trigger = { 
 	vietnam_area = {
@@ -3139,6 +3186,17 @@ IR_France_slot_6 = {
 		icon = mission_trade_company_region_abroad
 		required_missions = { fra_take_mekong fra_take_vietnam }
 		position = 22
+		
+		provinces_to_highlight = { 
+			OR = {
+				region = indochina_region
+				region = burma_region
+				area = malacca_area
+				area = malaya_area
+				area = tenasserim_area
+				area = north_tenasserim_area
+			}
+		}
 
 		trigger = { 
 	indochina_region = {
@@ -3387,11 +3445,61 @@ IR_France_slot_7 = {
 			}
 		}
 	}
+	
+	fra_conquer_holland = {
+		icon = mission_cannons_firing
+		required_missions = { fra_conquer_belgique }
+		position = 10
+
+		provinces_to_highlight = { holland_area_provinces = yes }
+
+		trigger = { 
+			conquest_mission_trigger = {
+				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
+				PROVINCES=holland_area_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+
+		effect = { 
+			low_countries_region = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}	
+		}
+	}
+
+	fra_low_countries = {
+		icon = mission_empire
+		required_missions = { fra_conquer_holland }
+		position = 11
+
+		provinces_to_highlight = { low_countries_region_provinces = yes }
+
+		trigger = { 
+			conquest_mission_trigger = {
+				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
+				PROVINCES=low_countries_region_provinces
+				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+		}
+
+		effect = { 
+			add_country_modifier = {
+				name = "eng_channel_dominance"
+				duration = 7300
+			}
+		}
+	}
 
 	fra_discover_newfoundland = {
 		icon = mission_rb_cod_wars
 		required_missions = { }
 		position = 12
+		
+		provinces_to_highlight = {
+			OR = { colonial_region = colonial_newfoundland } 
+		}
 
 		trigger = { 
 	colonial_newfoundland = { type = all has_discovered = ROOT }
@@ -3549,6 +3657,10 @@ IR_France_slot_7 = {
 		icon = mission_establish_high_seas_navy
 		required_missions = { fra_discover_newfoundland }
 		position = 13
+		
+		provinces_to_highlight = {
+			OR = { area = lower_acadia_area } 
+		}
 
 		trigger = { 
 	lower_acadia_area = { type = all has_discovered = ROOT }
@@ -3707,11 +3819,17 @@ IR_France_slot_7 = {
 		icon = mission_colonial
 		required_missions = { fra_discover_acadia }
 		position = 14
+		
+		provinces_to_highlight = {
+			OR = { area = lower_acadia_area } 
+		}
 
 		trigger = { 
-	lower_acadia_area = { type = all has_discovered = ROOT }
-			2570 = { has_discovered = ROOT }
-			has_idea = quest_for_the_new_world
+			num_colonized_mission_trigger = {
+				TOOLTIP=highlighted_colonize.tooltip
+				PROVINCES=fra_colonize_acadia
+				NUM=5
+			}
 		}
 
 		effect = { 
@@ -3742,14 +3860,18 @@ IR_France_slot_7 = {
 		icon = mission_settlers_north_america
 		required_missions = { fra_colonize_ontario }
 		position = 15
+		
+		provinces_to_highlight = {
+			OR = { colonial_region = colonial_ohio } 
+		}
 
 		trigger = { 
-	num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
-    value = 15
-    OR = {
-     colonial_region =  colonial_ohio
-    }
-   }
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 15
+				OR = {
+					colonial_region = colonial_ohio
+				}
+			}
 		}
 
 		effect = { 
@@ -3780,6 +3902,10 @@ IR_France_slot_7 = {
 		icon = mission_establish_high_seas_navy
 		required_missions = {  }
 		position = 17
+		
+		provinces_to_highlight = {
+			OR = { province_id = 540 province_id = 2084 } 
+		}
 
 		trigger = { 
 	540 = { has_discovered = ROOT }
@@ -4184,16 +4310,24 @@ IR_France_slot_8 = {
 
 		trigger = { 
 			ENG = { 
-				NOT = { num_of_owned_provinces_with = { value = 1 region = ireland_area }    }
+				NOT = { num_of_owned_provinces_with = { value = 1 region = ireland_area } }
 			}
 			GBR = { 
-			   NOT = { num_of_owned_provinces_with = { value = 1 region = ireland_area }    }
+			   NOT = { num_of_owned_provinces_with = { value = 1 region = ireland_area } }
 			}
 			UNK = { 
-				NOT = { num_of_owned_provinces_with = { value = 1 region = ireland_area }    }
+				NOT = { num_of_owned_provinces_with = { value = 1 region = ireland_area } }
 			}
-			NOT = { OR = { ANI = { is_subject_of = ENG } ANI = { is_subject_of = GBR } ANI = { is_subject_of = UNK } } }
-
+			NOT = { 
+				any_country = {
+					capital_scope = { region = ireland_area }
+					OR = {
+						is_subject_of = ENG
+						is_subject_of = GBR
+						is_subject_of = UNK
+					}
+				}
+			}
 		}
 
 		effect = { 
@@ -4219,7 +4353,7 @@ IR_France_slot_8 = {
 		}
 
 		effect = { 
-			#EVENT
+			add_accepted_culture = irish
 		}
 	}
 	
@@ -4254,7 +4388,7 @@ IR_France_slot_8 = {
 	}
 
 	fra_conquer_nice = {
-		icon = mission_rb_monopolize_the_channel
+		icon = mission_landsknecht_soldier
 		required_missions = { fra_conquer_savoy }
 		position = 10
 
@@ -4724,7 +4858,10 @@ IR_France_slot_8 = {
 		}
 
 		effect = { 
-			#MISSING
+			every_province = {
+				limit = { OR = { region = western_india_region region = hindustan_region } NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
 		}
 	}
 
@@ -4801,19 +4938,37 @@ IR_France_slot_9 = {
 			custom_tooltip = fra.8lightships.tooltip
 			hidden_effect = {
 				random_owned_province = {
-					limit = { OR = { area = upper_brittany_area area = brittany_area } has_port = yes NOT = { province_id = 170 } }			
+					limit = { has_port = yes }			
 					add_unit_construction = {
 						type = light_ship
-						amount = 4
+						amount = 2
 						speed = 0.5
 						cost = 0
 					}
 				}
 				random_owned_province = {
-					limit = { OR = { area = upper_brittany_area area = brittany_area } has_port = yes NOT = { province_id = 170 } }			
+					limit = { has_port = yes }			
 					add_unit_construction = {
 						type = light_ship
-						amount = 4
+						amount = 2
+						speed = 0.5
+						cost = 0
+					}
+				}
+				random_owned_province = {
+					limit = { has_port = yes }			
+					add_unit_construction = {
+						type = light_ship
+						amount = 2
+						speed = 0.5
+						cost = 0
+					}
+				}
+				random_owned_province = {
+					limit = { has_port = yes }			
+					add_unit_construction = {
+						type = light_ship
+						amount = 2
 						speed = 0.5
 						cost = 0
 					}
@@ -4836,7 +4991,7 @@ IR_France_slot_9 = {
 		}
 
 		effect = { 
-			 
+			 add_navy_tradition = 10
 		}
 	}
 
@@ -5284,7 +5439,10 @@ IR_France_slot_9 = {
 		}
 
 		effect = { 
-			#MISSING
+			every_province = {
+				limit = { fra_gujarat = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
 		}
 	}
 
@@ -5304,7 +5462,10 @@ IR_France_slot_9 = {
 		}
 
 		effect = { 
-			#MISSING
+			every_province = {
+				limit = { OR = { region = bengal_region region = coromandel_region region = deccan_region } NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
 		}
 	}
 
