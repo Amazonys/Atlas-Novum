@@ -1,7 +1,7 @@
  -- IR + BT defines
  -- DO NOT CHANGE OR REPLACE WITHOUT PERMISSION PLEASE
   -- NGame changes
-NDefines.NGame.END_DATE = "1872.1.2" --from 1821.1.2
+NDefines.NGame.END_DATE = "1900.1.2" --from 1821.1.2
 NDefines.NGame.MAX_COLONIAL_NATIONS = 250 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
 NDefines.NGame.MAX_CLIENT_STATES = 50		-- Max is 100 -- TODO: Lower this to 75 after 1.18 (used to start at K75 for some reason)
 NDefines.NGame.MAX_ESTATE_COUNTRIES = 10			 -- 50				-- Max is 100
@@ -10,9 +10,10 @@ NDefines.NGame.MAX_CUSTOM_COUNTRIES = 50 -- 75				-- Max is 100
 
   --NDiplomacy changes   note subsections
 NDefines.NDiplomacy.FAVORS_LAND_DIVIDER = 4			-- from 2      note inversed value
-NDefines.NDiplomacy.VASSALIZE_BASE_DEVELOPMENT_CAP = 300			-- from 100, doubled after dev doubling, because this is annoying.
-NDefines.NDiplomacy.MARCH_BASE_DEVELOPMENT_CAP = 300			-- from 200
-NDefines.NDiplomacy.MARCH_DEVELOPMENT_FRACTION = 0.33
+NDefines.NDiplomacy.VASSALIZE_BASE_DEVELOPMENT_CAP = 1000			-- from 100, doubled after dev doubling, because this is annoying.
+NDefines.NDiplomacy.INTEGRATE_VASSAL_MIN_YEARS = 25 -- from 10
+NDefines.NDiplomacy.MARCH_BASE_DEVELOPMENT_CAP = 500			-- from 200
+NDefines.NDiplomacy.MARCH_DEVELOPMENT_FRACTION = 0.25
 NDefines.NDiplomacy.AE_ATTACKER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_DEFENDER_DEVELOPMENT = 0.005			-- from 0p01
 NDefines.NDiplomacy.AE_PROVINCE_CAP = 50			-- from 30
@@ -21,8 +22,8 @@ NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.3			-- from 0p75
 NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.2			-- from 0p5
 NDefines.NDiplomacy.PO_FORM_PU_AE = 0.1			-- from 0p1
 NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.1			-- from 0p25
-NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.25			-- from 0p5
-NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.25			-- from 0p33
+NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.5			-- from 0p5
+NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.5			-- from 0p33
  -- Peace Prestige
 NDefines.NDiplomacy.PO_ANNEX_PRESTIGE = 0.15			-- from 0p25
 NDefines.NDiplomacy.PO_DEMAND_PROVINCES_PRESTIGE = 0.2			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Directly demanding provinces should be slightly rarer and harder now so offsetting larger penalties minorly with prestige
@@ -134,8 +135,8 @@ NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03			-- % each tech increases size of r
 NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 NDefines.NCountry.CROWN_LANDS_ALERT_THRESHOLD = 35
 --PROSPERITY/DEV CHANGES
-NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -2				-- monthly tick - WAS -2, ASSUME THAT THIS IS THE DEVASTATION REDUCTION, LETS SET TO -1 FOR NOW, PENDING TESTING
-NDefines.NCountry.PROSPERITY_INCREASE_SIZE= 1				-- if diceroll of d20< monarch stat, while possible ot increase - WAS 1, TURNED TO 0 CAUSE WHY SHOULD MONARCH INCREASE PROSP?? - PROBABLY SHOULD HANDLE THIS THROUGH EVENT/EDICT
+NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -2.5				-- monthly tick - WAS -2, ASSUME THAT THIS IS THE DEVASTATION REDUCTION, LETS SET TO -1 FOR NOW, PENDING TESTING
+NDefines.NCountry.PROSPERITY_INCREASE_SIZE= 0.05				-- if diceroll of d20< monarch stat, while possible ot increase - WAS 1, TURNED TO 0 CAUSE WHY SHOULD MONARCH INCREASE PROSP?? - PROBABLY SHOULD HANDLE THIS THROUGH EVENT/EDICT
  --Colonial
 NDefines.NCountry.MAX_CROWN_COLONIES = 2
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
@@ -185,9 +186,9 @@ NDefines.NCountry.MAX_GOV_RANK = 5
 NDefines.NCountry.NAT_FOCUS_YEARS_RANK = 3
 
  --SETTLEMENT
-NDefines.NCountry.SETTLEMENT_GROWTH_DEVELOPMENT_INCREASE = 0 -- How much development may increase per year if a colonist is working on Settlement Growth.
-NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 0 -- Affects chance of development increase per year if a colonist is working on Settlement Growth.
-NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0 -- Minimum chance of increasing development for colonists promoting Settlement Growth
+NDefines.NCountry.SETTLEMENT_GROWTH_DEVELOPMENT_INCREASE = 1 -- How much development may increase per year if a colonist is working on Settlement Growth.
+NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 1 -- Affects chance of development increase per year if a colonist is working on Settlement Growth.
+NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.005 -- Minimum chance of increasing development for colonists promoting Settlement Growth
 NDefines.NCountry.SETTLEMENT_GROWTH_CHECK_INTERVAL = 365 -- Interval in days between checks for random development increase when working in Settlement Growth.
 
 
@@ -201,6 +202,8 @@ NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
  --Necessary
 --NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable 
+NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.5						-- _EDEF_TRADE_WIND_STRENGTH_
+NDefines.NEconomy.TRADED_FRACTION_FOR_BONUS = 0.05				-- _EDEF_TRADED_FRACTION_FOR_BONUS_
 
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is ncreased from development
@@ -210,7 +213,6 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local auto
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
  --NMilitary changes
-NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 10			-- from 5     I dont actually know how this works     Might have it reversed better check later
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 40			-- from 50
 NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.1			-- from 0p25
@@ -220,14 +222,23 @@ NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
 NDefines.NMilitary.GARRISON_SIZE = 1000							-- GARRISON_SIZE
 NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 2	
  -- Devastation
-NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -1
-NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.02			-- 100 revanschism is -2 a year.
-NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -3.5
-NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -1
+ NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 100			-- from 5     I dont actually know how this works     Might have it reversed better check later
+NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -6
+NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.2			-- 100 revanschism is -20 a year.
+NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -5
+NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -12
  --Unit Speeds
 NDefines.NMilitary.INFANTRY_SPEED = 0.6					
 NDefines.NMilitary.CAVALRY_SPEED = 0.8							
 NDefines.NMilitary.ARTILLERY_SPEED = 0.4
+ -- speeds
+--NDefines.NMilitary.HOSTILE_TERRITORY_SPEED_MODIFIER = 0	-- speed modifier into hostile territory
+--NDefines.NMilitary.SHATTERED_RETREAT_SPEED_MODIFIER = 0.5			-- How much (by percentage) the movement speed will be modified when doing a shattered retreat
+NDefines.NMilitary.SEA_EXPLORE_SPEED = 10 --5						-- Can to some extent determine exploration speed of seas and coasts by specifying how long a ship pauses between exploration targets.
+--NDefines.NMilitary.FORT_FLIPPING_TIME = 90 --30	
+--NDefines.NMilitary.INF_LOOT = 0.1								-- How many ducats/month will a single full strength infantry regiment loot?
+--NDefines.NMilitary.CAV_LOOT = 0.3								-- How many ducats/month will a single full strength cavalry regiment loot?
+--NDefines.NMilitary.ART_LOOT = 0.05						-- How many ducats/month will a single full strength artillery regiment loot?	
  --Loot and Devastation and raiding
 NDefines.NMilitary.LOOT_DEVASTATION_IMPACT = 25
 NDefines.NMilitary.SCORCHED_DEVASTATION_IMPACT = 50
@@ -247,6 +258,7 @@ NDefines.NMilitary.INF_SUPPRESSION = 0.5					-- The amount of reduction to unres
 NDefines.NMilitary.CAV_SUPPRESSION = 0.75						-- The amount of reduction to unrest for each friendly cavalry regiment in a province
 NDefines.NMilitary.ART_SUPPRESSION = 0.25					-- The amount of reduction to unrest for each friendly artillery regiment in a province
 NDefines.NMilitary.ARMY_DRILL_YEARLY_DECAY = -0.05
+
  --- navy changes
  
 NDefines.NMilitary.NAVAL_BASE_ENGAGEMENT_WIDTH = 10   		-- Number of ships that can fire per round
@@ -300,7 +312,7 @@ NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_DISABLE_VERSUS_PLAYER_ENEMIES =
 NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 15
 NDefines.NAI.PEACE_TERMS_VASSAL_BASE_MULT = 10.0 -- only applied if the AI has vassalize priority
  -- abandon union
-NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_BASE_FACTOR = 20 --  was 60     AI scoring to abandoning Personal Union (given high enough LD and strength).
+NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_BASE_FACTOR = 10 --  was 60     AI scoring to abandoning Personal Union (given high enough LD and strength).
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 5 --  was 2.5      Threshold in relative strength for AI to give up on Personal Union.
 	
 
@@ -316,16 +328,14 @@ NDefines.NEngine.EVENT_PROCESS_OFFSET = 30				-- Events are checked every X day 
 NDefines.NReligion.CONSECRATE_PATRIARCH_THRESHOLD = 60			-- from 30
 NDefines.NReligion.DOOM_REDUCTION_FROM_OCCUPATION = 0.025			-- from 0p05
 NDefines.NReligion.AUTHORITY_FROM_DEVELOPMENT = 0.01			-- from 0p02
-NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 20			-- from 10
-NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 400			-- from 200
 NDefines.NReligion.HARMONY_LOSS_PER_DEV_CONVERTED = 0.5			-- from 1
 NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 5 --was 3
-NDefines.NReligion.MIN_CARDINALS = 6									-- Least amount of cardinals/ Starting cardinals
+NDefines.NReligion.MIN_CARDINALS = 12									-- Least amount of cardinals/ Starting cardinals
 NDefines.NReligion.MAX_CARDINALS = 24									-- Max amount of cardinals
-NDefines.NReligion.MAX_CARDINALS_PER_COUNTRY = 4							-- Max cardinals in a single country
-NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 30.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
-NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 400.0							-- WAS 200 -- When a cardinal is chosen the formula is diving a countrys development by this number.
-NDefines.NReligion.NUMBER_OF_POSSIBLE_CARDINALS = 10						-- Number of cardinals from said number of most successful provinces to be randomly picked from
+NDefines.NReligion.MAX_CARDINALS_PER_COUNTRY = 6							-- Max cardinals in a single country
+NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 40.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
+NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 600.0							-- WAS 200 -- When a cardinal is chosen the formula is diving a countrys development by this number.
+NDefines.NReligion.NUMBER_OF_POSSIBLE_CARDINALS = 5						-- Number of cardinals from said number of most successful provinces to be randomly picked from
 
 
  --NNationDesigner changes
@@ -350,7 +360,7 @@ NDefines.NGovernment.EFFICIENT_FARMING_DUCAT_MULTIPLIER = 2
 NDefines.NGovernment.LAND_AQUISITION_MANPOWER_MULTIPLIER = 0.05
 	
 NDefines.NGovernment.GOVERNMENT_REFORM_BASE_COST = 100.0
-NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 50.0
+NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 100.0
 NDefines.NGovernment.GOVERNMENT_REFORM_YEARLY_BASE_PROGRESS = 10.0
 NDefines.NGovernment.GOVERNMENT_REFORM_HISTORIC_AUTONOMY = 0.25
 NDefines.NGovernment.GOVERNMENT_REFORM_CHANGE_PROGRESS_COST = 50.0
