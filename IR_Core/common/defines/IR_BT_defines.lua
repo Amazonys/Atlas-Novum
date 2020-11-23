@@ -2,28 +2,38 @@
  -- DO NOT CHANGE OR REPLACE WITHOUT PERMISSION PLEASE
   -- NGame changes
 NDefines.NGame.END_DATE = "1900.1.2" --from 1821.1.2
-NDefines.NGame.MAX_COLONIAL_NATIONS = 250 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
+NDefines.NGame.MAX_COLONIAL_NATIONS = 100 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
 NDefines.NGame.MAX_CLIENT_STATES = 50		-- Max is 100 -- TODO: Lower this to 75 after 1.18 (used to start at K75 for some reason)
-NDefines.NGame.MAX_ESTATE_COUNTRIES = 10			 -- 50				-- Max is 100
+NDefines.NGame.MAX_ESTATE_COUNTRIES = 50			 -- 50				-- Max is 100
 NDefines.NGame.MAX_TRADING_CITIES = 10 -- 75	-- Max is 100
 NDefines.NGame.MAX_CUSTOM_COUNTRIES = 50 -- 75				-- Max is 100
 
-  --NDiplomacy changes   note subsections
+  --NDiplomacy 
 NDefines.NDiplomacy.FAVORS_LAND_DIVIDER = 4			-- from 2      note inversed value
 NDefines.NDiplomacy.VASSALIZE_BASE_DEVELOPMENT_CAP = 1000			-- from 100, doubled after dev doubling, because this is annoying.
 NDefines.NDiplomacy.INTEGRATE_VASSAL_MIN_YEARS = 25 -- from 10
 NDefines.NDiplomacy.MARCH_BASE_DEVELOPMENT_CAP = 500			-- from 200
 NDefines.NDiplomacy.MARCH_DEVELOPMENT_FRACTION = 0.25
-NDefines.NDiplomacy.AE_ATTACKER_DEVELOPMENT = 0.005			-- from 0p01
-NDefines.NDiplomacy.AE_DEFENDER_DEVELOPMENT = 0.005			-- from 0p01
+NDefines.NDiplomacy.AE_ATTACKER_DEVELOPMENT = 0.01			-- from 0p01
+NDefines.NDiplomacy.AE_DEFENDER_DEVELOPMENT = 0.01			-- from 0p01
 NDefines.NDiplomacy.AE_PROVINCE_CAP = 50			-- from 30
+NDefines.NDiplomacy.AE_OTHER_CONTINENT = 5 -- from 10
+NDefines.NDiplomacy.AE_SAME_CULTURE = 0.5
+NDefines.NDiplomacy.AE_SAME_CULTURE_GROUP = 0.75
+NDefines.NDiplomacy.AE_INFIDEL_CONQUEST = 0.5		-- different religion group conquered same religion province
+NDefines.NDiplomacy.AE_SAME_RELIGION = 0
+NDefines.NDiplomacy.AE_SAME_RELIGION_GROUP = 0
+NDefines.NDiplomacy.AE_DIFFERENT_RELIGION = -0.5
+NDefines.NDiplomacy.AE_HRE_INTERNAL = 1
+NDefines.NDiplomacy.AE_DISTANCE_BASE = 1
+NDefines.NDiplomacy.AE_SAME_OVERLORD = 0.5	
  -- Peace AE
-NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.3			-- from 0p75
-NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.2			-- from 0p5
+NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.75			-- from 0p75
+NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.5			-- from 0p5
 NDefines.NDiplomacy.PO_FORM_PU_AE = 0.1			-- from 0p1
-NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.1			-- from 0p25
+NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.25			-- from 0p25
 NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.5			-- from 0p5
-NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.5			-- from 0p33
+NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.25		-- from 0p33
  -- Peace Prestige
 NDefines.NDiplomacy.PO_ANNEX_PRESTIGE = 0.15			-- from 0p25
 NDefines.NDiplomacy.PO_DEMAND_PROVINCES_PRESTIGE = 0.2			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Directly demanding provinces should be slightly rarer and harder now so offsetting larger penalties minorly with prestige
@@ -53,17 +63,7 @@ NDefines.NDiplomacy.ANNEX_DIP_COST_PER_DEVELOPMENT = 4 -- from 8
 NDefines.NDiplomacy.PEACE_COST_DEMAND_NON_OCCUPIED_PROVINCE_MULT = 1.5
 NDefines.NDiplomacy.PEACE_COST_DEMAND_CAPITAL_MULT = 2
  --End of Peace Costs
- -- AE
-NDefines.NDiplomacy.AE_OTHER_CONTINENT = 5 -- from 10
-NDefines.NDiplomacy.AE_SAME_CULTURE = 0.5
-NDefines.NDiplomacy.AE_SAME_CULTURE_GROUP = 0.75
-NDefines.NDiplomacy.AE_INFIDEL_CONQUEST = 0.5		-- different religion group conquered same religion province
-NDefines.NDiplomacy.AE_SAME_RELIGION = 0
-NDefines.NDiplomacy.AE_SAME_RELIGION_GROUP = 0
-NDefines.NDiplomacy.AE_DIFFERENT_RELIGION = -0.5
-NDefines.NDiplomacy.AE_HRE_INTERNAL = 0.25
-NDefines.NDiplomacy.AE_DISTANCE_BASE = 1
-NDefines.NDiplomacy.AE_SAME_OVERLORD = 0.5	
+
  --Empire of China
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.03			-- from 0p06
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_DEVASTATION = -2.5			-- from -5p0
@@ -177,9 +177,10 @@ NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_3 = 25
 -- NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_4 = ?
 NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_2 = 75
 NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_3 = 300
+NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_4 = 800
+NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_5 = 2000
 NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_4 = 800
 NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_5 = 2000
--- NDefines.NCountry.MIN_DEVELOPMENT_FOR_GOV_RANK_4 = ?
 NDefines.NCountry.MIN_PRESTIGE_FOR_GOV_RANK_X = 50
 NDefines.NCountry.ADDITIONAL_MIN_DEVELOPMENT_FOR_GOV_RANK_X = 300
 NDefines.NCountry.MAX_GOV_RANK = 5
