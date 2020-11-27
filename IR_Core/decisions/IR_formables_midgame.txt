@@ -66,8 +66,10 @@ country_decisions = {
 				limit = { capital_scope = { region = iberia_region } OR = { is_subject_of_type = personal_union is_subject_of_type = dominion is_subject_of_type = fief } }
 				ROOT = { inherit = PREV }
 			}
-			change_tag = SPA
-			set_empire_rank = { TOOLTIP = ir_upgrade_to_empire } 
+			change_tag = SPA			
+			if = { limit = { NOT = { government_rank = 4 } }
+				set_government_rank = 4
+			}
 			add_country_modifier = {
 				name = centralization_modifier
 				duration = 7300
@@ -978,39 +980,89 @@ country_decisions = {
 					}
 				}
 			}
+			#VANILLA EFFECT:
 			change_tag = PRU
+			restore_country_name_effect = yes
+			swap_non_generic_missions = yes
+			remove_non_electors_emperors_from_empire_effect = yes
 			if = {
-				limit = { has_dlc = "Rights of Man" }
-				set_legacy_government = prussian_monarchy_legacy
-			}
-			if = {
-				limit = { NOT = { government_rank = 2 } }
-				set_government_rank = 2
-			}
-			add_country_modifier = {
-				name = centralization_modifier
-				duration = 7300
-			}
-			add_prestige = 25
-			#special culture change
-			change_primary_culture = prussian
-			PRU = {
-				every_owned_province = {
-					limit = { 
-						OR = {
-							culture = saxon
-							culture = pommeranian
-						}
-					} 
-					change_culture = prussian
+				limit = {
+					OR = {
+						NOT = { has_dlc = "Emperor" }
+						NOT = { hre_size = 1 }
+					}
+					NOT = { government_rank = 4 }
 				}
-			}	
+				set_government_rank = 4
+			}
 			if = {
 				limit = {
 					has_custom_ideas = no
 					NOT = { has_idea_group = PRU_ideas }
 				}
 				country_event = { id = ideagroups.1 } #Swap Ideas
+			}
+			random_owned_province = {
+				limit = {
+					OR = {
+						culture = pommeranian
+						culture = saxon
+						culture = prussian
+					}
+				}
+				add_base_tax = 1
+			}
+			add_country_modifier = {
+				name = "centralization_modifier"
+				duration = 3650
+			}
+			if =  {
+				limit = {
+					NOT = {
+						government = republic
+					}
+				}
+				change_government_to_monarchy = yes
+				add_government_reform = prussian_monarchy
+			}
+			else = {
+				add_government_reform = prussian_republic_reform
+			}
+			if = {
+				limit = {
+					has_reform = states_general_reform
+				}
+				remove_government_reform = states_general_reform
+			}
+			add_prestige = 25
+			change_primary_culture = prussian
+			PRU = {
+				random_owned_province = {
+					limit = { 
+						is_capital = no 
+						OR = {
+							culture = saxon
+							culture = pommeranian
+							#culture = markish
+						}
+					} 
+					change_culture = prussian
+				}
+			}
+			west_prussia_area = {
+				limit = {
+					NOT = { owned_by = ROOT }
+				}
+				add_permanent_claim = PRU
+			}
+			east_prussia_area = {
+				limit = {
+					NOT = { owned_by = ROOT }
+				}
+				add_permanent_claim = PRU
+			}
+			capital_scope = {
+				change_culture = prussian
 			}
 			set_country_flag = formed_prussia_flag
 		}
@@ -2281,7 +2333,20 @@ country_decisions = {
 				}
 			}
 			change_tag = RUS
-			set_kingdom_rank = { TOOLTIP = ir_upgrade_to_kingdom } 
+			if = {
+				limit = {
+					NOT = { government = monarchy }
+					is_revolutionary = no
+				}
+				change_government_to_monarchy = yes
+			}
+			if = {
+				limit = { is_revolutionary = no }
+				add_government_reform = tsardom
+			}
+			if = { limit = { NOT = { government_rank = 4 } }
+				set_government_rank = 4
+			}
 			add_country_modifier = {
 				name = centralization_modifier
 				duration = 7300
@@ -2337,7 +2402,9 @@ country_decisions = {
 				}
 			}
 			change_tag = JAP
-			set_kingdom_rank = { TOOLTIP = ir_upgrade_to_kingdom } 
+			if = { limit = { NOT = { government_rank = 4 } }
+				set_government_rank = 4
+			}
 			add_country_modifier = {
 				name = centralization_modifier
 				duration = 7300
@@ -5796,12 +5863,184 @@ bt_najd_formation = {
 			}
 			if = {
 				limit = {
-					NOT = { has_idea_group = serbian_ideas } 
+					NOT = { has_idea_group = SER_ideas } 
 					is_playing_custom_nation = no
 				}
 				country_event = { id = ideagroups.1 } #Swap Ideas
 			}
 			set_country_flag = formed_serbia_flag
+		}
+		ai_will_do = {
+			factor = 1
+		}
+		ai_importance = 400 #
+	}
+	
+	ir_walloon_nation = {
+		major = yes
+		potential = {
+			NOT = { has_country_flag = formed_wallonia_flag }
+			NOT = { has_country_flag = formed_hre_tier2_flag }
+			WLL = { exists = no }
+			NOT = { tag = WLL }
+			NOT = { tag = BEL }
+			NOT = { tag = NED }
+			NOT = { tag = FRA }
+			NOT = { tag = BUR }
+			is_nomad = no
+			OR = {
+				primary_culture = wallonian
+				AND = { 
+					primary_culture = picard
+					capital_scope = { region = low_countries_region }
+				}
+			}
+		}
+		provinces_to_highlight = {
+			region = low_countries_region
+				OR = {
+					culture = wallonian
+					culture = picard
+				}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		allow = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 9
+				low_countries_region = {
+					OR = {
+						culture = wallonian
+						culture = picard
+					}
+				}
+				is_core = THIS #?
+			}
+			is_at_war = no
+			NOT = { current_age = age_of_discovery }
+		}
+		effect = {
+			# integrate fiefs
+			custom_tooltip = integrate_fiefs.tooltip
+			hidden_effect = {
+				every_subject_country = {
+					limit = { is_subject_of = ROOT is_subject_of_type = fief NOT = { num_of_cities = 9 } }
+					every_owned_province = {
+						add_core = ROOT
+						cede_province = ROOT
+					}
+				}
+			}
+			change_tag = WLL
+			if = { limit = { NOT = { government_rank = 3 } }
+				set_government_rank = 3
+			}
+			add_country_modifier = {
+				name = "centralization_modifier"
+				duration = 7300
+			}
+			add_prestige = 10
+			#if = {
+			#	limit = {
+			#		has_custom_ideas = no
+			#		NOT = { has_idea_group = WES_ideas }
+			#	}
+			#	country_event = { id = ideagroups.1 } #Swap Ideas
+			#}
+			set_country_flag = formed_wallonia_flag
+			set_country_flag = formed_hre_tier2_flag
+		}
+		ai_will_do = {
+			factor = 1
+		}
+		ai_importance = 400 #
+	}
+	
+	ir_unify_flemish_states = {
+		major = yes
+		potential = {
+			NOT = { has_country_flag = united_flanders_flag }
+			NOT = { has_country_flag = formed_hre_tier2_flag }
+			NOT = { tag = BEL }
+			NOT = { tag = NED }
+			NOT = { tag = FRA }
+			NOT = { tag = BUR }
+			is_nomad = no
+			OR = {
+				primary_culture = flemish
+				primary_culture = brabantian
+			}
+		}
+		provinces_to_highlight = {
+			region = low_countries_region
+				OR = {
+					culture = flemish
+					culture = brabantian
+				}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		allow = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 11
+				region = low_countries_region
+				OR = {
+					culture = flemish
+					culture = brabantian
+				}
+				is_core = THIS #?
+			}
+			is_at_war = no
+			NOT = { current_age = age_of_discovery }
+		}
+		effect = {
+			# integrate fiefs
+			custom_tooltip = integrate_fiefs.tooltip
+			hidden_effect = {
+				every_subject_country = {
+					limit = { is_subject_of = ROOT is_subject_of_type = fief NOT = { num_of_cities = 9 } }
+					every_owned_province = {
+						add_core = ROOT
+						cede_province = ROOT
+					}
+				}
+			}
+			if = { limit = { FLA = { exists = no } }
+				#change_tag = FLA
+				country_event = {
+					id = IR_flavor_LowCountries.1
+					days = 0
+				}
+			}
+			else = {
+				#override_country_name = FLANDERS_FAKE
+			}
+			#if = {
+			#	limit = { NOT = { government_rank = 4 } is_part_of_hre = no }
+			#	set_government_rank = 4
+			#}
+			#else = { set_government_rank = 3 }
+			add_country_modifier = {
+				name = "centralization_modifier"
+				duration = 7300
+			}
+			if = { limit = { NOT = { government_rank = 3 } }
+				set_government_rank = 3
+			}
+			add_prestige = 13
+			change_primary_culture = flemish
+			every_owned_province = {
+				if = { limit = { NOT = { is_core = ROOT } }
+					remove_core = BRB
+					remove_core = FLA
+					remove_core = DOO
+					remove_core = BR3
+					remove_core = MEC
+				}
+				if = { limit = { OR = { culture = brabantian culture = meuse_rhenish } }
+					change_culture = flemish
+				}
+			}
+			set_country_flag = united_flanders_flag
+			set_country_flag = formed_hre_tier2_flag
 		}
 		ai_will_do = {
 			factor = 1
