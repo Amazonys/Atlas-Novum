@@ -2,41 +2,19 @@
 #GUELDERS MISSIONS
 ########################
 
-ir_gelre_slot_1 = { 
+IR_Gelre_slot_1 = { 
 	slot = 1
 	generic = no
 	ai = yes
 	potential = {
-		#OR = {
 		tag = GEL
-		#was_tag = GEL
-		#}
 	}
 	has_country_shield = yes
 
-	ned_unite_home_region = {
-		icon = mission_conquer_5_states
-		required_missions = { ned_prepare_conflict }
-		position = 2
-
-		trigger = { 
-	capital_scope = {
-    area_for_scope_province = {
-     type = all
-     owned_by = ROOT #Subjects won't count, empty provinces will need to be colonized.
-    }
-   }
-		}
-
-		effect = { 
-			
-		}
-	}
-
-	westward_push = {
+	gel_westward_push = {
 		icon = mission_rb_monopolize_the_channel
-		required_missions = { contest_the_bishop }
-		position = 3
+		required_missions = {  }
+		position = 1
 
 		provinces_to_highlight = { gel_westward_prov = yes }
 
@@ -45,45 +23,83 @@ ir_gelre_slot_1 = {
 				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
 				PROVINCES=gel_westward_prov
 				OWNER_TYPE=country_or_non_sovereign_subject_holds
+			}
+			owns = 3060
+		}
 
+		effect = { 
+			3060 = { center_of_trade = 1 } 
+		}
+	}
+
+	gel_betuwe = {
+		icon = mission_early_modern_university
+		required_missions = { gel_westward_push }
+		position = 2
+
+		trigger = { 
+			owns = 3060
+			province_has_center_of_trade_of_level = 2
+		}
+
+		effect = { 
+			add_treasury = 250
+		}
+	}
+
+	gel_nijmegen = {
+		icon = versailles_palace
+		required_missions = { gel_betuwe }
+		position = 3
+
+		trigger = { 
+			3060 = {
+				development = 35
 			}
 		}
 
 		effect = { 
-	
+			add_adm_power = 50
+			add_dip_power = 50
+			add_mil_power = 50
 		}
 	}
 
-	liberate_lowlands = {
-		icon = mission_rb_monopolize_the_channel
-		required_missions = { westward_push }
+	gel_groningen = {
+		icon = mission_cannons_firing
+		required_missions = { gel_dominate_frisia }
 		position = 4
 
 		trigger = { 
-	
+			owns = 8118
+			8118 = {
+				development = 25
+			}
 		}
 
 		effect = { 
-	
+			add_prestige = 10
+			8118 = {
+				add_base_manpower = 2
+				add_base_production = 1
+				add_base_tax = 1
+			}
 		}
 	}
 
 }
-ir_gelre_slot_2 = { 
+IR_Gelre_slot_2 = { 
 	slot = 2
 	generic = no
 	ai = yes
 	potential = {
-		#OR = {
 		tag = GEL
-		#was_tag = GEL
-		#}
 	}
 	has_country_shield = yes
 
-	contest_the_bishop = {
+	gel_contest_the_bishop = {
 		icon = mission_religious
-		required_missions = { ned_prepare_conflict }
+		required_missions = { gel_prepare_conflict }
 		position = 2
 
 		provinces_to_highlight = { gel_oversticht_provinces = yes }
@@ -93,92 +109,111 @@ ir_gelre_slot_2 = {
 				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
 				PROVINCES=gel_oversticht_provinces
 				OWNER_TYPE=country_or_non_sovereign_subject_holds
-
 			}
 		}
 
 		effect = { 
-			98 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
+			#100 = {
+			#	limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+			#	add_permanent_claim = ROOT
+			#}
+			#8119 = {
+			#	limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+			#	add_permanent_claim = ROOT
+			#}
+			#10685 = {
+			#	limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+			#	add_permanent_claim = ROOT
+			#}
+			if = { limit = { FRI = { exists = yes } }
+			add_casus_belli = {
+    			target = FRI
+    			type = cb_vassalize_mission
+				months = -1
 			}
-			10519 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
 			}
-			frisia_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT province_id = 1931 province_id = 10687 province_id = 10598 } }
-				add_permanent_claim = ROOT
+			else_if = { limit = { FR1 = { exists = yes } }
+			add_casus_belli = {
+    			target = FRI
+    			type = cb_vassalize_mission
+				months = -1
+			}
 			}
 		}
 	}
 
-	dominate_frisia = {
+	gel_dominate_frisia = {
 		icon = mission_monarch_in_throne_room
-		required_missions = { contest_the_bishop }
+		required_missions = { gel_contest_the_bishop }
 		position = 3
 
 		provinces_to_highlight = { gel_ned_frisia = yes }
 
 		trigger = { 
-			conquest_mission_trigger = {
-				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
-				PROVINCES=gel_ned_frisia
-				OWNER_TYPE=country_or_non_sovereign_subject_holds
-			}
+			owns_or_non_sovereign_subject_of = 10685
+			owns_or_non_sovereign_subject_of = 8119
+			owns_or_non_sovereign_subject_of = 100
 		}
 
 		effect = { 
-			#add modifier frisian courage
+			#event to release friesland or keep
+			add_mil_power = 50
+			add_manpower = 2
+			8118 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	gel_frisian_mercenaries = {
+		icon = mission_assemble_an_army
+		required_missions = { gel_dominate_frisia }
+		position = 4
+
+		trigger = { 
+			manpower = 10000
+			army_size = HOL
+			army_size = 18
+		}
+
+		effect = { 
+			custom_tooltip = frisian_mercenaries_available
+			set_country_flag = frisian_mercs_true
 		}
 	}
 
 }
-ir_gelre_slot_3 = { 
+IR_Gelre_slot_3 = { 
 	slot = 3
 	generic = no
 	ai = yes
 	potential = {
-		#OR = {
 		tag = GEL
-		#was_tag = GEL
-		#}
 	}
 	has_country_shield = yes
 
-	ned_prepare_conflict = {
+	gel_prepare_conflict = {
 		icon = mission_build_up_to_force_limit
 		required_missions = {  }
 		position = 1
 
 		trigger = { 
-			army_size_percentage = 1.0
+	army_size_percentage = 1.0
 		}
 
 		effect = { 
-			guelders_area = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			2975 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			10505 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			1742 = {
+			limburg_area = {
 				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
 				add_permanent_claim = ROOT
 			}
 		}
 	}
 
-	claim_limburg = {
-		icon = mission_rb_monopolize_the_channel
-		required_missions = { ned_prepare_conflict }
-		position = 3
+	gel_claim_limburg = {
+		icon = mission_landsknecht_soldier
+		required_missions = { gel_prepare_conflict }
+		position = 2
 
 		provinces_to_highlight = { gel_limburg_prov = yes }
 
@@ -187,34 +222,33 @@ ir_gelre_slot_3 = {
 				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
 				PROVINCES=gel_limburg_prov
 				OWNER_TYPE=country_or_non_sovereign_subject_holds
-
 			}
 		}
 
 		effect = { 
 			2974 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			10689 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			3061 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
-			95 = {
-				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
-				add_permanent_claim = ROOT
-			}
+    limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+    add_permanent_claim = ROOT
+   }
+   10689 = {
+    limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+    add_permanent_claim = ROOT
+   }
+   3061 = {
+    limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+    add_permanent_claim = ROOT
+   }
+   95 = {
+    limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+    add_permanent_claim = ROOT
+   }
 		}
 	}
 
-	maas_buffer = {
-		icon = mission_conquer_50_development
-		required_missions = { claim_limburg }
-		position = 4
+	gel_maas_buffer = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { gel_claim_limburg }
+		position = 3
 
 		provinces_to_highlight = { gel_maas_buffer = yes }
 
@@ -223,52 +257,111 @@ ir_gelre_slot_3 = {
 				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
 				PROVINCES=gel_maas_buffer
 				OWNER_TYPE=country_or_non_sovereign_subject_holds
-
 			}
 		}
 
 		effect = { 
-	
+			
 		}
 	}
-	
-	ned_form_the_netherlands = {
-		icon = mission_alliances
-		required_missions = {  }
-		position = 5
+
+	gel_southern_forts = {
+		icon = mission_conquer_50_development
+		required_missions = { gel_maas_buffer }
+		position = 4
 
 		trigger = { 
-			tag = NED
+			calc_true_if = {
+				desc = ir_france_alsace_forts
+				all_owned_province = {
+					OR = {
+						area = limburg_area
+						area = brabant_area
+					}
+					if = {
+						limit = {
+							ROOT = {
+								NOT = { mil_tech = 14 }
+							}
+						}
+						has_building = fort_15th
+					}
+					else_if = {
+						limit = {
+							ROOT = {
+								AND = {
+									mil_tech = 14
+									NOT = { mil_tech = 19 }
+								}
+							}
+						}
+						has_building = fort_16th
+					}
+					else_if = {
+						limit = {
+							ROOT = {
+								AND = {
+									mil_tech = 19
+									NOT = { mil_tech = 24 }
+								}
+							}
+						}
+						has_building = fort_17th
+					}
+					else_if = {
+						limit = {
+							ROOT = {
+								mil_tech = 24
+							}
+						}
+						has_building = fort_18th
+					}
+				}
+				amount = 3
+			}
 		}
 
 		effect = { 
-			add_country_modifier = {
-				name = "ned_lowlands_victory"
-				duration = 7300
-			}
-			assign_claim_core = {
-				PROVINCES = ned_form_the_netherlands_claims
-				TYPE = permanent_claim
+			every_owned_province = {
+				limit = { has_building = fort_15th }
+					add_province_modifier = {
+						name = fra_maginotline.mod
+						duration = -1
+					}
 			}
 		}
 	}
 
 }
-ir_gelre_slot_4 = { 
+IR_Gelre_slot_4 = { 
 	slot = 4
 	generic = no
 	ai = yes
 	potential = {
-		#OR = {
 		tag = GEL
-		#was_tag = GEL
-		#}
 	}
 	has_country_shield = yes
 
-	claim_kleefland = {
-		icon = mission_rb_monopolize_the_channel
-		required_missions = { ned_prepare_conflict }
+	gel_marriages = {
+		icon = mission_alliances
+		required_missions = {  }
+		position = 1
+
+		trigger = { 
+			num_of_royal_marriages = 3
+		}
+
+		effect = { 			
+			2975 = {
+				limit = { NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	gel_claim_kleefland = {
+		icon = mission_cannons_firing
+		required_missions = { gel_marriages }
 		position = 2
 
 		provinces_to_highlight = { gel_kleefland_prov = yes }
@@ -278,27 +371,26 @@ ir_gelre_slot_4 = {
 				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
 				PROVINCES=gel_kleefland_prov
 				OWNER_TYPE=country_or_non_sovereign_subject_holds
-
 			}
 		}
 
 		effect = { 
-			add_casus_belli = {
-				target = KLE
-				type = cb_claim_throne
-				months = -1
-			}
-			add_casus_belli = {
-				target = JUL
-				type = cb_claim_throne
-				months = -1
-			}
+	#		add_casus_belli = {
+  #  target = KLE
+  #  type = cb_claim_throne
+   # months = -1
+  # }
+   add_casus_belli = {
+    target = JUL
+    type = cb_claim_throne
+    months = -1
+   }
 		}
 	}
 
-	throne_of_gullik = {
+	gel_throne_of_gullik = {
 		icon = mission_empire
-		required_missions = { claim_kleefland }
+		required_missions = { gel_claim_kleefland }
 		position = 3
 
 		provinces_to_highlight = { gel_gullikkleef = yes }
@@ -308,12 +400,284 @@ ir_gelre_slot_4 = {
 				TOOLTIP=country_or_non_sovereign_subject_holds_highlighted
 				PROVINCES=gel_gullikkleef
 				OWNER_TYPE=country_or_non_sovereign_subject_holds
-
 			}
 		}
 
 		effect = { 
+			add_legitimacy = 10
+			add_prestige = 10
+		}
+	}
+
+	gel_anti_burgundy = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = {  }
+		position = 4
+
+		trigger = { 
+			if = { limit = { BUR = { exists = yes is_subject = no } }
+			BUR = { 
+				any_rival_country = { alliance_with = GEL }
+			}
+			}
+			else_if = { limit = { HAB = { exists = yes is_subject = no } }
+			HAB = { 
+				any_rival_country = { alliance_with = GEL }
+			}
+			}
+			else = { 
+				192 = { 
+					owner = { 
+						any_rival_country = { alliance_with = GEL } 
+					} 
+				}
+			}
+		}
+
+		effect = { 
+			add_prestige = 10
+		}
+	}
+
+}
+
+IR_NED_slot_6 = { 
+	slot = 6
+	generic = no
+	ai = yes
+	potential = {
+		dutch_primary_culture = yes
+	}
+	has_country_shield = yes
+
+	ned_stadsmarkt = {
+		icon = mission_entrepot_of_india
+		required_missions = {  }
+		position = 1
+
+		trigger = { 
+	marketplace = 4
+		}
+
+		effect = { 
+			
+		}
+	}
+
+	ned_channel_trade = {
+		icon = mission_establish_mint_towns
+		required_missions = { ned_stadsmarkt }
+		position = 2
+
+		trigger = { 
+	1269 = { trade_share = {
+					country = ROOT
+					share = 25
+				} }
+		}
+
+		effect = { 
+			
+		}
+	}
+
+	ned_baltic_trade = {
+		icon = mission_naval_dominance
+		required_missions = { ned_channel_trade ned_naval_forcelimit }
+		position = 3
+
+		trigger = { 
+	1258 = { trade_share = {
+					country = ROOT
+					share = 10
+				} }
+		}
+
+		effect = { 
+			
+		}
+	}
+
+}
+IR_NED_slot_7 = { 
+	slot = 7
+	generic = no
+	ai = yes
+	potential = {
+		dutch_primary_culture = yes
+	}
+	has_country_shield = yes
+
+	ned_expand_shipyards = {
+		icon = mission_galleys_in_port
+		required_missions = {  }
+		position = 1
+
+		trigger = { 
+	shipyard = 1
+		}
+
+		effect = { 
+			
+		}
+	}
+
+	ned_naval_forcelimit = {
+		icon = mission_danzig_or_war
+		required_missions = { ned_expand_shipyards }
+		position = 2
+
+		trigger = { 
+			navy_size_percentage = 1.0
+		}
+
+		effect = { 			
+			add_country_modifier = {
+			name = IR_naval_buff
+			duration = 7300
+			}
+		}
+	}
+
+	ned_exploration = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { ned_naval_forcelimit }
+		position = 3
+
+		trigger = { 
+			has_idea_group = exploration_ideas
+			num_of_explorers = 1
+		}
+
+		effect = { 
+			add_dip_power = 100
+		}
+	}
 	
+	ned_colonial_discover_india = {
+		icon = mission_indian_soldier_elephant
+		required_missions = { ned_exploration }
+		position = 4
+
+		trigger = { 
+			india_superregion = { type = any has_discovered = ROOT }
+		}
+
+		effect = { 
+			add_treasury = 200
+		}
+	}
+
+	ned_colonial_indian_landfall = {
+		icon = mission_growth_of_surat
+		required_missions = { ned_colonial_discover_india }
+		position = 5
+
+		trigger = { 
+			any_owned_province = { superregion = india_superregion }
+		}
+
+		effect = { 
+			add_adm_power = 250
+		}
+	}
+
+}
+IR_NED_slot_8 = { 
+	slot = 8
+	generic = no
+	ai = yes
+	potential = {
+		dutch_primary_culture = yes
+	}
+	has_country_shield = yes
+
+	ned_local_production = {
+		icon = mission_early_game_buildings
+		required_missions = {  }
+		position = 1
+
+		trigger = { 
+	workshop = 4
+		}
+
+		effect = { 
+			
+		}
+	}
+
+	ned_build_city = {
+		icon = mission_early_modern_university
+		required_missions = { ned_local_production }
+		position = 2
+
+		trigger = { 
+	town = 1
+		}
+
+		effect = { 
+			
+		}
+	}
+	
+	ned_colonial_discover_americas = {
+		icon = mission_invade_island
+		required_missions = { ned_exploration }
+		position = 4
+
+		trigger = {
+			OR = { 
+			north_america = { type = any has_discovered = ROOT }
+			south_america = { type = any has_discovered = ROOT }
+			}
+		}
+
+		effect = { 
+			add_country_modifier = {
+			name = IR_colonial_buff
+			duration = 7300
+			}			
+		}
+	}
+
+	ned_colonial_colonize_america = {
+		icon = mission_colonial
+		required_missions = { ned_colonial_discover_americas }
+		position = 5
+
+		trigger = { 
+			any_owned_province = { OR = { continent = north_america continent = south_america } }
+		}
+
+		effect = {
+			add_country_modifier = {
+			name = IR_colonial_buff2
+			duration = 7300
+			}
+		}
+	}
+
+}
+IR_NED_slot_9 = { 
+	slot = 9
+	generic = no
+	ai = yes
+	potential = {
+		dutch_primary_culture = yes
+	}
+	has_country_shield = yes
+
+	ned_expand_agriculture = {
+		icon = mission_rb_monopolize_the_channel
+		required_missions = { ned_local_production }
+		position = 2
+
+		trigger = { 
+	
+		}
+
+		effect = { 
+			
 		}
 	}
 
