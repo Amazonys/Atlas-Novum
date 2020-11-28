@@ -5152,11 +5152,20 @@ country_event = {
 	title = "EVTNAME710"
 	desc = "EVTDESC710"
 	picture = DEBATE_REPUBLICAN_eventPicture
+	goto = bailiff_province
 
 	is_triggered_only = yes
 	
 	trigger = {
 		stability = 0
+		NOT = { government = tribal }
+		NOT = { government = native }
+		any_owned_province = {
+			is_state = yes
+			is_core = ROOT
+			is_in_capital_area = yes
+			is_capital = no
+		}
 	}
 
 	mean_time_to_happen = {
@@ -5167,16 +5176,44 @@ country_event = {
 		}		
 	}
 
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_state = yes
+					is_core = ROOT
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				save_event_target_as = bailiff_province
+			}
+		}
+	}
+
 	option = {
 		name = "EVTOPTA710"
+		trigger = {
+			is_emperor_of_china = no
+			is_lesser_in_union = no
+			NOT = { government = republic }
+		}
 		ai_chance = {
 			factor = 55
 			modifier = {
+				factor = 0
+				NOT = { legitimacy_equivalent = 20 }
+			}
+			modifier = {
 				factor = 0.5
-				NOT = { prestige = 35 }
+				NOT = { legitimacy_equivalent = 60 }
+			}
+			modifier = {
+				factor = 1.5
+				legitimacy_equivalent = 100
 			}
 		}
-		add_prestige = -10
+		add_legitimacy = -10
+		add_devotion = -10
 	}
 	option = {
 		name = "EVTOPTB710"
@@ -5190,14 +5227,35 @@ country_event = {
 				factor = 1.5
 				stability = 2
 			}
+		}		
+		add_stability = -1
+	}
+	option = {
+		name = "EVTOPTC710"
+		highlight = yes
+		trigger = {
+			OR = { 
+				government = republic
+				is_emperor_of_china = yes
+				is_lesser_in_union = yes
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+		add_meritocracy_effect = yes
+		if = {
+			limit = {
+				government = republic
+			}
+			add_republican_tradition = 5
+			add_corruption = -2
 		}
 		if = {
-			limit = { NOT = { stability = -2 } }
-			add_adm_power = -100
-		}		
-		if = {
-			limit = { stability = -2 }
-			add_stability = -1
+			limit = {
+				is_lesser_in_union = yes
+			}
+			add_liberty_desire = 10
 		}
 	}
 	option = {
@@ -5205,15 +5263,10 @@ country_event = {
 		highlight = yes
 		trigger = { ruler_has_personality = cruel_personality }
 		required_personality = cruel_personality
-		random_owned_province = {
-			limit = {
-				is_state = yes
-				is_core = ROOT
-				is_in_capital_area = yes
-			}
-			spawn_rebels = {
+		event_target:bailiff_province = {
+			spawn_small_scaled_rebels = {
 				type = anti_tax_rebels
-				size = 1
+				no_defined_leader = yes
 			}
 		}
 	}
@@ -7793,7 +7846,7 @@ country_event = {
 	}
 	option = {
 		name = "EVTOPTB862"
-		create_conquistador = 25
+		create_conquistador = { tradition = 25 }
 	}
 	option = {
 		name = "personality_options.862.a"
@@ -7803,7 +7856,7 @@ country_event = {
 		ai_chance = {
 			factor = 100
 		}
-		create_conquistador = 25
+		create_conquistador = { tradition = 25 }
 		add_country_modifier = {
 			name = "colonial_enthusiasm"
 			duration = 1825
@@ -7961,15 +8014,23 @@ country_event = {
 	mean_time_to_happen = {
 		days = 1
 	}
+
+	immediate = {
+		hidden_effect = {
+			random_neighbor_country = {
+				limit = {
+					religion = ROOT
+					NOT = { war_with = ROOT }
+					NOT = { truce_with = ROOT }
+				}
+				save_event_target_as = neighbour_country
+			}
+		}
+	}
 	
 	option = {
 		name = "EVTOPTA864"
-		random_neighbor_country = {
-			limit = {
-				religion = ROOT
-				NOT = { war_with = ROOT }
-				NOT = { truce_with = ROOT }
-			}
+		event_target:neighbour_country = {
 			add_opinion = { who = ROOT modifier = opinion_improved_relations }
 		}		
 	}
@@ -7979,12 +8040,7 @@ country_event = {
 		highlight = yes
 		trigger = { ruler_has_personality = charismatic_negotiator_personality }
 		required_personality = charismatic_negotiator_personality
-		random_neighbor_country = {
-			limit = {
-				religion = ROOT
-				NOT = { war_with = ROOT }
-				NOT = { truce_with = ROOT }
-			}
+		event_target:neighbour_country = {
 			add_opinion = { who = ROOT modifier = opinion_improved_relations }
 		}
 		random_neighbor_country = {
@@ -8834,7 +8890,7 @@ country_event = {
 			limit = { has_port = yes }
 			heavy_ship = ROOT
 		}
-		create_explorer = 20
+		create_explorer = { tradition = 20 }
 	}
 	option = {
 		name = "personality_options.881.a"
@@ -8845,7 +8901,7 @@ country_event = {
 			limit = { has_port = yes }
 			heavy_ship = ROOT
 		}
-		create_explorer = 50
+		create_explorer = { tradition = 50 }
 	}
 }
 
@@ -11892,9 +11948,26 @@ country_event = {
 	title = "EVTNAME5063"
 	desc = "EVTDESC5063"
 	picture = COURT_eventPicture
+	goto = province_in_question
 
 	trigger = {
 		government = monarchy
+		any_owned_province = {
+			is_city = yes
+			is_capital = no
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_city = yes
+					is_capital = no
+				}
+				save_event_target_as = province_in_question
+			}
+		}
 	}
 
 	is_triggered_only = yes
@@ -11905,7 +11978,7 @@ country_event = {
 
 	option = {
 		name = "EVTOPTA5063"		# Side with one family
-		random_owned_province = {
+		event_target:province_in_question = {
 			noble_rebels = 1
 		}
 	}
@@ -11913,8 +11986,7 @@ country_event = {
 		name = "EVTOPTB5063"		# Let them fight it out.
 		trigger = { num_of_cities = 2 }
 		ai_chance = { factor = 25 }
-		random_owned_province = {
-			limit = { is_capital = no }
+		event_target:province_in_question = {
 			add_local_autonomy = 25
 		}
 	}
