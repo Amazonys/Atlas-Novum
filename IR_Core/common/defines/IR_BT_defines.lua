@@ -21,15 +21,15 @@ NDefines.NDiplomacy.AE_OTHER_CONTINENT = 5 -- from 10
 NDefines.NDiplomacy.AE_SAME_CULTURE = 0.5
 NDefines.NDiplomacy.AE_SAME_CULTURE_GROUP = 0.75
 NDefines.NDiplomacy.AE_INFIDEL_CONQUEST = 0.5		-- different religion group conquered same religion province
-NDefines.NDiplomacy.AE_SAME_RELIGION = 0
-NDefines.NDiplomacy.AE_SAME_RELIGION_GROUP = 0
+NDefines.NDiplomacy.AE_SAME_RELIGION = 0.25
+NDefines.NDiplomacy.AE_SAME_RELIGION_GROUP = 0.1
 NDefines.NDiplomacy.AE_DIFFERENT_RELIGION = -0.5
-NDefines.NDiplomacy.AE_HRE_INTERNAL = 1
-NDefines.NDiplomacy.AE_DISTANCE_BASE = 1
+NDefines.NDiplomacy.AE_HRE_INTERNAL = 2
+NDefines.NDiplomacy.AE_DISTANCE_BASE = 2
 NDefines.NDiplomacy.AE_SAME_OVERLORD = 0.5	
  -- Peace AE
-NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.75			-- from 0p75
-NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.5			-- from 0p5
+NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 1			-- from 0p75
+NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.75			-- from 0p5
 NDefines.NDiplomacy.PO_FORM_PU_AE = 0.1			-- from 0p1
 NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.25			-- from 0p25
 NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.5			-- from 0p5
@@ -216,12 +216,13 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local auto
  --NMilitary changes
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 40			-- from 50
-NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.1			-- from 0p25
+NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.2			-- from 0p25
 NDefines.NMilitary.FORTRESS_COST = 0.15			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
 NDefines.NMilitary.GARRISON_SIZE = 1000							-- GARRISON_SIZE
 NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 2	
+NDefines.NMilitary.MIN_MONTHLY_MANPOWER = 0.25
  -- Devastation
  NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 100			-- from 5     I dont actually know how this works     Might have it reversed better check later
 NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -6
