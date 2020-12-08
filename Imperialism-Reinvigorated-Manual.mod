@@ -23,7 +23,6 @@ tags={
 	"Trade"
 	"Graphics"
 }
-supported_version="1.29.*.*"
+supported_version="1.30.*.*"
 path="mod/Imperialism-Reinvigorated/IR_Core"
 remote_file_id="1889865558"
-#C:/Users/ # < USERNAME > # /Documents/Paradox Interactive/Europa Universalis IV/mod/Imperialism-Reinvigorated/IR_Core
