@@ -215,20 +215,20 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local auto
 
  --NMilitary changes
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
-NDefines.NMilitary.FORT_PER_DEV_RATIO = 40			-- from 50
+NDefines.NMilitary.FORT_PER_DEV_RATIO = 42			-- from 50
 NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.1			-- from 0p25
-NDefines.NMilitary.FORTRESS_COST = 0.15			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
+NDefines.NMilitary.FORTRESS_COST = 0.1			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
 NDefines.NMilitary.GARRISON_SIZE = 1000							-- GARRISON_SIZE
 NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 2	
 NDefines.NMilitary.MIN_MONTHLY_MANPOWER = 0.25
  -- Devastation
- NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 100			-- from 5     I dont actually know how this works     Might have it reversed better check later
+NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 100			-- from 5     I dont actually know how this works     Might have it reversed better check later
 NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -6
-NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.2			-- 100 revanschism is -20 a year.
-NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -5
-NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -12
+NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.25		-- 100 revanschism is -20 a year.
+NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -12
+NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -3
  --Unit Speeds
 NDefines.NMilitary.INFANTRY_SPEED = 0.6					
 NDefines.NMilitary.CAVALRY_SPEED = 0.8							
@@ -283,7 +283,8 @@ NDefines.NMilitary.GALLEY_COST = 15							-- was, 10
 NDefines.NMilitary.TRANSPORT_COST = 10							-- _was 12
 
  --NAI changes
-NDefines.NAI.DEVELOPMENT_CAP_BASE = 50			-- from 10
+NDefines.NAI.DEVELOPMENT_CAP_BASE = 100			-- from 10
+NDefines.NAI.DEVELOPMENT_CAP_MULT = 3 -- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
 NDefines.NAI.PEACE_TERMS_RELEASE_ANNEXED_SIZE_MULT = 0.005			-- from 0p01
 
 NDefines.NAI.DIPLOMATIC_ACTION_VASSALIZE_DEVELOPMENT_FACTOR = 10			-- from 20
@@ -297,9 +298,6 @@ NDefines.NAI.DIPLOMATIC_ACTION_TRIBUTARY_ACCEPTANCE_PER_DEVELOPMENT = -0.25			--
 NDefines.NAI.CHARTER_COMPANY_BASE_RELUCTANCE = -100						-- from -3; Base reluctance to giving away provinces in charter company diplo action - essentially disabled
 NDefines.NAI.CHARTER_COMPANY_DEVELOPMENT_RELUCTANCE = 1				-- from 3; How much development needed to add one reluctance
 
---DEVELOPMENT
---NDefines.NAI.DEVELOPMENT_CAP_BASE = 10	-- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
-NDefines.NAI.DEVELOPMENT_CAP_MULT = 2
  -- Condotierri
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_BASE_MULT = 33 -- AI scoring for offer condottieri, base scale.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_MONTHLY_PARTICIPATION_RATE = -0.3 --Base monthly decay in participation. Related to multipliers for war participation (but doesn't depend on number of regiments, so raw multiplier matters).
@@ -311,13 +309,12 @@ NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_MILITARY_RULERS = 1 --If s
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_NEIGHBORS = 1 --If set to 1, AI will only send Condottieri to neighbors, regardless of access.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_DISABLE_VERSUS_PLAYER_ENEMIES = 0 --If set to 1, AI will try avoid sending Condottieri having to fight against human player enemies.
  --Peace Deals
-NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 15
+NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 0
 NDefines.NAI.PEACE_TERMS_VASSAL_BASE_MULT = 10.0 -- only applied if the AI has vassalize priority
  -- abandon union
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_BASE_FACTOR = 10 --  was 60     AI scoring to abandoning Personal Union (given high enough LD and strength).
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 5 --  was 2.5      Threshold in relative strength for AI to give up on Personal Union.
 	
-
  --NGraphics changes
 NDefines.NGraphics.CITY_SPRAWL_AMOUNT = 1.0			-- from 3p0
 --NDefines.NGraphics.CAPITAL_INDICATOR_HEIGHT = 0.1 -- from 5.8 - LOWERING AS FLAGS WERE REMOVED FOR PERFORMANCE PURPOSES
@@ -325,8 +322,8 @@ NDefines.NGraphics.CITY_SPRAWL_AMOUNT = 1.0			-- from 3p0
 
  --NEngine 
 NDefines.NEngine.EVENT_PROCESS_OFFSET = 30				-- Events are checked every X day per character or province (1 is ideal, but CPU heavy)
- 
- --NReligion changes
+
+  --NReligion changes
 NDefines.NReligion.CONSECRATE_PATRIARCH_THRESHOLD = 60			-- from 30
 NDefines.NReligion.DOOM_REDUCTION_FROM_OCCUPATION = 0.025			-- from 0p05
 NDefines.NReligion.AUTHORITY_FROM_DEVELOPMENT = 0.01			-- from 0p02
@@ -335,20 +332,15 @@ NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 5 --was 3
 NDefines.NReligion.MIN_CARDINALS = 12									-- Least amount of cardinals/ Starting cardinals
 NDefines.NReligion.MAX_CARDINALS = 24									-- Max amount of cardinals
 NDefines.NReligion.MAX_CARDINALS_PER_COUNTRY = 6							-- Max cardinals in a single country
-NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 40.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
+NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 50.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 600.0							-- WAS 200 -- When a cardinal is chosen the formula is diving a countrys development by this number.
 NDefines.NReligion.NUMBER_OF_POSSIBLE_CARDINALS = 5						-- Number of cardinals from said number of most successful provinces to be randomly picked from
 
 
- --NNationDesigner changes
-NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.1			-- from 0p5
-NDefines.NNationDesigner.PRODUCTION_COST_MODIFIER = 0.2			-- from 0p5
-NDefines.NNationDesigner.MANPOWER_COST_MODIFIER = 0.3			-- from 0p5
-NDefines.NNationDesigner.MAX_GOVERNMENT_RANK = 5 -- was 3
-
+---- NGovernment
 NDefines.NGovernment.RUSSIAN_ABILITY_COST = 100
 NDefines.NGovernment.RUSSIAN_ABILITY_POOL_SIZE = 150
-NDefines.NGovernment.RUSSIAN_ABILITY_BASE_GAIN = 3
+NDefines.NGovernment.RUSSIAN_ABILITY_BASE_GAIN = 1
 NDefines.NGovernment.RUSSIAN_ABILITY_SUDEBNIK_MIN_AUTONOMY = 10
 NDefines.NGovernment.RUSSIAN_ABILITY_SUDEBNIK_AUTONOMY_CHANGE = -10
 NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_THRESHOLD = 0.3
@@ -369,3 +361,10 @@ NDefines.NGovernment.GOVERNMENT_REFORM_CHANGE_PROGRESS_COST = 50.0
 NDefines.NGovernment.DICTATORSHIP_TO_MONARCHY_REFORM_PENALTY = 4
 NDefines.NGovernment.NATIVE_REFORM_REFORM_PENALTY = 2
 NDefines.NGovernment.EXPAND_ADMIN_COST = 20.0
+
+
+ --NNationDesigner changes
+NDefines.NNationDesigner.BASE_TAX_COST_MODIFIER = 0.1			-- from 0p5
+NDefines.NNationDesigner.PRODUCTION_COST_MODIFIER = 0.25			-- from 0p5
+NDefines.NNationDesigner.MANPOWER_COST_MODIFIER = 0.3			-- from 0p5
+NDefines.NNationDesigner.MAX_GOVERNMENT_RANK = 5 -- was 3
