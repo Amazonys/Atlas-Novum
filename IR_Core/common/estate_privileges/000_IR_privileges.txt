@@ -4,6 +4,9 @@ estate_peasants_land_rights = {
 	max_absolutism = -5
 	loyalty = 0.05
 	influence = 0.05
+	is_valid = {
+		NOT = { has_estate_privilege = estate_peasants_serfdom }
+	}
 	can_select = {
 	}
 	on_granted = {
@@ -77,6 +80,7 @@ estate_peasants_statutory_rights = {
 	influence = 0.1
 	is_valid = {
 		has_estate_privilege = estate_peasants_statutory_rights
+		NOT = { has_estate_privilege = estate_peasants_serfdom }
 	}
 	on_granted = {
 		#change_estate_land_share = {
@@ -100,6 +104,9 @@ estate_peasants_lowered_taxes = {
 	max_absolutism = -10
 	loyalty = 0.1
 	influence = 0.1
+	is_valid = {
+		NOT = { has_estate_privilege = estate_peasants_serfdom }
+	}
 	penalties = {
 	}
 	benefits = {
@@ -120,6 +127,12 @@ estate_peasants_peasant_army = {
 	loyalty = -0.05
 	can_select = {
 	}
+	is_valid = {
+		NOT = { 
+			has_estate_privilege = estate_peasants_serfdom 
+			has_estate = estate_nobles
+		}
+	}
 	on_granted = {
 	}
 	penalties = {
@@ -138,7 +151,7 @@ estate_peasants_peasant_army = {
 					influence = 75
 				}
 			}
-			NOT = { has_estate_privilege = estate_peasants_homeland_defense }
+			#NOT = { has_estate_privilege = estate_peasants_homeland_defense }
 		}
 		modifier = {
 			factor = 0.8
@@ -149,7 +162,7 @@ estate_peasants_peasant_army = {
 					NOT = { crown_land_share = 55 }
 				}
 			}
-			NOT = { has_estate_privilege = estate_peasants_homeland_defense }
+			#NOT = { has_estate_privilege = estate_peasants_homeland_defense }
 		}
 		modifier = {
 			factor = 0.8
@@ -166,10 +179,156 @@ estate_peasants_peasant_army = {
 	}
 }
 
-#homeland defense 
-# attrition
-# lowered taxes/manpower?
+estate_peasants_homeland_defense = {
+	icon = privilege_royal_authority
+	max_absolutism = -5
+	influence = 0.1
+	loyalty = 0.05
+	is_valid = {
+		NOT = { has_estate_privilege = estate_peasants_serfdom }
+		NOT = { has_estate_privilege = estate_peasants_homeland_defense }
+		NOT = { has_estate_privilege = estate_peasants_frisian_karelsprivilege }
+		NOT = { 
+			primary_culture = frisian
+			is_part_of_hre = yes
+		}
+	}
+	on_granted = {
+		#change_estate_land_share = {
+		#estate = estate_nobles
+		#share = -5
+		#}
+		#add_estate_loyalty = {
+		#estate = estate_nobles
+		#loyalty = -10
+		#}
+		#change_estate_land_share = {
+		#estate = estate_church
+		#share = -5
+		#}
+		#add_estate_loyalty = {
+		#estate = estate_church
+		#loyalty = -10
+		#}
+	}
+	penalties = {
+		min_autonomy = 10
+	}
+	benefits = {
+		hostile_attrition = 1
+		land_morale = 0.025
+	}
+	#can_revoke = {
+		#NOT = { has_reform = peasants_republic }
+	#}
+	#conditional_modifier = { #something with emperor.
+	#}
+	ai_will_do = {
+		#factor = 7.5
+		#modifier = {
+		#	factor = 1.5
+		#	owns = 43
+		#	NOT = { num_of_cities = 6 }
+		#	crown_land_share = 40
+		#	NOT = {
+		#		estate_influence = {
+		#			estate = estate_burghers
+		#			influence = 70
+		#		}
+		#	}
+		#}
+	}
+}
 
+estate_peasants_serfdom = {
+	icon = privilege_royal_authority
+	land_share = 0
+	max_absolutism = 0
+	#loyalty = -0.3
+	influence = 0
+	is_valid = {
+		NOT = { 
+			IR_peasant_freedom_exceptions = yes
+		}
+	}
+	#can_select = {
+		
+	#}
+	on_granted = {
+		#change_estate_land_share = {
+		#estate = estate_peasants
+		#share = -100
+		#}
+		add_estate_loyalty = {
+			estate = estate_peasants
+			loyalty = -30
+		}
+		#change_estate_land_share = {
+		#estate = estate_nobles
+		#share = 10
+		#}
+		#add_estate_loyalty = {
+		#estate = estate_nobles
+		#loyalty = 10
+		#}
+		#change_estate_land_share = {
+		#estate = estate_church
+		#share = 5
+		#}
+		#add_estate_loyalty = {
+		#estate = estate_church
+		#loyalty = 10
+		#}
+	}
+	on_revoked = { 
+		add_estate_loyalty = {
+			estate = estate_peasants
+			loyalty = 30
+		}
+		change_estate_land_share = {
+			estate = estate_peasants
+			share = 20
+		}
+		change_estate_land_share = {
+			estate = estate_nobles
+			share = -10
+		}
+	}	
+	penalties = {
+		peasants_loyalty_modifier = -0.2
+	}
+	benefits = {
+		nobles_loyalty_modifier = 0.1		
+	}
+	can_revoke = {
+		if = { limit = { ROOT = { technology_group = western } }
+			#custom_trigger_tooltip = {
+			#	tooltip = IR_western_serfdom_revoke
+				has_institution = renaissance
+				NOT = {
+					estate_influence = {
+						estate = estate_nobles
+						influence = 30
+					}
+				}
+			#}
+		}
+		if = { limit = { ROOT = { technology_group = eastern } }
+			#custom_trigger_tooltip = {
+			#	tooltip = IR_eastern_serfdom_revoke
+				is_year = 1800 #something like that
+				NOT = {
+					estate_influence = {
+						estate = estate_nobles
+						influence = 30
+					}
+				}
+			#}
+		}
+	}
+	ai_will_do = {
+	}
+}
 
 ###########################################
 #			UNIQUE PRIVILEGES			  #
@@ -180,7 +339,7 @@ estate_peasants_frisian_karelsprivilege = {
 	icon = privilege_royal_authority
 	max_absolutism = -5
 	influence = 0.1
-	loyalty = 0.1
+	loyalty = 0.10
 	is_valid = {
 		OR = {
 			AND = {
@@ -206,10 +365,11 @@ estate_peasants_frisian_karelsprivilege = {
 	#	min_autonomy = 35
 	#}
 	benefits = {
-		discipline = 0.05
+		hostile_attrition = 1
+		land_morale = 0.025
 	}
 	can_revoke = {
-		NOT = {	is_part_of_hre = yes }
+		NOT = { has_reform = peasants_republic }
 	}
 	#conditional_modifier = { #something with emperor.
 	#}
