@@ -228,7 +228,7 @@ NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 100			-- from 5     I dont ac
 NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -6
 NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.25		-- 100 revanschism is -20 a year.
 NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -12
-NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -3
+NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -6
  --Unit Speeds
 NDefines.NMilitary.INFANTRY_SPEED = 0.6					
 NDefines.NMilitary.CAVALRY_SPEED = 0.8							
