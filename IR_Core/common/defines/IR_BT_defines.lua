@@ -29,10 +29,10 @@ NDefines.NDiplomacy.AE_DISTANCE_BASE = 2
 NDefines.NDiplomacy.AE_SAME_OVERLORD = 0.5	
  -- Peace AE
 NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 1			-- from 0p75
-NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.75			-- from 0p5
-NDefines.NDiplomacy.PO_FORM_PU_AE = 0.1			-- from 0p1
-NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.25			-- from 0p25
-NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.5			-- from 0p5
+NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.5			-- from 0p5
+NDefines.NDiplomacy.PO_FORM_PU_AE = 0.05		-- from 0p1
+NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.5			-- from 0p25
+NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.25			-- from 0p5
 NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.25		-- from 0p33
  -- Peace Prestige
 NDefines.NDiplomacy.PO_ANNEX_PRESTIGE = 0.15			-- from 0p25
