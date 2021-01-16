@@ -37,6 +37,10 @@ province_event = {
 		months = 300 #Once every 25 years
 		modifier = {
 			factor = 0.9
+			has_building = town
+		}
+		modifier = {
+			factor = 0.8
 			has_building = city
 		}
 		modifier = {
@@ -132,6 +136,10 @@ province_event = {
 		months = 240 #Approximately every 40 years when possible
 		modifier = {
 			factor = 0.9
+			has_building = town
+		}
+		modifier = {
+			factor = 0.8
 			has_building = city
 		}
 		modifier = {
@@ -720,7 +728,7 @@ province_event = {
 		add_mil_power = -50
 		add_devastation = 50
 		add_permanent_province_modifier = {
-			name = influenza
+			name = salmonella
    			duration = 365
 		}
 		IR_low_pop_loss = yes
@@ -733,7 +741,7 @@ province_event = {
 					chance = 20 # HALF INFECTION CHANCE 
 					add_devastation = 50
 					add_permanent_province_modifier = {
-						name = influenza
+						name = salmonella
 						duration = 365
 					}
 					IR_low_pop_loss = yes
@@ -756,14 +764,14 @@ province_event = {
 	trigger = { 
 		is_city = yes 
 		has_global_flag = IR_dev_init 
-		OR = {
-			devastation = 25
-			has_province_modifier = famine_1
-			has_province_modifier = famine_2
-			has_province_modifier = famine_3
-			has_province_modifier = famine_4
-		}
 		IR_disease_free = yes
+		if = { #ONLY SPREADS INTO NEW WORLD AFTER OLD WORLD DISCOVERS
+			limit = { capital_scope = { in_new_world = yes } }
+			any_country = {
+                capital_scope = { in_old_world = yes }
+                has_discovered = ROOT
+			}
+		}
 	}
 	
 	is_mtth_scaled_to_size = 1
@@ -778,44 +786,13 @@ province_event = {
 			}
 		}
 		modifier = {
-			factor = 0.75
-			devastation = 25
-			NOT = { devastation = 50 }
-		}
-		modifier = {
 			factor = 0.5
-			devastation = 50
-			NOT = { devastation = 75 }
-		}
-		modifier = {
-			factor = 0.25
-			devastation = 75
-			NOT = { devastation = 90 }
-		}
-		modifier = {
-			factor = 0.1
-			devastation = 90
-		}
-		modifier = {
-			factor = 0.75
-			has_province_modifier = famine_1
-		}
-		modifier = {
-			factor = 0.5
-			has_province_modifier = famine_2
-		}
-		modifier = {
-			factor = 0.25
-			has_province_modifier = famine_3
-		}
-		modifier = {
-			factor = 0.1
-			has_province_modifier = famine_4
+			trade_goods = livestock #FROM CHICKENS OR CATTLE
 		}
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.11.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = measles
@@ -823,22 +800,48 @@ province_event = {
 		}
 		IR_low_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_50
+		custom_tooltip = IR_disease_chance_80
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = measles } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 50
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = measles
-							duration = 730
-						}
-						IR_low_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 80 #HIGH INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = measles
+						duration = 730
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = measles
+   			duration = 730
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_40
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 40 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = measles
+						duration = 730
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -862,34 +865,22 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
 			factor = 0.5
-			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
-		}
-		modifier = {
-			factor = 0.75
-			devastation = 25
-			NOT = { devastation = 50 }
+			any_neighbor_province = {
+				OR = { has_building = village has_building = town has_building = city has_building = metropolis }
+				has_province_modifier = measles
+			}
 		}
 		modifier = {
 			factor = 0.5
-			devastation = 50
-			NOT = { devastation = 75 }
-		}
-		modifier = {
-			factor = 0.25
-			devastation = 75
-			NOT = { devastation = 90 }
-		}
-		modifier = {
-			factor = 0.1
-			devastation = 90
+			trade_goods = livestock #FROM CHICKENS OR CATTLE
 		}
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.110.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = measles
@@ -897,22 +888,48 @@ province_event = {
 		}
 		IR_low_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_25
+		custom_tooltip = IR_disease_chance_80
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = measles } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 25
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = measles
-							duration = 730
-						}
-						IR_low_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 80 #HIGH INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = measles
+						duration = 730
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = measles
+   			duration = 730
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_40
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 40 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = measles
+						duration = 730
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -984,11 +1001,59 @@ province_event = {
 		modifier = {
 			factor = 0.1
 			has_province_modifier = famine_4
+		}	
+		modifier = {
+			factor = 0.9
+			has_building = town
+		}
+		modifier = {
+			factor = 0.8
+			has_building = city
+		}
+		modifier = {
+			factor = 0.7
+			has_building = metropolis
+		}
+		modifier = { 
+			factor = 2
+			capital_scope = { OR = { region = scandinavia_region region = poland_region region = north_german_region } } #RESISTANCE IN POLAND, N GERMANY, SCANDINAVIA
+		}
+		modifier = { 
+			factor = 0.25
+			capital_scope = { OR = { region = british_isles_region region = ireland_area region = france_region } } #FOCUSED IN BRITISH ISLES AND FRANCE INITIALLY
+			is_year = 1465
+			NOT = { is_year = 1625 }
+		}
+		modifier = { 
+			factor = 0.25
+			capital_scope = { OR = { region = italy_region region = iberia_region region = russia_region } } #THEN SOUTHERN EUROPE AND RUSSIA
+			is_year = 1625
+			NOT = { is_year = 1680 }
+		}
+		modifier = { 
+			factor = 0.25
+			capital_scope = { OR = { region = south_german_region region = baltic_region region = carpathia_region } } #THEN SOUTH GERMANY, DANUBE, AND BALTIC
+			is_year = 1680
+			NOT = { is_year = 1770 }
+		}
+		modifier = { 
+			factor = 0.25
+			capital_scope = { OR = { region = dinaric_region region = balkan_region region = anatolia_region region = mesopotamia_region region = mashriq_region region = egypt_region } } #MIDDLE EAST AND BALKANS IN LATEGAME
+			is_year = 1770
+		}
+		modifier = {
+			factor = 0.1
+			capital_scope = { OR = { region = north_china_region region = south_china_region }} #CHINA VERY LIKELY TO GET IT VERY LATE FOR THIRD PLAGUE PANDEMIC ~1850s
+			is_year = 1830
+		}
+		modifier = { #UNLIKELY TO SPAWN TWICE AT THE SAME TIME
+			factor = 4
+			owner = { any_owned_province = { has_province_modifier = plague } }
 		}
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.12.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = plague
@@ -998,20 +1063,46 @@ province_event = {
 		IR_check_dev_variables = yes
 		custom_tooltip = IR_disease_chance_50
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = plague } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 50
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = plague
-							duration = 365
-						}
-						IR_mid_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 50 #MODERATE INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = plague
+						duration = 365
 					}
+					IR_mid_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = plague
+   			duration = 365
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_25
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 25 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = plague
+						duration = 365
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1035,34 +1126,55 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
-			factor = 0.5
-			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
+			factor = 0.9
+			has_building = town
 		}
 		modifier = {
-			factor = 0.75
-			devastation = 25
-			NOT = { devastation = 50 }
+			factor = 0.8
+			has_building = city
 		}
 		modifier = {
-			factor = 0.5
-			devastation = 50
-			NOT = { devastation = 75 }
+			factor = 0.7
+			has_building = metropolis
 		}
-		modifier = {
+		modifier = { 
+			factor = 2
+			capital_scope = { OR = { region = scandinavia_region region = poland_region region = north_german_region } } #RESISTANCE IN POLAND, N GERMANY, SCANDINAVIA
+		}
+		modifier = { 
 			factor = 0.25
-			devastation = 75
-			NOT = { devastation = 90 }
+			capital_scope = { OR = { region = british_isles_region region = ireland_area region = france_region } } #FOCUSED IN BRITISH ISLES AND FRANCE INITIALLY
+			is_year = 1465
+			NOT = { is_year = 1625 }
+		}
+		modifier = { 
+			factor = 0.25
+			capital_scope = { OR = { region = italy_region region = iberia_region region = russia_region } } #THEN SOUTHERN EUROPE AND RUSSIA
+			is_year = 1625
+			NOT = { is_year = 1680 }
+		}
+		modifier = { 
+			factor = 0.25
+			capital_scope = { OR = { region = south_german_region region = baltic_region region = carpathia_region } } #THEN SOUTH GERMANY, DANUBE, AND BALTIC
+			is_year = 1680
+			NOT = { is_year = 1770 }
+		}
+		modifier = { 
+			factor = 0.25
+			capital_scope = { OR = { region = dinaric_region region = balkan_region region = anatolia_region region = mesopotamia_region region = mashriq_region region = egypt_region } } #MIDDLE EAST AND BALKANS IN LATEGAME
+			is_year = 1770
 		}
 		modifier = {
 			factor = 0.1
-			devastation = 90
+			capital_scope = { OR = { region = north_china_region region = south_china_region }} #CHINA VERY LIKELY TO GET IT VERY LATE FOR THIRD PLAGUE PANDEMIC ~1850s
+			is_year = 1830
 		}
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.120.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = plague
@@ -1070,22 +1182,48 @@ province_event = {
 		}
 		IR_mid_pop_loss = yes
 		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_50
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 50 #MODERATE INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = plague
+						duration = 365
+					}
+					IR_mid_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = plague
+   			duration = 365
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
 		custom_tooltip = IR_disease_chance_25
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = plague } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 25
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = plague
-							duration = 365
-						}
-						IR_mid_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 25 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = plague
+						duration = 365
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1160,8 +1298,9 @@ province_event = {
 		}
 	}
 	
+	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.3.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = yellow_fever
@@ -1171,20 +1310,46 @@ province_event = {
 		IR_check_dev_variables = yes
 		custom_tooltip = IR_disease_chance_50
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = yellow_fever } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 50
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = yellow_fever
-							duration = 365
-						}
-						IR_low_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 50 #MODERATE INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = yellow_fever
+						duration = 365
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = yellow_fever
+   			duration = 365
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_25
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 25 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = yellow_fever
+						duration = 365
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1208,7 +1373,7 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
 			factor = 0.5
 			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
@@ -1235,7 +1400,36 @@ province_event = {
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.130.a" 
+		name = "IR_disease.x.a" 
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = yellow_fever
+   			duration = 365
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_50
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 50 #MODERATE INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = yellow_fever
+						duration = 365
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = yellow_fever
@@ -1245,20 +1439,17 @@ province_event = {
 		IR_check_dev_variables = yes
 		custom_tooltip = IR_disease_chance_25
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = yellow_fever } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 25
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = yellow_fever
-							duration = 365
-						}
-						IR_low_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 25 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = yellow_fever
+						duration = 365
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1334,7 +1525,7 @@ province_event = {
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.14.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = smallpox
@@ -1342,22 +1533,48 @@ province_event = {
 		}
 		IR_mid_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_50
+		custom_tooltip = IR_disease_chance_90
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = smallpox } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 50
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = smallpox
-							duration = 365
-						}
-						IR_mid_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 90 #EXTREMELY HIGH INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = smallpox
+						duration = 365
 					}
+					IR_mid_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = smallpox
+   			duration = 365
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_45
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 45 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = smallpox
+						duration = 365
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1381,7 +1598,7 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
 			factor = 0.5
 			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
@@ -1408,7 +1625,7 @@ province_event = {
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.140.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = smallpox
@@ -1416,22 +1633,48 @@ province_event = {
 		}
 		IR_mid_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_25
+		custom_tooltip = IR_disease_chance_90
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = smallpox } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 25
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = smallpox
-							duration = 365
-						}
-						IR_mid_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 90 #EXTREMELY HIGH INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = smallpox
+						duration = 365
 					}
+					IR_mid_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = smallpox
+   			duration = 365
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_45
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 45 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = smallpox
+						duration = 365
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1508,7 +1751,7 @@ province_event = {
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.15.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = typhus
@@ -1516,22 +1759,48 @@ province_event = {
 		}
 		IR_low_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_50
+		custom_tooltip = IR_disease_chance_60
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = typhus } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 50
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = typhus
-							duration = 730
-						}
-						IR_low_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 60 #MODERATE INFECTION
+					add_devastation = 50 
+					add_permanent_province_modifier = {
+						name = typhus
+						duration = 730
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = typhus
+   			duration = 730
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_30
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 30 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = typhus
+						duration = 730
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1555,7 +1824,7 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
 			factor = 0.5
 			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
@@ -1582,7 +1851,7 @@ province_event = {
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.150.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = typhus
@@ -1590,22 +1859,48 @@ province_event = {
 		}
 		IR_low_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_25
+		custom_tooltip = IR_disease_chance_60
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = typhus } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 25
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = typhus
-							duration = 730
-						}
-						IR_low_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 60 #MODERATE INFECTION
+					add_devastation = 50 
+					add_permanent_province_modifier = {
+						name = typhus
+						duration = 730
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = typhus
+   			duration = 730
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_30
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 30 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = typhus
+						duration = 730
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1682,7 +1977,7 @@ province_event = {
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.16.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = influenza
@@ -1690,22 +1985,48 @@ province_event = {
 		}
 		IR_mid_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_50
+		custom_tooltip = IR_disease_chance_90
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = influenza } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 50
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = influenza
-							duration = 365
-						}
-						IR_mid_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 90 #EXTREMELY HIGH INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = influenza
+						duration = 365
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = influenza
+   			duration = 365
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_45
+		hidden_effect = {
+		every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 45 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = influenza
+						duration = 365
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1729,7 +2050,7 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
 			factor = 0.5
 			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
@@ -1756,7 +2077,7 @@ province_event = {
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.160.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = influenza
@@ -1764,22 +2085,48 @@ province_event = {
 		}
 		IR_mid_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_25
+		custom_tooltip = IR_disease_chance_90
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = influenza } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 25
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = influenza
-							duration = 365
-						}
-						IR_mid_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 90 #EXTREMELY HIGH INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = influenza
+						duration = 365
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = influenza
+   			duration = 365
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_45
+		hidden_effect = {
+		every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 45 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = influenza
+						duration = 365
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1819,6 +2166,16 @@ province_event = {
 			}
 		}
 		modifier = {
+			factor = 0.8
+			has_building = city
+			OR = { trade_goods = livestock trade_goods = grain trade_goods = ir_fruit trade_goods = ir_maize trade_goods = ir_rice }
+		}
+		modifier = {
+			factor = 0.5
+			has_building = metropolis
+			OR = { trade_goods = livestock trade_goods = grain trade_goods = ir_fruit trade_goods = ir_maize trade_goods = ir_rice }
+		}
+		modifier = {
 			factor = 0.75
 			devastation = 25
 			NOT = { devastation = 50 }
@@ -1856,7 +2213,7 @@ province_event = {
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.17.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = salmonella
@@ -1864,22 +2221,48 @@ province_event = {
 		}
 		IR_low_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_50
+		custom_tooltip = IR_disease_chance_40
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = influenza } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 50
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = salmonella
-							duration = 730
-						}
-						IR_low_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 40 #LOW INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = salmonella
+						duration = 730
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = influenza
+   			duration = 365
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_20
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 20 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = influenza
+						duration = 365
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1903,7 +2286,7 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
 			factor = 0.5
 			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
@@ -1927,10 +2310,20 @@ province_event = {
 			factor = 0.1
 			devastation = 90
 		}
+		modifier = {
+			factor = 0.8
+			has_building = city
+			OR = { trade_goods = livestock trade_goods = grain trade_goods = ir_fruit trade_goods = ir_maize trade_goods = ir_rice }
+		}
+		modifier = {
+			factor = 0.5
+			has_building = metropolis
+			OR = { trade_goods = livestock trade_goods = grain trade_goods = ir_fruit trade_goods = ir_maize trade_goods = ir_rice }
+		}
 	}
 	
 	option = { #let the IR_disease spawn without response
-		name = "IR_disease.170.a" 
+		name = "IR_disease.x.a" 
 		add_devastation = 50
 		add_permanent_province_modifier = {
 			name = salmonella
@@ -1938,22 +2331,48 @@ province_event = {
 		}
 		IR_low_pop_loss = yes
 		IR_check_dev_variables = yes
-		custom_tooltip = IR_disease_chance_25
+		custom_tooltip = IR_disease_chance_40
 		hidden_effect = {
-			if = { 
-				limit = { NOT = { any_neighbor_province = { has_province_modifier = salmonella } } }
-				every_neighbor_province = {
-					limit = { IR_disease_free = yes }
-					random = { 
-						chance = 25
-						add_devastation = 50
-						add_permanent_province_modifier = {
-							name = salmonella
-							duration = 730
-						}
-						IR_low_pop_loss = yes
-						IR_check_dev_variables = yes
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 40 #LOW INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = salmonella
+						duration = 730
 					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = salmonella
+   			duration = 730
+		}
+		IR_low_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_20
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 20 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = salmonella
+						duration = 730
+					}
+					IR_low_pop_loss = yes
+					IR_check_dev_variables = yes
 				}
 			}
 		}
@@ -1970,7 +2389,7 @@ province_event = {
 	trigger = { 
 		is_city = yes 
 		has_global_flag = IR_dev_init 
-		NOT = { is_year = 1444 }
+		always = no
 		OR = {
 			devastation = 25
 			has_province_modifier = famine_1
@@ -2030,6 +2449,62 @@ province_event = {
 	}
 	
 	option = { #let the IR_disease spawn without response
+		name = "IR_disease.x.a" 
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = cholera
+   			duration = 365
+		}
+		IR_mid_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_90
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 90 #High INFECTION
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = cholera
+						duration = 365
+					}
+					IR_mid_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	option = { #Quarantine the province
+		name = "IR_disease.x.b" 
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		add_devastation = 50
+		add_permanent_province_modifier = {
+			name = cholera
+   			duration = 365
+		}
+		IR_mid_pop_loss = yes
+		IR_check_dev_variables = yes
+		custom_tooltip = IR_disease_chance_45
+		hidden_effect = {
+			every_neighbor_province = {
+				limit = { IR_disease_free = yes }
+				random = { 
+					chance = 45 # HALF INFECTION CHANCE 
+					add_devastation = 50
+					add_permanent_province_modifier = {
+						name = cholera
+						duration = 365
+					}
+					IR_mid_pop_loss = yes
+					IR_check_dev_variables = yes
+				}
+			}
+		}
+	}
+	
+	option = { #let the IR_disease spawn without response
 		name = "IR_disease.18.a" 
 		add_devastation = 75
 		add_permanent_province_modifier = {
@@ -2067,6 +2542,7 @@ province_event = {
 	picture = PLAGUE_eventPicture
 	
 	trigger = { 
+		always = no
 		is_city = yes 
 		has_global_flag = IR_dev_init 
 		any_neighbor_province = {
@@ -2077,7 +2553,7 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
 			factor = 0.5
 			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
@@ -2144,7 +2620,7 @@ province_event = {
 	trigger = { 
 		is_city = yes 
 		has_global_flag = IR_dev_init 
-		NOT = { is_year = 1444 }
+		always = no
 		OR = {
 			devastation = 25
 			has_province_modifier = famine_1
@@ -2241,6 +2717,7 @@ province_event = {
 	picture = PLAGUE_eventPicture
 	
 	trigger = { 
+		always = no
 		is_city = yes 
 		has_global_flag = IR_dev_init 
 		any_neighbor_province = {
@@ -2251,7 +2728,7 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
 			factor = 0.5
 			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
@@ -2317,6 +2794,7 @@ province_event = {
 	
 	trigger = { 
 		is_city = yes 
+		always = no
 		has_global_flag = IR_dev_init 
 		OR = {
 			devastation = 25
@@ -2414,6 +2892,7 @@ province_event = {
 	picture = PLAGUE_eventPicture
 	
 	trigger = { 
+		always = no
 		is_city = yes 
 		has_global_flag = IR_dev_init 
 		any_neighbor_province = {
@@ -2424,7 +2903,7 @@ province_event = {
 	is_mtth_scaled_to_size = 1
 	
 	mean_time_to_happen = {
-		months = 60 
+		months = 240
 		modifier = {
 			factor = 0.5
 			OR = { has_building = village has_building = town has_building = city has_building = metropolis }
