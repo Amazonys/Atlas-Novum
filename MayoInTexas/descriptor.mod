@@ -1,4 +1,4 @@
-version="13.0.8"
+version="1.0"
 tags={
 	"Balance"
 	"Map"
@@ -13,6 +13,5 @@ tags={
 	"Technologies"
 	"Trade"
 }
-name="Beyond Typus"
+name="Mayo in Texas"
 supported_version="1.30.*"
-remote_file_id="2138490092"
