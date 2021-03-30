@@ -1,0 +1,266 @@
+#Updated by C1CK 18/07/2020
+#All missions updated with Dub's scipted system
+
+bavarian_missions_main = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	bav_reunite_bavaria = { #Left triggers alone, as they are a mess and I don't want to go through the hassle of making it dynamic
+		icon = mission_conquer_50_development
+		required_missions = { }
+		completed_by = 1507.1.1
+		ai_weight = {
+			factor = 10
+		}
+		ai_priority = {
+			factor = 10
+		}
+
+		provinces_to_highlight = {
+			OR = {
+				#other claimants are gone
+				AND = {
+					ROOT = { NOT = { tag = LBV } }
+					LBV = {
+						OR = {
+							num_of_cities = 5
+							NOT = { is_subject_of = ROOT }
+						}
+					}
+					owned_by = LBV
+				}
+				AND = {
+					ROOT = { NOT = { tag = ING } }
+					ING = {
+						OR = {
+							num_of_cities = 5
+							NOT = { is_subject_of = ROOT }
+						}
+					}
+					owned_by = ING
+				}
+				AND = {
+					ROOT = { NOT = { tag = UBV } }
+					UBV = {
+						OR = {
+							num_of_cities = 5
+							NOT = { is_subject_of = ROOT }
+						}
+					}
+					owned_by = UBV
+				}
+				#make sure you are not benefitting from others' conquests
+				AND = {
+					province_id = 65
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				AND = {
+					province_id = 64
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+				AND = {
+					province_id = 2955
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+			}
+		}
+		trigger = {
+			tag = BAV
+			army_size_percentage = 1
+			all_owned_province = {
+				NOT = { unrest = 1 }
+			}
+		}
+		effect = {
+			#Actually, the Bavaria formation decision will give you these, so it is just a tooltip
+			give_permaclaims_for_mission = { mission=bav_expand_in_bavaria }
+			
+			add_country_modifier = {
+				name = bav_rising_power
+				duration = 7300
+			}
+		}
+	}
+	bav_expand_in_bavaria = {
+		icon = mission_unite_home_region
+		required_missions = { bav_reunite_bavaria }
+		position = 3
+		completed_by = 1618.5.6
+		provinces_to_highlight = {
+			bav_expand_in_bavaria_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			num_of_cities = 10
+			has_fulfiled_num_of_province_requirement_for_mission_trigger = {
+				tooltip = country_holds_or_non_sovereign_subject_holds_highlighted_num
+				provinces = bav_expand_in_bavaria_provinces
+				owner_type = country_or_non_sovereign_subject_holds
+				value = 1 #1 of 3
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					has_dlc = "Emperor"
+					valid_for_personal_unions_trigger = yes
+					exists = PAL
+					PAL = {
+						valid_for_personal_unions_trigger = yes
+					}
+				}
+				add_casus_belli = {
+					type = cb_restore_personal_union
+					months = 300
+					target = PAL
+				}
+			}
+			else = {
+				give_permaclaims_for_mission = { mission=emp_bav_union_with_palatinate }
+				if = {
+					limit = {
+						exists = PAL
+					}
+					custom_tooltip = gain_claims_on_palatinate_provinces
+					hidden_effect = {
+						PAL = {
+							every_owned_province = {
+								limit = {
+									NOT = { area = palatinate_area }
+									NOT = { is_permanent_claim = root }
+									NOT = { is_core = root }
+								}
+								add_permanent_claim = root
+							}
+						}
+					}
+				}
+			}
+			give_permaclaims_for_mission = { mission=conquer_franken }
+		}
+	}
+
+	conquer_franken = {
+		icon = mission_cannons_firing
+		required_missions = { bav_expand_in_bavaria }
+		completed_by = 1806.1.1
+		provinces_to_highlight = {
+			conquer_franken_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			has_fulfiled_num_of_province_requirement_for_mission_trigger = {
+				tooltip = country_holds_or_non_sovereign_subject_holds_highlighted_num
+				provinces = conquer_franken_provinces
+				owner_type = country_or_non_sovereign_subject_holds
+				value = 6 #6 of 9 (6 of 8 in vanilla)
+			}
+		}
+		effect = {
+			add_prestige = 20
+			add_country_modifier = {
+				name = "bavarian_ambition"
+				duration = 7300
+			}
+			give_permaclaims_for_mission = { mission=conquer_ansbach }
+		}
+	}
+
+	conquer_ansbach = {
+		icon = mission_landsknecht_soldier
+		required_missions = { conquer_franken }
+		provinces_to_highlight = {
+			OR = {
+				area = lower_swabia_area
+				area = upper_swabia_area
+			}
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_num_of_province_requirement_for_mission_trigger = {
+				tooltip = country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces = conquer_ansbach_provinces
+				owner_type = country_or_non_sovereign_subject_holds
+				value = 8 #8 of 9 (6 of 7 in vanilla)
+			}
+		}
+		effect = {
+			add_adm_power = 100
+			upper_rhineland_area = { #Baden (In vanilla this is only the land East of the Rhine, but this is probably fine to include Alsace)
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = {  is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+}
+
+bavarian_missions_palatinate = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+		NOT = { has_dlc = "Emperor" }
+	}
+	has_country_shield = yes
+	
+	conquer_alzey = {
+		position = 4
+		icon = mission_monarch_in_throne_room
+		required_missions = { bav_expand_in_bavaria }
+		completed_by = 1777.12.30
+		provinces_to_highlight = {
+			area = palatinate_area
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			palatinate_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			OR = {
+				NOT = { exists = PAL }
+				PAL = {
+					is_subject_of = ROOT
+				}
+			}
+		}
+		effect = {
+			add_prestige = 10
+			add_legitimacy = 10
+			add_devotion = 10
+			add_republican_tradition = 5
+			palatinate_area = {
+				limit = { owned_by = ROOT }
+				add_province_modifier = {
+					name = faster_integration
+					duration = 7300
+				}
+			}
+		}
+	}
+}

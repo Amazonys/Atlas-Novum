@@ -1,0 +1,1144 @@
+
+#Overhauled scriptified Swedish missions by Dub
+swedish_missions_scandinavia = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		tag = SWE
+	}
+	has_country_shield = yes
+
+	swe_win_independence = {
+		icon = mission_monarch_in_throne_room
+		required_missions = { }
+		trigger = {
+			is_subject = no
+			owns_core_province = 1
+			is_at_war = no
+		}
+		effect = {
+			#Claims
+			give_permaclaims_for_mission = { mission=control_scania }
+		}
+	}
+	control_scania = {
+		icon = mission_assemble_an_army
+		required_missions = { swe_win_independence }
+		provinces_to_highlight = {
+			control_scania_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=control_scania_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "consolidated_sweden"
+				duration = 5475
+			}
+			#Copied from Austria's missions, adjusted to become a vassalization.
+			if = {
+				limit = {
+					exists = NOR
+					is_subject = no
+					NOR = {
+						is_subject = no
+					}
+				}
+				add_casus_belli = {
+					type = cb_vassalize_mission
+					months = 300
+					target = NOR
+				}
+			}
+			else = {
+				#Claims
+				give_permaclaims_for_mission = { mission=vassalize_norway_swe }
+			}
+		}
+	}
+	vassalize_norway_swe = {
+		icon = mission_have_two_subjects
+		required_missions = { control_scania }
+		provinces_to_highlight = {
+			vassalize_norway_swe_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=vassalize_norway_swe_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "norway_subjugated_swe"
+				duration = 5475
+			}
+			#BT adjusted, changed to Scandinavia region.
+			if = {
+				limit = {
+					exists = DAN
+					is_subject = no
+					DAN = {
+						is_subject = no
+					}
+				}
+				add_casus_belli = {
+					type = cb_vassalize_mission
+					months = 300
+					target = DAN
+				}
+			}
+			else = {
+				give_permaclaims_for_mission = { mission=swe_turns_have_tabled }
+			}
+		}
+	}
+	#New mission: Turn the Tables (Subjugate Denmark). Grants "United Scandinavia" modifier, giving +1 legitimacy
+	swe_turns_have_tabled = {
+		icon = mission_sca_shield
+		required_missions = { vassalize_norway_swe }
+		provinces_to_highlight = {
+			swe_turns_have_tabled_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=swe_turns_have_tabled_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "united_scandinavia"
+				duration = 5475
+			}
+			if = { #Sacking of Copenhagen
+				limit = {
+					owns = 12
+				}
+				country_event = {
+					id = bt_sacking_events.2
+				}
+			}
+			scandinavia_region = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_claim = ROOT }
+				}
+				add_claim = ROOT
+			}
+		}
+	}
+}
+
+bt_swedish_colonialism = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		tag = SWE
+	}
+	has_country_shield = yes
+	
+	#New chain: Swedish colonialism. Sends into New Sweden, Gold Coast, and Antilles
+	swedish_colonialism = {
+		icon = mission_settlers_north_america
+		required_missions = { }
+		position = 5
+		provinces_to_highlight = {
+			OR = {
+				province_id = 956
+				province_id = 957
+				province_id = 962
+			}
+			has_discovered = ROOT
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			any_subject_country = {
+				is_colonial_nation = yes
+			}
+			OR = {
+				owns_or_non_sovereign_subject_of = 956
+				owns_or_non_sovereign_subject_of = 957
+				owns_or_non_sovereign_subject_of = 962
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "colonial_enthusiasm"
+				duration = 5475
+			}
+		}
+	}
+	swedish_gold_coast = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { swedish_colonialism }
+		provinces_to_highlight = {
+			province_id = 1139
+			has_discovered = ROOT
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			owns_or_non_sovereign_subject_of = 1139
+		}
+		effect = {
+			add_country_modifier = {
+				name = "colonial_enthusiasm"
+				duration = 5475
+			}
+		}
+	}
+	swedish_caribbean = {
+		icon = mission_iberian_conquistador
+		required_missions = { swedish_gold_coast }
+		provinces_to_highlight = {
+			OR = {
+				province_id = 496
+				province_id = 5581
+				province_id = 5585
+			}
+			has_discovered = ROOT
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			OR = {
+				owns_or_non_sovereign_subject_of = 496
+				owns_or_non_sovereign_subject_of = 5581
+				owns_or_non_sovereign_subject_of = 5585
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					owns = 4163 #Lödöse/Göteborg
+				}
+				4163 = { #The founding of Gothenburg. Technically occured before Sweden even became a colonial power, but whatever.
+					add_or_spawn_center_of_trade = { level = 1 }
+					add_base_tax = 6
+					add_base_production = 6
+					rename_capital = "Göteborg"
+				}
+			}
+			else_if = {
+				limit = {
+					owns = 3 #Kalmar
+				}
+				3 = {
+					add_or_spawn_center_of_trade = { level = 1 }
+					add_base_tax = 4
+					add_base_production = 4
+				}
+			}
+			else = {
+				1 = { #Stockholm
+					add_base_tax = 2
+					add_base_production = 2
+				}
+			}
+		}
+	}
+}
+
+bt_swedish_balticum_intermarum = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential = {
+		tag = SWE
+	}
+	has_country_shield = yes
+	
+	swe_found_sala_silver_mine = {
+		icon = mission_mine
+		required_missions = { }
+		provinces_to_highlight = {
+			province_id = 4
+		}
+		trigger = {
+			hidden_trigger = { #Hiding this because it clutters the trigger.
+				owns = 4
+			}
+			4 = { #Sala lies in Västmanland, north of Västerås. Not that many pixels north from the capital placement actually.
+				base_production = 10
+				has_building = workshop
+			}
+		}
+		effect = {
+			4 = {
+				change_trade_goods = gold #Developer's note: Should be silver once added into the game.
+			}
+		}
+	}
+	swe_expand_kopparberget = {
+		icon = mission_have_manufactories
+		required_missions = { swe_found_sala_silver_mine }
+		provinces_to_highlight = {
+			province_id = 8
+		}
+		trigger = {
+			hidden_trigger = { #While it is pretty self-explanatory, it wouldn't make sense that Sweden could even try and do this mission without owning Dalaskogen.
+				owns = 8
+			}
+			8 = {
+				base_production = 10
+				has_building = workshop
+				has_building = weapons
+			}
+			production_leader = { trade_goods = copper }
+		}
+		effect = {
+			add_years_of_income = 0.25
+			random_owned_province = {
+				limit = {
+					trade_goods = iron
+				}
+				if = {
+					limit = {
+						has_building = workshop
+					}
+					add_base_tax = 2
+					add_base_production = 1
+				}
+				else = {
+					add_building = workshop
+					add_base_tax = 1
+				}
+			}
+			random_owned_province = {
+				limit = {
+					trade_goods = iron
+				}
+				if = {
+					limit = {
+						has_building = workshop
+					}
+					add_base_tax = 2
+					add_base_production = 1
+				}
+				else = {
+					add_building = workshop
+					add_base_tax = 1
+				}
+			}
+			random_owned_province = {
+				limit = {
+					trade_goods = copper
+				}
+				if = {
+					limit = {
+						has_building = workshop
+					}
+					add_base_tax = 2
+					add_base_production = 1
+				}
+				else = {
+					add_building = workshop
+					add_base_tax = 1
+				}
+			}
+		}
+	}
+	swe_control_baltic_trade = {
+		icon = mission_high_income
+		required_missions = { swe_expand_kopparberget }
+		provinces_to_highlight = {
+			province_has_center_of_trade_of_level = 1
+			any_trade_node_member_province = {
+				OR = {
+					province_id = 1
+					province_id = 43
+				}
+			}
+			NOT = { owned_by = ROOT }
+		}
+		trigger = {
+			num_of_heavy_ship = 5
+			if = { #Realised that without Dharma, you can't complete this mission requirement, since there's no level 3 CoT here except Lubeck, which gets silly.
+				limit = {
+					has_dlc = "Dharma"
+				}
+				country_has_center_of_trade_of_level = 3
+				custom_trigger_tooltip = {
+					tooltip = swe_control_baltic_trade_tooltip
+					1 = { #Bergslagen
+						calc_true_if = {
+							all_trade_node_member_province = {
+								owned_by = ROOT
+								province_has_center_of_trade_of_level = 2
+							}
+							amount = 3 #5 CoTs in Bergslagen total, out of which one is level 2 (Stockholm).
+						}
+					}
+					43 = { #Danzig
+						calc_true_if = {
+							all_trade_node_member_province = {
+								owned_by = ROOT
+								province_has_center_of_trade_of_level = 2
+							}
+							amount = 2 #Sweden will control 3 of the CoTs upon finishing their missions, out of which one is level 2 (Riga)
+						}
+					}
+				}
+			}
+			else = {
+				1 = { #You can at least develop Stockholm in the base game.
+					development = 30 #Stockholm starts at 11. +3 from Expand Sweden, +4 from settle Finland, so +12 seems like a good compromise.
+				}
+				custom_trigger_tooltip = {
+					tooltip = swe_control_baltic_trade_tooltip
+					1 = { #Bergslagen
+						calc_true_if = {
+							all_trade_node_member_province = {
+								owned_by = ROOT
+								province_has_center_of_trade_of_level = 1
+								development = 20
+							}
+							amount = 3 #5 CoTs in Bergslagen total, out of which one is level 2 (Stockholm).
+						}
+					}
+					43 = { #Danzig
+						calc_true_if = {
+							all_trade_node_member_province = {
+								owned_by = ROOT
+								province_has_center_of_trade_of_level = 1
+								development = 20
+							}
+							amount = 2 #Sweden will control 3 of the CoTs upon finishing their missions, out of which one is level 2 (Riga)
+						}
+					}
+				}
+			}
+			1 = { #Bergslagen Node
+				is_strongest_trade_power = ROOT
+			}
+			43 = { #Danzig Node
+				is_strongest_trade_power = ROOT
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "baltic_ambition_new"
+				duration = 5475
+			}
+		}
+	}
+	swe_dominium_maris_baltici = {
+		icon = mission_empire
+		required_missions = { swe_control_baltic_trade }
+		provinces_to_highlight = {
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			sea_zone = {
+				OR = {
+					area = baltic_area
+					area = kattegat_area
+				}
+			}
+			
+		}
+		trigger = {
+			NOT = {
+				any_province = {
+					sea_zone = {
+						OR = {
+							area = baltic_area
+							area = kattegat_area
+						}
+					}
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "swe_golden_age"
+				duration = 36500
+			}
+		}
+	}
+	
+}
+
+bt_swedish_hre_intervention = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential = {
+		tag = SWE
+	}
+	has_country_shield = yes
+	
+	#Participate in 30 years war
+	swe_participate_league_war = {
+		icon = mission_hre_shield
+		position = 5
+		trigger = {
+			if = {
+				limit = {
+					has_dlc = "Common Sense"
+				}
+				is_in_league_war = yes
+			}
+			else = {
+				army_size = emperor
+			}
+		}
+		effect = {
+			#Claims
+			give_permaclaims_for_mission = { mission=swedish_pommerania }
+			give_permaclaims_for_mission = { mission=swe_bremen_verden }
+			
+			#Treaty of Königsberg (1656)
+			if = {
+				limit = {
+					exists = PRU
+					is_subject = no
+					PRU = {
+						is_subject = no
+					}
+				}
+				add_casus_belli = {
+					type = cb_vassalize_mission
+					months = 300
+					target = PRU
+				}
+			}
+			else = {
+				give_permaclaims_for_mission = { mission=swedish_prussia }
+			}
+		}
+	}
+	#Moved to behind league war
+	swedish_pommerania = {
+		icon = mission_breitenfeld
+		required_missions = { swe_participate_league_war }
+		provinces_to_highlight = {
+			swedish_pommerania_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=swedish_pommerania_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "swe_pommerania_conquered"
+				duration = 5475
+			}
+			hinter_pommern_area = { #Sweden gained right of succession if the Hohenzollerns went extinct.
+				if = {
+					limit = {
+						NOT = { is_core = ROOT }
+						NOT = { is_permanent_claim = ROOT }
+					}
+				}
+				add_permanent_claim = ROOT
+			}
+			if = { #A bit of ahistoricity for nicer borders.
+				limit = {
+					46 = { 
+						NOT = {
+							is_core = ROOT
+							is_permanent_claim = ROOT 
+						}
+					}
+				}
+				46 = {
+					add_permanent_claim = ROOT
+				}
+			}
+		}
+	}
+}
+
+bt_swedish_hre_intervention_2 = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential = {
+		tag = SWE
+	}
+	has_country_shield = yes
+	#After fighting in 30 years war
+	swe_bremen_verden = {
+		icon = mission_alliances
+		required_missions = { swe_participate_league_war }
+		position = 6
+		provinces_to_highlight = {
+			swe_bremen_verden_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=swe_bremen_verden_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "swe_imperial_influence"
+				duration = 5475
+			}
+		}
+	}
+}
+
+bt_swedish_colonialism_2 = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential = {
+		tag = SWE
+	}
+	has_country_shield = yes
+	swedish_east_indian_trade_company = {
+		icon = mission_market_place_with_asian_traders
+		required_missions = { swedish_gold_coast }
+		position = 7
+		provinces_to_highlight = {
+			province_id = 4416 #Trankebar
+			has_discovered = ROOT
+			NOT = {
+				owned_by = ROOT
+			}
+		}
+		trigger = {
+			owns = 4416
+		}
+		effect = {
+			add_country_modifier = {
+				name = "east_india_trade_rush"
+				duration = 5475
+			}
+		}
+	}
+}
+
+bt_swedish_internal_missions = {
+	slot = 4
+	generic = no
+	ai = yes
+	potential = {
+		tag = SWE
+	}
+	has_country_shield = yes
+	
+	swe_improve_sweden = {
+		icon = mission_tre_kronor
+		required_missions = { }
+		provinces_to_highlight = {	
+			OR = {
+				area = gotaland_area
+				area = vastra_gotaland_area
+				area = svealand_area
+				area = skaneland_area
+			}
+			NOT = { province_id = 1981 } #Excluding Bornholm
+		}
+		
+		trigger = {
+			hidden_trigger = { #Hiding this because it clutters the trigger.
+				NOT = {
+					any_province = {
+						OR = {
+							area = gotaland_area
+							area = vastra_gotaland_area
+							area = svealand_area
+							area = skaneland_area
+						}
+						NOT = { province_id = 1981 } #Excluding Bornholm
+						NOT = { owned_by = ROOT }
+					}
+				}
+			}
+			1 = { development = 25 }
+			5 = { development = 10 }
+			1982 = { development = 10 }
+			7794 = { development = 5 }
+			7795 = { development = 10 }
+			4165 = { development = 10 }
+			development_in_provinces = { #70 dev in designated provinces. Other missions require dev-pushing two provinces to at least 20 dev each. 5 other provinces at 3 dev, 4 at 4, 4 at 5, 4 at 6, 1 at 7, 3 at 8, 2 at 10 and 1 at 12 in 1444 is 138 dev. This totals at 208 dev (Plus 5 dev in Bornholm not required). Because of a bunch of extra dev from other missions, 250 dev seems justifiable. 
+				value = 250
+				OR = {
+					area = gotaland_area
+					area = vastra_gotaland_area
+					area = svealand_area
+					area = skaneland_area
+				}
+			}
+		}
+		
+		effect = {
+			add_legitimacy = 20
+			change_government_reform_progress = 50			
+			5 = { rename_capital = "Karlstad" }
+			1982 = {
+				rename_capital = "Karlskrona"
+				if = { #Swedish Naval Base.
+					limit = {
+						OR = {
+							has_building = shipyard
+							has_building = grand_shipyard
+						}
+					}
+					add_base_tax = 2
+					add_base_production = 2
+				}
+				else = {
+					add_building = shipyard
+				}
+			}
+			7794 = { rename_capital = "Lindesberg" }
+			7795 = { rename_capital = "Kristinehamn" }
+			4165 = { #Technically was the Danes that did this, but I don't see why not. It became an important town under Sweden.
+				rename_capital = "Kristianstad"
+			}
+		}
+	}
+		
+	swe_found_helsinki = {
+		icon = mission_early_game_buildings
+		required_missions = { }
+		provinces_to_highlight = {
+			province_id = 28
+		}
+		
+		trigger = {
+			hidden_trigger = { #Hiding this because it clutters the trigger.
+				owns = 28
+			}
+			28 = {
+				base_tax = 8
+				base_production = 8
+				has_building = marketplace
+			}
+		}
+		
+		effect = {
+			28 = {
+				rename_capital = "Helsinki"
+				add_or_spawn_center_of_trade = { level = 1 }
+			}
+		}
+	}
+	swe_settle_finland = {
+		icon = mission_colonial
+		required_missions = { swe_found_helsinki swe_expand_finland }
+		position = 4
+		provinces_to_highlight = {
+			OR = {
+				area = finland_area
+				area = bothnia_area
+				area = west_karelia_area
+			}
+		}
+		
+		trigger = {
+			27 = { development = 20 }
+			30 = { development = 15 }
+			development_in_provinces = { #35 dev in Åbo & Viborg, plus at least 17 in Helsingfors/Nyland. 19 other provinces at 3 dev in 1444 is 57 dev. This totals at 109 dev. Hence, 125 dev seems justifiable. 
+				value = 125
+				OR = {
+					area = finland_area
+					area = bothnia_area
+					area = west_karelia_area
+				}
+			}
+		}
+		
+		effect = {
+			add_yearly_manpower = 2
+			capital_scope = {
+				add_base_tax = 2
+				add_base_production = 2
+			}
+			finland_area = {
+				add_province_modifier = {
+					name = "swe_settled_finland"
+					duration = 7300
+				}
+			}
+			bothnia_area = {
+				add_province_modifier = {
+					name = "swe_settled_finland"
+					duration = 7300
+				}
+			}
+			west_karelia_area = {
+				add_province_modifier = {
+					name = "swe_settled_finland"
+					duration = 7300
+				}
+			}
+			custom_tooltip = swe_settle_finland_tooltip
+			hidden_effect = {
+				4151 = { rename_capital = "Enare" } #Inari
+				7802 = { rename_capital = "Rovanäs" } #Rovaniemi. Rova is technically ridge, but whatever.
+				7864 = { rename_capital = "Kolaträsk" } #Kuolajärvi. Järvi can be translated to either sjö or träsk (Swamp). See Torne Träsk in north Sweden.
+				4113 = { rename_capital = "Uleåborg" } #Oulu
+				4152 = { rename_capital = "Kajana" } #Kainuu
+				7800 = { rename_capital = "Torneå" } #Tornio
+				7804 = { rename_capital = "Kopeå" } #Kuopionniemi
+				7803 = { rename_capital = "Jivesby" } #Jyväskylä. Jyvä is technically grain, but yeah whatever
+				7801 = { rename_capital = "Karleby" } #Kokkola
+				4124 = { rename_capital = "Brahea" } #Lieksa, though Ilomantsi (Ilomants in Swedish) is an older city.
+				19 = { rename_capital = "Korsholm" } #Mustasaari
+				3128 = { rename_capital = "Ulvsby" } #Ulvila
+				27 = { rename_capital = "Åbo" } #Turku
+				28 = { rename_capital = "Helsingfors" } #Has been changed to Helsinki previous mission. Raseborg/Raasepori is the older one.
+				7807 = { rename_capital = "Borgå" } #Porvoo
+				4123 = { rename_capital = "Tammerfors" } #Tammerkoski
+				7805 = { rename_capital = "Lahtis" } #Lahti, literally means "Lax" in Swedish, like Savolahti and such
+				31 = { rename_capital = "Olofsborg" } #Olavinlinna 
+				7806 = { rename_capital = "Jäskis" } #Jääski 
+				30 = { rename_capital = "Viborg" } #Viipuri 
+				32 = { rename_capital = "Kexholm" } #Käkisalmi 
+				7808 = { rename_capital = "Sordavala" } #Sortavala
+			}
+		}
+	}
+	swe_universities = {
+		icon = mission_early_modern_university
+		required_missions = { swe_settle_finland control_latvia }
+		position = 5
+		provinces_to_highlight = {
+			OR = {
+				province_id = 3123 #Uppsala
+				province_id = 1834 #Dorpat
+				province_id = 27 #Abo
+				province_id = 6 #Lund
+			}
+			NOT = { has_building = university }
+		}
+		
+		trigger = {
+			hidden_trigger = { #Hiding this because it clutters the trigger.
+				owns = 3123 #Uppsala
+				owns = 1834 #Dorpat
+				owns = 27 #Abo
+				owns = 6 #Lund
+			}
+			3123 = { #Uppsala, Uppsala University
+				has_building = university
+			}
+			1834 = { #Dorpat, Academia Gustaviana
+				has_building = university
+			}
+			27 = { #Abo, Royal Academy of Abo
+				has_building = university
+			}
+			6 = { #Lund, Lund University
+				has_building = university
+			}
+		}
+		
+		effect = {
+			add_innovativeness_big_effect = yes
+			3123 = {
+				add_base_tax = 3
+				add_base_production = 2
+			}
+			1834 = {
+				add_base_tax = 3
+				add_base_production = 2
+			}
+			27 = {
+				add_base_tax = 3
+				add_base_production = 2
+			}
+			6 = {
+				add_base_tax = 3
+				add_base_production = 2
+			}
+		}
+		
+	}
+}
+
+bt_swedish_hre_intervention_3 = {
+	slot = 4
+	generic = no
+	ai = yes
+	potential = {
+		tag = SWE
+	}
+	has_country_shield = yes
+	
+	swedish_prussia = {
+		icon = mission_pru_shield
+		required_missions = { swe_participate_league_war }
+		position = 6
+		provinces_to_highlight = {
+			swedish_prussia_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=swedish_prussia_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "swe_conquered_prussia"
+				duration = 5475
+			}
+			west_prussia_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			if = {
+				limit = {
+					1841 = { 
+						NOT = {
+							is_core = ROOT
+							is_permanent_claim = ROOT 
+						}
+					}
+				}
+				1841 = {
+					add_permanent_claim = ROOT
+				}
+			}
+			if = {
+				limit = {
+					42 = { 
+						NOT = {
+							is_core = ROOT
+							is_permanent_claim = ROOT 
+						}
+					}
+				}
+				42 = {
+					add_permanent_claim = ROOT
+				}
+			}
+			if = {
+				limit = {
+					1859 = { 
+						NOT = {
+							is_core = ROOT
+							is_permanent_claim = ROOT 
+						}
+					}
+				}
+				1859 = {
+					add_permanent_claim = ROOT
+				}
+			}
+		}
+	}
+}
+
+swedish_missions_baltic = {
+	slot = 5
+	generic = no
+	ai = yes
+	potential = {
+		tag = SWE
+	}
+	has_country_shield = yes
+	
+	swe_baltic_fleet = {
+		icon = mission_galleys_in_port
+		required_missions = { }
+		trigger = {
+			naval_forcelimit = 25
+			navy_size_percentage = 0.9
+			is_subject = no
+			is_at_war = no
+		}
+		effect = {
+			#Claims
+			give_permaclaims_for_mission = { mission=control_estonia }
+		}
+	}
+	#Restored from vanilla.
+	control_estonia = {
+		icon = mission_invade_island
+		required_missions = { swe_baltic_fleet }
+		provinces_to_highlight = {
+			control_estonia_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=control_estonia_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "baltic_ambition_new"
+				duration = 5475
+			}
+			give_permaclaims_for_mission = { mission=swe_expand_finland }
+		}
+	}
+	#New to symbolise the Ingrian War.
+	swe_expand_finland = {
+		icon = mission_unite_home_region
+		required_missions = { control_estonia }
+		provinces_to_highlight = {
+			swe_expand_finland_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=swe_expand_finland_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			give_permaclaims_for_mission = { mission=control_latvia }
+			karelia_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_claim = ROOT }
+				}
+				add_claim = ROOT
+			}
+			#BT added Kola lappland - The natural border of the three lakes was something the Swedes would've wanted had they beaten back Russia.
+			laponia_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_claim = ROOT }
+				}
+				add_claim = ROOT
+			}
+		}
+	}
+	control_latvia = {
+		icon = mission_sea_battles
+		required_missions = { swe_expand_finland }
+		provinces_to_highlight = {
+			control_latvia_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=control_latvia_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "baltic_ambition_new"
+				duration = 5475
+			}
+			#Treaty of Kiejdany
+			if = {
+				limit = {
+					exists = LIT
+					is_subject = no
+					LIT = {
+						is_subject = no
+					}
+				}
+				add_casus_belli = {
+					type = cb_restore_personal_union
+					months = 300
+					target = LIT
+				}
+			}
+			else = {
+				give_permaclaims_for_mission = { mission=swe_subjugate_lithuania }
+			}
+		}
+	}
+	
+	swe_subjugate_lithuania = {
+		icon = mission_monarch_in_throne_room
+		required_missions = { control_latvia }
+		provinces_to_highlight = {
+			swe_subjugate_lithuania_provinces = yes
+			NOT = {
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=swe_subjugate_lithuania_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			#The Treaty of Kiejdany was superceded by a direct union between Sweden & Lithuania. Supposedly there was also a separate principality that would swear fealty to Sweden ruled by Janusz Radziwill who also signed the treaty, however I cannot find any information about its suggested borders, hence I'll leave it with a single union here.
+			if = { #Lithuania was PU'd or cannot be released.
+				limit = {
+					exists = LIT
+				}
+				set_government_rank = 3
+			}
+			else = { #Lithuania has been absorbed, create the PU.
+				add_prestige = 50
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							is_core = ROOT 
+							is_core = LIT
+						}
+						remove_core = ROOT
+					}
+				}
+				release = LIT
+				create_union = LIT
+				LIT = {
+					define_advisor = {
+						type = statesman
+						name = "Jonušas Radvila"
+						skill = 3
+						cost_multiplier = 0.34
+					}
+				}
+			}
+		}
+	}
+	
+}

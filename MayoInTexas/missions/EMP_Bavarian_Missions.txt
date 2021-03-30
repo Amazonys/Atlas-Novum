@@ -1,0 +1,1164 @@
+#Updated by C1CK 18/07/2020
+#All missions updated with Dub's scipted system
+
+emp_bav_prestige_branch = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	emp_bav_cultural_center = { #Doubled dev needed
+		icon = develop_our_capital
+		required_missions = { }
+		provinces_to_highlight = {
+			owned_by = root
+			is_capital = yes
+			OR = {
+				NOT = { development = 50 } #Doubled dev
+				NOT = { num_of_buildings_in_province = 5 }
+			}
+		}
+		trigger = {
+			capital_scope = {
+				development = 50 #Doubled dev
+				num_of_buildings_in_province = 5
+			}
+		}
+		effect = {
+			capital_scope = {
+				if = {
+					limit = {
+						province_has_center_of_trade_of_level = 1
+						NOT = { province_has_center_of_trade_of_level = 3 }
+					}
+					add_center_of_trade_level = 1
+				}
+				else_if = {
+					limit = {
+						NOT = { province_has_center_of_trade_of_level = 1 }
+					}
+					center_of_trade = 1
+				}
+				else = { #Doubled dev
+					add_base_tax = 2
+					add_base_production = 2
+					add_base_manpower = 2
+				}
+			}
+		}
+	}
+	emp_bav_splendour = { #Doubled dev
+		icon = regal_splendour
+		required_missions = { emp_bav_cultural_center }
+		trigger = {
+			if = {
+				limit = { has_dlc = "Common Sense" }
+				government_rank = 2
+			}
+			else = { total_development = 600 } #Doubled dev
+			is_subject = no
+			if = {
+				limit = {
+					has_dlc = "Mandate of Heaven"
+					has_had_golden_age = no
+				}
+				in_golden_age = yes
+			}
+			else = {
+				prestige = 80
+			}
+			legitimacy_equivalent = 95
+		}
+		effect = {
+			add_prestige = 20
+
+			add_country_modifier = {
+				name = bav_splendorous_bavaria
+				duration = 7300
+			}
+
+			if = {
+				limit = {
+					NOT = { has_dlc = "Common Sense" }
+					NOT = { government_rank = 2 }
+					OR = {
+						is_elector = yes
+						is_part_of_hre = no
+					}
+				}
+				set_government_rank = 2
+			}
+		}
+	}
+	emp_bav_oktoberfest_mission = { #Added Beer to list of trade goods accepted
+		icon = establish_oktoberfest
+		required_missions = { emp_bav_splendour }
+		provinces_to_highlight = {
+			OR = {
+				AND = {
+					owned_by = root
+					OR = {
+						trade_goods = bt_trade_good_beer #Added BT beer
+						trade_goods = grain
+						trade_goods = livestock
+						trade_goods = wine
+					}
+					NOT = { has_building = farm_estate }
+				}
+				AND = {
+					ROOT = {
+						NOT = {
+							num_of_owned_provinces_with = {
+								value = 5
+								OR = {
+									trade_goods = bt_trade_good_beer #Added BT beer
+									trade_goods = grain
+									trade_goods = livestock
+									trade_goods = wine
+								}
+							}
+						}
+					}
+					OR = {
+						trade_goods = bt_trade_good_beer #Added BT beer
+						trade_goods = grain
+						trade_goods = livestock
+						trade_goods = wine
+					}
+					OR = {
+						owner = { is_subject_of = ROOT }
+						any_neighbor_province = {
+							owned_by = ROOT
+						}
+					}
+				}
+			}
+		}
+		trigger = {
+			num_of_owned_provinces_with = {
+				value = 5 #eligible Bavarian starting provs (of all three duchies)
+				has_building = farm_estate
+			}
+			production_leader = { trade_goods = bt_trade_good_beer }
+		}
+		effect = {
+			capital_scope = {
+				add_province_modifier = {
+					name = bav_established_oktoberfest
+					duration = -1
+				}
+				if = {
+					limit = {
+						NOT = { devastation = 1 }
+						NOT = { prosperity = 100 }
+						ROOT = { has_dlc = "Mandate of Heaven" }
+					}
+					add_prosperity = 50
+				}
+			}
+		}
+	}
+}
+
+emp_bav_missions_conquest = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	emp_bav_union_with_palatinate = {
+		icon = mission_conquer_50_development
+		position = 4
+		required_missions = { bav_expand_in_bavaria }
+		completed_by = 1777.12.30
+		provinces_to_highlight = {
+			emp_bav_union_with_palatinate_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		ai_weight = {
+			factor = 5
+		}
+		ai_priority = {
+			factor = 5
+		}
+
+		trigger = {
+			OR = {
+				senior_union_with = PAL
+				has_fulfiled_province_requirement_for_mission_trigger = {
+					tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+					provinces=emp_bav_union_with_palatinate_provinces
+					owner_type=country_or_non_sovereign_subject_holds
+				}
+			}
+		}
+		effect = {
+			give_permaclaims_for_mission = { mission=emp_bav_conquer_tirol }
+			give_permaclaims_for_mission = { mission=emp_bav_sway_cologne }
+			if = {
+				limit = {
+					NOT = {
+						OR = {
+							senior_union_with = PAL
+							AND = {
+								owns_or_non_sovereign_subject_of = 77
+								owns_or_non_sovereign_subject_of = 1757
+								owns_or_non_sovereign_subject_of = 1761
+								owns_or_non_sovereign_subject_of = 4767
+							}
+						}
+					}
+				}
+				if = {
+					limit = {
+						is_part_of_hre = yes
+						is_elector = no
+						PAL = { is_elector = yes }
+						OR = {
+							hre_religion_locked = no
+							hre_religion = root
+						}
+					}
+					custom_tooltip = emp_bav_union_with_palatinate_effect_tooltip
+					emperor = {
+						custom_tooltip = emp_bav_union_with_palatinate_effect_tooltip2
+					}
+					custom_tooltip = emp_bav_union_with_palatinate_effect_tooltip3
+					tooltip = {
+						add_prestige = 10
+						add_legitimacy = 10
+						add_devotion = 10
+						add_republican_tradition = 5
+						palatinate_area = {
+							limit = { owned_by = ROOT }
+							add_province_modifier = {
+								name = faster_integration
+								duration = 7300
+							}
+						}
+					}
+				}
+				else = {
+					tooltip = {
+						add_prestige = 10
+						add_legitimacy = 10
+						add_devotion = 10
+						add_republican_tradition = 5
+						palatinate_area = {
+							limit = { owned_by = ROOT }
+							add_province_modifier = {
+								name = faster_integration
+								duration = 7300
+							}
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					is_part_of_hre = yes
+					is_elector = no
+					PAL = { is_elector = yes }
+					senior_union_with = PAL
+					OR = {
+						hre_religion_locked = no
+						hre_religion = root
+					}
+				}
+				hidden_effect = {
+					if = {
+						limit = {
+							senior_union_with = PAL
+						}
+						emperor = {
+							country_event = { id = new_flavour_bav.10 }
+						}
+					}
+				}
+				custom_tooltip = emp_bav_union_with_palatinate_effect_tooltip2
+			}
+			else = {
+				add_prestige = 10
+				add_legitimacy = 10
+				add_devotion = 10
+				add_republican_tradition = 5
+				palatinate_area = {
+					limit = { owned_by = ROOT }
+					add_province_modifier = {
+						name = faster_integration
+						duration = 7300
+					}
+				}
+			}
+		}
+	}
+	
+	emp_bav_sway_cologne = {
+		icon = sway_cologne
+		position = 6
+		required_missions = { emp_bav_union_with_palatinate }
+		provinces_to_highlight = {
+			province_id = 85
+			OR = {
+				NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				NOT = { owner = { religion_group = root } }
+			}
+		}
+		trigger = {
+			85 = {
+				country_or_non_sovereign_subject_holds = ROOT
+				owner = {
+					religion_group = root
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					valid_for_personal_unions_trigger = yes
+					exists = BRA #deliberately not PRU, that would be OP
+					BRA = {
+						valid_for_personal_unions_trigger = yes
+					}
+				}
+				add_casus_belli = {
+					type = cb_restore_personal_union
+					months = 300
+					target = BRA
+				}
+			}
+			else = {
+				give_permaclaims_for_mission = { mission=emp_bav_tame_brandenburg }
+			}
+			
+			if = {
+				limit = {
+					NOT = {
+						85 = { country_or_non_sovereign_subject_holds = ROOT }
+					}
+				}
+				if = {
+					limit = {
+						KOL = {
+							government = theocracy
+							is_elector = yes
+							religion_group = root
+						}
+						government = monarchy
+						has_government_attribute = heir
+					}
+					custom_tooltip = emp_bav_sway_cologne_effect_tooltip
+					tooltip = {
+						country_event = { id = new_flavour_bav.11 }
+					}
+					custom_tooltip = emp_bav_sway_cologne_effect_tooltip2
+	
+					tooltip = {
+						add_prestige = 10
+						add_legitimacy = 10
+						add_devotion = 10
+						add_republican_tradition = 5
+					}
+				}
+				else = {
+					tooltip = {
+						add_prestige = 10
+						add_legitimacy = 10
+						add_devotion = 10
+						add_republican_tradition = 5
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					KOL = {
+						government = theocracy
+						is_elector = yes
+						religion_group = root
+					}
+					government = monarchy
+					has_government_attribute = heir
+					KOL = { is_subject_of = ROOT }
+				}
+				country_event = { id = new_flavour_bav.11 }
+			}
+			else = {
+				add_prestige = 10
+				add_legitimacy = 10
+				add_devotion = 10
+				add_republican_tradition = 5
+			}
+		}
+	}
+}
+
+emp_bav_missions_conquest_2 = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	emp_bav_tame_brandenburg = { #Adapted to allow a union with Brandenburg, /or/ owning the provinces if HAB doesn't exist like the Palatine mission
+		icon = tame_brandenburg
+		position = 7
+		required_missions = { emp_bav_sway_cologne }
+		provinces_to_highlight = {
+			emp_bav_tame_brandenburg_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			OR = {
+				senior_union_with = BRA
+				has_fulfiled_province_requirement_for_mission_trigger = {
+					tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+					provinces=emp_bav_tame_brandenburg_provinces
+					owner_type=country_or_non_sovereign_subject_holds
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = bav_tamed_brandenburg
+				duration = 7300
+			}
+		}
+	}
+}	
+
+emp_bav_missions_military = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	emp_bav_standing_army = { #Untouched
+		icon = establish_a_standing_army
+		position = 2
+		required_missions = { emp_bav_cultural_center }
+		provinces_to_highlight = {
+			owned_by = root
+			has_forcelimit_building_trigger = no
+			has_manpower_building_trigger = no
+			ROOT = {
+				NOT = {
+					num_of_owned_provinces_with = {
+						value = 6
+						OR = {
+							has_forcelimit_building_trigger = yes
+							has_manpower_building_trigger = yes
+						}
+					}
+				}
+			}
+		}
+		trigger = {
+			num_of_owned_provinces_with = {
+				value = 6
+				OR = {
+					has_forcelimit_building_trigger = yes
+					has_manpower_building_trigger = yes
+				}
+			}
+			manpower_percentage = 0.75
+			army_size_percentage = 1
+			NOT = { num_of_mercenaries = 1 }
+		}
+		effect = {
+			capital_scope = {
+				add_base_manpower = 2
+			}
+			if = {
+				limit = {
+					has_dlc = "Cradle of Civilization"
+				}
+				add_country_modifier = {
+					name = bav_professional_army
+					duration = 7300
+				}
+			}
+			else = {
+				add_country_modifier = {
+					name = bav_professional_army2
+					duration = 7300
+				}
+			}
+		}
+	}
+}
+
+emp_bav_cultural_dominance_branch = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	emp_bav_cultural_dominance = { #Untouched
+		icon = bavarian_cultural_dominance
+		required_missions = { emp_bav_oktoberfest_mission emp_bav_center_of_counter_reformation }
+		position = 4
+		provinces_to_highlight = {
+			OR = {
+				region = south_german_region
+				region = north_german_region
+			}
+			NOT = { owned_by = ROOT }
+			OR = {
+				culture = bavarian
+				any_province = {
+					is_capital_of = root
+					NOT = { higher_development_than = prev }
+				}
+			}
+		}
+		trigger = {
+			primary_culture = bavarian
+			development_in_provinces = {
+				value = 500
+				culture = bavarian
+			}
+			capital_scope = {
+				is_strongest_trade_power = root
+			}
+			capital_scope = {
+				culture = bavarian
+				custom_trigger_tooltip = {
+					tooltip = emp_bav_cultural_dominance_trigger_tooltip
+					south_german_region = {
+						type = all
+						OR = {
+							owned_by = ROOT
+							NOT = { higher_development_than = prev }
+						}
+					}
+					north_german_region = {
+						type = all
+						OR = {
+							owned_by = ROOT
+							NOT = { higher_development_than = prev }
+						}
+					}
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = bav_boarisch_als_leitkultur
+				duration = -1
+			}
+		}
+	}
+}
+
+
+emp_bav_missions_religious = {
+	slot = 4
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	emp_bav_be_good_at_religion = { #Untouched
+		icon = show_piety
+		required_missions = { }
+		trigger = {
+			if = {
+				limit = {
+					religion = catholic
+					exists = PAP
+				}
+				papal_influence = 100
+				PAP = {
+					has_opinion = {
+						who = root
+						value = 150
+					}
+				}
+				num_of_cardinals = 1
+			}
+			else_if = {
+				limit = {
+					religion = catholic
+				}
+				papal_influence = 100
+				religious_unity = 1
+			}
+			else_if = {
+				limit = {
+					religion = protestant
+					has_dlc = "Common Sense"
+				}
+				num_of_aspects = 3
+				church_power = 100
+			}
+			else_if = {
+				limit = {
+					religion = reformed
+					has_dlc = "Wealth of Nations"
+				}
+				fervor = 100
+			}
+			else = {
+				custom_trigger_tooltip = {
+					tooltip = emp_bav_be_good_at_religion_reformation_started_tooltip
+					had_global_flag = {
+						flag = reformation_started
+						days = 7300
+					}
+				}
+				religious_unity = 1
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = bav_piety_shown
+				duration = 7300
+			}
+		}
+	}
+	
+	emp_bav_center_of_counter_reformation = { #Untouched
+		icon = spread_piety
+		required_missions = { emp_bav_be_good_at_religion }
+		position = 3
+		provinces_to_highlight = {
+			OR = {
+				owner = {
+					is_neighbor_of = root
+					NOT = { religion = root }
+					religion_group = root
+				}
+			}
+		}
+		trigger = {
+			custom_trigger_tooltip = {
+				tooltip = emp_bav_center_of_counter_reformation_tooltip2
+				had_global_flag = {
+					flag = reformation_started
+					days = 18250
+				}
+			}
+			any_owned_province = {
+				OR = {
+					area = upper_bavaria_area
+					area = lower_bavaria_area
+					area = east_bavaria_area
+				}
+				has_building = university
+			}
+			custom_trigger_tooltip = {
+				tooltip = emp_bav_center_of_counter_reformation_tooltip
+				NOT = {
+					any_neighbor_country = {
+						NOT = { religion = root }
+						religion_group = root
+					}
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = bav_piety_spread
+				duration = 7300
+			}
+			every_neighbor_country = {
+				add_opinion = {
+					who = root
+					modifier = opinion_bav_center_of_religion
+				}
+			}
+		}
+	}
+}
+
+
+emp_bav_missions_illuminati = {
+	slot = 4
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	emp_bav_illuminati_mission = { #Untouched
+		icon = deal_with_the_illuminati
+		position = 5
+		required_missions = { emp_bav_center_of_counter_reformation }
+
+		trigger = {
+			has_institution = enlightenment
+			if = {
+				limit = {
+					NOT = { has_estate = estate_church }
+					NOT = { has_estate = estate_nobles }
+					NOT = { has_estate = estate_burghers }
+					NOT = { has_reform = revolutionary_republic_reform }
+					NOT = { has_reform = junior_revolutionary_republic_reform }
+				}
+				crown_land_share = 100
+			}
+			else_if = {
+				limit = { NOT = { has_estate = estate_nobles } }
+				OR = {
+					AND = {
+						NOT = { absolutism = 50 }
+						estate_loyalty = {
+							estate = estate_church
+							loyalty = 60
+						}
+						NOT = {
+							estate_territory = {
+								estate = estate_burghers
+								territory = 5
+							}
+						}
+					}
+					AND = {
+						absolutism = 85
+						estate_loyalty = {
+							estate = estate_burghers
+							loyalty = 60
+						}
+					}
+					has_reform = revolutionary_republic_reform
+					has_reform = revolutionary_empire_reform
+				}
+			}
+			else = {
+				OR = {
+					AND = {
+						NOT = { absolutism = 50 }
+						estate_loyalty = {
+							estate = estate_church
+							loyalty = 60
+						}
+						estate_loyalty = {
+							estate = estate_nobles
+							loyalty = 60
+						}
+						NOT = {
+							estate_territory = {
+								estate = estate_burghers
+								territory = 5
+							}
+						}
+					}
+					AND = {
+						absolutism = 85
+						estate_loyalty = {
+							estate = estate_burghers
+							loyalty = 60
+						}
+					}
+					has_reform = revolutionary_republic_reform
+					has_reform = revolutionary_empire_reform
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					OR = {
+						has_estate = estate_church
+						has_estate = estate_nobles
+						has_estate = estate_burghers
+					}
+					NOT = {
+						OR = {
+							AND = {
+								NOT = { absolutism = 50 }
+								estate_loyalty = {
+									estate = estate_church
+									loyalty = 60
+								}
+								estate_loyalty = {
+									estate = estate_nobles
+									loyalty = 60
+								}
+								NOT = {
+									estate_territory = {
+										estate = estate_burghers
+										territory = 5
+									}
+								}
+							}
+							AND = {
+								absolutism = 85
+								estate_loyalty = {
+									estate = estate_burghers
+									loyalty = 60
+								}
+							}
+							has_reform = revolutionary_republic_reform
+							has_reform = revolutionary_empire_reform
+						}
+					}
+				}
+				custom_tooltip = emp_bav_illuminati_mission_effect_tooltip
+			}
+			if = {
+				limit = {
+					NOT = { has_estate = estate_church }
+					NOT = { has_estate = estate_nobles }
+					NOT = { has_estate = estate_burghers }
+				}
+				add_country_modifier = {
+					name = bav_bavarian_absolutism
+					duration = -1
+				}
+			}
+			if = {
+				limit = {
+					NOT = { absolutism = 50 }
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 60
+					}
+					estate_loyalty = {
+						estate = estate_nobles
+						loyalty = 60
+					}
+					NOT = {
+						estate_territory = {
+							estate = estate_burghers
+							territory = 5
+						}
+					}
+				}
+				add_estate_loyalty_modifier = {
+					estate = estate_nobles
+					desc = VAL_BAV_DEALT_WITH_ILLUMINATI
+					loyalty = 10
+					duration = -1
+				}
+				add_estate_loyalty_modifier = {
+					estate = estate_church
+					desc = VAL_BAV_DEALT_WITH_ILLUMINATI
+					loyalty = 10
+					duration = -1
+				}
+			}
+			else_if = {
+				limit = {
+					absolutism = 85
+					estate_loyalty = {
+						estate = estate_burghers
+						loyalty = 60
+					}
+				}
+				add_country_modifier = {
+					name = bav_bavarian_absolutism
+					duration = -1
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_reform = revolutionary_republic_reform
+						has_reform = revolutionary_empire_reform
+					}
+				}
+				add_country_modifier = {
+					name = bav_revolutionary_zeal
+					duration = -1
+				}
+			}
+		}
+	}
+}
+
+
+emp_bav_missions_conquer_austria = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+
+	
+	emp_bav_conquer_tirol = {
+		icon = claim_tirol
+		required_missions = { emp_bav_union_with_palatinate }
+		position = 5
+		provinces_to_highlight = {
+			emp_bav_conquer_tirol_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			has_fulfiled_num_of_province_requirement_for_mission_trigger = {
+				tooltip = country_holds_or_non_sovereign_subject_holds_highlighted_num
+				provinces = emp_bav_conquer_tirol_provinces
+				owner_type = country_or_non_sovereign_subject_holds
+				value = 3 #3 of 7 (2 of 5 in vanilla)
+			}
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = HAB_owns_nothing_in_tirol
+					NOT = {
+						HAB = {
+							any_owned_province = {
+								emp_bav_conquer_tirol_provinces = yes
+							}
+						}
+					}
+				}
+				HAB = { is_subject_of = root }
+			}
+		}
+		effect = {
+			every_owned_province = {
+				limit = { emp_bav_conquer_tirol_provinces = yes }
+				add_local_autonomy = -15
+				add_nationalism = -10
+			}
+			
+			if = {
+				limit = {
+					valid_for_personal_unions_trigger = yes
+					exists = HAB
+					HAB = {
+						valid_for_personal_unions_trigger = yes
+					}
+				}
+				add_casus_belli = {
+					type = cb_restore_personal_union
+					months = 300
+					target = HAB
+				}
+			}
+			else = {
+				give_permaclaims_for_mission = { mission=emp_bav_union_with_austria }
+			}
+		}
+	}
+
+	emp_bav_union_with_austria = { #Adapted to allow a union with Austria, /or/ owning the provinces if HAB doesn't exist like the Palatine mission
+		icon = mission_the_austrian_succession
+		required_missions = { emp_bav_conquer_tirol }
+		provinces_to_highlight = {
+			emp_bav_union_with_austria_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = root }
+		}
+		trigger = {
+			OR = {
+				senior_union_with = HAB
+				has_fulfiled_province_requirement_for_mission_trigger = {
+					tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+					provinces=emp_bav_union_with_austria_provinces
+					owner_type=country_or_non_sovereign_subject_holds
+				}
+			}
+		}
+		effect = {
+			add_prestige = 20
+
+			give_permaclaims_for_mission = { mission=emp_bav_italian_sun }
+			give_permaclaims_for_mission = { mission=emp_bav_netherlands }
+		}
+	}
+}
+
+
+emp_bav_missions_conquer_italy = {
+	slot = 4
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	emp_bav_italian_sun = { #Added a check for owning an Adriatic port
+		icon = mission_control_venice
+		position = 7
+		required_missions = { emp_bav_union_with_austria }
+		provinces_to_highlight = {
+			emp_bav_italian_sun_provinces = yes
+			NOT = { owned_by = root }
+		}
+		trigger = {
+			has_fulfiled_num_of_province_requirement_for_mission_trigger = {
+				tooltip = country_holds_highlighted_num
+				provinces = emp_bav_italian_sun_provinces
+				owner_type = owned_by
+				value = 14 #14 of 22 (8 of 10 in vanilla) (Lowered as this requires direct ownership, and significant amounts are owned by HAB, who've just been unioned, per the mission preceding)
+			}
+			any_owned_province = { #Check for an actual Adriatic port (Doesn't actually need to be in the provinces needed, something like Pflaum or Zara will validate this)
+				has_port = yes
+				sea_zone = { province_id = 1308 } #Gulf of Venice
+			}
+		}
+		effect = {
+			add_dip_power = 100
+			if = {
+				limit = {
+					NOT = { max_sailors = 1000 }
+				}
+				add_sailors = 1000
+			}
+			else = {
+				add_yearly_sailors = 10
+			}
+			add_country_modifier = {
+				name = bav_italian_coast
+				duration = 7300
+			}
+		}
+	}
+}
+
+
+
+
+emp_bav_missions_netherlands = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Emperor"
+	}
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			tag = BAV
+			tag = ING
+			tag = LBV
+			tag = UBV
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	emp_bav_netherlands = {
+		icon = bavarian_netherlands
+		position = 7
+		required_missions = { emp_bav_sway_cologne emp_bav_union_with_austria }
+		provinces_to_highlight = {
+			emp_bav_netherlands_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = root }
+		}
+		trigger = {
+			has_fulfiled_num_of_province_requirement_for_mission_trigger = {
+				tooltip = country_holds_or_non_sovereign_subject_holds_highlighted_num
+				provinces = emp_bav_netherlands_provinces
+				owner_type = country_or_non_sovereign_subject_holds
+				value = 20 #20 of 24 (12 of 15 in vanilla)
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = bav_bavarian_netherlands
+				duration = 7300
+			}
+		}
+	}
+}

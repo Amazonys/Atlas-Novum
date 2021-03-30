@@ -1,0 +1,595 @@
+namespace = BtPLegacy_european_trade
+
+#Written by Driaocht 16-10-25
+#Modified by Draiocht 16-12-1
+
+##############################################
+### Migration of Trade Power in the Low Countries ###
+##############################################
+
+# Brugge to Antwerp
+country_event = {
+	id = BtPLegacy_european_trade.1
+	title = "BtPLegacy_european_trade.EVTNAME1"
+	desc = "BtPLegacy_european_trade.EVTDESC1"
+	picture = CITY_VIEW_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		is_year = 1499
+		owns = 90			#Owns Brugge
+		90 = { province_has_center_of_trade_of_level = 3 }
+	}
+
+	mean_time_to_happen = {
+		months = 6
+	}
+	
+	option = { # No, keep trade in Brugge
+		name = "BtPLegacy_european_trade.EVTOPTA1"
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				owns = 1744			#Doesn't care if already owns Antwerp
+			}
+			modifier = {
+				factor = 0
+				NOT = { years_of_income = 7.5 }			#Wont do if would go too broke
+			}
+			modifier = {
+				factor = 33
+				years_of_income = 15.0			#More likely if plenty of money
+			}
+		}
+		if = {
+			limit = { NOT = { monthly_income = 25 } }				#Yearly income below 300 (meaning total cost under 3000)
+			add_years_of_income = -10.0
+		}
+		if = {
+			limit = { monthly_income = 25 }				#Caps out at 3000 cost for high income nations
+			add_treasury = -3000
+		}
+		add_country_modifier = { name = "btpl_clearing_the_inlet" duration = 7300 }
+	}
+	option = { # Oh well, crap happens
+		name = "BtPLegacy_european_trade.EVTOPTB1"
+		ai_chance = {
+			factor = 98
+		}
+		90 = {
+			add_center_of_trade_level = -2
+			add_base_tax = -10
+			add_base_production = -10
+			add_base_manpower = -4
+		}
+		1744 = { owner = { country_event = { id = BtPLegacy_european_trade.2 days = 1 } } }
+		add_prestige = -10
+	}
+	option = { # Force the industry and port to move to Sluis, nearer to the sea
+		name = "BtPLegacy_european_trade.EVTOPTC1"
+		ai_chance = {
+			factor = 1
+		}
+		90 = {
+			rename_capital = "Sluis"
+			add_base_tax = -5
+			add_base_production = -5
+			add_base_manpower = -2
+		}
+	}
+}
+
+# Antwerp from Brugge
+country_event = {
+	id = BtPLegacy_european_trade.2
+	title = "BtPLegacy_european_trade.EVTNAME2"
+	desc = "BtPLegacy_european_trade.EVTDESC2"
+	picture = CITY_VIEW_eventPicture
+
+	major = yes
+	is_triggered_only = yes
+	
+	option = { # Wonderful
+		name = "BtPLegacy_european_trade.EVTOPTA2"
+		1744 = {
+			center_of_trade = 3
+			add_base_tax = 11
+			add_base_production = 11
+			add_base_manpower = 5
+		}
+		add_prestige = 10
+		if = {
+			limit = {
+				ROOT = {
+					is_subject_of = CAS
+					is_subject_of = SPA
+					is_subject_of = POR
+					is_subject_of = IBE
+					is_subject_of = HAB
+					tag = CAS
+					tag = SPA
+					tag = POR
+					tag = IBE
+					tag = HAB
+				}
+			}
+			1744 = { change_trade_goods = sugar }	#Antwerp becomes the sugar capital of Europe, refining and shipping most of the sugar from Portugal and Spain.
+		}
+	}
+}
+
+# Antwerp to Amsterdam
+country_event = {
+	id = BtPLegacy_european_trade.3
+	title = "BtPLegacy_european_trade.EVTNAME3"
+	desc = "BtPLegacy_european_trade.EVTDESC3"
+	picture = CITY_VIEW_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		owns = 1744			#Owns Antwerp
+		1744 = { province_has_center_of_trade_of_level = 3 }	#Antwerp has a Centre of Trade, ie. Brugge didn't keep it
+		OR = {	#OR lines, any one of these will enable the event
+			1744 = { controller = { is_in_deficit = yes } }	#Controller running in deficit
+			1744 = { controller = { is_bankrupt = yes } }	#Controller is bankrupt
+			1744 = { controlled_by = REB }	#Controller is a rebel faction
+			1744 = { unrest = 30 }	#Very high unrest
+			1744 = {	#Owner is subject and overlord has financial trouble   - This is what happened historically, look up Spanish Fury aka Sack of Antwerp
+				owner = {
+					is_subject_other_than_tributary_trigger = yes
+					overlord = {
+						OR = {
+							is_in_deficit = yes
+							is_bankrupt = yes
+						}
+					}
+				}
+			}
+			AND = {	#AI controlled with no overlord
+				ai = yes
+				is_year = 1590
+				is_free_or_tributary_trigger = yes
+			}
+			AND = {	#AI controlled with an overlord who is also ai controlled
+				ai = yes
+				is_year = 1590
+				is_subject_other_than_tributary_trigger = yes
+				overlord = { ai = yes }
+			}
+		}	#End of OR lines
+		NOT = { is_year = 1620 }	#If the player can protect Antwerp until 1620, they deserve to keep it the CoT..... stays in vanilla anyway
+	}
+
+	mean_time_to_happen = {
+		months = 30
+		
+		modifier = { #Slower for the AI
+			factor = 2
+			ai = yes
+		}
+		modifier = { #If it hasnt fired by 1619 and it should, make it near instant
+			factor = 0.05
+			is_year = 1619
+		}
+	}
+	
+	option = { # No, keep trade in Antwerp
+		name = "BtPLegacy_european_trade.EVTOPTA3"
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				owns = 97			#Doesn't care if already owns Amsterdam
+			}
+			modifier = {
+				factor = 0
+				NOT = { years_of_income = 15.0 }			#Wont do if would go too broke
+			}
+			modifier = {
+				factor = 33
+				years_of_income = 30.0			#More likely if plenty of money
+			}
+		}
+		if = {
+			limit = { NOT = { monthly_income = 25 } }				#Yearly income below 300 (meaning total cost under 6000)
+			add_years_of_income = -20.0
+		}
+		if = {
+			limit = { monthly_income = 25 }				#Caps out at 6000 cost for high income nations
+			add_treasury = -6000
+		}
+		add_country_modifier = { name = "btpl_stabilising_the_economy" duration = 7300 }
+		if = {
+			limit = { NOT = { has_dlc = "Common Sense" } }
+			1744 = { add_province_modifier = { name = "severe_tax_reduction" duration = 3650 } }
+		}
+		if = {
+			limit = { has_dlc = "Common Sense" }
+			1744 = { add_province_modifier = { name = "btpl_investing_in_antwerp" duration = 7300 } }
+		}
+	}
+	option = { # Oh well, crap happens
+		name = "BtPLegacy_european_trade.EVTOPTB3"
+		ai_chance = {
+			factor = 99
+		}
+		1744 = {
+			add_center_of_trade_level = -2
+			add_base_tax = -11
+			add_base_production = -11
+			add_base_manpower = -5
+			
+		}
+		97 = { owner = { country_event = { id = BtPLegacy_european_trade.4 days = 1 } } }
+		add_prestige = -10
+		if = {
+			limit = {
+				OR = {
+					is_vassal = yes
+					is_lesser_in_union = yes
+				}
+			}
+			add_liberty_desire = 20
+		}	#Conditional liberty desire only if owner is a vassal or lesser in union
+	}
+}
+
+# Amsterdam from Antwerp
+country_event = {
+	id = BtPLegacy_european_trade.4
+	title = "BtPLegacy_european_trade.EVTNAME4"
+	desc = "BtPLegacy_european_trade.EVTDESC4"
+	picture = CITY_VIEW_eventPicture
+
+	major = yes
+	is_triggered_only = yes
+	
+	option = { # Wonderful
+		name = "BtPLegacy_european_trade.EVTOPTA4"
+		97 = {
+			center_of_trade = 3
+			add_base_tax = 12
+			add_base_production = 12
+			add_base_manpower = 6
+		}
+		add_prestige = 10
+	}
+}
+
+# Amsterdam boost - I lowered Amsterdams dev in 1444 because it was a nothing town, but I want to encourage its historical rise to power
+country_event = {
+	id = BtPLegacy_european_trade.5
+	title = "BtPLegacy_european_trade.EVTNAME5"
+	desc = "BtPLegacy_european_trade.EVTDESC5"
+	picture = CITY_VIEW_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		is_year = 1620
+		owns = 97			#Owns Amsterdam
+		primary_culture = dutch
+		NOT = { is_year = 1681 }			#chance to just get plain unlucky, and miss out
+	}
+
+	mean_time_to_happen = {
+		months = 120
+		
+		modifier = { #If it hasnt fired by this, make it more likely
+			factor = 0.5
+			is_year = 1640
+		}
+		modifier = { #If it hasnt fired by this, make it more likely
+			factor = 0.5
+			is_year = 1660
+		}
+		modifier = { #If it hasnt fired by this, make it more likely
+			factor = 0.5
+			is_year = 1680
+		}
+	}
+	
+	option = { # Wonderful
+		name = "BtPLegacy_european_trade.EVTOPTA5"
+		add_mercantilism = 15
+		97 = {
+			add_base_tax = 6
+			add_base_production = 6
+			add_base_manpower = 3
+		}
+		if = {
+			limit = { 97 = { NOT = { province_has_center_of_trade_of_level = 3 } } }
+			97 = {
+				center_of_trade = 1
+			}
+		}	#If Player manages to keep CoT in Antwerp or Brugge until 1620 Amsterdam gets a new CoT and a larger boost
+	}
+}
+
+#######################################
+### Grand Centre of Trade Modifier Events ###
+#######################################
+
+#Venetian GCoT remove - leaving this code in and untouched from pre-Dharma period, though it will only activate if the player does not have Dharma.
+province_event = {
+	id = BtPLegacy_european_trade.6
+	title = "BtPLegacy_european_trade.EVTNAME6"
+	desc = "BtPLegacy_european_trade.EVTDESC6"
+	picture = CITY_VIEW_eventPicture
+
+	trigger = {
+		NOT = { has_dlc = "Dharma" }
+		province_id = 112
+		province_has_center_of_trade_of_level = 3
+		owner = {
+			NOT = {
+				OR = {
+					tag = VEN
+					AND = {
+						primary_culture = venetian
+						capital = 112
+						NOT = { exists = VEN }
+					}
+				}
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 3
+	}
+	
+	option = { # No other option
+		name = "BtPLegacy_european_trade.EVTOPTA6"
+		if = {
+			limit = { development = 30 }
+			add_base_tax = -3
+			add_base_production = -3
+			owner = {
+				capital_scope  = {
+					add_base_tax = 2
+					add_base_production = 2
+				 }
+			}
+		}
+		add_center_of_trade_level = -1
+	}
+}
+
+#Genovese GCoT remove - leaving this code in and untouched from pre-Dharma period, though it will only activate if the player does not have Dharma.
+province_event = {
+	id = BtPLegacy_european_trade.7
+	title = "BtPLegacy_european_trade.EVTNAME7"
+	desc = "BtPLegacy_european_trade.EVTDESC7"
+	picture = CITY_VIEW_eventPicture
+
+	trigger = {
+		NOT = { has_dlc = "Dharma" }
+		province_id = 101
+		province_has_center_of_trade_of_level = 3
+		owner = {
+			NOT = {
+				OR = {
+					tag = GEN
+					AND = {
+						primary_culture = ligurian
+						capital = 101
+						NOT = { exists = GEN }
+					}
+				}
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 3
+	}
+	
+	option = { # No other option
+		name = "BtPLegacy_european_trade.EVTOPTA7"
+		if = {
+			limit = { development = 30 }
+			add_base_tax = -3
+			add_base_production = -3
+			owner = {
+				capital_scope  = {
+					add_base_tax = 2
+					add_base_production = 2
+				 }
+			}
+		}
+		add_center_of_trade_level = -1
+	}
+}
+
+#Hanseatic GCoT remove - leaving this code in and untouched from pre-Dharma period, though it will only activate if the player does not have Dharma.
+province_event = {
+	id = BtPLegacy_european_trade.8
+	title = "BtPLegacy_european_trade.EVTNAME8"
+	desc = "BtPLegacy_european_trade.EVTDESC8"
+	picture = CITY_VIEW_eventPicture
+
+	trigger = {
+		NOT = { has_dlc = "Dharma" }
+		province_id = 45
+		province_has_center_of_trade_of_level = 3
+		owner = {
+			NOT = {
+				OR = {
+					tag = HSA
+					AND = {
+						primary_culture = hannoverian
+						capital = 45
+						NOT = { exists = HSA }
+					}
+				}
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 3
+	}
+	
+	option = { # No other option
+		name = "BtPLegacy_european_trade.EVTOPTA8"
+		if = {
+			limit = { development = 30 }
+			add_base_tax = -3
+			add_base_production = -3
+			owner = {
+				capital_scope  = {
+					add_base_tax = 2
+					add_base_production = 2
+				 }
+			}
+		}
+		add_center_of_trade_level = -1
+	}
+}
+
+#Removal of a new GCoT - cutting for Dharma, as new 3rd tier trade centres are added outside of the old 3 in BT
+#province_event = {
+#	id = BtPLegacy_european_trade.9
+#	title = "BtPLegacy_european_trade.EVTNAME9"
+#	desc = "BtPLegacy_european_trade.EVTDESC9"
+#	picture = CITY_VIEW_eventPicture
+#	
+#	major = yes
+#
+#	trigger = {
+#		NOT = { has_dlc = "Dharma" }
+#		province_has_center_of_trade_of_level = 3
+#		NOT = {
+#			province_id = 112
+#			province_id = 101
+#			province_id = 45
+#		}
+#		OR = {
+#			NOT = { development = 28 }
+#			NOT = { is_capital = yes }
+#			NOT = { has_owner_culture = yes }
+#		}
+#	}
+#
+#	mean_time_to_happen = {
+#		days = 30
+#	}
+#	
+#	option = { # No other option
+#		name = "BtPLegacy_european_trade.EVTOPTA9"
+#		if = {
+#			limit = { development = 30 }
+#			add_base_tax = -2
+#			add_base_production = -2
+#			owner = {
+#				capital_scope  = {
+#					add_base_tax = 1
+#					add_base_production = 1
+#				 }
+#			}
+#		}
+#		add_center_of_trade_level = -1
+#	}
+#}
+
+#Creation of a new GCoT - leaving this code in and untouched from pre-Dharma period, though it will only activate if the player does not have Dharma.
+province_event = {
+	id = BtPLegacy_european_trade.10
+	title = "BtPLegacy_european_trade.EVTNAME10"
+	desc = "BtPLegacy_european_trade.EVTDESC10"
+	picture = CITY_VIEW_eventPicture
+
+	trigger = {
+		NOT = { has_dlc = "Dharma" }
+		province_has_center_of_trade_of_level = 2
+		has_port = yes
+		development = 25
+		is_capital = yes
+		has_owner_culture = yes
+		has_owner_religion = yes
+		owner = {
+			government = republic
+			is_free_or_tributary_trigger = yes
+		}			#For now going with the rule that to form a GCoT, one must be a republic, but may keep the GCoT even after reforming government. Might change this later.
+	}
+
+	mean_time_to_happen = {
+		months = 2400			#200 years, reduced to either around 40y with full bonuses or 500y with full penalties
+		
+		modifier = {
+			factor = 1.2
+			owner = { NOT = { stability = -2 } }
+		}
+		modifier = {
+			factor = 1.2
+			owner = { NOT = { stability = -1 } }
+		}
+		modifier = {
+			factor = 1.2
+			owner = { NOT = { stability = 0 } }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { stability = 1 }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { stability = 2 }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { stability = 3 }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { adm = 5 }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { adm = 6 }
+		}
+		modifier = {
+			factor = 1.2
+			owner = { NOT = { adm = 3 } }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { dip = 5 }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { dip = 6 }
+		}
+		modifier = {
+			factor = 1.2
+			owner = { NOT = { dip = 3 } }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { ruler_has_personality = entrepreneur_personality }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { ruler_has_personality = midas_touched_personality }
+		}
+		modifier = {
+			factor = 0.5
+			owner = { primary_culture = dutch }
+		}
+		modifier = {
+			factor = 0.2
+			province_id = 97			#Amsterdam
+		}
+	}
+	
+	option = { # Yay
+		name = "BtPLegacy_european_trade.EVTOPTA10"
+		add_base_tax = 1
+		add_base_production = 1
+		add_center_of_trade_level = 1
+	}
+}

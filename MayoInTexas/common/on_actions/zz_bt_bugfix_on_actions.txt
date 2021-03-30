@@ -1,0 +1,519 @@
+#New on_actions:
+#On new Monarch if Hungary is under a PU of Austria and Croatia exists and is either PU of Austria or Hungary (I'll be honest, I don't know whether PU transfer comes before this or not), Hungary integrates Croatia.
+#Removed on_actions:
+#Most of BT's on_startups.
+
+on_startup = {
+	#Vanilla
+	emperor = {
+		save_global_event_target_as = Emperor
+	}
+	if = {
+		limit = {
+			is_emperor_of_china = yes
+		}
+		save_global_event_target_as = EmperorOfChina
+	}
+	events = {
+		muslim_school_events.20 #Pick School
+#		flavor_fra.15000 #Make the French Revolution happen if starting in 1789
+	}
+	if = {
+		limit = {
+			has_dlc = "Cradle of Civilization"
+			has_country_modifier = tur_janissary
+		}
+		remove_country_modifier = tur_janissary
+	}
+	initialize_schools_effect = yes #This is only used here but is used for readability of on_action file.
+
+	if = {
+		limit = {
+			NOT = { has_country_flag = new_flavour_bav_13_has_been_triggered }
+			OR = {
+				tag = UBV
+				tag = LBV
+				tag = ING
+			}
+		}
+		set_country_flag = new_flavour_bav_13_has_been_triggered
+		country_event = { id = new_flavour_bav.13 days = 90 } #better not to allow almost instant DOWs
+	}
+	if = {
+		limit = {
+			tag = FRA
+			started_in = 1789.7.14
+			NOT = { is_year = 1790 }
+			NOT = { has_disaster = french_revolution }
+		}
+		add_disaster_progress = {
+			value = 100
+			disaster = french_revolution
+		}
+	}
+	#BT
+	if = {
+		limit = {
+			has_global_flag = beyond_typus_mod_enabled
+		}
+		if = {
+			limit = { started_in = 1459.1.1 }
+			set_global_flag = constantinople_restored
+			TUR = { set_country_flag = relocated_capital_constantinople }
+		}	#Preventing exploits relating to Contaninople's growth.
+		if = {
+			limit = {
+				started_in = 1495.1.1
+				NOT = { started_in = 1648.1.1 }
+			}
+			clr_global_flag = italy_out_of_HRE
+		}	#BT calls the Peace of Westphalia then end of the Italian HRE, not 1495, so delaying the global flag here without having to mess with the HAB history file for now.
+		# if = { #Dirty fix for the huge loan sizes in BT due to dev doubling since there's no defines value to change. #Didn't work. Deprecated.
+			# limit = {
+				# has_global_flag = beyond_typus_mod_enabled
+				# NOT = { has_global_flag = bt_loan_size_fixed }
+			# }
+			# every_country = {
+				# loan_size = 6 
+			# }
+			# set_global_flag = bt_loan_size_fixed
+		# }
+		if = { #Native start flag
+			limit = {
+				started_in = 1444.11.12
+				NOT = { started_in = 1444.11.13 }
+				NOT = { has_global_flag = bt_native_start_2_enabled }
+			}
+			set_global_flag = bt_native_start_2_enabled
+		}
+		if = { #Shattered flag
+			limit = {
+				started_in = 1444.11.13
+				NOT = { started_in = 1444.11.15 }
+				NOT = { has_global_flag = bt_shattered_start_2_enabled }
+			}
+			set_global_flag = bt_shattered_start_2_enabled
+		}
+		if = { #Performance flag
+			limit = {
+				started_in = 1444.11.16
+				NOT = { started_in = 1444.11.18 }
+				NOT = { has_global_flag = bt_performance_start_2_enabled }
+			}
+			set_global_flag = bt_performance_start_2_enabled
+		}
+	}
+}
+
+# country 
+on_new_monarch = {
+	#Vanilla
+	crimean_succession_effect = yes #Scripted effect
+	slesvig_question_effect = yes #Scripted effect
+	if = {
+		limit = {
+			has_consort_regency = no
+			any_owned_province = {
+				has_province_modifier = domain_of_spouses_family
+			}
+		}
+		random_owned_province = {
+			limit = { has_province_modifier = domain_of_spouses_family }
+			remove_province_modifier = domain_of_spouses_family
+		}
+	}
+	if = {
+		limit = {
+			has_consort_regency = no
+			any_owned_province = {
+				has_province_modifier = home_of_consort
+			}
+		}
+		random_owned_province = {
+			limit = { has_province_modifier = home_of_consort }
+			remove_province_modifier = home_of_consort
+		}
+	}
+	if = {
+		limit = {
+			NOT = { has_dlc = "Mandate of Heaven" }
+			has_country_modifier = the_mandate_of_heaven
+			NOT = { legitimacy = 80 }
+		}
+		country_event = { id = china_events.32 }	# History of last ruler 
+	}
+	#ambrosian_republic_effect = yes
+	succession_culture_religion_effect = yes
+	sheik_ul_islam_effect = yes
+	hab_remove_mission_mods_if_not_emperor_effect = yes
+	thu_remain_von_wettin_effect = yes
+	ladislaus_postumus_union_effect = yes
+	events = {
+		tribal_succession.1		# Harsh anti-tribals.
+		9492 					# Remove some event modifiers
+		flavor_boh.8			# Winter King in Prague
+		flavor_kol.1			# Bavarian Archbishop
+		war_of_the_roses.101	# WotR - House of Lancaster wins
+		war_of_the_roses.102	# WotR - House of York wins
+		war_of_the_roses.106	# WotR - Another dynasty has seized the throne
+		flavor_tur.102			# Janissary Reward
+		flavor_ori.7			# Hamvira Victorious
+		flavor_kbo.1			# The two branches of the Sayfawa dynasty
+		flavor_kbo.8			# Sayfawa pretenders
+		flavor_zan.5			# Coup of Coup of Suleiman and Muhammad al-Mazlum.
+		purple_phoenix.1		# BYZ pretenders
+		flavor_pol.3480			# The Pacta Conventa
+		protestantism_events.15	# Catholic Leaning Monarch
+		tengri_events.17		# Keep the Khojas in Power?
+		flavor_tus.15			# Savonarola Dies
+		flavor_brapru.22		# Succession of Albrecht Achilles
+		flavor_brapru.25		# Dispositio Achillea (can also trigger from flavor_brapru.22)
+		flavor_nor.27			# Proclamation in Hamar
+		china_events.43			# Picking new Capital for China
+		celestial_empire_events.3 #Resistance to Sinicization
+		flavor_boh.2			#Heretic Kings
+		flavor_hun.17			#Maintaining the Black Army
+		flavor_tim.1			#Death of Shah Rukh
+		muslim_school_events.20 #No Religious School
+		flavor_daimyo.4			#Shiba Yoshikado
+		flavor_fra.9000			# François Villon
+	}
+	random_events = { 
+		1000 = 0
+		100 = flavor_kol.1		# Bavarian Archbishop
+		100 = flavor_hsa.3		# Hansa: Tagfahrt
+		100 = inti_events.1		# Birth of a Panaca
+		50 = dynastic_events.4	
+		50 = dynastic_events.5	
+		25 = harem_events.7		#Failed Policy of Fratricide
+	}
+	#BT
+	if = {
+		limit = {
+			has_reform = tanistry_reform
+			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
+		}
+		set_country_flag = bt_tanistry_king_just_died
+		clr_country_flag = bt_tanistry_high_queen_reigning
+		remove_country_modifier = bt_uncertainty_about_a_high_queen
+		country_event = { id = BeyondTypusCelticFlavour.1 days = 1 }				#New Tanist election
+		country_event = { id = BeyondTypusCelticFlavour.6 days = 1 }			#High Queen comes to power, will only fire for female rulers
+	}
+	if = { #If Sweden fell under the Danish PU elsehow and the event that was supposed to fire the end of Karl Knutsson Bonde's reign never fired.
+		limit = {
+			tag = SWE
+			junior_union_with = DAN
+			has_global_flag = bt_kalmar_union_power_struggle_pt_I
+		}
+		disband_rebels = pretender_rebels
+		disband_rebels = catholic_rebels
+		disband_rebels = noble_rebels
+		clr_global_flag = bt_kalmar_union_power_struggle_pt_I
+	}
+	if = { #Kalmar Union power struggle flavour event.
+		limit = {
+			has_global_flag = bt_kalmar_union_power_struggle_pt_I
+			tag = SWE
+			war_with = DAN
+		}
+		DAN = {
+			create_union = SWE
+		}
+		disband_rebels = pretender_rebels
+		disband_rebels = catholic_rebels
+		disband_rebels = noble_rebels
+		clr_global_flag = bt_kalmar_union_power_struggle_pt_I
+	}
+}
+
+on_monarch_death = {
+	#Vanilla
+	if = {
+		limit = {
+			tag = ANS
+			BRA = {
+				has_country_flag = albrecht_achilles_flag
+			}
+		}
+		BRA = {
+			clr_country_flag = albrecht_achilles_flag #Just to be sure
+			kill_heir = yes #If Albrecht Achilles dies in Ansbach he will also be dead in Brandenburg, will appear as normal death of heir to BRA.
+		}
+	}
+	if = {
+		limit = { has_country_modifier = sought_after_bachelor }
+		remove_country_modifier = sought_after_bachelor
+	}
+	if = {
+		limit = {
+			tag = SAX
+			has_country_flag = sax_thuringen_split_to_happen
+			OR = {
+				NOT = { dynasty = "von Wettin" }
+				NOT = { senior_union_with = THU }
+				has_regency = yes
+			}
+		}
+		clr_country_flag = sax_thuringen_split_to_happen
+	}
+	burgundian_inheritance_start_effect = yes
+	ladislaus_postumus_king_died_effect = yes
+	events = {
+		flavor_wal.1 # Vlad the Impaler. So that he doesn't try to usurp his father.
+		flavor_nav.4 # Navarra succession event
+		flavor_sax.8 # Treaty of Leipzig
+		flavor_pap.16 # Borgia Pope
+		flavor_pap.19 # death of borgia pope
+		flavor_tus.22 # Medici Pope
+		flavor_tus.24 # death of the Medici Pope
+	}
+	#BT
+	if = {
+		limit = {
+			has_reform = tanistry_reform
+			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
+		}
+		set_country_flag = bt_tanistry_king_just_died
+		clr_country_flag = bt_tanistry_high_queen_reigning
+		remove_country_modifier = bt_uncertainty_about_a_high_queen
+		remove_country_modifier = bt_tanistry_underaged_heir
+		remove_country_modifier = bt_tanistry_female_heir
+		remove_country_modifier = bt_tanistry_waiting_on_heir
+	}
+}
+
+on_heir_death = {
+	#Vanilla
+	if = {
+		limit = { has_country_flag = heir_dip_education }
+		clr_country_flag = heir_dip_education
+	}
+	if = {
+		limit = { has_country_flag = heir_mil_education }
+		clr_country_flag = heir_mil_education
+	}
+	if = {
+		limit = { has_country_flag = heir_adm_education }
+		clr_country_flag = heir_adm_education
+	}
+	if = {
+		limit = { has_ruler_flag = well_advised_tutored_heir }
+		clr_ruler_flag = well_advised_tutored_heir
+	}
+	if = {
+		limit = { has_ruler_flag = heir_went_on_grand_tour }
+		clr_ruler_flag = heir_went_on_grand_tour
+	}
+	if = {
+		limit = { has_country_flag = albrecht_achilles_flag }
+		clr_country_flag = albrecht_achilles_flag #Death of original Albrecht Achilles
+	}
+	if = {
+		limit = { has_ruler_flag = sancaga_cikma }
+		clr_ruler_flag = sancaga_cikma
+		every_owned_province = {
+			limit = {
+				has_province_modifier = heir_in_training
+			}
+			remove_province_modifier = heir_in_training
+		}
+	}
+	if = {
+		limit = { has_ruler_flag = returned_from_sancaga_sikma_province }
+		clr_ruler_flag = returned_from_sancaga_sikma_province
+	}
+	ladislaus_postumus_heir_died_effect = yes
+	#BT
+	if = {
+		limit = {
+			has_reform = tanistry_reform
+			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
+		}
+		remove_country_modifier = bt_tanistry_underaged_heir
+		remove_country_modifier = bt_tanistry_female_heir
+		country_event = { id = BeyondTypusCelticFlavour.8 days = 1 }			#Tanist dies, new tanist event
+	}
+}
+
+on_new_heir = {
+	if = {
+		limit = {
+			has_reform = tanistry_reform
+			has_country_modifier = bt_tanistry_waiting_on_heir
+			NOT = { has_country_flag = bt_abolition_of_tanistry_succession }
+		}
+		country_event = { id = BeyondTypusCelticFlavour.2 days = 1 }			#Male heir born/introduced			- doesn't seem to work, I'll look into this later, added a 1 day MTTH in the meantime
+		country_event = { id = BeyondTypusCelticFlavour.3 days = 1 }			#Female heir born/introduced			- doesn't seem to work, I'll look into this later, added a 1 day MTTH in the meantime
+	}
+}
+
+#BT adjusting brewing emporium to function on right trade goods.
+on_province_owner_change = {
+	#Vanilla
+	events = {
+		japan.1
+	}
+	
+	if = {
+		limit = {
+			OR = {
+				has_province_modifier = wine_bonus_prod
+				has_province_modifier = grain_bonus_prod
+				has_province_modifier = fruit_bonus_prod
+			}
+			FROM = { has_reform = monastic_breweries_reform }
+			NOT = { owner = { has_reform = monastic_breweries_reform } }
+		}
+		remove_province_modifier = wine_bonus_prod
+		remove_province_modifier = grain_bonus_prod
+		remove_province_modifier = fruit_bonus_prod
+	}
+	
+	if = {
+		limit = {
+			NOT = {
+				OR = {
+					has_province_modifier = wine_bonus_prod
+					has_province_modifier = grain_bonus_prod
+					has_province_modifier = fruit_bonus_prod
+				}
+			}
+			owner = { has_reform = monastic_breweries_reform }
+			NOT = { FROM = { has_reform = monastic_breweries_reform } }
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					trade_goods = wine
+				}
+				add_province_modifier = { 
+					name = wine_bonus_prod
+					duration = -1
+					hidden = yes
+				}
+			}
+			if = {
+				limit = {
+					trade_goods = bt_trade_goods_beer
+				}
+				add_province_modifier = { 
+					name = grain_bonus_prod
+					duration = -1
+					hidden = yes
+				}
+			}
+			if = {
+				limit = {
+					trade_goods = bt_trade_goods_fruit
+				}
+				add_province_modifier = { 
+					name = fruit_bonus_prod
+					duration = -1
+					hidden = yes
+				}
+			}
+		}
+	}
+
+	if = {
+		limit = {
+			owned_by = SRU
+			exists = ARA
+		}
+		ARA = {
+			set_country_flag = ARA_defeat_saruhan
+		}
+	}
+	if = {
+		limit = {
+			NOT = { owner = { religion_group = muslim } }
+			has_province_modifier = sufi_shrine
+		}
+		remove_province_modifier = sufi_shrine
+	}
+	on_province_owner_change_estate_privileges_effect = yes
+	#BT Dithmarschen production bonus on grain modifier.
+	
+	
+	if = {
+		limit = {
+			has_province_modifier = dtt_bread_bonus_prod
+			FROM = { 
+				tag = DTT 
+				mission_completed = peasants_conquest_of_bread
+			}
+			NOT = { 
+				owner = {
+					tag = DTT 
+					mission_completed = peasants_conquest_of_bread
+				} 
+			}
+		}
+		remove_province_modifier = dtt_bread_bonus_prod
+	}
+	
+	if = {
+		limit = {
+			NOT = {
+				has_province_modifier = dtt_bread_bonus_prod
+			}
+			owner = { 
+				tag = DTT 
+				mission_completed = peasants_conquest_of_bread
+			}
+			NOT = { 
+				FROM = {
+					tag = DTT 
+					mission_completed = peasants_conquest_of_bread
+				} 
+			}
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					trade_goods = grain
+				}
+				add_province_modifier = { 
+					name = dtt_bread_bonus_prod
+					duration = -1
+					hidden = yes
+				}
+			}
+		}
+	}
+}
+
+# province
+on_province_religion_converted = {
+	#Vanilla
+	on_province_religion_converted_estate_privileges_effect = yes
+	#BT
+	#BT added if Culture's Iberian and gets converted to muslim, it turns into Andalusi culture.
+	if = {
+		limit = {
+			religion_group = muslim
+			culture = andalucian
+		}
+		change_culture = andalusi_culture
+	}
+	#And vice versa.
+	if = {
+		limit = {
+			religion_group = christian
+			culture = andalusi_culture
+		}
+		change_culture = andalucian
+	}
+}
+
+#BT adding minority expulsion bonus in preparation for a 1.30 change.
+# When a minority is expelled to a colony
+# THIS = Colony, ROOT = Colony, FROM = Home province
+on_minority_expelled = {
+	FROM = {
+		add_province_modifier = {
+			name = "bt_minorities_expelled"
+			duration = 5475 #15 years
+		}
+	}
+}

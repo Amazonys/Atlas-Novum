@@ -1,0 +1,701 @@
+#Completely overhauled for the 13.0 update by Dub.
+
+hsn_economic_group = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		tag = HSN
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	hsn_mosques = {
+		icon = mission_mosque
+		required_missions = { }
+		position = 1
+		
+		provinces_to_highlight = {
+			owned_by = ROOT
+			NOT = { 
+				development = 10
+				has_tax_building_trigger = yes
+			}
+		}
+		
+		trigger = {
+			calc_true_if = {
+				amount = 15
+				all_owned_province = {
+					development = 10
+					has_tax_building_trigger = yes
+				}
+			}
+		}
+		
+		effect = {
+			add_years_of_income = 0.5
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+			add_estate_loyalty_modifier = {
+				estate = estate_church
+				desc = EST_VAL_BUILT_MOSQUES
+				loyalty = 10
+				duration = 7300
+			}
+		}
+	}
+	
+	hsn_hospitals = {
+		icon = mission_hospital
+		position = 3
+		required_missions = { hsn_mosques }
+		
+		provinces_to_highlight = {
+			owned_by = ROOT
+			NOT = { 
+				development = 15
+				has_building = soldier_households
+			}
+		}
+		
+		trigger = {
+			calc_true_if = {
+				amount = 5
+				all_owned_province = {
+					development = 15
+					has_building = soldier_households
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "bt_hsn_hospitals"
+				duration = 7300
+			}
+		}		
+	}
+}
+
+hsn_economic_group_2 = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		tag = HSN
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	hsn_assert_dominance_over_amirs = {
+		icon = mission_fatimid_caliphate
+		required_missions = { hsn_hospitals hsn_conquer_crusaders }
+		position = 7
+		
+		provinces_to_highlight = {
+			#None
+		}
+		
+		trigger = {
+			absolutism = 50
+			NOT = {
+				estate_influence = {
+					estate = estate_nobles
+					influence = 20
+				}
+			}
+			crown_land_share = 50
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "bt_hsn_nobility_crushed"
+				duration = 7300
+			}
+		}		
+	}
+}
+
+
+hsn_religious_group = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential = {
+		tag = HSN
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	hsn_piety = {
+		icon = mission_muslim_piety
+		required_missions = { hsn_mosques }
+		position = 2
+		
+		provinces_to_highlight = {
+			#None
+		}
+		
+		trigger = {
+			OR = {
+				piety = 0.5
+				NOT = { piety = -0.5 }
+			}
+		}
+		
+		effect = {
+			if = {
+				limit = {
+					piety = 0.5
+				}
+				add_country_modifier = {
+					name = "bt_hsn_pious_nation"
+					duration = 7300
+				}
+			}
+			else = {
+				add_country_modifier = {
+					name = "bt_hsn_unpious_nation"
+					duration = 7300
+				}
+			}
+			give_permaclaims_for_mission = { mission=hsn_custodian_of_holy_cities }
+		}
+	}
+	
+	hsn_custodian_of_holy_cities = {
+		icon = mission_into_arabia
+		required_missions = { hsn_piety }
+		position = 4
+		
+		provinces_to_highlight = {
+			hsn_custodian_of_holy_cities_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted
+				provinces=hsn_custodian_of_holy_cities_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		
+		effect = {
+			add_prestige = 25
+			add_piety = -0.25
+		}
+	}
+}
+
+hsn_revenge_on_crusaders_group = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential = {
+		tag = HSN
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	hsn_restore_navy = {
+		icon = mission_galleys_in_port
+		required_missions = { hsn_conquer_jerusalem }
+		position = 5
+		
+		provinces_to_highlight = {
+			owned_by = ROOT
+			has_port = yes
+			OR = {
+				NOT = { has_dock_building_trigger = yes }
+				NOT = { has_shipyard_building_trigger = yes }
+			}
+		}
+		
+		trigger = {
+			calc_true_if = {
+				amount = 5
+				all_owned_province = {
+					OR = {
+						has_dock_building_trigger = yes
+						has_shipyard_building_trigger = yes
+					}
+				}
+			}
+			num_of_galley = 20
+			num_of_heavy_ship = 5
+		}
+		
+		effect = {
+			add_prestige = 10
+			add_navy_tradition = 25
+			#Changed from nonsensical north_kurdistan_area & erzurum_area to rest of mainland Levant.
+			give_permaclaims_for_mission = { mission=hsn_conquer_crusaders }
+		}
+	}
+	
+	hsn_conquer_crusaders = {
+		icon = mission_teutonic_knights
+		required_missions = { hsn_restore_navy }
+		position = 6
+		
+		provinces_to_highlight = {
+			hsn_conquer_crusaders_provinces = yes
+			NOT = { owned_by = ROOT }
+		}
+		
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_highlighted
+				provinces=hsn_conquer_crusaders_provinces
+				owner_type=owned_by
+			}
+		}
+		
+		effect = {
+			add_prestige = 15
+			add_country_modifier = {
+				name = "bt_hsn_crusaders_conquered"
+				duration = 5475
+			}
+			aegean_archipelago_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_claim = ROOT
+			}
+			eastern_mediterrenean_islands_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_claim = ROOT
+			}
+		}
+		
+	}
+}
+
+hsn_conquest_group = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential = {
+		tag = HSN
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	hsn_buildforces = {
+		icon = mission_bedouins
+		required_missions = { }
+		position = 1
+		
+		trigger = {
+			army_size_percentage = 1
+			manpower_percentage = 0.8
+			num_of_generals = 1
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "oma_buildforces_mod"
+				duration = 5475
+			}
+			give_permaclaims_for_mission = { mission=hsn_white_sheep }
+			give_permaclaims_for_mission = { mission=conquer_al_jazira_hsn } #The Black Sheep
+		}
+	}
+	
+	hsn_white_sheep = {
+		icon = mission_white_sheep
+		required_missions = { hsn_buildforces }
+		position = 2
+		
+		provinces_to_highlight = {
+			hsn_white_sheep_provinces = yes
+			NOT = { owned_by = ROOT }
+		}
+		
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_highlighted
+				provinces=hsn_white_sheep_provinces
+				owner_type=owned_by
+			}
+		}
+		
+		effect = {
+			add_prestige = 15
+			add_army_tradition = 20
+			give_permaclaims_for_mission = { mission=conquer_aleppo_hsn }
+		}
+		
+	}
+	
+	conquer_aleppo_hsn = {
+		icon = mission_egyptian_mamluk_soldier
+		required_missions = { hsn_white_sheep }
+		position = 3
+		
+		provinces_to_highlight = {
+			conquer_aleppo_hsn_provinces = yes
+			NOT = { owned_by = ROOT }
+		}
+		
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_highlighted
+				provinces=conquer_aleppo_hsn_provinces
+				owner_type=owned_by
+			}
+		}
+		
+		effect = {
+			add_army_tradition = 20
+			give_permaclaims_for_mission = { mission=hsn_conquer_jerusalem }
+		}
+	}
+	
+	hsn_conquer_jerusalem = {
+		icon = jerusalem
+		required_missions = { conquer_aleppo_hsn }
+		position = 4
+		
+		provinces_to_highlight = {
+			hsn_conquer_jerusalem_provinces = yes
+			NOT = { owned_by = ROOT }
+		}
+		
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_highlighted
+				provinces=hsn_conquer_jerusalem_provinces
+				owner_type=owned_by
+			}
+		}
+		
+		effect = {
+			add_prestige = 15
+			382 = { #From 12/12/8 (32) to 16/16/12 (44)
+				add_base_tax = 4
+				add_base_production = 4
+				add_base_manpower = 4
+				add_province_modifier = { #Great Mosque of Damascus (Umayyad mosque) modifier from Andalusian mission tree.
+					name = "adu_summer_capital"
+					duration = -1
+				}
+				set_province_flag = bt_damascus_restored
+			}
+			country_event = {
+				id = bt_ayyubid_mission_events.1
+			}
+			give_permaclaims_for_mission = { mission=hsn_destroy_mamluks }
+		}
+		
+	}
+	
+	hsn_destroy_mamluks = {
+		icon = mission_unite_home_region
+		required_missions = { hsn_conquer_jerusalem }
+		position = 5
+		
+		provinces_to_highlight = {
+			hsn_destroy_mamluks_provinces = yes
+			NOT = { owned_by = ROOT }
+		}
+		
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_highlighted
+				provinces=hsn_destroy_mamluks_provinces
+				owner_type=owned_by
+			}
+		}
+		
+		effect = {
+			add_prestige = 25
+			add_legitimacy = 25
+			add_country_modifier = {
+				name = "bt_hsn_egypt_reclaimed" #+10% governing capacity
+				duration = -1
+			}
+		}
+	}
+	
+	hsn_new_capital = {
+		icon = mission_early_game_buildings
+		required_missions = { hsn_destroy_mamluks }
+		position = 5
+		
+		provinces_to_highlight = {
+			OR = {
+				province_id = 377 #Aleppo
+				province_id = 382 #Damascus
+				province_id = 361 #Cairo
+			}
+			NOT = { 
+				development = 40 
+				has_courthouse_building_trigger = yes
+				is_state = yes
+			}
+		}
+		
+		trigger = {
+			377 = {
+				development = 40 
+				has_courthouse_building_trigger = yes
+				is_state = yes
+			}
+			382 = {
+				development = 40 
+				has_courthouse_building_trigger = yes
+				is_state = yes
+			}
+			361 = {
+				development = 40 
+				has_courthouse_building_trigger = yes
+				is_state = yes
+			}
+		}
+		
+		effect = {
+			country_event = { id = bt_ayyubid_mission_events.2 } #New capital event, choose between the three above.
+		}
+		
+	}
+	
+	hsn_ayyubid_restoration = {
+		icon = mission_empire
+		required_missions = { hsn_new_capital }
+		position = 6
+		
+		trigger = {
+			total_own_and_non_tributary_subject_development = 2000
+		}
+		
+		effect = {
+			if = {	
+				limit = {
+					NOT = { government_rank = 3 }
+				}
+				set_government_rank = 3
+			}
+			if = {
+				limit = {
+					NOT = { dynasty = "Ayyubid" }
+				}
+				set_dynasty = original_dynasty
+			}
+			add_prestige = 25
+			add_legitimacy = 25
+			add_government_reform = bt_ayyubid_sultanate_reform
+			override_country_name = AYB #Using BT's old country names still in the localisation files.
+		}
+	}
+}	
+
+hsn_conquest_group_east = {
+	slot = 4
+	generic = no
+	ai = yes
+	potential = {
+		tag = HSN
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+
+	
+	conquer_al_jazira_hsn = { #Repurposed to The Black Sheep mission.
+		icon = mission_black_sheep
+		required_missions = { hsn_buildforces }
+		position = 2
+		
+		provinces_to_highlight = {
+			conquer_al_jazira_hsn_provinces = yes
+			NOT = { owned_by = ROOT }
+		}
+		
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_highlighted
+				provinces=conquer_al_jazira_hsn_provinces
+				owner_type=owned_by
+			}
+		}
+		
+		effect = {
+			add_prestige = 15
+			give_permaclaims_for_mission = { mission=hsn_take_baghdad }
+			north_kurdistan_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			2306 = {
+				if = {
+					limit = {
+						NOT = { is_permanent_claim = ROOT }
+						NOT = { is_core = ROOT }
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+		}
+	}
+	
+	hsn_take_baghdad = {
+		icon = mission_baghdad
+		required_missions = { conquer_al_jazira_hsn }
+		position = 3
+		
+		provinces_to_highlight = {
+			hsn_take_baghdad_provinces = yes
+			NOT = { owned_by = ROOT }
+		}
+		
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_highlighted
+				provinces=hsn_take_baghdad_provinces
+				owner_type=owned_by
+			}
+		}
+		
+		effect = {
+			410 = { #8/8/8 (24) to 13/13/11 (37). Needs 40 for the next mission.
+				add_base_tax = 5
+				add_base_production = 5
+				add_base_manpower = 3
+				set_province_flag = bt_baghdad_restored
+			}
+			basra_area = {
+				limit = {
+					religion = shiite
+				}
+				add_province_modifier = {
+					name = "bt_hsn_influx_of_sunni_population"
+					duration = 7300
+				}
+			}
+			iraq_arabi_area = {
+				limit = {
+					religion = shiite
+				}
+				add_province_modifier = {
+					name = "bt_hsn_influx_of_sunni_population"
+					duration = 7300
+				}
+			}
+			add_prestige = 15
+		}
+	}
+	
+	hsn_new_caliphate = {
+		icon = mission_mosque
+		required_missions = { hsn_take_baghdad hsn_destroy_mamluks }
+		position = 6
+		
+		provinces_to_highlight = {
+			province_id = 410
+			NOT = { 
+				development = 40
+				has_tax_building_trigger = yes
+			}
+		}
+		
+		trigger = {
+			410 = {
+				development = 40
+				has_tax_building_trigger = yes
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "bt_hsn_new_caliphate"
+				duration = 7300
+			}
+			add_prestige = 15
+		}
+	}
+	
+}
+
+hsn_tech_internal_group = {
+	slot = 5
+	generic = no
+	ai = yes
+	potential = {
+		tag = HSN
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	hsn_madrasas = {
+		icon = mission_patronize_art_and_religion
+		required_missions = { }
+		position = 3
+		
+		provinces_to_highlight = {
+			owned_by = ROOT
+			NOT = { 
+				development = 20
+				has_building = university
+			}
+		}
+		
+		trigger = {
+			calc_true_if = {
+				amount = 5
+				all_owned_province = {
+					development = 20
+					has_building = university
+				}
+			}
+		}
+		
+		effect = {
+			add_innovativeness_big_effect = yes
+			add_country_modifier = {
+				name = "bt_hsn_madrasas"
+				duration = 7300
+			}
+		}
+		
+	}
+	
+	hsn_baghdad_house_of_learning = {
+		icon = mission_persian_soldiers
+		required_missions = { hsn_take_baghdad hsn_madrasas }
+		position = 4
+		
+		provinces_to_highlight = {
+			province_id = 410
+			NOT = { 
+				has_building = university
+				has_building = cathedral
+			}
+		}
+		
+		trigger = {
+			410 = {
+				has_building = university
+				has_building = cathedral
+			}
+		}
+		
+		effect = {
+			add_adm_power = 100
+			add_dip_power = 100
+			add_mil_power = 100
+			add_prestige = 25
+		}
+	}
+}

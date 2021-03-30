@@ -1,0 +1,599 @@
+#Updated and scriptified by Dub.
+hab_holy_roman_ambitions = {
+	slot = 1 #upper left column
+	generic = no #if a mission without generic = yes wants this slot then it overrides this.
+	ai = yes
+	potential = {
+		NOT = { map_setup = map_setup_random }
+		tag = HAB
+	}
+	has_country_shield = yes
+	
+	secure_the_imperial_crown = {
+		icon = mission_alliances
+		required_missions = {  } #None
+		
+		completed_by = 1526.8.30
+		
+		trigger = {
+			is_emperor = yes
+			custom_trigger_tooltip = {
+				tooltip = secure_the_imperial_crown.tooltip
+				calc_true_if = {
+					all_elector = {
+						preferred_emperor = ROOT
+						has_opinion = { who = ROOT value = 100 }
+					}
+					amount = 5
+				}
+			}
+			hidden_trigger = { #If AI, don't be diplomat
+				OR = {
+					AND = {
+						ai = yes
+						NOT = { personality = ai_diplomat }
+					}
+					ai = no
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					exists = BOH
+					government = monarchy
+					religion_group = christian
+					BOH = {
+						is_subject = no
+						government = monarchy
+					}
+				}
+				add_casus_belli = {
+					type = cb_restore_personal_union
+					months = 300
+					target = BOH
+				}
+			}
+			else = {
+				#Claims
+				custom_tooltip = subjugate_bohemia_claims
+				hidden_effect = {
+					every_province = {
+						limit = {
+							subjugate_bohemia_provinces = yes
+							NOT = { is_core = ROOT }
+							NOT = { owned_by = ROOT }
+						}
+						add_permanent_claim = ROOT
+					}
+				}
+			}
+			add_country_modifier = {
+				name = "succesful_bid_for_imperial_crown"
+				duration = 5475 #15 years
+			}
+		}
+	}
+	subjugate_bohemia = {
+		icon = mission_empire
+		required_missions = { secure_the_imperial_crown }
+		
+		completed_by = 1526.8.30
+		
+		ai_weight = {
+			factor = 3
+			modifier = {
+				factor = 0
+				bohemia_area = {
+					owner = {
+						alliance_with = ROOT
+					}
+				}
+			}
+		}
+		ai_priority = {
+			factor = 2
+		}
+		
+		provinces_to_highlight = {
+			subjugate_bohemia_provinces	= yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=subjugate_bohemia_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "habsburg_bohemia"
+				duration = 5475 #15 years
+			}
+			#Claims
+			custom_tooltip = recover_silesia_claims
+			hidden_effect = {
+				every_province = {
+					limit = {
+						recover_silesia_provinces = yes
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+			hidden_effect = {
+				remove_casus_belli = {
+					type = cb_restore_personal_union
+					target = BOH
+				}
+			}
+		}
+	}
+	recover_silesia = {
+		icon = mission_assemble_an_army
+		required_missions = { subjugate_bohemia }
+		completed_by = 1620.11.8
+		ai_weight = {
+			factor = 2
+		}
+		ai_priority = {
+			factor = 1.5
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=recover_silesia_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		provinces_to_highlight = {
+			recover_silesia_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		effect = {
+			silesia_area = {
+				add_province_modifier = {
+					name = "austrian_silesia"
+					duration = 7300
+				}
+				add_nationalism = -5
+			}
+			#BT added to adjust for the changes in areas.
+			lower_silesia_area = {
+				add_province_modifier = {
+					name = "austrian_silesia"
+					duration = 7300
+				}
+				add_nationalism = -5
+			}
+			
+			#Claims
+			custom_tooltip = partition_poland_claims
+			hidden_effect = {
+				every_province = {
+					limit = {
+						partition_poland_provinces = yes
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+		}
+	}
+	partition_poland = { #Conquer Galicia
+		icon = mission_conquer_5_states
+		completed_by = 1772.8.5
+		required_missions = { recover_silesia }
+		ai_weight = {
+			factor = 0.5
+			modifier = {
+				factor = 0
+				malopolska_area = {
+					owner = {
+						alliance_with = ROOT
+					}
+				}
+			}
+			modifier = {
+				factor = 2
+				slovakia_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			modifier = {
+				factor = 2
+				malopolska_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			modifier = {
+				factor = 2
+				red_ruthenia_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+		}
+		provinces_to_highlight = {
+			partition_poland_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=partition_poland_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "austrian_empire"
+				duration = 7300
+			}
+			
+			#BT added, historical third partition of Poland provinces. There's a bit missing that is part of province 269, but I can't do much about that.
+			sandomierz_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { owned_by = ROOT }
+				}
+				add_claim = ROOT
+			}
+			4538 = {
+				if = {
+					limit = {
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_claim = ROOT
+				}
+			}
+			7266 = {
+				if = {
+					limit = {
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_claim = ROOT
+				}
+			}
+		}
+	}
+}
+
+hab_protect_the_balkans = {
+	slot = 5 #upper right column
+	generic = no #if a mission without generic = yes wants this slot then it overrides this.
+	ai = yes
+	potential = {
+		NOT = { map_setup = map_setup_random }
+		tag = HAB
+	}
+	has_country_shield = yes
+	
+	
+	subjugate_hungary = { #Decline of Hungary
+		icon = mission_conquer_50_development
+		required_missions = {  } #None
+		completed_by = 1490.1.1
+		trigger = {
+			if = {
+				limit = {
+					exists = HUN
+				}
+				total_development = HUN
+				total_development = 200
+			}
+			else = {
+				total_development = 200
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					exists = HUN
+					is_subject = no
+					government = monarchy
+					religion_group = christian
+					HUN = {
+						is_subject = no
+						government = monarchy
+					}
+				}
+				add_casus_belli = {
+					type = cb_restore_personal_union
+					months = 300
+					target = HUN
+				}
+			}
+			else = {
+				#Claims
+				custom_tooltip = austrian_hungary_claims
+				hidden_effect = {
+					every_province = {
+						limit = {
+							austrian_hungary_provinces = yes
+							NOT = { is_core = ROOT }
+							NOT = { owned_by = ROOT }
+						}
+						add_permanent_claim = ROOT
+					}
+				}
+			}
+		}
+	}
+	austrian_hungary = {
+		icon = mission_monarch_in_throne_room
+		required_missions = { subjugate_hungary }
+		position = 4
+		completed_by = 1490.1.1
+		ai_weight = {
+			factor = 3
+			modifier = {
+				factor = 2
+				slovakia_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			modifier = {
+				factor = 2
+				transdanubia_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+		}
+		ai_priority = {
+			factor = 2
+		}
+		
+		provinces_to_highlight = {
+			austrian_hungary_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=austrian_hungary_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "royal_hungary"
+				duration = 5475
+			}
+			
+			#Claims
+			custom_tooltip = austrian_croatia_claims
+			hidden_effect = {
+				every_province = {
+					limit = {
+						austrian_croatia_provinces = yes
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+		}
+	}
+	austrian_croatia = {
+		icon = mission_galleys_in_port
+		required_missions = { austrian_hungary }
+		position = 6
+		completed_by = 1526.8.30
+		
+		ai_weight = {
+			factor = 1
+			modifier = {
+				factor = 2
+				east_adriatic_coast_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			modifier = {
+				factor = 2
+				croatia_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+		}
+		provinces_to_highlight = {
+			austrian_croatia_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=austrian_croatia_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			#Claims
+			custom_tooltip = conquer_transylvania_claims
+			hidden_effect = {
+				every_province = {
+					limit = {
+						conquer_transylvania_provinces = yes
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+			custom_tooltip = austrian_italian_ambition_claims
+			hidden_effect = {
+				every_province = {
+					limit = {
+						austrian_italian_ambition_provinces = yes
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+		}
+	}
+	conquer_transylvania = {
+		icon = mission_european_church
+		required_missions = { austrian_croatia }
+		completed_by = 1699.1.26
+		ai_weight = {
+			factor = 2
+			modifier = {
+				factor = 2
+				southern_transylvania_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			modifier = {
+				factor = 2
+				transylvania_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+		}
+		ai_priority = {
+			factor = 2
+		}
+		provinces_to_highlight = {
+			conquer_transylvania_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=conquer_transylvania_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			#Give Austria subjugation CBs on Moldavia & Wallachia. Could probably also do Bosnia, but it's just too much work since it doesn't match any areas.
+			if = {
+				limit = {
+					exists = WAL
+					is_subject = no
+					WAL = {
+						is_subject = no
+					}
+				}
+				add_casus_belli = {
+					type = cb_vassalize_mission
+					months = 300
+					target = WAL
+				}
+			}
+			else = {
+				wallachia_area = {
+					limit = {
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_claim = ROOT
+				}
+				oltenia_area = {
+					limit = {
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_claim = ROOT
+				}
+				upper_muntenia_area = {
+					limit = {
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_claim = ROOT
+				}
+			}
+			if = {
+				limit = {
+					exists = MOL
+					is_subject = no
+					MOL = {
+						is_subject = no
+					}
+				}
+				add_casus_belli = {
+					type = cb_vassalize_mission
+					months = 300
+					target = MOL
+				}
+			}
+			else = { #Only Moldavia area for this one. The rest is either already owned (Bukovina) or is Russian (Bessarabia).
+				western_moldovia = {
+					limit = {
+						NOT = { is_core = ROOT }
+						NOT = { owned_by = ROOT }
+					}
+					add_claim = ROOT
+				}
+			}
+		}
+	}
+}
+
+hab_italian_ambitions = {
+	slot = 3 #upper left column
+	generic = no
+	ai = yes
+	
+	potential = {
+		NOT = { map_setup = map_setup_random }
+		tag = HAB
+	}
+	
+	has_country_shield = yes
+	
+	austrian_italian_ambition = {
+		icon = mission_religious
+		position = 7
+		completed_by = 1797.10.17
+		
+		ai_weight = {
+			factor = 3
+			modifier = {
+				factor = 0.5
+				venetia_area = {
+					is_part_of_hre = yes
+					NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				}
+			}
+			modifier = {
+				factor = 2
+				venetia_area = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+		}
+		ai_priority = {
+			factor = 5
+		}
+		
+		required_missions = { austrian_croatia }
+		provinces_to_highlight = {
+			austrian_italian_ambition_provinces = yes
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			has_fulfiled_province_requirement_for_mission_trigger = {
+				tooltip=country_holds_or_non_sovereign_subject_holds_highlighted 
+				provinces=austrian_italian_ambition_provinces
+				owner_type=country_or_non_sovereign_subject_holds
+			}
+		}
+		effect = {
+			add_mercantilism = 5
+			venetia_area = {
+				add_province_modifier = {
+					name = "protected_italian_interests"
+					duration = 3650
+				}
+			}
+		}
+	}
+}

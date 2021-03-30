@@ -1,0 +1,736 @@
+pom_1 = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		NOT = { map_setup = map_setup_random }
+		OR = {
+			tag = POM
+			tag = STE
+			tag = WOL
+			tag = MKL
+			tag = STP
+		}
+	}
+	has_country_shield = yes
+	
+	pom_unite_pomerania = {
+		icon = mission_unite_home_region
+		required_missions = { }
+		provinces_to_highlight = {
+			OR = {
+				area = vorpommern_area
+				area = hinter_pommern_area
+			}
+			NOT = {
+				owned_by = ROOT
+			}
+		}
+		trigger = {
+			vorpommern_area = {
+				type = all
+				owned_by = ROOT
+			}
+			hinter_pommern_area = {
+				type = all
+				owned_by = ROOT
+			}
+		}
+		effect = {
+			2993 = {
+				if = {
+					limit = {
+						NOT = {
+							is_core = ROOT
+							is_permanent_claim = ROOT
+						}
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+			mecklenburg_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_permanent_claim = ROOT
+					}
+				}
+				add_permanent_claim = ROOT
+			}
+			neumark_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_permanent_claim = ROOT
+					}
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	pom_reclaim_frontiers = {
+		icon = mission_cannons_firing
+		required_missions = { pom_unite_pomerania }
+		provinces_to_highlight = {
+			OR = {
+				area = neumark_area
+				province_id = 2993
+			}
+			NOT = {
+				owned_by = ROOT
+			}
+		}
+		trigger = {
+			owns_core_province = 2993
+			neumark_area = {
+				type = all
+				owned_by = ROOT
+			}
+		}
+		effect = {
+			mittelmark_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_permanent_claim = ROOT
+					}
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	pom_subdue_brandenburg = {
+		icon = mission_landsknecht_soldier
+		required_missions = { pom_reclaim_frontiers }
+		provinces_to_highlight = {
+			area = mittelmark_area
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			mittelmark_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "pom_consolidated_front"
+				duration = 7300
+			}
+		}
+	}
+
+	pom_strengthen_old_ties = {
+		icon = mission_monarch_in_throne_room
+		required_missions = { pom_subdue_brandenburg }
+		
+		provinces_to_highlight = {
+			OR = {
+				AND = {
+					OR = {
+						owned_by = PLC
+						AND = {
+							owned_by = POL
+							NOT = { exists = PLC }
+						}
+					}
+				}
+				AND = {
+					OR = {
+						area = wielkopolska_area
+						area = kuyavia_area
+						area = mazovia_area
+						area = central_poland_area
+					}
+					OR = {
+						ROOT = {
+							OR = {
+								is_rival = PLC
+								AND = {
+									is_rival = POL
+									NOT = { exists = PLC }
+								}
+							}
+						}
+						PLC = { 
+							OR = {
+								is_rival = ROOT
+								AND = {
+									is_subject = yes
+									is_subject_of = ROOT 
+								}
+							}
+						}
+						AND = {
+							NOT = { exists = PLC }
+							POL = {
+								OR = {
+									is_rival = ROOT
+									AND = {
+										is_subject = yes
+										is_subject_of = ROOT
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		
+		trigger = {
+			if = {
+				limit = { # Check if PLC exists and free/our subject
+					PLC = {
+						exists = yes
+						OR = {
+							is_subject = no
+							is_subject_of = ROOT
+						}
+					}
+				}
+				if = {
+					limit = {
+						NOT = { 
+							OR = {
+								PLC = { is_rival = ROOT }
+								is_rival = PLC
+							}
+						}
+					}
+					PLC = {
+						OR = {
+							alliance_with = ROOT
+							marriage_with = ROOT
+							is_subject_of = ROOT
+						}
+						has_opinion = {
+							who = ROOT
+							value = 120
+						}
+					}
+				}
+				else = {
+					OR = { # if PLC is rival
+						AND = {
+							is_rival = PLC
+							any_ally = { is_rival = PLC }
+						}
+						AND = {
+							wielkopolska_area = {
+								type = all
+								country_or_non_sovereign_subject_holds = ROOT
+							}
+							kuyavia_area = {
+								type = all
+								country_or_non_sovereign_subject_holds = ROOT
+							}
+							mazovia_area = {
+								type = all
+								country_or_non_sovereign_subject_holds = ROOT
+							}
+							central_poland_area = {
+								type = all
+								country_or_non_sovereign_subject_holds = ROOT
+							}
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = { # if PLC is someone's subject
+					PLC = { is_subject = yes }
+				}
+				OR = {
+					AND = {
+						any_rival_country = { overlord_of = PLC }
+						any_ally = {
+							any_rival_country = { overlord_of = PLC }
+						}
+					}
+					AND = {
+						wielkopolska_area = {
+							type = all
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+						kuyavia_area = {
+							type = all
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+						mazovia_area = {
+							type = all
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+						central_poland_area = {
+							type = all
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = { # Now the same for POL
+					POL = {
+						exists = yes
+						OR = {
+							is_subject = no
+							is_subject_of = ROOT
+						}
+					}
+				}
+				if = {
+					limit = {
+						NOT = { 
+							OR = {
+								POL = { is_rival = ROOT }
+								is_rival = POL
+							}
+						}
+					}
+					POL = {
+						OR = {
+							alliance_with = ROOT
+							marriage_with = ROOT
+							is_subject_of = ROOT
+						}
+						has_opinion = {
+							who = ROOT
+							value = 120
+						}
+					}
+				}
+				else = {
+					OR = { # if POL is rival
+						AND = {
+							is_rival = POL
+							any_ally = { is_rival = POL }
+						}
+						AND = {
+							wielkopolska_area = {
+								type = all
+								country_or_non_sovereign_subject_holds = ROOT
+							}
+							kuyavia_area = {
+								type = all
+								country_or_non_sovereign_subject_holds = ROOT
+							}
+							mazovia_area = {
+								type = all
+								country_or_non_sovereign_subject_holds = ROOT
+							}
+							central_poland_area = {
+								type = all
+								country_or_non_sovereign_subject_holds = ROOT
+							}
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = { # if POL is someone's subject
+					POL = { is_subject = yes }
+				}
+				OR = {
+					AND = {
+						any_rival_country = { overlord_of = POL }
+						any_ally = {
+							any_rival_country = { overlord_of = POL }
+						}
+					}
+					AND = {
+						wielkopolska_area = {
+							type = all
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+						kuyavia_area = {
+							type = all
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+						mazovia_area = {
+							type = all
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+						central_poland_area = {
+							type = all
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+					}
+				}
+			}
+			else = {
+				wielkopolska_area = {
+					type = all
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+				kuyavia_area = {
+					type = all
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+				mazovia_area = {
+					type = all
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+				central_poland_area = {
+					type = all
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+		}
+		
+		effect = {
+			west_prussia_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_permanent_claim = ROOT
+					}
+				}
+				add_permanent_claim = ROOT
+			}
+			if = {
+				limit = { 
+					PLC = {
+						exists = yes
+						OR = {
+							is_subject = no
+							is_subject_of = ROOT
+						}
+					}
+				}
+				if = {
+					limit = {
+						NOT = { 
+							OR = {
+								PLC = { is_rival = ROOT }
+								is_rival = PLC
+							}
+						}
+					}
+					add_prestige = 20
+					add_country_modifier = {
+						name = pom_pol_unity
+						duration = -1
+					}
+				}
+				else = {
+					add_prestige = 20
+					wielkopolska_area = {
+						limit = {
+							NOT = {
+								is_core = ROOT
+								is_claim = ROOT
+							}
+							owned_by = PLC
+						}
+						add_claim = ROOT
+					}
+					kuyavia_area = {
+						limit = {
+							NOT = {
+								is_core = ROOT
+								is_claim = ROOT
+							}
+							owned_by = PLC
+						}
+						add_claim = ROOT
+					}
+					mazovia_area = {
+						limit = {
+							NOT = {
+								is_core = ROOT
+								is_claim = ROOT
+							}
+							owned_by = PLC
+						}
+						add_claim = ROOT
+					}
+					central_poland_area = {
+						limit = {
+							NOT = {
+								is_core = ROOT
+								is_claim = ROOT
+							}
+							owned_by = PLC
+						}
+						add_claim = ROOT
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					PLC = { is_subject = yes }
+				}
+				add_prestige = 20
+				add_country_modifier = {
+					name = pom_royal_solidarity
+					duration = 7300
+				}
+			}
+			else_if = {
+				limit = { 
+					POL = {
+						exists = yes
+						OR = {
+							is_subject = no
+							is_subject_of = ROOT
+						}
+					}
+				}
+				if = {
+					limit = {
+						NOT = { 
+							OR = {
+								POL = { is_rival = ROOT }
+								is_rival = POL
+							}
+						}
+					}
+					add_prestige = 20
+					add_country_modifier = {
+						name = pom_pol_unity
+						duration = -1
+					}
+				}
+				else = {
+					add_prestige = 20
+					wielkopolska_area = {
+						limit = {
+							NOT = {
+								is_core = ROOT
+								is_claim = ROOT
+							}
+							owned_by = POL
+						}
+						add_claim = ROOT
+					}
+					kuyavia_area = {
+						limit = {
+							NOT = {
+								is_core = ROOT
+								is_claim = ROOT
+							}
+							owned_by = POL
+						}
+						add_claim = ROOT
+					}
+					mazovia_area = {
+						limit = {
+							NOT = {
+								is_core = ROOT
+								is_claim = ROOT
+							}
+							owned_by = POL
+						}
+						add_claim = ROOT
+					}
+					central_poland_area = {
+						limit = {
+							NOT = {
+								is_core = ROOT
+								is_claim = ROOT
+							}
+							owned_by = POL
+						}
+						add_claim = ROOT
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					POL = { is_subject = yes }
+				}
+				add_prestige = 20
+				add_country_modifier = {
+					name = pom_royal_solidarity
+					duration = 7300
+				}
+			}
+			else = {
+				poland_region = {
+					limit = {
+						NOT = {
+							is_core = ROOT
+							is_claim = ROOT
+						}
+					}
+					add_claim = ROOT
+				}
+			}
+		}
+	}
+	
+	pom_revenge_on_knights = {
+		icon = mission_teutonic_knights
+		required_missions = { pom_strengthen_old_ties }
+		provinces_to_highlight = { 
+			area = west_prussia_area
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			west_prussia_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		effect = {
+			east_prussia_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_permanent_claim = ROOT
+					}
+				}
+				add_permanent_claim = ROOT
+			}
+			add_country_modifier = {
+				name = "pom_inspiring_revenge"
+				duration = 7300
+			}
+		}
+	}
+}
+
+pom_2 = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential = {
+		NOT = { map_setup = map_setup_random }
+		OR = {
+			tag = POM
+			tag = STE
+			tag = WOL
+			tag = MKL
+			tag = STP
+		}
+	}
+	has_country_shield = yes
+	
+	pom_hanseatic_seat = {
+		icon = mission_hanseatic_city
+		required_missions = { pom_unite_pomerania }
+		position = 2
+		provinces_to_highlight = {
+			area = mecklenburg_area
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			mecklenburg_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+		}
+		effect = {
+			lower_saxony_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_permanent_claim = ROOT
+					}
+				}
+				add_permanent_claim = ROOT
+			}
+			holstein_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_permanent_claim = ROOT
+					}
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	
+	pom_control_hanseatic = {
+		icon = mission_invade_island
+		required_missions = { pom_hanseatic_seat }
+		provinces_to_highlight = {
+			OR = {
+				area = lower_saxony_area
+				area = holstein_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				value = 4
+				OR = {
+					lower_saxony_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+					holstein_area = {
+						type = all
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "pom_trade_boom"
+				duration = 7300
+			}
+		}
+	}
+	
+	pom_baltic_struggle = {
+		icon = mission_sea_battles
+		required_missions = { pom_control_hanseatic }
+		
+		trigger = {
+			navy_size_percentage = 0.9
+			num_of_galley = 25
+			45 = {
+				trade_share = {
+					country = ROOT
+					share = 50
+				}
+			}
+		}
+		effect = {
+			add_navy_tradition = 20
+			add_dip_power = 50
+			jutland_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_claim = ROOT
+					}
+				}
+				add_claim = ROOT
+			}
+			denmark_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_claim = ROOT
+					}
+				}
+				add_claim = ROOT
+			}
+			skaneland_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_claim = ROOT
+					}
+				}
+				add_claim = ROOT
+			}
+			gotaland_area = {
+				limit = {
+					NOT = {
+						is_core = ROOT
+						is_claim = ROOT
+					}
+				}
+				add_claim = ROOT
+			}
+		}
+	}
+}

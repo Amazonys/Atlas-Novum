@@ -1,0 +1,244 @@
+#Updated by Dub.
+berber_3 = {
+	slot = 3
+	generic = yes
+	ai = yes
+	potential = {
+		OR = { #BT overhauled this due to cultural overhaul restricting this to Algiers only.
+			culture_group = berber_group
+			culture_group = maghrebi
+			primary_culture = tunisian
+			primary_culture = moroccan
+		}
+		capital_scope = {
+			region = maghreb_region
+		}
+		NOT = { map_setup = map_setup_random }
+		OR = {
+			NOT = {
+				has_dlc = "Golden Century"
+			}
+			AND = {
+				has_dlc = "Golden Century"
+				NOT = {
+					OR = {
+						tag = MOR
+						tag = TUN
+					}
+				}
+			}
+		}
+	}
+	
+	berber_corsair_fleet = {
+		icon = mission_galleys_in_port
+		required_missions = { }
+		
+		trigger = {
+			naval_forcelimit = 20
+			navy_size_percentage = 1
+		}
+		
+		effect = {
+			if = {
+				limit = {
+					OR = {
+						has_dlc = "Golden Century"
+						has_dlc = "Wealth of Nations"
+					}
+				}
+				add_country_modifier = {
+					name = "berber_fleet"
+					duration = 7300
+				}
+			}
+			else = {
+				add_mercantilism = 3
+			}
+		}
+	}
+	berber_barbary_pirates = {
+		icon = mission_sea_battles
+		required_missions = { berber_corsair_fleet }
+		
+		provinces_to_highlight = {
+			province_id = 1298
+		}
+		
+		trigger = {
+			if = {
+				limit = {
+					OR = {
+						has_dlc = "Golden Century"
+						has_dlc = "Wealth of Nations"
+					}
+				}
+				1298 = {
+					privateer_power = {
+						country = ROOT
+						share = 25
+					}
+				}
+			}
+			else = {
+				1298 = {
+					trade_share = {
+						country = ROOT
+						share = 25
+					}
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "berber_piracy"
+				duration = 7300
+			}
+		}
+	}
+	berber_turkish_alliance = {
+		icon = mission_ottoman_harem
+		required_missions = { berber_barbary_pirates }
+		
+		provinces_to_highlight = {
+			owned_by = TUR
+			is_capital = yes
+		}
+		
+		trigger = {
+			OR = {
+				alliance_with = TUR
+				is_rival = TUR
+				NOT = { exists = TUR }
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "berber_turkish_diplomacy"
+				duration = 7300
+			}
+		}
+	}
+	berber_new_world_raiders = {
+		icon = mission_iberian_conquistador
+		required_missions = { berber_turkish_alliance }
+		
+		provinces_to_highlight = {
+			province_id = 1516
+			has_discovered = ROOT
+		}
+		
+		trigger = {
+			if = {
+				limit = {
+					is_random_new_world = no
+					OR = {
+						has_dlc = "Golden Century"
+						has_dlc = "Wealth of Nations"
+					}
+				}
+				1516 = {
+					privateer_power = {
+						country = ROOT
+						share = 25
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					is_random_new_world = no
+					NOT = {
+						OR = {
+							has_dlc = "Golden Century"
+							has_dlc = "Wealth of Nations"
+						}
+					}
+				}
+				1516 = {
+					trade_share = {
+						country = ROOT
+						share = 25
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					is_random_new_world = yes
+				}
+				custom_trigger_tooltip = {
+					tooltip = berber_new_world.tooltip
+					num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+						value = 10
+						continent = new_world
+						is_city = yes
+					}
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "berber_new_world_pirates"
+				duration = 7300
+			}
+			lower_andalucia_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			upper_andalucia_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	berber_invade_iberia = {
+		icon = mission_invade_island
+		required_missions = { berber_new_world_raiders }
+		
+		provinces_to_highlight = {
+			region = iberia_region
+			owner = {
+				religion_group = christian
+				total_development = 100
+				is_subject = no
+			}
+		}
+		
+		trigger = {
+			custom_trigger_tooltip = {
+				tooltip = berber_invade_iberia_tooltip
+				NOT = {
+					any_country = {
+						capital_scope = {
+							region = iberia_region
+						}
+						total_development = 200
+						religion_group = christian
+						is_subject = no
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = berber_invade_iberia_tooltip_2
+				num_of_owned_provinces_with = {
+					region = iberia_region
+					value = 10
+				}
+			}
+		}
+		
+		effect = {
+			add_adm_power = 100
+			add_dip_power = 100
+			add_mil_power = 100
+		}
+	}
+}

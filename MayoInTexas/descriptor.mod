@@ -1,0 +1,18 @@
+version="13.0.8"
+tags={
+	"Balance"
+	"Map"
+	"Events"
+	"Expansion"
+	"Gameplay"
+	"Graphics"
+	"Historical"
+	"National Ideas"
+	"New Nations"
+	"Missions And Decisions"
+	"Technologies"
+	"Trade"
+}
+name="Beyond Typus"
+supported_version="1.30.*"
+remote_file_id="2138490092"
