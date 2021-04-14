@@ -116,21 +116,11 @@ country_event = {
 		ai_chance = { factor = 80 }
 		set_country_flag = IR_flavor_TUR.3_a
 		tooltip = {
-			TUR = { 
-				province_group_cede = {
-					PROVINCES = rascia_common_provinces
-					TAG = SER
-				}
-				province_group_cede = {
-					PROVINCES = rascia_common_provinces
-					TAG = SER
-				}
-				province_group_cede = {
-					PROVINCES = rascia_common_provinces
-					TAG = SER
-				}
+			kosovo_area = {
+				limit = { owned_by = SER }
+				cede_province = TUR
 			}
-			grant_independence = yes
+			#grant_independence = yes
 		}
 		TUR = { country_event = { id = IR_flavor_TUR.4 days = 1 } }
 	}
@@ -142,7 +132,7 @@ country_event = {
 			every_owned_province = {
 				add_permanent_claim = TUR
 			}	
-			grant_independence = yes
+			#grant_independence = yes
 		}
 		TUR = { country_event = { id = IR_flavor_TUR.4 days = 1 } }
 	}
@@ -171,11 +161,11 @@ country_event = {
 	option = {		# Annex Rascia + Independence 
 		name = "IR_flavor_TUR.4.a"
 		trigger = { SER = { has_country_flag = IR_flavor_TUR.3_a } }
-		province_group_cede = {
-			PROVINCES = rascia_common_provinces
-			TAG = SER
+		kosovo_area = {
+			limit = { owned_by = SER }
+			cede_province = ROOT
 		}
-		SER = { grant_independence = yes }
+		#SER = { grant_independence = yes }
 	}
 	option = {		# Independence	+ Ottoman gains claims
 		name = "IR_flavor_TUR.4.b"
@@ -185,7 +175,7 @@ country_event = {
 				add_permanent_claim = TUR
 			}
 		}	
-		SER = { grant_independence = yes }
+		#SER = { grant_independence = yes }
 	}
 }
 
@@ -432,9 +422,6 @@ country_event = {
 	fire_only_once = yes
 	major = yes
 	is_triggered_only = yes
-	major_trigger = {
-		is_neighbor_of = TUR
-	}
 
 	trigger = {
 		ai = yes
@@ -455,7 +442,7 @@ country_event = {
 	option = {		# 
 		name = "IR_flavor_TUR.20.a"
 		trigger = { LES = { exists = yes dynasty = Gattilusio } }
-		ai_chance = { factor = 50 }
+		ai_chance = { factor = 40 }
 		LES = { country_event = { id = IR_flavor_TUR.21 days = 0 } }
 	}
 	option = {		# 
@@ -473,8 +460,14 @@ country_event = {
 	option = {		# 
 		name = "IR_flavor_TUR.20.d1"
 		trigger = { LES = { exists = no } }
-		ai_chance = { factor = 1 }
+		ai_chance = { factor = 9 }
 		TUR = { country_event = { id = IR_flavor_TUR.21 days = 0 } }
+	}
+	option = {		# 
+		name = "IR_flavor_TUR.20.e"
+		trigger = { AT0 = { exists = yes } }
+		ai_chance = { factor = 1 }
+		AT0 = { country_event = { id = IR_flavor_TUR.21 days = 0 } }
 	}
 }
 
@@ -493,7 +486,7 @@ country_event = {
 
 	trigger = {
 		#ai = yes
-		OR = { tag = LES tag = VEN tag = GEN }
+		OR = { tag = LES tag = VEN tag = GEN tag = AT0 }
 		NOT = { has_country_flag = IR_flavor_TUR.21_happened }
 	}
 
@@ -532,6 +525,12 @@ country_event = {
 		add_adm_power = 100
 		add_prestige = 5
 	}
+	option = {		# 
+		name = "IR_flavor_TUR.21.d1"
+		trigger = { tag = AT0 }
+		AIN = { every_owned_province = { add_permanent_claim = TUR } }
+		inherit = AIN
+	}
 }
 
 country_event = { #Fief Albania or integrate
@@ -541,69 +540,75 @@ country_event = { #Fief Albania or integrate
     picture = COURT_eventPicture
     
     is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { war_with = ALB }
+				white_peace = ALB
+			}
+		}
+	}
     
     option = { #Fief Albania
         name = "IR_flavor_TUR.22.a" 
-        if = { 
-            limit = { ALB = { exists = no } }
-            every_owned_province = {
-                limit = { culture = albanian }
-                cede_province = ALB remove_claim = ROOT remove_core = ROOT
-            }
-            create_subject = {
-                subject_type = fief
-                subject = ALB
-            }
-        }
-        TUR = { 
-			set_country_flag = Albanian_fief
-		}	
+        every_owned_province = {
+			limit = { culture = albanian }
+			cede_province = ALB 
+			hidden_effect = {
+				remove_claim = ROOT 
+				remove_core = ROOT
+			}
+		}
+		create_subject = {
+			subject_type = fief
+			subject = ALB
+		}
+		hidden_effect = { ALB = { country_event = { id = IR_flavor_TUR.23 days = 0 } } }
     }
     option = { #Integrate
         name = "IR_flavor_TUR.22.b" 
-        if = { 
-            limit = { ALB = { exists = no } }
-             every_owned_province = {
-                limit = { culture = albanian }
-                add_province_modifier = {
-					 name = Albanian_Resistance
-					duration = 14600
+		trigger = { ALB = { ai = yes } }
+		add_prestige = 5
+		tooltip = { 
+			ALB = { 
+				every_owned_province = {
+					cede_province = ROOT 
+					add_province_modifier = {
+						name = tur_alb_unrest
+						duration = 14600
+					}
+					add_local_autonomy = -25
 				}
-				add_local_autonomy = -25
-				add_prestige = 5
-				add_mil_power = 25
-            }
-        }
+			}
+		}
     }
 }
 
-country_event = { #Integrate Albanian fief
+country_event = { #Inform Albania
     id = IR_flavor_TUR.23
     title = "IR_flavor_TUR.23.t"
     desc = "IR_flavor_TUR.23.desc"
     picture = COURT_eventPicture
     
-   trigger = {
-		has_country_flag = Albanian_fief
-		tag = TUR
+	
+	is_triggered_only = yes
+	
+    trigger = {
+		tag = ALB
+		is_subject_of = FROM 
+		is_subject_of_type = fief
 	}
 	
-	mean_time_to_happen = {
-		months = 360
-    }
-	
-    option = { #Integrate
+    option = { #
         name = "IR_flavor_FRA.23.a" 
-        if = { 
-            limit = { ALB = { exists = yes } }
-            ALB = {
-				is_subject_of = TUR
-				is_subject_of_type = fief
+		tooltip = {
+			TUR = {
+				create_subject = {
+					subject_type = fief
+					subject = ALB
+				}
 			}
-            inherit = ALB
-        }
-        TUR = { 
-			clr_country_flag = Albanian_fief
-		}	
+		}
     }
 }	
