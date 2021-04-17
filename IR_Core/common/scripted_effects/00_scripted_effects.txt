@@ -1,0 +1,1268 @@
+#Unsorted Scripted effects:
+
+#General effect for extending or adding province modifier
+#Province Scope
+add_or_extend_province_modifier_effect = {
+	if = {
+		limit = {
+			has_province_modifier = $MODIFIER$
+		}
+		extend_province_modifier = { name = $MODIFIER$ duration = $DURATION$ }
+	}
+	else = {
+		add_province_modifier = { name = $MODIFIER$ duration = $DURATION$ }
+	}
+}
+
+#Used in army professionalism event:
+#used where FROM is a province and ROOT is a country, ie onaction for provinces fallen
+add_loot_from_province_effect = { 
+	if = {
+		limit = {
+			FROM = {
+				NOT = { development = 18 }
+			}
+		}
+		add_treasury = 115
+		add_mil_power = 15
+	}
+	if = {
+		limit = {
+			FROM = {
+				development = 18
+				NOT = { development = 21 }
+			}
+		}
+		add_treasury = 135
+		add_mil_power = 15
+	}
+	if = {
+		limit = {
+			FROM = {
+				development = 21
+				NOT = { development = 24 }
+			}
+		}
+		add_treasury = 155
+		add_mil_power = 25
+	}
+	if = {
+		limit = {
+			FROM = {
+				development = 24
+				NOT = { development = 27 }
+			}
+		}
+		add_treasury = 180
+		add_mil_power = 30
+	}
+	if = {
+		limit = {
+			FROM = {
+				development = 27
+				NOT = { development = 30 }
+			}
+		}
+		add_treasury = 210
+		add_mil_power = 40
+	}
+	if = {
+		limit = {
+			FROM = {
+				development = 30
+				NOT = { development = 33 }
+			}
+		}
+		add_treasury = 230
+		add_mil_power = 50
+	}
+	if = {
+		limit = {
+			FROM = {
+				development = 33
+			}
+		}
+		add_treasury = 250
+		add_mil_power = 55
+	}
+}
+
+#Generalized version of the same effect, for use in province scope.
+#used where ROOT is a province, ie onaction for provinces fallen
+#$LOOTER$ is the scope of the tag performing the Looting (so for instance owner)
+add_loot_from_rich_province_general_effect = { 
+	add_devastation = 80
+	if = {
+		limit = {
+			NOT = { development = 18 }
+		}
+		$LOOTER$ = {
+			add_treasury = 400
+			add_mil_power = 15
+		}
+	}
+	if = {
+		limit = {
+			development = 18
+			NOT = { development = 21 }
+		}
+		$LOOTER$ = {
+			add_treasury = 435
+			add_mil_power = 15
+		}
+	}
+	if = {
+		limit = {
+			development = 21
+			NOT = { development = 24 }
+		}
+		$LOOTER$ = {
+			add_treasury = 455
+			add_mil_power = 25
+		}
+	}
+	if = {
+		limit = {
+			development = 24
+			NOT = { development = 27 }
+		}
+		$LOOTER$ = {
+			add_treasury = 480
+			add_mil_power = 30
+		}
+	}
+	if = {
+		limit = {
+			development = 27
+			NOT = { development = 30 }
+		}
+		$LOOTER$ = {
+			add_treasury = 510
+			add_mil_power = 40
+		}
+	}
+	if = {
+		limit = {
+			development = 30
+			NOT = { development = 33 }
+		}
+		$LOOTER$ = {
+			add_treasury = 530
+			add_mil_power = 50
+		}
+	}
+	if = {
+		limit = {
+			development = 33
+		}
+		$LOOTER$ = {
+			add_treasury = 550
+			add_mil_power = 55
+		}
+	}
+}
+
+#Religious Schools:
+#Country Scope
+clear_religious_scholar_modifiers_effect = {
+	remove_country_modifier = hanafi_scholar_modifier
+	remove_country_modifier = hanbali_scholar_modifier
+	remove_country_modifier = maliki_scholar_modifier
+	remove_country_modifier = shafii_scholar_modifier
+	remove_country_modifier = ismaili_scholar_modifier
+	remove_country_modifier = jafari_scholar_modifier
+	remove_country_modifier = zaidi_scholar_modifier
+	remove_country_modifier = qizilbashi_scholar_modifier
+	remove_country_modifier = bektashi_scholar_modifier
+	remove_country_modifier = yarsani_scholar_modifier
+	remove_country_modifier = haddadin_scholar_modifier
+	remove_country_modifier = kalbiyya_scholar_modifier
+	remove_country_modifier = khayatin_scholar_modifier
+	remove_country_modifier = matawira_scholar_modifier
+}
+
+#Move capital along with all that also needs to be done. Used in capital decisions.
+#THIS = Province Scope, ROOT = Country Scope
+move_capital_effect = {
+	if = {
+		limit = {
+			is_part_of_hre = yes
+			ROOT = {
+				is_part_of_hre = no
+			}
+		}
+		set_in_empire = no
+		emperor = {
+			add_opinion = {
+				who = ROOT
+				modifier = hre_province_left
+			}
+		}
+		add_imperial_influence = -1
+	}
+	if = {
+		limit = { is_capital = no }
+		ROOT = {
+			set_capital = PREV
+		}
+	}
+}
+
+#Same as move_capital_effect, but for when you want to move PREV's rather than ROOT's capital
+#THIS = Province Scope, PREV = Country Scope
+prev_move_capital_effect = {
+	if = {
+		limit = {
+			is_part_of_hre = yes
+			PREV = {
+				is_part_of_hre = no
+			}
+		}
+		set_in_empire = no
+		PREV = {
+			emperor = {
+				add_opinion = {
+					who = PREV
+					modifier = hre_province_left
+				}
+			}
+		}
+		add_imperial_influence = -1
+	}
+	if = {
+		limit = { is_capital = no }
+		PREV = {
+			set_capital = PREV
+		}
+	}
+}
+
+remove_non_electors_emperors_from_empire_effect = {
+	if = {
+		limit = {
+			is_part_of_hre = yes
+			is_elector = no
+			is_emperor = no
+		}
+		custom_tooltip = remove_non_electors_emperors_from_empire_effect_tooltip
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					is_part_of_hre = yes
+				}
+				set_in_empire = no
+			}
+		}
+	}
+}
+
+abolish_slavery_effect = {
+	custom_tooltip = abolished_slavery_act_tooltip
+	hidden_effect = {
+		every_owned_province = {
+			limit = {
+				trade_goods = slaves
+			}
+			change_trade_goods = unknown
+			remove_building = tradecompany
+		}
+	}
+}
+
+
+add_vassalise_cb_effect = {
+	add_casus_belli = {
+		type = cb_vassalize_mission
+		months = 300
+		target = ROOT
+	}
+}
+
+
+remove_vassalise_cb_effect = {
+	if = {
+		limit = {
+			has_casus_belli = {
+				type = cb_vassalize_mission
+				target = event_target:agenda_country
+			}
+		}
+		remove_casus_belli = {
+			type = cb_vassalize_mission
+			target = event_target:agenda_country
+		}
+	}
+}
+
+#Ends the normal Revolution disaster (if you have it) and clears all related modifiers and flags
+clear_standard_revolution_elements_effect = {
+	if = {
+		limit = {
+			has_disaster = revolution
+		}
+		end_disaster = revolution
+	}
+
+	clr_country_flag = religious_revolution
+	clr_country_flag = serfdom
+	clr_country_flag = social_reform
+	clr_country_flag = royal_bureaucracy
+	clr_country_flag = deplorable_reign
+	clr_country_flag = road_to_bankruptcy
+	clr_country_flag = financial_crisis
+	clr_country_flag = revolutionary_philosopher
+	remove_country_modifier = religious_intolerance
+	remove_country_modifier = religious_tolerance
+	remove_country_modifier = restrict_serfdom
+	remove_country_modifier = enforce_serfdom
+	remove_country_modifier = suppress_free_thinkers
+	remove_country_modifier = bureaucratic_reduction
+	remove_country_modifier = bureaucratic_expansion
+	remove_country_modifier = support_monarch
+	remove_country_modifier = oppose_monarch
+	remove_country_modifier = mint_money
+	remove_country_modifier = fight_inflation
+	remove_country_modifier = disarmament
+	remove_country_modifier = financial_disaster
+}
+
+enact_revolution_effect = {
+	disband_rebels = revolutionary_rebels
+	disband_rebels = anti_tax_rebels
+	hidden_effect = {
+		if = {	
+			limit = {
+				any_subject_country = {
+					has_country_modifier = colony_inspired_by_revolution
+				}
+			}
+			every_subject_country = {
+				remove_country_modifier = colony_inspired_by_revolution
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_disaster = french_revolution
+					has_country_flag = use_french_disaster_exile_effect
+				}
+				has_regency = no
+			}
+			set_country_flag = ruler_of_france_exiled
+		}
+		if = {
+			limit = {
+				OR = {
+					has_disaster = french_revolution
+					has_country_flag = use_french_disaster_exile_effect
+				}
+				has_heir = yes
+			}
+			exile_heir_as = heir_of_france
+			set_country_flag = heir_of_france_exiled
+		}
+	}
+	if = {
+		limit = { is_emperor_of_china = yes }
+		dismantle_empire_of_china = yes
+		set_global_flag = empire_of_china_dismantled
+	}
+	if = {
+		limit = { NOT = { government = republic } }
+		change_government_to_republic = yes
+	}
+	if = {
+		limit = {
+			revolution_target_exists = yes
+		}
+		add_government_reform = junior_revolutionary_republic_reform
+	}
+	else = {
+		add_government_reform = revolutionary_republic_reform
+		set_revolution_target = ROOT
+	}
+	if = {
+		limit = { has_reform = parliamentary_reform }
+		remove_government_reform = parliamentary_reform
+	}
+	if = {
+		limit = { has_reform = states_general_reform }
+		remove_government_reform = states_general_reform
+	}
+	if = {
+		limit = {
+			OR = {
+				has_disaster = french_revolution
+				has_country_flag = use_french_disaster_exile_effect
+			}
+		}
+		hidden_effect = {
+			exile_ruler_as = ruler_of_france
+		}
+	}
+	else = {
+		kill_ruler = yes
+	}
+
+	add_yearly_manpower = 5
+
+	if = {
+		limit = {
+			has_country_flag = revolution_disaster_reactionary
+		}
+		add_country_modifier = {
+			name = reactionaries_failed
+			duration = 9125
+		}
+	}
+
+	if = {
+		limit = {
+			has_country_flag = revolution_disaster_immediate_revolution
+		}
+		clr_country_flag = revolution_disaster_immediate_revolution
+	}
+	set_country_flag = revolutionary_republic_flag
+}
+
+#province scope
+add_half_industrialization_effect = {
+	if = {
+		limit = {
+			is_institution_enabled = industrialization
+			NOT = { industrialization = 100 }
+		}
+		add_institution_embracement = {
+			which = industrialization
+			value = 50
+		}
+	}
+}
+
+#province scope
+add_quarter_industrialization_effect = {
+	if = {
+		limit = {
+			is_institution_enabled = industrialization
+			NOT = { industrialization = 100 }
+		}
+		add_institution_embracement = {
+			which = industrialization
+			value = 25
+		}
+	}
+}
+
+#province scope, chooses which random monarch point bonus to give for agendas
+choose_random_development_bonus_effect = {
+	random_list = {
+		1 = { set_province_flag = add_base_tax_flag }
+		1 = { set_province_flag = add_base_production_flag }
+		1 = { set_province_flag = add_base_manpower_flag }
+	}
+}
+
+apply_random_development_bonus_bonus_effect = {
+	trigger_switch = {
+		on_trigger = has_province_flag
+		add_base_tax_flag = { add_base_tax = 1 }
+		add_base_production_flag = { add_base_production = 1 }
+		add_base_manpower_flag = { add_base_manpower = 1 }
+	}
+	clear_random_development_bonus_flags_effect = yes
+}
+
+clear_random_development_bonus_flags_effect = {
+	clr_province_flag = add_base_tax_flag
+	clr_province_flag = add_base_production_flag
+	clr_province_flag = add_base_manpower_flag
+}
+#province scope, should be used whenever the revolution is removed from a province
+remove_revolution_from_province_effect = {
+	hidden_effect = { set_revolution_in_province = no }
+	custom_tooltip = no_spread_here_for_15_years_tt
+	add_province_modifier = {
+		name = no_revolution_here_dummy
+		duration = 5475
+		hidden = yes
+	}
+}
+
+
+spawn_small_scaled_rebels = {
+	#always specify type
+	#specify saved_name = <saved_name> if you want to use one of those
+	#specify leader and leader_dynasty if you want to do it that way
+	#otherwise state "no_defined_leader = yes"
+	if = {
+		limit = {
+			owner = {
+				total_development = 1000
+			}
+		}
+		[[no_defined_leader]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+			}
+		]
+		[[leader]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+				leader = $leader$
+				leader_dynasty = $leader_dynasty$
+			}
+		]
+		[[saved_name]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+				leader = $saved_name$
+			}
+		]
+	}
+	else_if = {
+		limit = {
+			owner = {
+				total_development = 500
+			}
+		}
+		[[no_defined_leader]
+			spawn_rebels = {
+				size = 2
+				type = $type$
+			}
+		]
+		[[leader]
+			spawn_rebels = {
+				size = 2
+				type = $type$
+				leader = $leader$
+				leader_dynasty = $leader_dynasty$
+			}
+		]
+		[[saved_name]
+			spawn_rebels = {
+				size = 2
+				type = $type$
+				leader = $saved_name$
+			}
+		]
+	}
+	else_if = {
+		limit = {
+			owner = {
+				total_development = 200
+			}
+		}
+		[[no_defined_leader]
+			spawn_rebels = {
+				size = 1.5
+				type = $type$
+			}
+		]
+		[[leader]
+			spawn_rebels = {
+				size = 1.5
+				type = $type$
+				leader = $leader$
+				leader_dynasty = $leader_dynasty$
+			}
+		]
+		[[saved_name]
+			spawn_rebels = {
+				size = 1.5
+				type = $type$
+				leader = $saved_name$
+			}
+		]
+	}
+	else = {
+		[[no_defined_leader]
+			spawn_rebels = {
+				size = 1
+				type = $type$
+			}
+		]
+		[[leader]
+			spawn_rebels = {
+				size = 1
+				type = $type$
+				leader = $leader$
+				leader_dynasty = $leader_dynasty$
+			}
+		]
+		[[saved_name]
+			spawn_rebels = {
+				size = 1
+				type = $type$
+				leader = $saved_name$
+			}
+		]
+	}
+}
+
+spawn_large_scaled_rebels = {
+	#always specify type
+	#specify saved_name = <saved_name> if you want to use one of those
+	#specify leader and leader_dynasty if you want to do it that way
+	#otherwise state "no_defined_leader = yes"
+	if = {
+		limit = {
+			owner = {
+				total_development = 2000
+			}
+		}
+		[[no_defined_leader]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+			}
+			spawn_rebels = {
+				size = 2
+				type = $type$
+			}
+		]
+		[[leader]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+				leader = $leader$
+				leader_dynasty = $leader_dynasty$
+			}
+			spawn_rebels = {
+				size = 2
+				type = $type$
+			}
+		]
+		[[saved_name]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+				leader = $saved_name$
+			}
+			spawn_rebels = {
+				size = 2
+				type = $type$
+			}
+		]
+	}
+	else_if = {
+		limit = {
+			owner = {
+				total_development = 1000
+			}
+		}
+		[[no_defined_leader]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+			}
+			spawn_rebels = {
+				size = 1
+				type = $type$
+			}
+		]
+		[[leader]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+				leader = $leader$
+				leader_dynasty = $leader_dynasty$
+			}
+			spawn_rebels = {
+				size = 1
+				type = $type$
+			}
+		]
+		[[saved_name]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+				leader = $saved_name$
+			}
+			spawn_rebels = {
+				size = 1
+				type = $type$
+			}
+		]
+	}
+	else_if = {
+		limit = {
+			owner = {
+				total_development = 500
+			}
+		}
+		[[no_defined_leader]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+			}
+		]
+		[[leader]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+				leader = $leader$
+				leader_dynasty = $leader_dynasty$
+			}
+		]
+		[[saved_name]
+			spawn_rebels = {
+				size = 3
+				type = $type$
+				leader = $saved_name$
+			}
+		]
+	}
+	else_if = {
+		limit = {
+			owner = {
+				total_development = 200
+			}
+		}
+		[[no_defined_leader]
+			spawn_rebels = {
+				size = 2.5
+				type = $type$
+			}
+		]
+		[[leader]
+			spawn_rebels = {
+				size = 2.5
+				type = $type$
+				leader = $leader$
+				leader_dynasty = $leader_dynasty$
+			}
+		]
+		[[saved_name]
+			spawn_rebels = {
+				size = 2.5
+				type = $type$
+				leader = $saved_name$
+			}
+		]
+	}
+	else = {
+		[[no_defined_leader]
+			spawn_rebels = {
+				size = 2
+				type = $type$
+			}
+		]
+		[[leader]
+			spawn_rebels = {
+				size = 2
+				type = $type$
+				leader = $leader$
+				leader_dynasty = $leader_dynasty$
+			}
+		]
+		[[saved_name]
+			spawn_rebels = {
+				size = 2
+				type = $type$
+				leader = $saved_name$
+			}
+		]
+	}
+}
+
+
+#country scope. Currently just applies to the Hansa, if future ones are added, update the flags
+#Used in nation formation decisions
+restore_country_name_effect = {
+	hidden_effect = {
+		if = {
+			limit = {
+				has_country_flag = is_hanseatic_league_flag
+			}
+			restore_country_name = yes
+			clr_country_flag = is_hanseatic_league_flag
+		}
+	}
+}
+
+#Used to clone the nation when forming a colonial tag.
+restore_old_nation_on_formation_effect = {
+	custom_tooltip = loses_old_world_provs_tt
+	hidden_effect = {
+		if = {
+			limit = {
+				NOT = { is_former_colonial_nation = yes }
+			}
+			every_province = {
+				limit = {
+					is_core = ROOT
+					OR = {
+						continent = europe
+						continent = asia
+						continent = africa
+					}
+				}
+				add_core = event_target:old_tag_target
+				remove_core = ROOT
+			}
+			release = event_target:old_tag_target
+			ROOT = { set_country_flag = old_world_to_new_world_flag }
+			ROOT = { set_country_flag = no_colonial_nations }
+			every_subject_country = {
+				limit = {
+					capital_scope = { 
+						OR = {
+							continent = europe
+							continent = asia
+							continent = africa
+						}
+					}
+				}
+				grant_independence = yes
+			}
+			every_subject_country = {
+				limit = {
+					is_subject_of_type = colony
+				}
+				ROOT = { inherit = PREV }
+			}
+			if = {
+				limit = {
+					NOT = { government_rank = 2 }
+				}
+				event_target:old_tag_target = { set_government_rank = 1 }
+			}
+			else_if = {
+				limit = {
+					government_rank = 3
+				}
+				event_target:old_tag_target = { set_government_rank = 3 }
+			}
+			if = {
+				limit = {
+					has_reform = shogunate
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = shogunate
+					#set_legacy_government = shogunate_legacy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = indep_daimyo
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = indep_daimyo
+					#set_legacy_government = indep_daimyo_legacy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = english_monarchy
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = english_monarchy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = elective_monarchy
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = elective_monarchy
+					#set_legacy_government = elective_monarchy_legacy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = ottoman_government
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = ottoman_government
+					#set_legacy_government = ottoman_government_legacy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = indian_sultanate_reform
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = indian_sultanate_reform
+					#set_legacy_government = iqta_legacy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+				if = {
+					limit = {
+						has_reform = mughal_government
+					}
+					event_target:old_tag_target = {
+						add_government_reform = mughal_government
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = mamluk_government
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = mamluk_government
+					#set_legacy_government = mamluk_government_legacy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = iqta
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = iqta
+					#set_legacy_government = iqta_legacy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = prussian_monarchy
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = prussian_monarchy
+					#set_legacy_government = prussian_monarchy_legacy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					government = monarchy
+				}
+				event_target:old_tag_target = {
+					change_government = monarchy
+					add_government_reform = feudalism_reform
+					#set_legacy_government = monarchy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = venice_merchants_reform
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = venice_merchants_reform
+					#set_legacy_government = venetian_merchant_republic
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = veche_republic
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = veche_republic
+					#set_legacy_government = veche_republic_legacy
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					government = theocracy
+					has_reform = united_cantons_reform
+				}
+				event_target:old_tag_target = {
+					change_government = theocracy
+					add_government_reform = united_cantons_reform
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = united_cantons_reform
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = united_cantons_reform
+					#set_legacy_government = united_cantons_legacy
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = merchants_reform
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = merchants_reform
+					#set_legacy_government = merchant_republic
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = prussian_republic_reform
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = prussian_republic_reform
+					#set_legacy_government = prussian_republic
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = signoria_reform
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = signoria_reform
+					#set_legacy_government = signoria
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = ambrosian_republic
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = ambrosian_republic
+					#set_legacy_government = ambrosian_republic_legacy
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = dutch_republic
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = dutch_republic
+					#set_legacy_government = dutch_republic_legacy
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = cossacks_reform
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = cossacks_reform
+					#set_legacy_government = cossacks_legacy_reform
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = noble_elite_reform
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = noble_elite_reform
+					#set_legacy_government = noble_republic
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = peasants_republic
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					#set_legacy_government = peasants_republic_legacy
+					add_government_reform = peasants_republic
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_reform = pirate_republic_reform
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = pirate_republic_reform
+					#set_legacy_government = pirate_republic
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					government = republic
+				}
+				event_target:old_tag_target = {
+					change_government = republic
+					add_government_reform = oligarchy_reform
+					#set_legacy_government = noble_republic
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					government = theocracy
+					has_reform = monastic_order_reform
+				}
+				event_target:old_tag_target = {
+					change_government = theocracy
+					add_government_reform = monastic_order_reform
+					#set_legacy_government = monastic_order_government
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					government = theocracy
+				}
+				event_target:old_tag_target = {
+					change_government = theocracy
+					add_government_reform = leading_clergy_reform
+					#set_legacy_government = theocratic_government
+					define_ruler = {
+						claim = 95
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					government = tribal
+					has_reform = steppe_horde
+				}
+				event_target:old_tag_target = {
+					change_government = tribal
+					add_government_reform = steppe_horde
+					#set_legacy_government = steppe_horde_legacy
+					define_ruler = {
+						dynasty = ROOT
+						claim = 95
+					}
+				}
+			}
+			else = {
+				event_target:old_tag_target = {
+					change_government = tribal
+					add_government_reform = tribal_federation
+					#set_legacy_government = tribal_democracy_legacy
+				}
+			}
+		}
+	}
+}
+
+change_government_to_republic = {
+	if = {
+		limit = {
+			NOT = { government = republic }
+		}
+		change_government = republic
+		lose_reforms = 2
+	}
+}
+
+change_government_to_monarchy = {
+	if = {
+		limit = {
+			NOT = { government = monarchy }
+		}
+		if = {
+			limit = {
+				government = republic
+			}
+			change_government = monarchy
+			lose_reforms = 4
+		}
+		else = {
+			change_government = monarchy
+			lose_reforms = 2
+		}
+	}
+}
+
+change_government_to_theocracy = {
+	if = {
+		limit = {
+			NOT = { government = theocracy }
+		}
+		if = {
+			limit = {
+				government = republic
+			}
+			change_government = theocracy
+			lose_reforms = 4
+		}
+		else = {
+			change_government = theocracy
+			lose_reforms = 2
+		}
+	}
+}
