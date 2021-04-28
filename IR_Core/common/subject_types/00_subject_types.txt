@@ -90,7 +90,12 @@ default = {
 	can_send_missionary_to_subject = yes				# Requires Cradle of Civilization
 	can_union_break = no								# Only works together with has_overlords_ruler
 	overlord_can_fabricate_for = yes
-	
+	does_overlord_size_count_for_warscore_cost = yes
+	is_colony_subtype = no
+	is_march = no
+	forms_trade_companies = yes
+	can_concentrate_development = yes
+
 	max_government_rank = 0								# 0 means no limit
 	cities_required_for_bonuses = 0						# How many cities the subject needs before giving bonuses to overlord
 	trust_on_start = 35									# Overlord and subject will each get this much extra trust with each other at game start
@@ -103,11 +108,17 @@ default = {
 	pays_overlord = 0.0									# 1.0 represents the amount payed by vassals
 	forcelimit_bonus = 0.0								# 1.0 represents bonus from having a vassal
 	forcelimit_to_overlord = 0.0						# Percent of subject FL to use as base for modifiers
+	naval_forcelimit_bonus = 0.0						# 1.0 represents bonus from having a vassal
+	naval_forcelimit_to_overlord = 0.0					# Percent of subject FL to use as base for modifiers
+	manpower_bonus = 0.0								# 1.0 represents bonus from having a vassal
+	manpower_to_overlord = 0.0							# Percent of subject FL to use as base for modifiers
+	sailors_bonus = 0.0									# 1.0 represents bonus from having a vassal
+	sailors_to_overlord = 0.0							# Percent of subject FL to use as base for modifiers
 	military_focus = 1.0								# How much the AI subject should spend etc. on army and forts. 0 should make them spend nothing. Very high values will probably not make a big difference since there will be sanity checks.
 
 	relative_power_class = 1 							# See description above
+	should_quit_wars_on_activation = yes
 	diplomacy_view_class = 1							# See description above
-
 	can_fight = {
 	}
 	can_rival = {
@@ -156,6 +167,9 @@ default = {
 	knowledge_sharing = yes
 	block_settlement_growth = yes
 	allow_settlement_growth = yes
+	change_colonial_type = no
+	upgrade_subject_type = no
+
 	# (special)
 	sword_hunt = no
 	sankin_kotai = no
@@ -187,6 +201,7 @@ vassal = {
 	gets_help_with_rebels = yes
 	#takes_diplo_slot = no
 	can_be_annexed = yes
+	forms_trade_companies = no
 
 	max_government_rank = 3
 
@@ -199,6 +214,8 @@ vassal = {
 	relative_power_class = 2
 	diplomacy_view_class = 4
 	
+	should_quit_wars_on_activation = yes
+
 	restoration_cb = cb_disloyal_vassal
 	
 	can_marry = {
@@ -208,10 +225,16 @@ vassal = {
 
 	# Subject Interactions:
 	scutage = yes
+	place_relative_on_throne = yes
+	sacrifice_ruler = yes
+	sacrifice_heir = yes
 	divert_trade = yes
 	seize_territory = yes
 
 	# Modifiers:
+	modifier_subject = {
+		modifier = vassal_nation
+	}
 	modifier_overlord = {
 		modifier = vassal_subject
 	}
@@ -238,6 +261,7 @@ march = {
 	#IR
 	relative_power_class = 0
 	diplomacy_view_class = 2
+	forms_trade_companies = no
 
 	# Subject Interactions:
 	scutage = no
@@ -248,6 +272,10 @@ march = {
 
 	# Modifiers:
 	modifier_overlord = clear #We don't want to duplicate the ones inherited from vassal
+	modifier_subject = clear #Ditto
+	modifier_subject = {
+		modifier = subject_nation
+	}
 	modifier_overlord = {
 		modifier = march_subject
 	}
@@ -276,6 +304,8 @@ daimyo_vassal = {
 	separatists_become_subjects = yes
 	allows_taking_land_without_independence = yes
 	can_use_claims = no
+	forms_trade_companies = no
+	can_concentrate_development = no
 
 	trust_on_start = 0
 	
@@ -283,6 +313,7 @@ daimyo_vassal = {
 	military_focus = 1.2
 
 	relative_power_class = 1
+	should_quit_wars_on_activation = yes
 
 	can_fight = {
 		same_overlord = daimyo_vassal
@@ -348,6 +379,7 @@ personal_union = {
 
 	# Properties:
 	has_overlords_ruler = yes
+	can_be_integrated = yes
 	overlord_can_attack = no
 	has_power_projection = no
 	gets_help_with_rebels = yes
@@ -360,6 +392,7 @@ personal_union = {
 
 	relative_power_class = 1
 	diplomacy_view_class = 6
+	should_quit_wars_on_activation = yes
 
 	restoration_cb = cb_restore_personal_union
 	
@@ -424,7 +457,6 @@ colony = {
 	diplomacy_subject_sprite = GFX_diplomacy_subjectcolony
 
 	# Properties:
-	transfer_trade_power = yes
 	can_release_and_play = yes
 	uses_tariffs = yes
 	eats_overlords_colonies = yes
@@ -438,6 +470,8 @@ colony = {
 	can_transfer_in_peace = no
 	press_sailors = yes
 	forcelimit_bonus = 1.0
+	transfer_trade_power = yes
+	can_concentrate_development = no
 	
 	liberty_desire_development_ratio = 0.1
 
@@ -445,6 +479,7 @@ colony = {
 	cities_required_for_bonuses = 20
 
 	relative_power_class = 0
+	should_quit_wars_on_activation = yes
 
 	can_fight = {
 		other_overlord = colony
@@ -480,6 +515,108 @@ colony = {
 	subject_opinion_modifier = colonial_relation
 }
 
+crown_colony = {
+	copy_from = colony
+
+	change_colonial_type = yes
+	upgrade_subject_type = yes
+	is_colony_subtype = yes
+	can_send_missionary_to_subject = yes	
+
+	forcelimit_bonus = 1.0
+	forcelimit_to_overlord = 0.5
+	manpower_bonus = 1.0
+	manpower_to_overlord = 0.5
+	naval_forcelimit_bonus = 0.5
+	naval_forcelimit_to_overlord = 0.05
+	sailors_bonus = 0.5
+	sailors_to_overlord = 0.05
+
+	# Subject Interactions:
+	embargo_rivals = yes
+	support_loyalists = yes
+	subsidize_armies = yes
+	send_officers = yes
+	enforce_religion = yes
+	takeondebt = yes
+	block_settlement_growth = yes
+	allow_settlement_growth = yes
+	
+	# Modifiers:
+	modifier_overlord = {
+		modifier = crown_colony_overlord
+	}
+
+	modifier_subject = {
+		modifier = crown_colony_subject
+	}
+}
+
+private_enterprise = {
+	copy_from = colony
+
+	change_colonial_type = yes
+	upgrade_subject_type = yes
+	is_colony_subtype = yes
+
+	forcelimit_bonus = 0.0
+	forcelimit_to_overlord = 0.0
+	manpower_bonus = 0.0
+	manpower_to_overlord = 0.0
+	naval_forcelimit_bonus = 1.0
+	naval_forcelimit_to_overlord = 0.5
+	sailors_bonus = 1.0
+	sailors_to_overlord = 0.5
+
+	# Subject Interactions:
+	replace_governor = no
+	block_settlement_growth = no
+	allow_settlement_growth = no
+	
+	# Modifiers:	
+	modifier_overlord = {
+		modifier = private_enterprise_overlord
+	}
+	
+	modifier_subject = {
+		modifier = private_enterprise_subject
+	}
+}
+
+self_governing_colony = {
+	copy_from = colony
+
+	change_colonial_type = yes
+	upgrade_subject_type = yes
+	is_colony_subtype = yes
+
+	forcelimit_bonus = 0.1
+	forcelimit_to_overlord = 0.05
+	manpower_bonus = 0.1
+	manpower_to_overlord = 0.05
+	naval_forcelimit_bonus = 0.1
+	naval_forcelimit_to_overlord = 0.05
+	sailors_bonus = 0.1
+	sailors_to_overlord = 0.05
+
+	# Subject Interactions:
+	transfer_trade_power = no
+	replace_governor = no
+	block_settlement_growth = no
+	allow_settlement_growth = no
+	press_sailors = no
+	
+	# Modifiers:	
+	modifier_overlord = {
+		modifier = self_governing_colony_overlord
+	}
+	
+	modifier_subject = {
+		modifier = self_governing_colony_subject
+	}
+}
+
+
 tributary_state = {
 	#If similar subject added check if it needs to be added to these scripted triggers:
 	#is_subject_except_tributary_trigger
@@ -500,6 +637,7 @@ tributary_state = {
 			is_nomad = yes
 			religion_group = eastern
 			religion = tapu
+			technology_group = polynesian_tech
 		}
 	}
 	
@@ -519,6 +657,7 @@ tributary_state = {
 	#base_liberty_desire = -5
 	relative_power_class = 1
 	diplomacy_view_class = 1
+	should_quit_wars_on_activation = no
 	can_send_tribute = yes
 	can_have_subjects_of_other_types = yes
 	uses_military_focus = no
@@ -530,6 +669,8 @@ tributary_state = {
 	can_set_mil_focus = no
 	can_send_missionary_to_subject = no
 	overlord_can_fabricate_for = no
+	does_overlord_size_count_for_warscore_cost = no
+	can_concentrate_development = no
 	
 	liberty_desire_development_ratio = 0.175
 	trust_on_start = 0
@@ -566,6 +707,8 @@ tributary_state = {
 	send_additional_troops = yes
 	demand_artifacts = yes
 	demand_additional_tribute = yes
+	block_settlement_growth = no
+	allow_settlement_growth = no
 	placate_rulers = no
 	knowledge_sharing = no
 	# (continuous)
@@ -836,6 +979,7 @@ protectorate = {
 	can_set_mil_focus = no
 	can_send_missionary_to_subject = no
 	overlord_can_fabricate_for = no
+	does_overlord_size_count_for_warscore_cost = no
 	
 	liberty_desire_development_ratio = 0.5
 	trust_on_start = 0
