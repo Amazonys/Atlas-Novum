@@ -3,6 +3,6 @@ tags={
 	"Map"
 	"Graphics"
 }
-supported_version="1.30.*.*"
+supported_version="1.31.*.*"
 name="Amyzonis' GFX REDUX: Manual Install"
 path="mod/Imperialism-Reinvigorated/AmyzGFX"
