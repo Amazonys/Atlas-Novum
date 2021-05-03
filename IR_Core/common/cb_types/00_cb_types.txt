@@ -32,7 +32,6 @@ cb_restore_personal_union = {
 				has_reform = ambrosian_republic
 				# has_reform = military_dictatorship_reform
 				has_country_flag = neapolitan_republic
-				has_reform = signoria_reform
 			}
 			is_subject = no
 		}
@@ -306,6 +305,11 @@ cb_humiliate = {
 		is_revolutionary = no
 	}
 
+	attacker_disabled_po = {
+		po_demand_provinces
+		po_become_vassal
+	}
+
 	war_goal = humiliate
 }
 
@@ -350,6 +354,16 @@ cb_independence_war = {
 							has_reform = pirate_king_reform
 							has_reform = war_against_the_world_doctrine_reform
 							has_reform = black_market_consortium_reform
+						}
+					}
+				}
+				NOT = {
+					AND = {
+						has_country_flag = ikko_ikki_peasants_flag
+						OR = {
+							has_reform = leading_clergy_reform
+							has_reform = monastic_order_reform
+							has_reform = peasants_republic
 						}
 					}
 				}
@@ -454,6 +468,14 @@ cb_daimyo_annex = {
 					has_reform = black_market_consortium_reform
 				}
 			}
+			AND = {
+				has_country_flag = ikko_ikki_peasants_flag
+				OR = {
+					has_reform = leading_clergy_reform
+					has_reform = monastic_order_reform
+					has_reform = peasants_republic
+				}
+			}
 		}
 		from = { has_reform = shogunate }
 		is_revolutionary = no
@@ -483,6 +505,14 @@ cb_independent_daimyo_annex = {
 					has_reform = black_market_consortium_reform
 				}
 			}
+			AND = {
+				has_country_flag = ikko_ikki_peasants_flag
+				OR = {
+					has_reform = leading_clergy_reform
+					has_reform = monastic_order_reform
+					has_reform = peasants_republic
+				}
+			}
 		}
 		from = { has_reform = shogunate }
 		is_revolutionary = no
@@ -506,6 +536,14 @@ cb_shogun_annex = {
 						has_reform = pirate_king_reform
 						has_reform = war_against_the_world_doctrine_reform
 						has_reform = black_market_consortium_reform
+					}
+				}
+				AND = {
+					has_country_flag = ikko_ikki_peasants_flag
+					OR = {
+						has_reform = leading_clergy_reform
+						has_reform = monastic_order_reform
+						has_reform = peasants_republic
 					}
 				}
 			}
@@ -536,6 +574,14 @@ cb_sengoku = {
 					has_reform = black_market_consortium_reform
 				}
 			}
+			AND = {
+				has_country_flag = ikko_ikki_peasants_flag
+				OR = {
+					has_reform = leading_clergy_reform
+					has_reform = monastic_order_reform
+					has_reform = peasants_republic
+				}
+			}
 		}
 		is_neighbor_of = FROM
 		is_subject = yes
@@ -549,6 +595,14 @@ cb_sengoku = {
 						has_reform = pirate_king_reform
 						has_reform = war_against_the_world_doctrine_reform
 						has_reform = black_market_consortium_reform
+					}
+				}
+				AND = {
+					has_country_flag = ikko_ikki_peasants_flag
+					OR = {
+						has_reform = leading_clergy_reform
+						has_reform = monastic_order_reform
+						has_reform = peasants_republic
 					}
 				}
 			}
@@ -1005,8 +1059,13 @@ cb_crush_the_revolution = {
 
 	prerequisites = {
 		OR = {
-			capital_scope = { continent = europe }
 			is_neighbor_of = FROM
+			NOT = {
+				border_distance = {
+					who = FROM
+					distance = 200
+				}
+			}
 		}
 		is_revolutionary = no
 		is_free_or_tributary_trigger = yes
@@ -1183,6 +1242,15 @@ cb_take_mandate = {
 		}
 		NOT = { truce_with = FROM }
 		is_revolutionary = no
+		
+		OR = {
+			ai = no
+			culture_group = east_asian
+			any_owned_province = {
+				culture_group = east_asian
+				has_owner_accepted_culture = yes
+			}
+		}
 	}
 
 	war_goal = take_capital_take_mandate
@@ -1331,4 +1399,144 @@ cb_world_crusade = {
 	}
 
 	war_goal = superiority_world_crusade
+}
+
+# CB for Majapahit
+cb_vassalize_majapahit = {
+	valid_for_subject = no
+
+	prerequisites = {
+		mission_completed = mnd_maj_enforce_loyalty
+		FROM = {
+			is_free_or_tributary_trigger = yes
+			OR = {
+				culture_group = malay
+				AND = {
+					technology_group = chinese
+					ROOT = { mission_completed = mnd_maj_gaja_madas_oath }
+				}
+				ROOT = { mission_completed = mnd_maj_subjugate_the_mainland }
+			}
+		}
+	}
+
+	war_goal = take_capital_vassalize_maj
+}
+
+# For Malacca
+cb_vassalize_malacca = {
+	valid_for_subject = no
+
+	prerequisites = {
+		mission_completed = mnd_mlc_destroy_majapahit
+		FROM = {
+			is_free_or_tributary_trigger = yes
+			culture_group = malay
+		}
+	}
+
+	war_goal = take_capital_vassalize_maj
+}
+
+cb_sword_of_islam = {
+	valid_for_subject = no
+
+	prerequisites = {
+		mission_completed = atj_porch_of_mecca
+		religion = sunni
+		FROM = {
+			NOT = { religion_group = muslim }
+			OR = {
+				primary_culture = sumatran
+				AND = {
+					ROOT = { mission_completed = atj_sumatra_islam }
+					OR = {
+						primary_culture = javanese
+						primary_culture = sundanese
+					}
+				}
+				AND = {
+					ROOT = { mission_completed = atj_java_islam }
+					OR = {
+						primary_culture = sulawesi
+						primary_culture = moluccan
+					}
+				}
+				AND = {
+					ROOT = { mission_completed = atj_moluccas_islam }
+					is_neighbor_of = ROOT
+				}
+			}
+		}
+	}
+
+	war_goal = superiority_world_crusade
+}
+
+# Force migration
+cb_force_migration = {
+
+	valid_for_subject = no
+
+	prerequisites = {
+		has_dlc = "Conquest of Paradise"
+		is_native_tribe = yes
+		FROM = {
+			is_migratory_tribe = yes
+			capital_scope = {
+				tribal_land_of = ROOT
+			}
+		}
+	}
+	war_goal = force_migration
+}
+
+# 
+cb_native_american_tribal_feud = {
+	valid_for_subject = no
+
+	prerequisites = {
+		has_dlc = "Conquest of Paradise"
+		is_native_tribe = yes
+		FROM = {
+			is_native_tribe = yes
+			if = {
+				limit = { 
+					capital_scope = {
+						tribal_land_of = FROM
+					}
+				}
+				is_neighbor_of = ROOT # This is faster method so let's do this for the general case
+			}
+			else = {
+				any_tribal_land = {
+					any_neighbor_province = {
+						tribal_land_of = ROOT
+					}
+				}
+			}
+		}
+	}
+	war_goal = take_native_american_land
+}
+
+# Burn European Colonies
+cb_push_back_colonizers = {
+	valid_for_subject = no
+
+	prerequisites = {
+		has_dlc = "Conquest of Paradise"
+		is_native_tribe = yes
+		FROM = {
+			is_native_tribe = no
+			OR = {
+				is_neighbor_of = ROOT
+				any_owned_province = {
+					tribal_land_of = ROOT
+				}
+			}
+		}
+	}
+
+	war_goal = push_back_colonizers
 }
