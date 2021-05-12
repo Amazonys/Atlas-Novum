@@ -25,5 +25,5 @@ tags={
 }
 picture="Thumbnail.png"
 name="Imperialism Reinvigorated: Playtester BETA"
-supported_version="1.31.*"
+supported_version="1.30.*"
 remote_file_id="2327236927"

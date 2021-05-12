@@ -14,7 +14,7 @@ replace_path="common/bookmarks"
 replace_path="common/buildings"
 replace_path="common/province_names"
 picture="IR_icon.png"
-supported_version="1.31.*.*"
+supported_version="1.30.*.*"
 tags={
 	"Missions and Decisions"
 	"Historical"
