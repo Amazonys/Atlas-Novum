@@ -205,7 +205,7 @@ NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
  --Necessary
 --NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable 
 NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.5						-- _EDEF_TRADE_WIND_STRENGTH_
-NDefines.NEconomy.TRADED_FRACTION_FOR_BONUS = 0.05				-- _EDEF_TRADED_FRACTION_FOR_BONUS_
+NDefines.NEconomy.TRADED_FRACTION_FOR_BONUS = 0.1				-- _EDEF_TRADED_FRACTION_FOR_BONUS_
 
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is ncreased from development
