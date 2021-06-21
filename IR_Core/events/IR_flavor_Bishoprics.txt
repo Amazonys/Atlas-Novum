@@ -1,0 +1,167 @@
+namespace = IR_flavor_bishops
+
+country_event = { #Form union with Other Bishoprics
+	id = IR_flavor_bishops.1
+	title = IR_flavor_bishops.1.t
+	desc = IR_flavor_bishops.1.desc
+	picture = BATTLE_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		government = theocracy
+		is_part_of_hre = yes
+	}
+	
+	immediate = {	
+		#hidden_effect = {
+			random_known_country = { 
+				limit = {
+					NOT = { tag = ROOT government_rank = 1 }
+					government = theocracy
+					is_part_of_hre = yes
+					OR = {
+						total_development = ROOT
+						government_rank = 3
+					}
+					total_development = 30
+					ROOT = {
+						has_opinion = {
+							who = PREV
+							value = 40
+						}
+					}
+					primary_culture = ROOT
+				}
+				save_event_target_as = suitable_successor
+			}
+			if = { #SECOND RUN TO INCREASE CHANCES
+				limit = { NOT = { has_saved_event_target = suitable_successor total_development = 30 } }
+				random_known_country = { 
+				limit = {
+					NOT = { tag = ROOT }
+					government = theocracy
+					is_part_of_hre = yes
+					OR = {
+						total_development = ROOT
+						government_rank = 3
+					}
+					ROOT = {
+						has_opinion = {
+							who = PREV
+							value = 25
+						}
+					}
+				}
+				save_event_target_as = suitable_successor
+				}
+			}
+		set_country_flag = IR_decide_on_bishop
+		clr_country_flag = IR_avoid_spam
+		#}
+	}
+	
+	
+		#if = {
+		#limit = { is_lesser_in_union = yes }
+		#	set_country_flag = CHO_was_in_previous_union
+		#	OVERLORD = {
+		#		save_event_target_as = CHO_current_overlord
+		#	}
+		#	if = {
+		#		limit = {
+		#			has_opinion = {
+		#				who = event_target:CHO_current_overlord
+		#				value = 50
+		#			}
+		#		}
+		#		event_target:CHO_current_overlord = {
+		#			save_event_target_as = suitable_successor
+		#		}
+		#	}
+		#	grant_independence = yes
+		#}
+	
+	option = { #Select our current Heir as successor
+		name = IR_flavor_bishops.1.a
+		ai_chance = { 
+			factor = 4 
+			modifier = { 
+				factor = 0.1
+				NOT = {
+					heir_adm = 2 
+					heir_dip = 2
+					heir_mil = 2
+				}
+			}
+		}
+		clr_country_flag = IR_decide_on_bishop
+	}
+	
+	option = { #Join union with suitable nation
+		name = IR_flavor_bishops.1.b
+		trigger = {
+			has_saved_event_target = suitable_successor
+			NOT = { 
+				is_elector = yes
+			}
+		}
+		ai_chance = { factor = 1 }
+		event_target:suitable_successor = { 
+			create_union = ROOT
+		}
+		clr_country_flag = IR_decide_on_bishop
+	}
+}
+
+country_event = { #Reform Union
+	id = IR_flavor_bishops.2
+	title = IR_flavor_bishops.2.t
+	desc = IR_flavor_bishops.2.desc
+	picture = BATTLE_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		government = theocracy
+		is_part_of_hre = yes
+	}
+	
+	immediate = {
+		set_country_flag = IR_decide_on_bishop
+		set_country_flag = IR_avoid_spam
+		OVERLORD = {
+			save_event_target_as = IR_current_overlord
+		}
+		grant_independence = yes
+	}
+	
+	option = { #Select our current Heir as successor
+		name = IR_flavor_bishops.2.a
+		ai_chance = { 
+			factor = 4
+		}
+		clr_country_flag = IR_decide_on_bishop
+		country_event = {
+			id = IR_flavor_bishops.1
+		}
+	}
+	
+	option = { #Join union with previous union
+		name = IR_flavor_bishops.2.b
+		ai_chance = { 
+			factor = 1 
+			modifier = {
+				factor = 8
+				has_opinion = {
+					who = event_target:IR_current_overlord
+					value = 50
+				}
+			}
+		}
+		event_target:IR_current_overlord = { 
+			create_union = ROOT
+		}
+		clr_country_flag = IR_decide_on_bishop
+	}
+}

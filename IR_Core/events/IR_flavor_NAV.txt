@@ -340,7 +340,7 @@ country_event = {
 		
     option = {
         name = IR_flavor_NAV.6.a
-        ai_chance = { factor = 100 }
+        ai_chance = { factor = 80 }
         CAT = {
             define_ruler = {
                 name = "Karlos IV"
@@ -379,6 +379,7 @@ country_event = {
     }
     option = {
         name = IR_flavor_NAV.6.b
+        ai_chance = { factor = 20 }
         set_country_flag = aragon_monarch_flag
         random_owned_province = {
             spawn_rebels = {
@@ -462,11 +463,20 @@ country_event = {
 	}
 	option = {
 		name = IR_flavor_NAV.8.a
-		ai_chance = { factor = 100 }
-		PRO = {
-			join_all_defensive_wars_of  = CAT
-			set_country_flag = rene_intervenes_flag
-		}	
+		ai_chance = { factor = 80 }
+		CAT = {
+			if = {
+				limit = { war_with = NAV }
+				white_peace = NAV
+				create_succession_crisis = { attacker = NAV defender = PRO target = CAT }
+			}
+			else_if = {
+				limit = { war_with = ARA }
+				white_peace = ARA
+				create_succession_crisis = { attacker = ARA defender = PRO target = CAT }
+				}
+			}	
+		PRO = { set_country_flag = rene_intervenes_flag }
 		ARA = { 
 			country_event = { 
 				id = IR_flavor_NAV.26 days = 1
@@ -481,6 +491,7 @@ country_event = {
 		}
 	}
 	option = {
+        ai_chance = { factor = 20 }
 		name = IR_flavor_NAV.8.b
 		add_prestige = -5
 	}
@@ -684,7 +695,7 @@ country_event = {
 		random_owned_province = {
 			spawn_rebels = {
 				type = pretender_rebels
-				size = 0.2
+				size = 0.1
 				leader = "Karlos" 
 				leader_dynasty = "de Trastámara"
 				win = yes
@@ -724,9 +735,8 @@ country_event = {
 	trigger = {
 		tag = NAV
 		has_country_flag = IR_flavor_NAV.10_happened
-		NOT = { num_of_rebel_armies = 1 }
-        NOT = { num_of_rebel_controlled_provinces = 1 }
-		has_ruler = "Juan II"
+		num_of_rebel_armies = 0
+        num_of_rebel_controlled_provinces = 0
 	}
 	
 	option = {
@@ -749,8 +759,8 @@ country_event = {
 	trigger = {
 		tag = NAV
 		has_country_flag = IR_flavor_NAV.10_happened
-		NOT = { num_of_rebel_armies = 1 }
-        NOT = { num_of_rebel_controlled_provinces = 1 }
+		num_of_rebel_armies = 0
+        num_of_rebel_controlled_provinces = 0
 		NOT = { has_ruler = "Juan II" }
 	}
 	option = {
@@ -847,7 +857,7 @@ country_event = {
 		ai_chance = { factor = 100 }
 			CAT = { 
 				every_owned_province = { 
-				add_local_autonomy = 25 
+					add_local_autonomy = 25 
 				} 
 			}
 		}	
@@ -873,9 +883,7 @@ country_event = {
 
 
 	trigger = {
-		OR = {
 			tag = ARA
-		}
 	}
 	mean_time_to_happen = {
 		months = 1
@@ -903,6 +911,7 @@ country_event = {
 		tag = PRO
 		has_country_flag = rene_intervenes_flag
 		NOT = { war_with = NAV }
+		NOT = { war_with = ARA }
 	}
 	option = {
 		name = IR_flavor_NAV.16.a
@@ -921,18 +930,19 @@ country_event = {
 	picture = DIPLOMACY_eventPicture
 	
 	fire_only_once = yes
-	is_triggered_only = yes
 	
 	trigger = {
 		# Upon Eleanor becoming ruler of Navarre
-		has_ruler = "Eleanor I"
 		tag = NAV
-		senior_union_with = FOI
+		has_country_flag = eleanor_needs_heir_flag
 	}
 	
+	immediate = {
+		set_country_flag = francis_febo_flag
+		clr_country_flag = eleanor_needs_heir_flag
+	}
 	option = {
 		name = IR_flavor_NAV.17.a
-		set_country_flag = francis_febo_flag
 		ai_chance = { factor = 100 }
 		define_heir_fixed = {
 			name = "Francisco Febo"
@@ -961,10 +971,13 @@ country_event = {
 		tag = NAV
 		has_country_flag = francis_febo_flag
 	}
+	immediate = {
+		clr_country_flag = francis_febo_flag
+	}
 	option = {
 		name = IR_flavor_NAV.18.a
-		set_country_flag = francis_febo_flag
 		ai_chance = { factor = 100 }
+		set_country_flag = magdalena_regency_flag
 		define_ruler = {
 			name = "Magdalena de Valois"
 			dynasty = "de Valois"
@@ -977,8 +990,6 @@ country_event = {
 			regency = yes
 			fixed = yes
 		}
-		clr_country_flag = francis_febo_flag
-		set_country_flag = magdalena_regency_flag
 	}
 }
 
@@ -1025,12 +1036,14 @@ country_event = {
 			age = 13
 			female = yes
 		}
-		spawn_rebels = {
+		random_owned_province = {
+			spawn_rebels = {
 				type = pretender_rebels
-				size = 2
+				size = 0.2
 				leader = "John" 
 				leader_dynasty = "de Foix"
 			}
+		}
 		reverse_add_casus_belli = {
 			target = ARA
 			type = cb_make_domain
@@ -1038,6 +1051,28 @@ country_event = {
 		}
 	}	
 	
+	option = {
+		name = IR_flavor_NAV.19.c
+		define_ruler = {
+			name = "John"
+			dynasty = "de Foix"
+			culture = gascon
+			religion = catholic
+			claim = 70
+			dip = 3
+			adm = 4
+			mil = 3
+			fixed = yes
+		}
+		if = { limit = { NRB = { exists = yes } } 
+            create_subject = { subject_type = dominion  subject = NRB } }
+        else_if = { 
+            every_country = {
+               limit = { any_owned_province = { is_core = NRB } }
+               release = NRB
+            }
+            create_subject = { subject_type = dominion  subject = NRB } }
+	}	
 	option = {
 		name = IR_flavor_NAV.19.b
 		kill_ruler = yes
@@ -1063,6 +1098,7 @@ country_event = {
 		# Upon the end of Magdalena's regency
 		tag = NAV
 		has_country_flag = catalina_navarra_heiress_flag
+		has_ruler = "Catalina"
 	}
 	
 	immediate = {
@@ -1095,12 +1131,16 @@ country_event = {
                limit = { any_owned_province = { is_core = BEA } }
                release = BEA
             }
-            create_subject = { subject_type = fief  subject = BEA } }
+            create_subject = { subject_type = fief  subject = BEA } 
+		}
+		CAS = {
+			set_country_flag = undermine_navarra_flag
+		}
 	}	
 	
 	option = {
 		name = IR_flavor_NAV.20.b
-		set_dynasty = "d'Albret"
+		set_dynasty = "de Trastámara"
 		define_consort = {
 			name = "John III"
 			dynasty = "de Trastámara"
@@ -1121,6 +1161,10 @@ country_event = {
 			modifier = insulted
 		}
 		set_country_flag = Unhappy_Beaumonts_flag
+		CAS = {
+			set_country_flag = undermine_navarra_flag
+			country_event = { id = IR_flavor_NAV.29 days = 10 } 
+		}
 	}
 }
 
@@ -1135,6 +1179,7 @@ country_event = {
 	
 	trigger = {
 		# If John of Asturias and Catherine married, and they pass away
+		tag = NAV
 		has_country_flag = Iberian_succession_flag
 	}
 	
@@ -1153,7 +1198,7 @@ country_event = {
 		}
 	}	
 }
-
+	
 country_event = {
 	id = IR_flavor_NAV.22
 	title = IR_flavor_NAV.22.t
@@ -1163,45 +1208,48 @@ country_event = {
 	fire_only_once = yes
 	
 	trigger = {
+		tag = NAV
+		has_country_flag = castille_supports_rebels_flag
 		has_country_flag = Unhappy_Beaumonts_flag
 	}
 	mean_time_to_happen = {
-			months = 24
+			months = 10
 	}
 	immediate = {
 		clr_country_flag = Unhappy_Beaumonts_flag
+		clr_country_flag = castille_supports_rebels_flag
 	}
 	
 	option = {
 		name = IR_flavor_NAV.22.a
-		add_manpower = 2
-		random_owned_province = { 
-			spawn_rebels = {
-				type = noble_rebels
-				size = 2
+		NAV = {
+			declare_war_with_cb = {
+				who = VIA
+				casus_belli = cb_annex   	
 			}
+			set_country_flag = bearnese_archers_flag
 		}
 		reverse_add_opinion = {
 			who = CAS
 			modifier = insulted
 		}
 	}	
+	
 	option = {
 		name = IR_flavor_NAV.22.b
 		ai_chance = { factor = 100 }
-		random_owned_province = {
-			spawn_rebels = {
-				type = noble_rebels
-				size = 1
+		NAV = {
+			add_casus_belli = {
+					type = cb_annex  
 			}
 		}
 		set_country_flag = Beaumontrebellion_flag	#Maybe use for Castille? Idk yet
-#		CAS = {
-#			assign_claim_core = {
-#				PROVINCES = nav_iberia_provinces # does not exist
-#				TYPE = permanent_claim
-#			}
-#		}
+		CAS = {
+			assign_claim_core = {
+				PROVINCES = nav_iberia_provinces
+				TYPE = permanent_claim
+			}
+		}
 	}
 }
 
@@ -1264,10 +1312,14 @@ country_event = {
         name = IR_flavor_NAV.21.a
         ai_chance = { factor = 100 }
         white_peace = NAV
-#        province_group_cede = {
-#            PROVINCES = nav_iberia_provinces # does not exist
-#            TAG = NAV
-#        }
+        province_group_cede = {
+            PROVINCES = nav_iberia_provinces
+            TAG = NVV
+        }
+		create_subject = {
+				subject_type = dominion
+				subject = NVV
+		}
 		FRA = {
 			create_subject = {
 				subject_type = fief
@@ -1324,6 +1376,19 @@ country_event = {
 	}		
 	option = {
 		name = IR_flavor_NAV.25.b
+		ai_chance = { factor = 25 }
+		reverse_add_opinion = {
+			who = CAS
+			modifier = insulted
+		}
+		reverse_add_opinion = {
+			who = ARA
+			modifier = insulted
+		}
+		reverse_add_opinion = {
+			who = FRA
+			modifier = insulted
+		}
 		if = { limit = { BEA = { exists = yes } } 
             create_subject = { subject_type = confederate  subject = BEA } }
         else_if = { 
@@ -1393,7 +1458,7 @@ country_event = {
 	picture = DIPLOMACY_eventPicture
 	
 	mean_time_to_happen = {
-		months = 1
+		days = 3
 	}
 	hidden = yes
 	
@@ -1411,6 +1476,56 @@ country_event = {
 					subject_type = dominion
 					subject = CAT
 			}
+		}
+	}
+}
+
+country_event = {
+	id = IR_flavor_NAV.29
+	title = IR_flavor_NAV.29.t
+	desc = IR_flavor_NAV.29.d
+	picture = DIPLOMACY_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = CAS
+		has_country_flag = undermine_navarra_flag
+	}
+	option = {
+		name = IR_flavor_NAV.29.a
+		clr_country_flag = undermine_navarra_flag
+		ai_chance = { factor = 90 }
+		10162 = { cede_province = VIA }
+		VIA = {
+			add_manpower = 5
+			define_ruler = {
+				name = "Louis"
+				dynasty = "de Beaumont"
+				culture = basque
+				religion = catholic
+				claim = 95
+				dip = 6
+				adm = 2
+				mil = 4
+				fixed = yes
+			}
+		}
+		NAV = { 
+			create_subject = { 
+				subject_type = fief
+				subject = VIA
+			}
+			set_country_flag = castille_supports_rebels_flag
+		}
+	}
+	option = {
+		name = IR_flavor_NAV.29.b
+		ai_chance = { factor = 10 }
+		clr_country_flag = undermine_navarra_flag
+		add_opinion = {
+			who = NAV
+			modifier = tributary_paid_for_service 
 		}
 	}
 }
