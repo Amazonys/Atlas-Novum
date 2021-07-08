@@ -1,0 +1,465 @@
+########################################
+# Events for Borno
+#
+# written by Henrik Lohmander
+########################################
+
+namespace = flavor_kbo
+normal_or_historical_nations = yes
+
+#The two branches of the Sayfawa dynasty
+country_event = {
+	id = flavor_kbo.1
+	title = flavor_kbo.1.t
+	desc = flavor_kbo.1.d
+	picture = ACCUSATION_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		tag = KBO
+		government = monarchy
+		num_of_cities = 5
+		NOT = { has_country_flag = kbo_two_branches } #After this flavor_kbo.8 is displayed instead.
+		NOT = { has_country_flag = kbo_calipha } #Will end the dispute if not done by then
+		NOT = { is_year = 1500 }
+	}
+	
+	
+	option = {
+		name = flavor_kbo.1.a	#Ok.
+		set_country_flag = kbo_two_branches
+		if = {
+			limit = {
+				NOT = { has_country_flag = kbo_gazargamu }
+				NOT = { has_country_modifier = kbo_religious_orthodoxy }
+				NOT = { has_country_modifier = kbo_death_to_kingmakers }
+			}
+			random_owned_province = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 3
+				}
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						has_country_flag = kbo_gazargamu
+						NOT = { has_country_modifier = kbo_religious_orthodoxy }
+						NOT = { has_country_modifier = kbo_death_to_kingmakers }
+					}
+					AND = {
+						has_country_modifier = kbo_religious_orthodoxy
+						NOT = { has_country_flag = kbo_gazargamu }
+						NOT = { has_country_modifier = kbo_death_to_kingmakers }
+					}
+					AND = {
+						has_country_modifier = kbo_death_to_kingmakers
+						NOT = { has_country_flag = kbo_gazargamu }
+						NOT = { has_country_modifier = kbo_religious_orthodoxy }
+					}
+				}
+			}
+			random_owned_province = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						has_country_flag = kbo_gazargamu
+						has_country_modifier = kbo_religious_orthodoxy
+						NOT = { has_country_modifier = kbo_death_to_kingmakers }
+					}
+					AND = {
+						has_country_modifier = kbo_religious_orthodoxy
+						has_country_modifier = kbo_death_to_kingmakers
+						NOT = { has_country_flag = kbo_gazargamu }
+					}
+					AND = {
+						has_country_modifier = kbo_death_to_kingmakers
+						has_country_modifier = kbo_religious_orthodoxy
+						NOT = { has_country_modifier = kbo_religious_orthodoxy }
+					}
+				}
+			}
+			random_owned_province = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 1
+				}
+			}
+		}
+	}
+}
+
+#Foundation of Gazargamu
+country_event = {
+	id = flavor_kbo.2
+	title = flavor_kbo.2.t
+	desc = flavor_kbo.2.d
+	picture = CITY_VIEW_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = KBO
+		has_country_flag = kbo_two_branches
+		NOT = { is_year = 1550 }
+		owns = 1157
+	}
+	
+	mean_time_to_happen = {
+		months = 318
+		modifier = {
+			factor = 0.8
+			stability = 2
+		}
+		modifier = {
+			factor = 0.8
+			stability = 3
+		}
+		modifier = {
+			factor = 0.8
+			years_of_income = 0.4
+		}
+	}
+	
+	option = {
+		name = flavor_kbo.2.a	#Build Gazargamu
+		ai_chance = { factor = 1 }
+		if = {
+			limit = {
+				NOT = { capital = 1157 }
+			}
+			set_capital = 1157
+		}
+		add_years_of_income = -0.3
+		add_adm_power = -25
+		set_country_flag = kbo_gazargamu
+		1157 = {
+			add_province_modifier = {
+			name = kbo_gazargamu
+			duration = 7300
+			}
+		}
+	}
+	option = {
+		name = flavor_kbo.2.b	#Our current capital is fine.
+		ai_chance = { factor = 0 }
+		add_stability_or_adm_power = yes
+	}
+}
+
+#Enforcing Orthodoxy on the ruling class.
+country_event = {
+	id = flavor_kbo.3
+	title = flavor_kbo.3.t
+	desc = flavor_kbo.3.d
+	picture = RELIGIOUS_CONVERSION_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = KBO
+		has_country_flag = kbo_two_branches
+		NOT = { is_year = 1550 }
+		religion = sunni
+		government = monarchy
+	}
+	
+	mean_time_to_happen = {
+		months = 318
+		modifier = {
+			factor = 0.8
+			stability = 2
+		}
+		modifier = {
+			factor = 0.8
+			stability = 3
+		}
+		modifier = {
+			factor = 0.6
+			religious_unity = 1.0
+		}
+	}
+	
+	option = {
+		name = flavor_kbo.3.a	#No more syncretism!
+		ai_chance = { factor = 1 }
+		add_stability = -1
+		add_country_modifier = {
+			name = kbo_religious_orthodoxy
+			duration = -1
+		}
+	}
+	
+	option = {
+		name = flavor_kbo.3.b	#Let us not go overboard with this.
+		ai_chance = { factor = 0 }
+		add_stability_or_adm_power = yes
+	}
+}
+
+#Reduction of local titleholders might. Especially in the north. Kingmakers.
+country_event = {
+	id = flavor_kbo.4
+	title = flavor_kbo.4.t
+	desc = flavor_kbo.4.d
+	picture = ADVISOR_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = KBO
+		has_country_flag = kbo_two_branches
+		NOT = { is_year = 1550 }
+		stability = 1
+	}
+	
+	mean_time_to_happen = {
+		months = 318
+		modifier = {
+			factor = 0.8
+			stability = 2
+		}
+		modifier = {
+			factor = 0.8
+			stability = 3
+		}
+	}
+	
+	option = {
+		name = flavor_kbo.4.a	#Rein them in.
+		ai_chance = { factor = 1 }
+		random_owned_province = {
+			limit = {
+					NOT = { is_capital = yes }
+			}
+			spawn_rebels = {
+				type = noble_rebels
+				size = 3
+			}
+		}
+		add_country_modifier = {
+			name = kbo_death_to_kingmakers
+			duration = -1
+		}
+	}
+	
+	option = {
+		name = flavor_kbo.4.b	#We cannot infringe upon their rights.
+		ai_chance = { factor = 1 }
+		add_stability_or_adm_power = yes
+	}
+}
+
+#Calipha
+country_event = {
+	id = flavor_kbo.5
+	title = flavor_kbo.5.t
+	desc = flavor_kbo.5.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = KBO
+		is_year = 1490
+		NOT = { is_year = 1530 }
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	option = {
+		name = flavor_kbo.5.a	#Ok.
+		ai_chance = { factor = 1 }
+		set_country_flag = kbo_calipha
+		add_prestige = 15
+		add_legitimacy = 15
+	}
+}
+
+#Reforms of Idris bin Ali
+country_event = {
+	id = flavor_kbo.6
+	title = flavor_kbo.6.t
+	desc = flavor_kbo.6.d
+	picture = RELIGION_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = KBO
+		is_year = 1565
+		NOT = { is_year = 1610 }
+		OR = {
+			adm = 4
+			dip = 4
+			mil = 4
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 135
+	}
+	
+	option = {
+		name = flavor_kbo.6.a	#Reform both the economy and the army.
+		ai_chance = { factor = 1 }
+		add_mil_power = 50
+		add_dip_power = 50
+	}
+	
+	option = {
+		name = flavor_kbo.6.b	#Focus on the Army.
+		ai_chance = { factor = 1 }
+		add_army_tradition = 25
+		add_mil_power = 75
+		add_dip_power = 25
+	}
+	
+	option = {
+		name = flavor_kbo.6.c	#Focus on the Economy.
+		ai_chance = { factor = 1 }
+		add_years_of_income = 0.15
+		add_mil_power = 25
+		add_dip_power = 75
+	}
+}
+
+#Magira Aisha
+country_event = {
+	id = flavor_kbo.7
+	title = flavor_kbo.7.t
+	desc = flavor_kbo.7.d
+	picture = RELIGION_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = KBO
+		has_heir = yes
+		has_regency = yes
+		OR = {
+			has_consort_regency = yes
+			NOT = { has_dlc = "Rights of Man" }
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 210
+	}
+	
+	option = {
+		name = flavor_kbo.7.a	#Ok.
+		ai_chance = { factor = 1 }
+		add_adm_power = 25
+		add_dip_power = 25
+		add_mil_power = 25
+	}
+}
+
+#The two branches of the Sayfawa dynasty
+country_event = {
+	id = flavor_kbo.8
+	title = flavor_kbo.8.t
+	desc = flavor_kbo.8.d
+	picture = ACCUSATION_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		tag = KBO
+		government = monarchy
+		num_of_cities = 5
+		has_country_flag = kbo_two_branches
+		NOT = { has_country_flag = kbo_calipha } #Will end the dispute if not done by then
+		NOT = { is_year = 1550 } #By this time the instability will have gone away one way or the other.
+		OR = { #If all these are taken care of this stops.
+			NOT = { has_country_flag = kbo_gazargamu }
+			NOT = { has_country_modifier = kbo_religious_orthodoxy }
+			NOT = { has_country_modifier = kbo_death_to_kingmakers }
+		}
+	}
+	
+	
+	option = {
+		name = flavor_kbo.8.a	#Ok.
+		if = {
+			limit = {
+				NOT = { has_country_flag = kbo_gazargamu }
+				NOT = { has_country_modifier = kbo_religious_orthodoxy }
+				NOT = { has_country_modifier = kbo_death_to_kingmakers }
+			}
+			random_owned_province = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 3
+				}
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						has_country_flag = kbo_gazargamu
+						NOT = { has_country_modifier = kbo_religious_orthodoxy }
+						NOT = { has_country_modifier = kbo_death_to_kingmakers }
+					}
+					AND = {
+						has_country_modifier = kbo_religious_orthodoxy
+						NOT = { has_country_flag = kbo_gazargamu }
+						NOT = { has_country_modifier = kbo_death_to_kingmakers }
+					}
+					AND = {
+						has_country_modifier = kbo_death_to_kingmakers
+						NOT = { has_country_flag = kbo_gazargamu }
+						NOT = { has_country_modifier = kbo_religious_orthodoxy }
+					}
+				}
+			}
+			random_owned_province = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						has_country_flag = kbo_gazargamu
+						has_country_modifier = kbo_religious_orthodoxy
+						NOT = { has_country_modifier = kbo_death_to_kingmakers }
+					}
+					AND = {
+						has_country_modifier = kbo_religious_orthodoxy
+						has_country_modifier = kbo_death_to_kingmakers
+						NOT = { has_country_flag = kbo_gazargamu }
+					}
+					AND = {
+						has_country_modifier = kbo_death_to_kingmakers
+						has_country_modifier = kbo_religious_orthodoxy
+						NOT = { has_country_modifier = kbo_religious_orthodoxy }
+					}
+				}
+			}
+			random_owned_province = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 1
+				}
+			}
+		}
+	}
+}

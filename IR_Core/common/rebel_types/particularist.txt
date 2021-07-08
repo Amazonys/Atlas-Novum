@@ -1,0 +1,315 @@
+
+######################################################################
+# Particularist rebels. Decentralizers.
+######################################################################
+particularist_rebels = {
+	
+	color = { 120 195 120 }
+	
+	area = nation 					# Stays within the nation
+	government = any				# Don't care about gov type				
+	defection = none				# Will not defect
+	independence = none				# Does not strive for independence
+	gfx_type = culture_province
+	will_relocate = yes	
+
+	resilient = no					# Can retreat
+	reinforcing = yes				# Can reinforce
+	general = yes					# Does use generals
+	smart = yes						# Do assault forts, tactically withdraw from battle, etc.
+	unit_transfer = no				# Units do not remain after enforcing demands.
+	
+	artillery = 0.0
+	infantry = 0.7
+	cavalry = 0.3
+	
+	morale = 0.75
+	
+	# Possible handle actions
+	handle_action_negotiate = yes
+	handle_action_stability = yes
+	handle_action_build_core = yes
+	handle_action_send_missionary = yes		
+	
+	# The rebel type with the highest modifier for this province gets picked
+	spawn_chance = {
+		factor = 2
+		modifier = {
+			factor = 0
+			owner = { 
+				NOT = { num_of_cities = 5 }
+			}
+		}
+		
+		modifier = {
+			factor = 0.05
+			owner = {
+				OR = {
+					has_country_modifier = the_mandate_of_heaven_lost
+					has_country_modifier = lost_mandate_of_heaven
+				}
+			}
+		}
+		
+		modifier = {
+			factor = 20.0
+			owner = { 
+				has_disaster = the_dacke_feud
+			}
+		}		
+		modifier = {
+			factor = 0.2
+			is_core = owner
+		}
+		modifier = {
+			factor = 0.5
+			is_overseas = yes # Prefer other types overseas
+		}
+		modifier = {
+			factor = 0.5
+			owner = {
+				primary_culture = ROOT
+			}
+		}
+		modifier = {
+			factor = 0.8
+			religion = owner
+		}
+
+
+		modifier = {
+			factor = 1.25
+			owner = { 
+				num_of_cities = 12
+			}
+		}
+		modifier = {
+			factor = 1.25
+			owner = { 
+				num_of_cities = 18
+			}
+		}
+		modifier = {
+			factor = 1.5
+			owner = { 
+				num_of_cities = 24
+			}
+		}
+		modifier = {
+			factor = 1.5
+			owner = { 
+				num_of_cities = 30
+			}
+		}
+		modifier = {
+			factor = 1.5
+			owner = { 
+				num_of_cities = 40
+			}
+		}
+		modifier = {
+			factor = 2.0
+			owner = { 
+				num_of_cities = 50
+			}
+		}
+		modifier = {
+			factor = 2.0
+			owner = {
+				government = tribal
+			}
+		}
+		modifier = {
+			factor = 3.0
+			owner = {
+				estate_territory = {
+					estate = estate_burghers
+					territory = 20
+				}
+			}
+		}
+		modifier = {
+			factor = 2.0
+			owner = {
+				estate_territory = {
+					estate = estate_burghers
+					territory = 30
+				}
+			}
+		}
+		modifier = {
+			factor = 2.0
+			owner = {
+				estate_territory = {
+					estate = estate_burghers
+					territory = 40
+				}
+			}
+		}
+		modifier = {
+			factor = 5
+			owner = {
+				has_disaster = court_and_country
+			}
+		}
+	}
+ 
+ 	# This is checked for EACH province in the Area of Operations
+	movement_evaluation = {
+		factor = 1
+		modifier = {
+			factor = 0.1
+			units_in_province = 1
+		}
+		modifier = {
+			factor = 0.001
+			controlled_by = REB
+		}
+		modifier = {
+			factor = 2.0
+			is_capital = yes
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 2
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 4
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 6
+		}
+	}
+	
+ 	# Province Scope
+ 	siege_won_trigger = {
+ 		NOT = { local_autonomy = 50 }
+ 	}
+	siege_won_effect = {
+		add_local_autonomy = 10	
+		owner = {
+			if = {
+				limit = { has_estate = estate_dhimmi }
+				change_estate_land_share = {
+					estate = estate_dhimmi
+					share = 10.0
+					province = ROOT
+				}
+			}
+			if = {
+				limit = { has_estate = estate_burghers }
+				change_estate_land_share = {
+					estate = estate_burghers
+					share = 10.0
+					province = ROOT
+				}
+			}
+			else_if = {
+				limit = { has_estate = estate_vaisyas }
+				change_estate_land_share = {
+					estate = estate_vaisyas
+					share = 10.0
+					province = ROOT
+				}
+				change_estate_land_share = {
+					estate = estate_jains
+					share = 5.0
+					province = ROOT
+				}
+			}
+			else = { # Fallback
+				change_estate_land_share = {
+					estate = all
+					share = 10.0
+					province = ROOT
+				}
+			}
+		}
+	}	
+	
+	# Country scope
+	can_negotiate_trigger = {
+		always = yes
+	}
+	
+	# Country scope
+	can_enforce_trigger = {
+		always = yes
+	}
+
+	# Localisation for their demands
+	demands_description = "particularist_rebels_demand"
+	
+	# Country scope
+	demands_enforced_effect = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_lost_to_rebels
+				duration = 10
+				hidden = yes
+			}
+		}
+		every_owned_province = {
+			limit = {
+				has_rebel_faction = REB
+			}
+			add_local_autonomy = 30
+		}	
+		add_prestige = -20
+		if = {
+			limit = {
+				has_estate = estate_burghers
+				NOT = {
+					has_estate_influence_modifier = {
+						estate = estate_burghers
+						modifier = EST_VAL_SUCCESFUL_PARTICULARISTS
+					}
+				}
+			}
+			add_estate_influence_modifier = {
+				estate = estate_burghers
+				duration = 5475
+				influence = 15
+				desc = EST_VAL_SUCCESFUL_PARTICULARISTS
+			}
+		}
+		if = {
+			limit = {
+				has_disaster = court_and_country
+			}
+			custom_tooltip = bad_ending_court_and_country_tooltip
+			set_country_flag = court_and_country_surrendered_to_rebels
+			hidden_effect = { country_event = { id = court_and_country_events.100 } }
+			end_disaster = court_and_country
+		}
+		if = {
+			limit = { has_estate = estate_dhimmi }
+			change_estate_land_share = {
+				estate = estate_dhimmi
+				share = 10.0
+			}
+		}
+		if = {
+			limit = { has_estate = estate_burghers }
+			change_estate_land_share = {
+				estate = estate_burghers
+				share = 10.0
+			}
+		}
+		else_if = {
+			limit = { has_estate = estate_vaisyas }
+			change_estate_land_share = {
+				estate = estate_vaisyas
+				share = 10.0
+			}
+		}
+		else = { # Fallback
+			change_estate_land_share = {
+				estate = all
+				share = 10.0
+			}
+		}
+	}
+}

@@ -1,0 +1,658 @@
+#################################################
+# Flavor Events for Saxony
+#
+# Scripted by Sara Wendel-Örtqvist (flavor_sax.1)
+# And Pierre du Plessis (the rest)
+#################################################
+
+namespace = flavor_sax
+normal_or_historical_nations = yes
+
+# Johann Sebastian Bach
+country_event = {
+	id = flavor_sax.1
+	title = "flavor_sax.EVTNAME1"
+	desc = "flavor_sax.EVTDESC1"
+	picture = IMPORTANT_STATUE_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = SAX
+		is_year = 1700
+		NOT = { is_year = 1750 }
+	}
+	
+	mean_time_to_happen = {
+		months = 200
+	}
+	
+	option = {
+		name = "flavor_sax.EVTOPTA1"
+		add_adm_power = 10
+		add_prestige = 10
+		add_innovativeness_small_effect = yes
+	}
+}
+
+#Leipzig Prospers
+province_event = {
+	id = flavor_sax.3
+	title = flavor_sax.3.name
+	desc = flavor_sax.3.desc
+	picture = INVENTION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = flavor_sax.3.A
+		if = {
+			limit = { NOT = { trade_goods = coal } }
+			change_trade_goods = paper
+		}
+		center_of_trade = 1
+		add_base_tax = 3
+		add_base_production = 3
+	}
+}
+
+
+#The Saxon Fratricidal War
+country_event = {
+	id = flavor_sax.4
+	title = flavor_sax.4.name
+	desc = flavor_sax.4.desc
+	picture = BAD_WITH_MONARCH_eventPicture
+
+	fire_only_once = yes
+
+	mean_time_to_happen = {
+		months = 18
+	}
+
+	trigger = {
+		tag = SAX
+		senior_union_with = THU
+		owns_core_province = 59 #Wittenberg
+		is_at_war = no
+		is_year = 1445
+		has_ruler = "Friedrich II"
+		dynasty = "von Wettin"
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_country_flag = sax_thuringen_split_to_happen
+		}
+	}
+
+	option = {
+		name = flavor_sax.4.A
+		tooltip = {
+			59 = {
+				remove_core = root
+				add_core = THU
+				cede_province = THU
+			}
+		}
+		hidden_effect = {
+			THU = {
+				country_event = { id = flavor_sax.5 }
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = flavor_sax.4.B
+		tooltip = {
+			THU = {
+				capital_scope = {
+					spawn_rebels = {
+						size = 2
+						type = pretender_rebels
+						leader = "Wilhelm"
+						leader_dynasty = "von Wettin"
+					}
+				}
+				add_claim = 59
+			}
+		}
+		hidden_effect = {
+			THU = {
+				country_event = { id = flavor_sax.51 }
+			}
+		}
+
+		hidden_effect = {
+			random_list = {
+				2 = { set_country_flag = sax_provoked_wilhelm_bad }
+				1 = { set_country_flag = sax_provoked_wilhelm_worse }
+			}
+		}
+
+		ai_chance = { #less bad option
+			factor = 2
+		}
+	}
+}
+
+#The Saxon Fratricidal War - gave us Wittenberg
+country_event = {
+	id = flavor_sax.5
+	title = flavor_sax.5.name
+	desc = flavor_sax.5.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+		
+		from = {
+			59 = {
+				remove_core = from
+				add_core = THU
+				cede_province = THU
+			}
+		}
+	}
+}
+
+#The Saxon Fratricidal War - didn't give us Wittenberg
+country_event = {
+	id = flavor_sax.51
+	title = flavor_sax.51.name
+	desc = flavor_sax.51.desc
+	picture = BAD_WITH_MONARCH_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = flavor_sax.51.opt
+		
+		capital_scope = {
+			spawn_rebels = {
+				size = 2
+				type = pretender_rebels
+				leader = "Wilhelm"
+				leader_dynasty = "von Wettin"
+			}
+		}
+		add_claim = 59
+	}
+}
+
+
+#Altenburger Prinzenraub - Plot Fails
+country_event = {
+	id = flavor_sax.6
+	title = flavor_sax.6.name
+	desc = flavor_sax.6.desc
+	picture = FORT_eventPicture
+
+	fire_only_once = yes
+
+	mean_time_to_happen = {
+		years = 5
+	}
+
+	trigger = {
+		tag = SAX
+		senior_union_with = THU
+		THU = {
+			NOT = { num_of_rebel_armies = 1 }
+			NOT = { num_of_rebel_controlled_provinces = 1 }
+		}
+		is_at_war = no
+		dynasty = "von Wettin"
+		has_country_flag = sax_provoked_wilhelm_bad
+		NOT = {
+			had_country_flag = {
+				flag = sax_provoked_wilhelm_bad
+				days = 10950
+			}
+		}
+	}
+
+	option = {
+		name = flavor_sax.6.A
+		THU = { add_liberty_desire = 30 }
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				THU = {
+					liberty_desire = 60
+				}
+			}
+			modifier = {
+				factor = 2
+				THU = {
+					NOT = { liberty_desire = 30 }
+				}
+			}
+		}
+	}
+	option = {
+		name = flavor_sax.6.B
+		add_stability = -1
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.15
+				NOT = {
+					stability = 0
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					stability = 1
+				}
+			}
+			modifier = {
+				factor = 2
+				stability = 2
+			}
+		}
+	}
+}
+
+#Altenburger Prinzenraub - Plot Succeeds
+country_event = {
+	id = flavor_sax.7
+	title = flavor_sax.7.name
+	desc = flavor_sax.7.desc
+	picture = CIVIL_WAR_eventPicture
+
+	fire_only_once = yes
+
+	mean_time_to_happen = {
+		years = 5
+	}
+
+	trigger = {
+		tag = SAX
+		senior_union_with = THU
+		THU = {
+			NOT = { num_of_rebel_armies = 1 }
+			NOT = { num_of_rebel_controlled_provinces = 1 }
+		}
+		is_at_war = no
+		dynasty = "von Wettin"
+		has_country_flag = sax_provoked_wilhelm_worse
+		NOT = {
+			had_country_flag = {
+				flag = sax_provoked_wilhelm_worse
+				days = 10950
+			}
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_neighbor_country = {
+				save_event_target_as = neighbour
+			}
+			random_neighbor_country = {
+				limit = {
+					OR = {
+						is_rival = root
+						is_enemy = root
+					}
+				}
+				save_event_target_as = neighbour
+			}
+			random_neighbor_country = {
+				limit = {
+					tag = BOH
+					NOT = { alliance_with = root }
+					NOT = { is_subject_of = root }
+					NOT = { overlord_of = root }
+				}
+				save_event_target_as = neighbour
+			}
+		}
+	}
+
+	option = {
+		name = flavor_sax.7.A
+
+		add_treasury = -200
+
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 0
+				AND = {
+					NOT = { treasury = 150 }
+					num_of_loans = 5
+				}
+			}
+			modifier = {
+				factor = 0.5
+				AND = {
+					NOT = { treasury = 200 }
+					num_of_loans = 1
+				}
+			}
+			modifier = {
+				factor = 2
+				treasury = 250
+			}
+		}
+	}
+	option = {
+		name = flavor_sax.7.B
+
+		kill_heir = yes
+		add_ruler_modifier = {
+			name = sax_grieving_death_of_sons
+			duration = -1
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+
+#The Treaty of Leipzig
+country_event = {
+	id = flavor_sax.8
+	title = flavor_sax.8.name
+	desc = flavor_sax.8.desc
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+
+	trigger = {
+		tag = SAX
+		dynasty = "von Wettin"
+		has_country_flag = sax_thuringen_split_to_happen
+		senior_union_with = THU
+		has_regency = no
+	}
+
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = sax_thuringen_split_to_happen
+		}
+	}
+
+	option = {
+		name = flavor_sax.8.A
+		
+		tooltip = {
+			THU = {
+				break_union = root
+				define_ruler = {
+					name = "Ernst"
+					dynasty = "von Wettin"
+					age = 30
+					dip = 2
+					adm = 2
+					mil = 2
+					fixed = yes
+				}
+			}
+		}
+		custom_tooltip = flavor_sax.8.A.tooltip
+		hidden_effect = {
+			THU = {
+				country_event = { id = flavor_sax.81 }
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = flavor_sax.8.B
+		
+		add_legitimacy = -60
+		tooltip = {
+			THU = {
+				add_liberty_desire = 50
+			}
+		}
+		add_ruler_modifier = {
+			name = sax_really_bad_reputation
+			duration = -1
+		}
+		hidden_effect = {
+			THU = {
+				country_event = { id = flavor_sax.82 }
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#Treaty of Leipzig - Let Ernst go
+country_event = {
+	id = flavor_sax.81
+	title = flavor_sax.81.name
+	desc = flavor_sax.81.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = flavor_sax.81.opt
+		
+		break_union = SAX
+		define_ruler = {
+			name = "Ernst"
+			dynasty = "von Wettin"
+			age = 30
+			dip = 2
+			adm = 2
+			mil = 2
+			fixed = yes
+		}
+		custom_tooltip = flavor_sax.8.A.tooltip
+		hidden_effect = {
+			SAX = {
+				remove_casus_belli = {
+					type = cb_restore_personal_union
+					target = THU
+				}
+			}
+		}
+	}
+}
+
+#Treaty of Leipzig - Broke the deal
+country_event = {
+	id = flavor_sax.82
+	title = flavor_sax.82.name
+	desc = flavor_sax.82.desc
+	picture = BAD_WITH_MONARCH_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = flavor_sax.82.opt
+		
+		tooltip = {
+			SAX = {
+				add_legitimacy = -60
+				add_ruler_modifier = {
+					name = sax_really_bad_reputation
+					duration = -1
+				}
+			}
+		}
+		add_liberty_desire = 50
+	}
+}
+
+
+#Get the Saxon Electorate
+country_event = {
+	id = flavor_sax.9
+	title = flavor_sax.9.name
+	desc = {
+		desc = flavor_sax.9.desc
+		trigger = { is_emperor = no }
+	}
+	desc = {
+		desc = flavor_sax.9.desc.emperor
+		trigger = { is_emperor = yes }
+	}
+	picture = DIPLOMACY_eventPicture
+
+	fire_only_once = yes
+	
+	mean_time_to_happen = {
+		years = 1
+	}
+
+	trigger = {
+		tag = THU
+		is_elector = no
+		dynasty = "von Wettin"
+		SAX = {
+			is_subject_of = THU
+			is_elector = yes
+		}
+		OR = {
+			is_emperor = yes
+			emperor = {
+				alliance_with = root
+			}
+		}
+	}
+
+	option = {
+		name = flavor_sax.9.A
+		
+		trigger = { is_emperor = no }
+		
+		emperor = { country_event = { id = flavor_sax.11 } }
+
+		SAX = {
+			add_liberty_desire = 50
+		}
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = flavor_sax.9.B
+		
+		trigger = { is_emperor = yes }
+
+		SAX = {
+			elector = no
+			add_opinion = {
+				who = root
+				modifier = opinion_bav_repealed_electorate
+			}
+			add_liberty_desire = 50
+		}
+
+		elector = yes
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = flavor_sax.9.C
+		
+		add_prestige = 10
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#on_siege_won_country
+#Get the Saxon Electorate (version 2)
+country_event = {
+	id = flavor_sax.10
+	title = flavor_sax.9.name
+	desc = flavor_sax.9.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	option = {
+		name = flavor_sax.9.A
+		
+		emperor = { country_event = { id = flavor_sax.11 } }
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = flavor_sax.9.C
+		
+		add_prestige = 10
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+
+#Transfer the Saxon Electorate to Thuringia
+country_event = {
+	id = flavor_sax.11
+	title = flavor_sax.11.name
+	desc = flavor_sax.11.desc
+	picture = HRE_eventPicture
+	major = yes
+	
+	is_triggered_only = yes
+	
+	option = { #transfer the electorate
+		name = flavor_sax.11.A	
+
+		SAX = {
+			elector = no
+			add_opinion = {
+				who = root
+				modifier = opinion_bav_repealed_electorate
+			}
+		}
+
+		THU = {
+			elector = yes
+			add_opinion = {
+				who = root
+				modifier = opinion_bav_gave_electorate
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = { #don't transfer the electorate
+		name = flavor_sax.11.B
+		
+		THU = {
+			add_opinion = {
+				who = root
+				modifier = opinion_bav_refused_to_transfer_electorate
+			}
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}

@@ -1,0 +1,846 @@
+########################################
+# Free Cities Events
+#
+# Scripted by Sara Wendel-Örtqvist
+# Ammended for 1.30 by James Beaumont
+########################################
+
+namespace = free_cities
+
+# Free City status gained
+country_event = {
+	id = free_cities.1
+	title = free_cities.1.t
+	desc = free_cities.1.d
+	picture = HRE_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			change_government_to_republic = yes
+			add_government_reform = free_city
+		}
+	}
+	
+	option = {
+		name = free_cities.1.a
+		tooltip = {
+			change_government_to_republic = yes
+			add_government_reform = free_city
+		}
+	}
+}
+
+# Free City status lost
+country_event = {
+	id = free_cities.2
+	title = free_cities.2.t
+	desc = free_cities.2.d
+	picture = HRE_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			remove_government_reform = free_city
+			add_government_reform = oligarchy_reform
+			remove_country_modifier = fc_hre_privileges
+			remove_country_modifier = fc_city_league
+			clr_country_flag = fc_city_league_flag
+		}
+	}
+	
+	option = {
+		name = free_cities.2.a
+		tooltip = { 
+			remove_government_reform = free_city
+			add_government_reform = oligarchy_reform
+		}
+	}
+}
+
+#- Riots begin among lower class residents, you ask HRE intervention (gold, manpower), he gets to decide if he wants to do it for a relations and authority boost.
+country_event = {
+	id = free_cities.3
+	title = free_cities.3.t
+	desc = free_cities.3.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_reform = free_city
+		emperor = {
+			NOT = {
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_sent_help }
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_refused_send_help }
+			}
+		}
+		any_owned_province = {
+			unrest = 3
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = free_cities.3.a
+		add_dip_power = -25
+		emperor = {
+			country_event = {
+				id = free_cities.4
+			}
+		}
+	}
+	option = {
+		name = free_cities.3.b
+		add_mil_power = -50
+	}
+}
+
+# To Destroy Rebels, Or Not
+country_event = {
+	id = free_cities.4
+	title = free_cities.4.t
+	desc = free_cities.4.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = free_cities.4.a
+		ai_chance = {
+			factor = 75
+			modifier = {
+				factor = 2
+				has_opinion = {
+					who = FROM
+					value = 50
+				}
+			}
+		}
+		add_manpower = -1
+		add_years_of_income = -0.1
+		add_imperial_influence = 10
+		FROM = {
+			set_country_flag = fc_help_flag
+			country_event = {
+				id = free_cities.5
+				tooltip = free_cities.5.tt1
+			}
+			tooltip = {
+				add_manpower = 1
+				add_years_of_income = 0.1
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sent_help
+			}
+		}
+	}
+	option = {
+		name = free_cities.4.b
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 2
+				NOT = {
+					has_opinion = {
+						who = FROM
+						value = 0
+					}				
+				}
+			}
+			modifier = {
+				factor = 0
+				has_opinion = {
+					who = FROM
+					value = 50
+				}
+			}
+		}		
+		FROM = {
+			set_country_flag = fc_nohelp_flag
+			country_event = {
+				id = free_cities.5
+				tooltip = free_cities.5.tt2
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_refused_send_help
+			}
+		}
+	}
+}
+
+# Help to Crush Rebels, or Not?
+country_event = {
+	id = free_cities.5
+	title = free_cities.5.t
+	desc = free_cities.5.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = free_cities.5.a
+		trigger = {
+			has_country_flag = fc_help_flag
+		}
+		add_manpower = 1
+		add_years_of_income = 0.1
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_sent_help
+			}
+		}
+		clr_country_flag = fc_help_flag
+	}
+	option = {
+		name = free_cities.5.b
+		trigger = {
+			has_country_flag = fc_nohelp_flag
+		}
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_refused_send_help
+			}
+		}
+		add_mil_power = -50
+		clr_country_flag = fc_nohelp_flag
+	}
+}
+
+#- Picked as place of coronation by the new HRE.
+country_event = {
+	id = free_cities.6
+	title = free_cities.6.t
+	desc = free_cities.6.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = free_cities.6.a
+		add_prestige = 50
+		add_country_modifier = {
+			name = fc_imperial_coronation
+			duration = 3650
+		}
+	}
+}
+
+# The Treaty Conference
+country_event = {
+	id = free_cities.7
+	title = free_cities.7.t
+	desc = free_cities.7.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_reform = free_city
+		NOT = {
+			prestige = 40
+		}
+		has_country_modifier = fc_treatyconference_timer
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = free_cities.7.a
+		add_prestige = 10
+	}
+}
+
+# Custom and tax privileges 
+country_event = {
+	id = free_cities.8
+	title = free_cities.8.t
+	desc = free_cities.8.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		is_emperor = yes
+		has_regency = no
+		any_known_country = {
+			num_of_loans = 3
+			NOT = { treasury = 100 }
+			has_reform = free_city
+			reverse_has_opinion = { who = ROOT value = 25 }
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					num_of_loans = 3
+					NOT = { treasury = 100 }
+					has_reform = free_city
+					reverse_has_opinion = { who = ROOT value = 25 }
+				}
+				save_event_target_as = free_city_in_debt_target
+			}
+		}
+	}
+	
+	option = {
+		name = free_cities.8.a
+		add_years_of_income = -0.2
+		event_target:free_city_in_debt_target = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_special_privileges
+			}
+			country_event = {
+				id = free_cities.9
+			}
+			tooltip = {
+				add_country_modifier = {
+					name = fc_hre_privileges
+					duration = -1
+				}
+			}
+		}
+	}
+	option = {
+		name = free_cities.8.b
+		add_imperial_influence = -2	
+	}
+}
+
+# Custom and Tax Privileges Given
+country_event = {
+	id = free_cities.9
+	title = free_cities.9.t
+	desc = free_cities.9.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = free_cities.9.a
+		add_treasury = 100
+		add_country_modifier = {
+			name = fc_hre_privileges
+			duration = -1
+		}
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_special_privileges
+			}
+		}
+	}
+}
+
+# Wellborns with Weapons (Too Large A Conflict)
+country_event = {
+	id = free_cities.10
+	title = free_cities.10.t
+	desc = free_cities.10.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_reform = free_city
+		NOT = { has_country_modifier = aristocratic_privileges }
+		emperor = {
+			NOT = {
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_sent_help }
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_refused_send_help }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1	
+	}
+	
+	option = {
+		name = free_cities.10.a
+		add_prestige = -5
+		emperor = {
+			country_event = {
+				id = free_cities.11
+			}
+		}
+	}
+	option = {
+		name = free_cities.10.b
+		add_country_modifier = {
+			name = "concessions_to_the_nobility"
+			duration = 7300
+		}
+	}
+}
+
+# Plea for Help with Rebellious Nobles
+country_event = {
+	id = free_cities.11
+	title = free_cities.11.t
+	desc = free_cities.11.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = free_cities.11.a
+		add_dip_power = -50
+		FROM = {
+			set_country_flag = fc_hre_yeshan_flag
+			country_event = {
+				id = free_cities.12
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sent_help
+			}
+		}
+	}
+	option = {
+		name = free_cities.11.b	
+		add_imperial_influence = -2		
+		FROM = {
+			set_country_flag = fc_hre_nohan_flag				
+			add_country_modifier = {
+				name = "aristocratic_privileges"
+				duration = 7300
+			}			
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_refused_send_help
+			}
+			country_event = {
+				id = free_cities.12
+			}			
+		}	
+	}
+}
+
+# Helped or Hindered?
+country_event = {
+	id = free_cities.12
+	title = free_cities.12.t
+	desc = free_cities.12.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = free_cities.12.a
+		trigger = {
+			has_country_flag = fc_hre_yeshan_flag
+		}
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_sent_help
+			}
+		}
+		clr_country_flag = fc_hre_yeshan_flag
+	}
+	option = {
+		name = free_cities.12.b
+		trigger = {
+			has_country_flag = fc_hre_nohan_flag
+		}
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_refused_send_help
+			}
+			add_country_modifier = {
+				name = "aristocratic_privileges"
+				duration = 7300
+			}			
+		}
+		clr_country_flag = fc_hre_nohan_flag
+	}
+}
+
+# City League
+country_event = {
+	id = free_cities.13
+	title = free_cities.13.t
+	desc = free_cities.13.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_reform = free_city
+		is_at_war = no
+		NOT = { has_country_modifier = fc_city_league }
+		any_known_country = {
+			has_reform = free_city
+			is_at_war = no
+			culture_group = ROOT
+			NOT = { has_country_modifier = fc_city_league }
+			NOT = { is_rival = ROOT }
+			NOT = { is_enemy = ROOT }
+			NOT = {
+				has_opinion_modifier = { who = ROOT modifier = opinion_refused_league }
+			}
+			has_opinion = {
+				who = ROOT
+				value = 25
+			}
+			ROOT = {
+				has_opinion = {
+					who = PREV
+					value = 25
+				}
+			}			
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					has_reform = free_city
+					is_at_war = no
+					culture_group = ROOT
+					NOT = { has_country_modifier = fc_city_league }
+					NOT = { is_rival = ROOT }
+					NOT = { is_enemy = ROOT }
+					NOT = {
+						has_opinion_modifier = { who = ROOT modifier = opinion_refused_league }
+					}
+					has_opinion = {
+						who = ROOT
+						value = 25
+					}
+					ROOT = {
+						has_opinion = {
+							who = PREV
+							value = 25
+						}
+					}				
+				}
+				save_event_target_as = fc_league_invitation_target
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = free_cities.13.a
+		add_dip_power = -100
+		event_target:fc_league_invitation_target = {
+			country_event = {
+				id = free_cities.14
+			}
+		}
+	}
+	option = {
+		name = free_cities.13.b
+		add_country_modifier = {
+			name = fc_mercenary_contracts
+			duration = 3650
+		}
+	}
+}
+
+# City League
+country_event = {
+	id = free_cities.14
+	title = free_cities.14.t
+	desc = free_cities.14.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = free_cities.14.a
+		add_dip_power = -100
+		ai_chance = {
+			factor = 50
+		}	
+		FROM = {
+			country_event = {
+				id = free_cities.15
+				tooltip = free_cities.15.tt
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_agreed_league
+			}
+		}
+		add_country_modifier = {
+			name = fc_city_league
+			duration = -1
+		}
+		add_manpower = 1
+		set_country_flag = fc_city_league_flag
+	}
+	option = {
+		name = free_cities.14.b
+		add_prestige = 10
+		ai_chance = {
+			factor = 50
+		}
+		hidden_effect = {
+			add_country_modifier = {
+				name = fc_league_timer
+				duration = 3650
+				hidden = yes
+			}
+		}
+		FROM = {
+			country_event = {
+				id = free_cities.16
+				tooltip = free_cities.16.tt
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_refused_league
+			}
+		}
+	}
+}
+
+# Members of the City League
+country_event = {
+	id = free_cities.15
+	title = free_cities.15.t
+	desc = free_cities.15.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = free_cities.15.a
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_agreed_league
+			}
+		}
+		add_country_modifier = {
+			name = fc_city_league
+			duration = -1
+		}
+		add_manpower = 1
+		clr_country_flag = fc_agreed_league_flag
+		set_country_flag = fc_city_league_flag
+	}
+}
+
+# Declined the City League
+country_event = {
+	id = free_cities.16
+	title = free_cities.16.t
+	desc = free_cities.16.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = free_cities.16.a
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_refused_league
+			}
+		}
+	}
+}
+
+# The Free City League Membership
+country_event = {
+	id = free_cities.17
+	title = free_cities.17.t
+	desc = free_cities.17.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_reform = free_city
+		is_at_war = no
+		NOT = {
+			has_country_modifier = fc_city_league
+			has_country_modifier = fc_league_timer
+		}
+		any_known_country = {
+			has_reform = free_city
+			is_at_war = no
+			culture_group = ROOT
+			has_country_modifier = fc_city_league
+			NOT = { is_rival = ROOT }
+			NOT = { is_enemy = ROOT }
+			NOT = {
+				has_opinion_modifier = { who = ROOT modifier = opinion_refused_league }
+			}
+			has_opinion = {
+				who = ROOT
+				value = 25
+			}
+			ROOT = {
+				has_opinion = {
+					who = PREV
+					value = 25
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	
+	option = {
+		name = free_cities.17.a
+		add_dip_power = -50
+		random_known_country = {
+			limit = {
+				has_reform = free_city
+				is_at_war = no
+				culture_group = ROOT
+				has_country_modifier = fc_city_league
+				NOT = { is_rival = ROOT }
+				NOT = { is_enemy = ROOT }
+				NOT = {
+					has_opinion_modifier = { who = ROOT modifier = opinion_refused_league }
+				}
+				has_opinion = {
+					who = ROOT
+					value = 25
+				}
+				ROOT = {
+					has_opinion = {
+						who = PREV
+						value = 25
+					}
+				}
+			}
+			country_event = {
+				id = free_cities.18
+			}
+		}
+	}
+	option = {
+		name = free_cities.17.b
+		add_prestige = 5
+	}
+}
+
+# Potential City League Member
+country_event = {
+	id = free_cities.18
+	title = free_cities.18.t
+	desc = free_cities.18.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = free_cities.18.a
+		add_dip_power = -25
+		FROM = {
+			country_event = {
+				id = free_cities.15
+				tooltip = free_cities.15.tt
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_agreed_league
+			}
+		}
+	}
+	option = {
+		name = free_cities.18.b
+		FROM = {
+			country_event = {
+				id = free_cities.16
+				tooltip = free_cities.16.tt
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_refused_league
+			}
+		}
+	}
+}
+
+# Cooperative Reforms
+country_event = {
+	id = free_cities.19
+	title = free_cities.19.t
+	desc = free_cities.19.d
+	picture = FREE_CITY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_reform = free_city
+		has_country_modifier = fc_city_league
+		had_country_flag = { flag = fc_city_league_flag days = 3650 }
+		NOT = {
+			any_known_country = {
+				has_country_modifier = fc_league_reforms_timer
+			}
+			has_country_modifier = fc_league_reforms_timer
+		}
+		any_known_country = {
+			has_reform = free_city
+			has_country_modifier = fc_city_league
+			has_country_flag = fc_city_league_flag
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = fc_league_reforms_timer
+				duration = 3650
+				hidden = yes
+			}
+		}
+	}
+	
+	option = {
+		name = free_cities.19.a
+		add_adm_power = 50
+		add_dip_power = 50
+		add_mil_power = 50
+	}
+}

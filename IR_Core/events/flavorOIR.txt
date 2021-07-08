@@ -1,0 +1,365 @@
+# Tumu Crisis by Daniel Tolman
+
+namespace = flavor_oir
+normal_or_historical_nations = yes
+
+# Yingzong Emperor leads the army against the Oirats
+country_event = {
+	id = flavor_oir.1
+	title = flavor_oir.1.t
+	desc = flavor_oir.1.d
+	picture = MONGOL_BANNERS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = MNG
+		war_with = OIR
+		NOT = { is_year = 1500 }
+		NOT = { MIL = 2 }
+		NOT = { has_regency = yes }
+		is_female = no
+	}
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = { # what an idiot
+		name = "flavor_oir.1.a"
+		if = {
+			limit = {
+				NOT = { is_monarch_leader = yes }
+			}
+			define_ruler_to_general = {
+				fire = 1
+				shock = 0
+				manuever = 0
+				siege = 0
+			}
+		}
+		set_ruler_flag = mng_militry_incompetence
+	}
+}
+
+# Emperor captured in battle
+country_event = {
+	id = flavor_oir.2
+	title = flavor_oir.2.t
+	desc = flavor_oir.2.d
+	picture = MONGOL_BANNERS_eventPicture
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+	major = yes
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = captured_mng_emperor
+			MNG = {
+				set_country_flag = mng_emperor_captured
+				country_event = { id = flavor_oir.3 }
+			}
+		}
+	}	
+	option = { # Onward to Beijing!
+		name = "flavor_oir.2.a"
+		custom_tooltip = oir_emperor_captured_tt
+		add_ruler_modifier = {
+			name = "oir_captured_mng_emperor" # siege ability and morale
+			duration = -1
+		}
+	}
+}
+
+# Notification for Ming
+country_event = {
+	id = flavor_oir.3
+	title = flavor_oir.2.t
+	desc = flavor_oir.3.d
+	picture = MONGOL_BANNERS_eventPicture
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+	
+	option = { # Disastrous!
+		name = "flavor_oir.3.a"
+		if = {
+			limit = {
+				is_emperor_of_china = yes
+			}
+			add_mandate = -20
+		}
+		add_stability = -1
+		hidden_effect = {
+			if = {
+				limit = {
+					has_heir = yes
+				}
+				exile_heir_as = mng_exiled_heir
+				set_country_flag = mng_exiled_heir_flag
+			}
+			exile_ruler_as = mng_exiled_ruler
+		}
+		define_ruler = {
+			regency = yes
+			ADM = 2
+			DIP = 2
+			MIL = 2
+			fixed = yes
+		}
+	}
+}
+	
+# Ming appoints new Emperor
+country_event = {
+	id = flavor_oir.4
+	title = flavor_oir.4.t
+	desc = {
+		trigger = {
+			has_heir = yes
+		}
+		desc = flavor_oir.4.d
+	}
+	desc = {
+		trigger = {
+			has_heir = no
+		}
+		desc = flavor_oir.4.d2
+	}
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	fire_only_once = yes
+	major = yes
+	
+	trigger = {
+		tag = MNG
+		war_with = OIR
+		had_country_flag = {
+			flag = mng_emperor_captured
+			days = 1825
+		}
+		NOT = { OIR = { has_country_flag = oir_demands_sent } }
+		NOT = {
+			1816 = {
+				num_of_units_in_province = {
+					who = OIR
+					amount = 9
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			OIR = {
+				clr_country_flag = captured_mng_emperor
+			}
+			clr_country_flag = mng_emperor_captured
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = { # May he have better judgement than his predecessor
+		name = "flavor_oir.4.a"
+		if = {
+			limit = {
+				has_country_flag = mng_exiled_heir_flag
+			}
+			set_heir = mng_exiled_heir
+		}
+		else = {
+			add_stability = -1
+			define_ruler = {
+				dynasty = "Zhu"
+				culture = ROOT
+				religion = ROOT
+				male = yes
+			}
+		}
+	}
+}
+	
+# Oirats capture Beijing
+country_event = {
+	id = flavor_oir.5
+	title = flavor_oir.5.t
+	desc = flavor_oir.5.d
+	picture = MONGOL_BANNERS_eventPicture
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = oir_demands_sent
+			clr_country_flag = captured_mng_emperor
+			set_country_flag = tumu_crisis_victory
+		}
+	}
+	
+	trigger = {
+		tag = OIR
+		FROM = {
+			province_id = 1816
+		}
+		MNG = {
+			has_country_flag = mng_emperor_captured
+		}
+	}
+	
+	option = { # Demand unconditional surrender
+		name = "flavor_oir.5.a"
+		MNG = { country_event = { id = flavor_oir.6 } }
+		custom_tooltip = ming_surrender_tt
+		hidden_effect = {
+			MNG = {
+				every_owned_province = {
+					limit = {
+						OR = {
+							region = north_china_region
+							region = mongolia_region
+						}
+						controlled_by = MNG
+					}
+					change_controller = OIR
+				}
+			}
+		}
+	}
+}
+	
+# Ming accepts demands
+country_event = {
+	id = flavor_oir.6
+	title = flavor_oir.6.t
+	desc = flavor_oir.6.d
+	picture = MONGOL_BANNERS_eventPicture
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+	
+	option = { # We have no choice but to accept
+		name = "flavor_oir.6.a"
+		ai_chance = { factor = 100 }
+		trigger = {
+			has_country_flag = mng_emperor_captured
+		}
+		tooltip = {
+			every_owned_province = {
+				limit = {
+					controlled_by = MNG
+					region = north_china_region
+				}
+				change_controller = OIR
+			}
+		}
+		if = {
+			limit = {
+				is_emperor_of_china = yes
+			}
+			add_mandate = -50
+		}
+		set_ruler = mng_exiled_ruler
+		if = {
+			limit = {
+				has_country_flag = mng_exiled_heir_flag
+			}
+			set_heir = mng_exiled_heir
+		}
+		clr_country_flag = mng_emperor_captured
+	}
+}
+
+# Emperor dies in captivity
+# For Oirat
+country_event = {
+	id = flavor_oir.7
+	title = flavor_oir.7.t
+	desc = flavor_oir.7.d
+	picture = MONGOL_BANNERS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = OIR
+		MNG = { 
+			has_country_flag = mng_emperor_captured
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	option = {
+		name = "flavor_oir.7.a"
+		MNG = {
+			clr_country_flag = mng_emperor_captured
+		}
+		if = {
+			limit = {
+				MNG = {
+					has_country_flag = mng_exiled_heir_flag
+				}
+			}
+			MNG = { 
+				set_heir = mng_exiled_heir 
+				clr_country_flag = mng_exiled_heir_flag
+			}
+		}
+	}
+}
+
+# The Dzunghars
+country_event = {
+	id = flavor_oir.8
+	title = flavor_oir.8.t
+	desc = flavor_oir.8.d
+	picture = MONGOL_BANNERS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		is_year = 1600
+		NOT = { exists = ZUN }
+		any_owned_province = {
+			area = north_zungaria
+		}
+		OR = {
+			NOT = { exists = OIR }
+			NOT = {
+				OIR = {
+					num_of_cities = 10
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+		modifier = {
+			factor = 0.5
+			num_of_owned_provinces_with = {
+				OR = {
+					area = north_zungaria
+					area = zungaria_area
+				}
+				value = 5
+			}
+		}
+	}
+	
+	option = {
+		name = "flavor_oir.8.a"
+		north_zungaria = {
+			add_core = ZUN
+		}
+		zungaria_area = {
+			add_core = ZUN
+		}
+	}
+}

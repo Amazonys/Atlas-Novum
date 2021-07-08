@@ -1,12 +1,7 @@
 estate_nobles =
 {
 	icon = 2
-	
-	color = { 200 0 50 }
-	
-	# Is estate kept in control of province on conquest?
-	keep_on_conquest = no
-	
+
 	# If true, country will get estate
 	trigger = {
 		NOT = { has_government_attribute = is_merchant_republic }
@@ -16,9 +11,10 @@ estate_nobles =
 		NOT = { government = native }
 		NOT = { has_reform = trading_city }
 		NOT = { has_reform = siberian_tribe }
-		NOT = { has_reform = revolutionary_republic_reform }
+		NOT = { is_revolutionary_republic_trigger = yes }
 		NOT = { has_reform = revolutionary_empire_reform }
-		#NOT = { has_reform = peasants_republic }
+		NOT = { has_reform = peasants_republic }
+		NOT = { has_reform = kongsi_federation }
 		NOT = { has_reform = american_republic }
 		NOT = { has_reform = federal_republic }
 		if = {
@@ -42,7 +38,10 @@ estate_nobles =
 			NOT = { has_dlc = "Common Sense" }
 			AND = {
 				NOT = { has_reform = english_monarchy }
-				NOT = { has_reform = parliamentary_reform }	
+				NOT = { has_reform = parliamentary_reform }
+				NOT = { has_reform = theocratic_democracy_reform }
+				NOT = { has_reform = regionally_elected_commanders }
+				NOT = { has_reform = protectorate_parliament_reform }
 			}
 		}
 		if = {
@@ -51,158 +50,63 @@ estate_nobles =
 			}
 			has_parliament = no
 		}
+		NOT = { has_reform = revolutionary_empire_reform }
+		AND = {
+			NOT = { has_country_flag = ikko_ikki_peasants_flag }
+			OR = {
+				NOT = { has_reform = leading_clergy_reform }
+				NOT = { has_reform = monastic_order_reform }
+				NOT = { has_reform = peasants_republic }
+			}
+		}
 	}
-	
-	# If true, province can be granted to estate
-	province_trigger = {
-		always = yes
-	}	
-
-	# Is used to weigh importance compared to other estates
-	start_territory_weight = 50
-	
-	# Min autonomy in estate provinces
-	min_autonomy = 25
-	
-	# Estate cancels out the following multiplicative local autonomy effects:
-	autonomy_does_not_affect = local_manpower_modifier
-	autonomy_does_not_affect = land_forcelimit_modifier
 
 	country_modifier_happy = {
 		manpower_recovery_speed = 0.2 
 		land_maintenance_modifier = -0.1
 		monthly_support_heir_gain = 0.33
-		legitimacy = 1.0			#BTAddOn new - estates rebalancing
 	}
 	country_modifier_neutral = {
-		manpower_recovery_speed = 0.1			#BTAddOn changed from 0.2 - estates rebalancing
+		manpower_recovery_speed = 0.2 
 	}	
 	country_modifier_angry = {
-		manpower_recovery_speed = -0.2			#BTAddOn changed from 0.1 - estates rebalancing
+		manpower_recovery_speed = -0.1
 		land_maintenance_modifier = 0.1
-		legitimacy = -1.0			#BTAddOn new - estates rebalancing
-		stability_cost_modifier = 0.33			#BTAddOn new - estates rebalancing
+		global_unrest = 2
 	}
-	
-	# These do not scale, but only applied in provinces owned by the estate
-	province_modifier_happy = {
-		local_defensiveness = 0.15
-		local_manpower_modifier = 0.2
+	land_ownership_modifier = {
+		nobles_loyalty_modifier = 0.2
 	}
-	province_modifier_neutral = {
-		local_manpower_modifier = 0.1			#BTAddOn changed from 0.2 - estates rebalancing
-	}	
-	province_modifier_angry = {
-		local_unrest = 5
-	}		
-	
+
+	province_independence_weight = {
+		factor = 1
+		modifier = {
+			factor = 1.5
+			culture_group = owner
+			religion_group = owner
+		}
+		modifier = {
+			factor = 1.5
+			base_manpower = 5
+		}
+		modifier = {
+			factor = 0.75
+			development = 20
+		}
+		modifier = {
+			factor = 0.5
+			NOT = { is_state_core = owner }
+		}
+	}
+
 	# Influence modifiers
-	base_influence = 20
-	influence_modifier = {
-		desc = EST_VAL_PERMANENT_MARATHAS_COUNCIL
-		trigger = {
-			has_reform = permanent_marathas_council_reform
-		}
-		influence = -10
-	}
-	influence_modifier = {
-		desc = EST_VAL_GOVERNMENTAL_PURBIAS_REGISTER
-		trigger = {
-			has_reform = governmental_purbias_register_reform
-		}
-		influence = -10
-	}
+	base_influence = 10
 	influence_modifier = {
 		desc = EST_VAL_EASTERN_TECH
 		trigger = {
 			technology_group = eastern
 		}	
 		influence = 5
-	}
-	influence_modifier = {
-		desc = EST_VAL_MONARCHY
-		trigger = {
-			government = monarchy
-		}
-		influence = 5
-	}
-	influence_modifier = {
-		desc = EST_VAL_FEUDALISM
-		trigger = {
-			has_reform = feudalism_reform
-		}
-		influence = 5
-	}
-	influence_modifier = {
-		desc = EST_VAL_NOBLE_ELITE
-		trigger = {
-			has_reform = noble_elite_reform
-		}
-		influence = 5
-	}
-	influence_modifier = {
-		desc = EST_VAL_NOBLES_OF_THE_ROBE
-		trigger = {
-			has_reform = of_noble_bearing_reform
-		}
-		influence = 10
-	}
-	influence_modifier = {
-		desc = EST_VAL_CURTAILED_NOBLE_PRIVILEGES
-		trigger = {
-			has_reform = quash_noble_power_reform
-		}
-		influence = -10
-	}
-	influence_modifier = {
-		desc = EST_VAL_BLACK_ARMY
-		trigger = {
-			has_country_modifier = hun_black_army
-		}		
-		influence = -10
-	}
-	influence_modifier = {
-		desc = EST_VAL_PLUTOCRATIC_REFORM
-		trigger = {
-			has_reform = plutocratic_reform
-		}
-		influence = -5
-	}
-	influence_modifier = {
-		desc = EST_VAL_CELESTIAL_EMPIRE
-		trigger = {
-			has_reform = celestial_empire
-		}		
-		influence = -10
-	}
-	influence_modifier = {
-		desc = EST_VAL_MAMLUK_AMIRS
-		trigger = {
-			has_reform = mamluk_government
-		}		
-		influence = 10
-	}
-	#Byz Resurgence added: Establishing the Theme System should remove some influence of the Dynatoi, as they only really became influentual in the Empire post-themes.
-	influence_modifier = {
-		desc = EST_VAL_ESTABLISHED_THEME_SYSTEM
-		trigger = {
-			has_reform = theme_system_reform
-		}
-		influence = -10
-	}
-	influence_modifier = { #Non-dharma version. Split up simply because it would not show up in the reform tooltip otherwise.
-		desc = EST_VAL_ESTABLISHED_THEME_SYSTEM
-		trigger = {
-			has_country_modifier = br_theme_system
-		}
-		influence = -10
-	}		
-	influence_modifier = {
-		desc = EST_VAL_ESTABLISHED_PRONOIAR
-		trigger = {
-			has_reform = pronoiar_reform
-		}
-		influence = -10
 	}
 	
 	# Influence modifiers from Events:
@@ -227,22 +131,6 @@ estate_nobles =
 		influence = -40
 	}
 	
-	
-	# Loyalty modifiers
-	loyalty_modifier = {
-		desc = EST_VAL_PERMANENT_MARATHAS_COUNTIL_LOY
-		trigger = {
-			has_reform = permanent_marathas_council_reform
-		}
-		loyalty = -5
-	}
-	loyalty_modifier = {
-		desc = EST_VAL_GOVERNMENTAL_PURBIAS_REGISTER_LOY
-		trigger = {
-			has_reform = governmental_purbias_register_reform
-		}
-		loyalty = -5
-	}
 	loyalty_modifier = {
 		desc = EST_VAL_OTHER_ESTATE_IN_POWER_LOY
 		trigger = {
@@ -257,13 +145,6 @@ estate_nobles =
 		loyalty = -20
 	}
 	loyalty_modifier = {
-		desc = EST_VAL_NOBLES_OF_THE_ROBE_LOY
-		trigger = {
-			has_reform = of_noble_bearing_reform
-		}
-		loyalty = 5
-	}
-	loyalty_modifier = {
 		desc = EST_VAL_NOBLE_CONSORT
 		trigger = {
 			has_dlc = "Rights of Man"
@@ -273,70 +154,78 @@ estate_nobles =
 		loyalty = 5
 	}
 	
-	loyalty_modifier = {
-		desc = EST_VAL_JUNKERS
+	# Great Peasants' War Modifiers
+	
+	influence_modifier = {
+		desc = EST_VAL_GREAT_PEASANTS_WAR_NOBLES_WIN_MINOR_INFLUENCE
 		trigger = {
-			has_reform = prussian_monarchy
+			has_global_flag = gpw_nobles_win_minor
+			is_part_of_hre = yes
+		}
+		influence = 5
+	}
+	
+	loyalty_modifier = {
+		desc = EST_VAL_GREAT_PEASANTS_WAR_NOBLES_WIN_MINOR_LOYALTY
+		trigger = {
+			has_global_flag = gpw_nobles_win_minor
+			is_part_of_hre = yes
+		}
+		loyalty = 5
+	}
+	
+	influence_modifier = {
+		desc = EST_VAL_GREAT_PEASANTS_WAR_NOBLES_WIN_MAJOR_INFLUENCE
+		trigger = {
+			has_global_flag = gpw_nobles_win_major
+			is_part_of_hre = yes
+		}
+		influence = 10
+	}
+	
+	loyalty_modifier = {
+		desc = EST_VAL_GREAT_PEASANTS_WAR_NOBLES_WIN_MAJOR_LOYALTY
+		trigger = {
+			has_global_flag = gpw_nobles_win_major
+			is_part_of_hre = yes
 		}
 		loyalty = 10
 	}
 	
-	loyalty_modifier = {
-		desc = EST_VAL_VERY_LEGITIMATE
+	influence_modifier = {
+		desc = EST_VAL_GREAT_PEASANTS_WAR_NOBLES_LOSE_MINOR_INFLUENCE
 		trigger = {
-			government = monarchy
-			legitimacy = 95
+			has_global_flag = gpw_peasants_win_minor
+			is_part_of_hre = yes
 		}
-		loyalty = 10
+		influence = -5
 	}
+	
 	loyalty_modifier = {
-		desc = EST_VAL_LEGITIMATE
+		desc = EST_VAL_GREAT_PEASANTS_WAR_NOBLES_LOSE_MINOR_LOYALTY
 		trigger = {
-			government = monarchy
-			legitimacy = 70
-			NOT = { legitimacy = 95 }
-		}
-		loyalty = 5
-	}
-	loyalty_modifier = {
-		desc = EST_VAL_NOT_LEGITIMATE
-		trigger = {
-			government = monarchy
-			NOT = { legitimacy = 50 }
-			legitimacy = 25
+			has_global_flag = gpw_peasants_win_minor
+			is_part_of_hre = yes
 		}
 		loyalty = -5
 	}
-	loyalty_modifier = {
-		desc = EST_VAL_ILLEGITIMATE
+	
+	influence_modifier = {
+		desc = EST_VAL_GREAT_PEASANTS_WAR_NOBLES_LOSE_MAJOR_INFLUENCE
 		trigger = {
-			government = monarchy
-			NOT = { legitimacy = 25 }
+			has_global_flag = gpw_peasants_win_major
+			is_part_of_hre = yes
+		}
+		influence = -10
+	}
+	
+	loyalty_modifier = {
+		desc = EST_VAL_GREAT_PEASANTS_WAR_NOBLES_LOSE_MAJOR_LOYALTY
+		trigger = {
+			has_global_flag = gpw_peasants_win_major
+			is_part_of_hre = yes
 		}
 		loyalty = -10
-	}
-	loyalty_modifier = {
-		desc = EST_VAL_FULL_ARISTOCRATIC
-		trigger = {
-			full_idea_group = aristocracy_ideas
-		}
-		loyalty = 10
-	}
-	#BT Idea set boni
-	loyalty_modifier = {
-		desc = EST_VAL_ARE_SARACEN_JOUST
-		trigger = {
-			has_idea = are_saracen_joust
-		}
-		loyalty = 10
-	}
-	#BR added loyalty modifiers from reforms
-	loyalty_modifier = {
-		desc = EST_VAL_PRONOIAR
-		trigger = {
-			has_reform = pronoiar_reform
-		}
-		loyalty = -20
 	}
 	
 	#Alternative naming of estates
@@ -432,456 +321,117 @@ estate_nobles =
 			culture_group = japanese_g
 		}
 	}
-	#Byz_Resurgence added: Byzantines call their landed nobility Dynatoi.
 	custom_name = {
-		desc = estate_dynatoi
+		desc = estate_yangban_administrators
 		trigger = {
-			tag = BYZ
+			tag = KOR
+			religion = confucianism
 		}
+	}
+	custom_name = {
+		desc = estate_junkers
+		trigger = {
+			OR = {
+				has_reform = prussian_republic_reform
+				has_reform = prussian_monarchy
+				tag = GER
+			}
+		}
+	}
+	custom_name = {
+		desc = estate_alii
+		trigger = {
+			OR = {
+				capital_scope = {
+					area = northern_polynesia_area
+				}
+				tag = SAM
+			}
+			primary_culture = polynesian
+			religion = animism
+		}
+	}
+	custom_name = {
+		desc = estate_rangatira
+		trigger = {
+			primary_culture = maori
+			religion = animism
+		}
+	}
+	custom_name = {
+		desc = estate_eiki
+		trigger = {
+			tag = TOG
+			primary_culture = polynesian
+			religion = animism
+		}
+	}
+	custom_name = {
+		desc = estate_ratu
+		trigger = {
+			OR = {
+				tag = LAI
+				tag = VIL
+				tag = VNL
+			}
+			religion = animism
+		}
+	}
+	
+	color = { 200 0 50 }
+	
+	privileges = {
+		estate_nobles_land_rights
+		estate_nobles_nobility_primacy
+		estate_nobles_officer_corp
+		estate_nobles_levies
+		estate_nobles_advisors
+		estate_nobles_right_of_counsel
+		estate_nobles_french_strong_duchies
+		estate_nobles_supremacy_over_crown
+		estate_nobles_junker_primacy
+		estate_nobles_strong_duchies
+		estate_nobles_golden_liberty
+		estate_nobles_veto_heir_apparent
+		estate_nobles_nieszawa_privileges
+		estate_nobles_pacta_conventa
+		estate_nobles_monopoly_of_metals
+		estate_nobles_monopoly_of_livestock
+		estate_nobles_monopoly_of_gems
+		estate_nobles_statutory_rights
+		estate_nobles_command_of_the_military
 	}
 
-	# Does the AI want to give any extra territory beyond the minimum?
-	ai_territory_modifier = {
-		trigger = {
-			has_idea_group = aristocracy_ideas
-			num_of_cities = 10
-		}	
-		value = 5		
+	agendas = {
+		estate_nobles_develop_x
+		estate_nobles_build_army_building_in_y
+		estate_nobles_build_fort_building_in_y
+		estate_nobles_build_university_in_y
+		estate_nobles_build_manufactory_in_y
+		estate_nobles_get_allies
+		estate_nobles_befriend_rival_of_rival
+		estate_nobles_restore_legitimacy
+		estate_nobles_relations_with_X
+		estate_nobles_break_coalition
+		estate_nobles_condottieri_rivals
+		estate_nobles_support_independence
+		estate_nobles_retake_core
+		estate_nobles_crush_revolts
+		estate_nobles_regain_liberty
+		estate_nobles_convert_province_culture
+		estate_nobles_protect_our_culture
+		estate_nobles_vassalise_vulnerable_country
+		estate_nobles_expand_into_x
+		estate_nobles_complete_conquest_of_x
+		estate_nobles_annex_subject
+		estate_nobles_build_an_army
+		estate_nobles_bigger_army_than_rival
+		estate_nobles_build_up_manpower_reserves
+		estate_nobles_recover_abysmal_prestige
+		estate_nobles_improve_prestige
+		estate_nobles_hire_advisor
+		estate_nobles_fire_advisor
 	}
-	ai_territory_modifier = {
-		trigger = {
-			has_idea_group = influence_ideas
-			num_of_cities = 10
-		}	
-		value = 5		
-	}		
 	
-	# For province assignment
-	ai_grant_province = {
-		factor = 1	
-		modifier = {
-			factor = 0.5
-			development = 20
-		}
-		modifier = {
-			factor = 2
-			NOT = { development = 10 }
-		}				
-		modifier = {
-			factor = 0.1
-			has_estate = estate_cossacks
-			has_terrain = steppe
-		}
-		modifier = {
-			factor = 0.75
-			has_owner_culture = yes
-		}
-		modifier = {
-			factor = 0.75
-			province_trade_power = 5
-		}			
-		modifier = {
-			factor = 0.75
-			province_trade_power = 10
-		}
-		modifier = {
-			factor = 4
-			local_autonomy = 25
-		}
-		modifier = {
-			factor = 0.25
-			NOT = { local_autonomy = 25 }
-		}
-	}	
-	
-	# Special interactions
-	interaction = {
-		name = "CALL_DIET"
-		icon = 1
-		
-		years_between_use = 20
-		
-		trigger = {
-			always = yes
-		}
-		
-		effect = {
-			add_prestige = -5
-			add_estate_loyalty = {
-				estate = estate_nobles
-				loyalty = 15
-			}
-			add_estate_influence_modifier = {
-				estate = estate_nobles
-				desc = EST_VAL_DIET_HELD
-				influence = 10
-				duration = 7300
-			}
-			if = {
-				limit = {
-					has_estate = estate_rajput
-				}
-				add_estate_loyalty = {
-					estate = estate_rajput
-					loyalty = -15
-				}
-			}
-			else_if = {
-				limit = {
-					has_estate = estate_maratha
-				}
-				add_estate_loyalty = {
-					estate = estate_maratha
-					loyalty = -15
-				}
-			}
-		}
-		
-		ai_will_do = {
-			factor = 1
-			modifier = {
-				factor = 0
-				estate_influence = {
-					estate = estate_nobles
-					influence = 60
-				}				
-			}
-			modifier = {
-				factor = 0
-				estate_loyalty = {
-					estate = estate_nobles
-					loyalty = 30
-				}				
-			}			
-		}
-	}
-	interaction = {
-		name = "GRANT_GENERALSHIP"
-		icon = 5
-		
-		years_between_use = 10
-		
-		potential = {
-			NOT = { has_disaster = estate_church_disaster }
-			NOT = { has_disaster = estate_burghers_disaster }
-		}
-		
-		trigger = {
-			estate_loyalty = {
-				estate = estate_nobles
-				loyalty = 30
-			}	
-			estate_influence = {
-				estate = estate_nobles
-				influence = 40
-			}			
-		}
-		
-		effect = {
-			create_general = { tradition = 40 }
-			add_estate_influence_modifier = {
-				estate = estate_nobles
-				desc = EST_VAL_GRANTED_GENERALSHIP
-				influence = 20
-				duration = 3650
-			}
-			if = {
-				limit = {
-					has_estate = estate_rajput
-				}
-				add_estate_loyalty = {
-					estate = estate_rajput
-					loyalty = -5
-				}
-			}
-			else_if = {
-				limit = {
-					has_estate = estate_maratha
-				}
-				add_estate_loyalty = {
-					estate = estate_maratha
-					loyalty = -5
-				}
-			}
-		}
-		
-		ai_will_do = {
-			factor = 0
-		}
-	}
-	interaction = {
-		name = "RECRUIT_CONQUISTADOR_ESTATES"
-		icon = 19
-		
-		years_between_use = 15
-		
-		potential = {
-			has_idea = quest_for_the_new_world
-			NOT = { has_disaster = estate_church_disaster }
-			NOT = { has_disaster = estate_burghers_disaster }
-		}
-		
-		trigger = {
-			estate_loyalty = {
-				estate = estate_nobles
-				loyalty = 30
-			}	
-			estate_influence = {
-				estate = estate_nobles
-				influence = 40
-			}
-		}
-		
-		effect = {
-			create_conquistador = 40		
-			add_estate_influence_modifier = {
-				estate = estate_nobles
-				desc = EST_VAL_RECRUITED_CONQUISTADOR
-				influence = 15
-				duration = 5475
-			}
-		}
-		
-		ai_will_do = {
-			factor = 0
-		}
-	}
-	interaction = {
-		name = "DEMAND_SUPPORT_NOBLES"
-		icon = 4
-		
-		years_between_use = 20
-		
-		potential = {
-			NOT = { has_disaster = estate_church_disaster }
-			NOT = { has_disaster = estate_burghers_disaster }
-		}
-		
-		trigger = {		
-			estate_loyalty = {
-				estate = estate_nobles
-				loyalty = 30
-			}	
-			estate_influence = {
-				estate = estate_nobles
-				influence = 25
-			}			
-		}
-		
-		effect = {
-			if = {
-				limit = {
-					NOT = {
-						estate_influence = {
-							estate = estate_nobles
-							influence = 50
-						}	
-					}
-				}
-				add_mil_power = 50
-			}
-			if = {
-				limit = {
-					estate_influence = {
-						estate = estate_nobles
-						influence = 50
-					}
-					NOT = {
-						estate_influence = {
-							estate = estate_nobles
-							influence = 75
-						}	
-					}
-				}
-				add_mil_power = 100
-			}
-			if = {
-				limit = {
-					estate_influence = {
-						estate = estate_nobles
-						influence = 75
-					}
-					NOT = {
-						estate_influence = {
-							estate = estate_nobles
-							influence = 100
-						}	
-					}
-				}
-				add_mil_power = 150
-			}
-			if = {
-				limit = {
-					estate_influence = {
-						estate = estate_nobles
-						influence = 100
-					}
-				}
-				add_mil_power = 200
-			}				
-			add_estate_loyalty = {
-				estate = estate_nobles
-				loyalty = -20
-			}
-		}
-		
-		ai_will_do = {
-			factor = 0
-		}
-	}
-	interaction = {
-		name = "RECRUIT_MINISTER"
-		icon = 10
-		
-		years_between_use = 30
-		
-		potential = {
-			NOT = { has_disaster = estate_church_disaster }
-			NOT = { has_disaster = estate_burghers_disaster }
-		}
-		
-		trigger = {
-			estate_influence = {
-				estate = estate_nobles
-				influence = 40
-			}
-		}
-		
-		effect = {
-			#Byz Resurgence changed to use scripted effect instead of this jumbled mess of code.
-			create_estate_advisor_effect = {
-				ADVISORTYPE = diplomat
-				ESTATE = estate_nobles
-				EVENTTARGET = nobles_estate_province
-			}
-			add_estate_influence_modifier = {
-				estate = estate_nobles
-				desc = EST_VAL_NOBLES_MINISTER
-				influence = 15
-				duration = 10950
-			}
-			if = {
-				limit = {
-					has_estate = estate_rajput
-				}
-				add_estate_loyalty = {
-					estate = estate_rajput
-					loyalty = -5
-				}
-			}
-			else_if = {
-				limit = {
-					has_estate = estate_maratha
-				}
-				add_estate_loyalty = {
-					estate = estate_maratha
-					loyalty = -5
-				}
-			}
-		}
-		
-		ai_will_do = {
-			factor = 0
-		}
-	}
-	interaction = {
-		name = "DEMAND_MORE_TROOPS"
-		icon = 12
-		
-		years_between_use = 25
-		
-		potential = {
-			NOT = { has_disaster = estate_church_disaster }
-			NOT = { has_disaster = estate_burghers_disaster }
-		}
-		
-		trigger = {
-			estate_loyalty = {
-				estate = estate_nobles
-				loyalty = 30
-			}
-			estate_influence = {
-				estate = estate_nobles
-				influence = 40
-			}
-		}
-		
-		effect = {
-			if = {
-				limit = {
-					NOT = {
-						estate_influence = {
-							estate = estate_nobles
-							influence = 50
-						}	
-					}
-				}
-				add_yearly_manpower = 1
-			}
-			if = {
-				limit = {
-					estate_influence = {
-						estate = estate_nobles
-						influence = 50
-					}
-					NOT = {
-						estate_influence = {
-							estate = estate_nobles
-							influence = 75
-						}	
-					}
-				}
-				add_yearly_manpower = 1.5
-			}
-			if = {
-				limit = {
-					estate_influence = {
-						estate = estate_nobles
-						influence = 75
-					}
-					NOT = {
-						estate_influence = {
-							estate = estate_nobles
-							influence = 100
-						}	
-					}
-				}
-				add_yearly_manpower = 2
-			}
-			if = {
-				limit = {
-					estate_influence = {
-						estate = estate_nobles
-						influence = 100
-					}
-				}
-				add_yearly_manpower = 2.5
-			}	
-			add_estate_loyalty = {
-				estate = estate_nobles
-				loyalty = -15
-			}
-		}
-		
-		ai_will_do = {
-			factor = 1
-			modifier = {
-				factor = 0
-				NOT = {
-					estate_loyalty = {
-						estate = estate_nobles
-						loyalty = 50
-					}	
-				}
-			}
-			modifier = {
-				factor = 0
-				manpower_percentage = 0.25				
-			}
-			modifier = {
-				factor = 0
-				is_at_war = no
-			}			
-		}
-	}
+	influence_from_dev_modifier = 1.0
 }

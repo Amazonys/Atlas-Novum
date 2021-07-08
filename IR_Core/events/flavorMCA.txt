@@ -1,0 +1,352 @@
+########################################
+# Events for Muisca
+#
+# written by Henrik Lohmander
+########################################
+
+namespace = flavor_mca
+normal_or_historical_nations = yes
+
+	
+# The Zipa and the Zaque
+country_event = {
+	id = flavor_mca.1
+	title = flavor_mca.1.t
+	desc = flavor_mca.1.d
+	picture = ACCUSATION_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = MCA
+		#Just to be sure:
+		owns = 832 #Tunja/Hunza
+		owns = 825 #Bogota/Bacatá
+		dynasty = "Bacatá"
+	}
+
+	mean_time_to_happen = {
+		months = 2
+	}
+	
+	
+	option = {
+		name = flavor_mca.1.a #Support the Zipa of Bacatá.
+		ai_chance = { factor = 95 }
+		custom_tooltip = flavor_mca.1.a.tt #Bacatá will remain the capital of Muisca.
+		set_country_flag = mca_zipa_supporter
+		832 = {
+			add_local_autonomy = 75 #The Zaque holds power here.
+			add_province_modifier = {
+				name = "mca_zaque_capital"
+				duration = -1
+			}
+		}
+	}
+	option = {
+		name = flavor_mca.1.b #Support the Zaque of Hunza.
+		ai_chance = { factor = 5 }
+		set_capital = 832
+		set_country_flag = mca_zaque_supporter
+		define_ruler = {
+			dynasty = "Hunza"
+			claim = 100 #Will be added in when supported
+		}
+		if = {
+			limit = { has_heir = yes }
+			kill_heir = yes
+		}
+		832 = {
+			add_local_autonomy = -100
+		}
+		825 = {
+			add_local_autonomy = 75 #The Zipa holds power here.
+			add_province_modifier = {
+				name = "mca_zipa_capital"
+				duration = -1
+			}
+		}
+	}
+}
+
+#The Salt Mines of Zipaquira
+country_event = {
+	id = flavor_mca.2
+	title = flavor_mca.2.t
+	desc = flavor_mca.2.d
+	picture = BORDER_TENSION_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = MCA
+		owns = 832
+		is_year = 1460
+		OR = {
+			has_country_flag = mca_zaque_supporter
+			has_country_flag = mca_zipa_supporter
+		}
+		NOT = { has_country_modifier = mca_iraca_intervention }
+	}
+
+	mean_time_to_happen = {
+		months = 60
+	}
+	
+	
+	option = {
+		name = flavor_mca.2.a #We must control the Salt
+		trigger = { has_country_flag = mca_zaque_supporter }
+		832 = {
+			add_province_modifier = {
+				name = "mca_salt_mines_of_zipaquira"
+				duration = -1
+			}
+		}
+	}
+	option = {
+		name = flavor_mca.2.b #Leave it to the Zipa to administer
+		trigger = { has_country_flag = mca_zaque_supporter }
+		add_stability_or_adm_power = yes
+		825 = {
+			add_local_autonomy = -25 #More influence due to more cooperation
+		}
+	}
+	option = {
+		name = flavor_mca.2.c #They're mine!
+		trigger = { has_country_flag = mca_zipa_supporter }
+		832 = {
+			add_province_modifier = {
+				name = "mca_salt_mines_of_zipaquira"
+				duration = -1
+			}
+		}
+	}
+	option = {
+		name = flavor_mca.2.dd #Leave it to the Zaque to administer
+		trigger = { has_country_flag = mca_zipa_supporter }
+		add_stability_or_adm_power = yes
+		832 = {
+			add_local_autonomy = -25 #More influence due to more cooperation
+		}
+	}
+}
+
+#Ambitions of the Zipa.
+#Repeating, max 1 time per ruler.
+country_event = {
+	id = flavor_mca.3
+	title = flavor_mca.3.t
+	desc = flavor_mca.3.d
+	picture = BORDER_TENSION_eventPicture
+
+	trigger = {
+		tag = MCA
+		has_country_flag = mca_zaque_supporter
+		NOT = { has_ruler_flag = mca_zipa_fought }
+		num_of_cities = 3
+		NOT = { has_country_modifier = mca_iraca_intervention }
+	}
+
+	mean_time_to_happen = {
+		months = 120
+		modifier = {
+			factor = 0.8
+			num_of_cities = 4
+		}
+		modifier = {
+			factor = 0.8
+			num_of_cities = 5
+		}
+		modifier = {
+			factor = 0.8
+			num_of_cities = 6
+		}
+	}
+	
+	
+	option = { 
+		name = flavor_mca.3.a #Strike back at the Zipa.
+		set_ruler_flag = mca_zipa_fought
+		add_prestige = 10
+		825 = {
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 2
+				leader = "Tisquesusa"
+				leader_dynasty = "Bacatá"
+			}
+		}
+	}
+	option = {
+		name = flavor_mca.3.b #Allow the chiefdom to be annexed.
+		add_prestige = -10
+		random_owned_province = {
+			limit = {
+				NOT = { is_capital = yes }
+				NOT = { has_province_modifier = mca_zipa_capital }
+			}
+			add_local_autonomy = 25
+		}
+	}
+	
+}
+
+#Ambitions of the Zaque.
+country_event = {
+	id = flavor_mca.4
+	title = flavor_mca.4.t
+	desc = flavor_mca.4.d
+	picture = BORDER_TENSION_eventPicture
+
+	trigger = {
+		tag = MCA
+		has_country_flag = mca_zipa_supporter
+		NOT = { has_ruler_flag = mca_zaque_fought }
+		num_of_cities = 3
+		NOT = { has_country_modifier = mca_iraca_intervention }
+	}
+
+	mean_time_to_happen = {
+		months = 120
+		modifier = {
+			factor = 0.8
+			num_of_cities = 4
+		}
+		modifier = {
+			factor = 0.8
+			num_of_cities = 5
+		}
+		modifier = {
+			factor = 0.6
+			num_of_cities = 6
+		}
+	}
+	
+	
+	option = { 
+		name = flavor_mca.4.a #Strike back at the Zaque.
+		set_ruler_flag = mca_zaque_fought
+		add_prestige = 10
+		832 = {
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 2
+				leader = "Quemuenchatocha"
+				leader_dynasty = "Hunza"
+			}
+		}
+	}
+	option = {
+		name = flavor_mca.4.b #Allow the chiefdom to be annexed.
+		add_prestige = -10
+		random_owned_province = {
+			limit = {
+				NOT = { is_capital = yes }
+				NOT = { has_province_modifier = mca_zaque_capital }
+			}
+			add_local_autonomy = 25
+		}
+	}
+	
+}
+
+#Influence of the Iraca
+country_event = {
+	id = flavor_mca.5
+	title = flavor_mca.5.t
+	desc = flavor_mca.5.d
+	picture = RELIGION_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = MCA
+		owns = 832
+		OR = {
+			has_country_flag = mca_zipa_supporter
+			has_country_flag = mca_zaque_supporter
+		}
+		any_known_country = {
+			OR = {
+				capital_scope = {
+					continent = europe
+				}
+				colonial_parent = {
+					capital_scope = {
+						continent = europe
+					}
+				}
+			}
+			any_owned_province = {
+				continent = south_america
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 44
+	}
+	
+	
+	option = { 
+		name = flavor_mca.5.a #The time has come to act together.
+		ai_chance = { factor = 95 }
+		add_stability = -1
+		add_country_modifier = {
+			name = "mca_iraca_intervention"
+			duration = 7300
+		}
+	}
+	option = {
+		name = flavor_mca.5.b #There can be only one authority in the Muiscan lands!
+		ai_chance = { factor = 5 }
+		add_stability_or_adm_power = yes
+		add_legitimacy = 10
+	}
+	
+}
+
+#The Muisca Stand United
+country_event = {
+	id = flavor_mca.6
+	title = flavor_mca.6.t
+	desc = flavor_mca.6.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = MCA
+		OR = {
+			has_country_flag = mca_zipa_supporter
+			has_country_flag = mca_zaque_supporter
+		}
+		num_of_cities = 8
+		stability = 1
+		legitimacy = 50
+	}
+
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	
+	option = { 
+		name = flavor_mca.6.a #Great!
+		ai_chance = { factor = 95 }
+		add_stability = 2
+		add_prestige = 10
+		clr_country_flag = mca_zipa_supporter
+		clr_country_flag = mca_zaque_supporter
+		random_owned_province = {
+			limit = { is_capital = yes }
+			add_base_tax = 2
+		}
+		random_owned_province = {
+			limit = { has_province_modifier = mca_zipa_capital }
+			remove_province_modifier = mca_zipa_capital
+		}
+		random_owned_province = {
+			limit = { has_province_modifier = mca_zaque_capital }
+			remove_province_modifier = mca_zaque_capital
+		}
+	}
+	
+}

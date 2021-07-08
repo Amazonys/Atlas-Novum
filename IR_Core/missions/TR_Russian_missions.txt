@@ -160,6 +160,7 @@ tr_muscovy_conquest = {
 				area = malopolska_area
 				area = red_ruthenia_area
 				area = mazovia_area
+				area = sandomierz_area
 			}
 			NOT = {
 				country_or_non_sovereign_subject_holds = ROOT
@@ -395,15 +396,49 @@ tr_russia_conquest_1 = {
 		required_missions = { tr_subjugate_novgorod }
 		completed_by = 1776.1.1
 		provinces_to_highlight = {
-			region = russia_region
+			OR = {
+				province_id = 294
+				province_id = 308
+				province_id = 300
+				province_id = 1778
+				province_id = 4147
+				province_id = 312
+				province_id = 301
+				province_id = 4116
+				province_id = 274
+			}
 			NOT = {
-				country_or_non_sovereign_subject_holds = ROOT
+				owned_by = ROOT
 			}
 		}
 		trigger = {
-			russia_region = {
-				type = all
-				country_or_non_sovereign_subject_holds = ROOT	
+			# integrate minors
+			294 = {
+				owned_by = ROOT
+			}
+			308 = {
+				owned_by = ROOT
+			}
+			300 = {
+				owned_by = ROOT
+			}
+			1778 = {
+				owned_by = ROOT
+			}
+			4147 = {
+				owned_by = ROOT
+			}
+			312 = {
+				owned_by = ROOT
+			}
+			301 = {
+				owned_by = ROOT
+			}
+			4116 = {
+				owned_by = ROOT
+			}
+			274 = {
+				owned_by = ROOT
 			}
 		}
 		effect = {
@@ -597,6 +632,13 @@ tr_russia_exclusive_1 = {
 				}
 				add_permanent_claim = ROOT
 			}
+			silistria_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT	}
+					NOT = { is_core = ROOT	}
+				}
+				add_permanent_claim = ROOT
+			}
 			thrace_area = {
 				limit = {
 					NOT = { is_permanent_claim = ROOT	}
@@ -616,6 +658,7 @@ tr_russia_exclusive_1 = {
 					OR = {
 						area = bulgaria_area
 						area = thrace_area
+						area = silistria_area
 					}
 					NOT = {
 						country_or_non_sovereign_subject_holds = ROOT
@@ -631,6 +674,10 @@ tr_russia_exclusive_1 = {
 		}
 		trigger = {
 			bulgaria_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			silistria_area = {
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT
 			}
@@ -664,7 +711,12 @@ tr_russia_exclusive_1 = {
 		icon = mission_autocratic_rule
 		required_missions = { rus_streltsy_mission }
 		trigger = {
-			absolutism = 50
+			if = {
+				limit = {
+					is_revolutionary = no
+				}
+				absolutism = 50
+			}
 			NOT = {
 				estate_influence = {
 					estate = estate_church
@@ -683,10 +735,10 @@ tr_russia_exclusive_1 = {
 					influence = 50
 				}
 			}
-			# certain gov reforms if dharma
+			crown_land_share = 75
 		}
 		effect = {
-			add_adm_power = 50 # or reform mana if dharma enabled
+			add_adm_power = 50
 			add_country_modifier = {
 				name = "russian_autocracy"
 				duration = 7300
@@ -769,9 +821,10 @@ tr_russia_exclusive_2 = {
 		position = 7
 		provinces_to_highlight = {
 			OR = {
-				area = ningguta_area
+				area = furdan_area
 				area = ilan_hala_area
 				area = central_jilin_area
+				area = sakhalin_area
 			}
 			NOT = {
 				country_or_non_sovereign_subject_holds = ROOT
@@ -783,7 +836,7 @@ tr_russia_exclusive_2 = {
 			730 = {
 				is_strongest_trade_power = ROOT
 			}
-			ningguta_area = {
+			furdan_area = {
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT
 			}
@@ -795,10 +848,13 @@ tr_russia_exclusive_2 = {
 				type = all
 				country_or_non_sovereign_subject_holds = ROOT
 			}
+			sakhalin_area = {
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT
+			}
 		}
 		effect = {
 			2106 = {
-				change_province_name = "Vladivostok"
 				rename_capital = "Vladivostok"
 				change_religion = ROOT
 				change_culture = ROOT
@@ -833,7 +889,6 @@ tr_russia_exclusive_2 = {
 		}
 		effect = {
 			add_prestige = 10
-			# gov reform mana if dharma
 		}
 	}
 	tr_revolution_mission = {
@@ -844,16 +899,18 @@ tr_russia_exclusive_2 = {
 		}
 		trigger = {
 			OR = {
+				has_reform = revolutionary_empire_reform
+				has_reform = revolutionary_republic_reform
+				custom_trigger_tooltip = {
+					tooltip = center_of_revolution.3000.A.tt
+					has_global_flag = no_more_revolutions_ever
+				}
 				any_known_country = {
 					is_revolution_target = yes
 					war_with = ROOT
 					capital_scope = {
 						controlled_by = ROOT
 					}
-				}
-				OR = {
-					has_reform = revolutionary_empire_reform
-					has_reform = revolutionary_republic_reform
 				}
 			}
 			
@@ -863,11 +920,14 @@ tr_russia_exclusive_2 = {
 			if = {
 				limit = {
 					OR = {
-						has_reform = revolutionary_empire
+						has_reform = revolutionary_empire_reform
 						has_reform = revolutionary_republic_reform
 					}
 				}		
-				country_event = { id = flavor_rus.2000 }
+				add_country_modifier = {
+					name = "rus_revolutionary_zeal"
+					duration = -1
+				}
 			}
 			else = {
 				add_country_modifier = {
@@ -1507,12 +1567,9 @@ tr_siberia_missions = {
 			}
 		}
 		trigger = {
-			custom_trigger_tooltip = {
-				tooltip = russia_westsiberia.tooltip
-				num_of_owned_provinces_with = {
-					region = west_siberia_region
-					value = 15
-				}
+			num_of_owned_provinces_with = {
+				region = west_siberia_region
+				value = 15
 			}
 		}
 		effect = {
@@ -1538,12 +1595,9 @@ tr_siberia_missions = {
 			}
 		}
 		trigger = {
-			custom_trigger_tooltip = {
-				tooltip = russia_eastsiberia.tooltip
-				num_of_owned_provinces_with = {
-					region = east_siberia_region
-					value = 10
-				}
+			num_of_owned_provinces_with = {
+				region = east_siberia_region
+				value = 10
 			}
 			owns_core_province = 1043
 		}
@@ -1575,7 +1629,7 @@ tr_siberia_missions = {
 					duration = -1
 				}
 			}
-			ningguta_area = {
+			furdan_area = {
 				limit = {
 					NOT = { is_permanent_claim = ROOT	}
 					NOT = { is_core = ROOT	}
@@ -1590,6 +1644,13 @@ tr_siberia_missions = {
 				add_permanent_claim = ROOT
 			}
 			central_jilin_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT	}
+					NOT = { is_core = ROOT	}
+				}
+				add_permanent_claim = ROOT
+			}
+			sakhalin_area = {
 				limit = {
 					NOT = { is_permanent_claim = ROOT	}
 					NOT = { is_core = ROOT	}

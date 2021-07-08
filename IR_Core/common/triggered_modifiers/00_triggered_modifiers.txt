@@ -3,7 +3,7 @@
 #
 # Effects are fully scriptable here.
 
-#NB: The reason why this file exists in Byzantine Resurgence is because attempting to modify them through another file causes the game to duplicate the modifier. //Dub
+
 ###########################################
 # Discovery of the East Indian trade route.
 ###########################################
@@ -303,12 +303,9 @@ catholic_rome = {
 
 	trigger = {	
 		NOT = { overlord_of = PAP }
-		owns_or_vassal_of = 118 # Roma
-		#BR Changed to requiring you to move your capital to Rome instead to not get the modifier. I regard this as you claiming rightful control of the city.
-		NOT = { capital = 118 }
-		# NOT = { tag = ITA }
-		# NOT = { tag = ROM }
-		# NOT = { tag = ITL }			#BtP
+		owns_or_vassal_of = 118 # Roma		
+		NOT = { tag = ITA }
+		NOT = { tag = ROM }
 	}
 
 	papal_influence = -10
@@ -327,7 +324,6 @@ papal_subjugation = {
 	trigger = {	
 		overlord_of = PAP
 		NOT = { tag = ITA }
-		NOT = { tag = ITL }			#BtP
 	}
 
 	diplomatic_reputation = -2
@@ -367,28 +363,31 @@ rapid_collapse_of_society = {
 	
 }
 
-
 ######################################
 # Italian - Submission to Emperor
 ######################################
 submission_to_emperor = {
 	potential = {
-		has_global_flag = italy_out_of_HRE
+		has_global_flag = italians_leave_hre
+		NOT = { has_country_flag = reined_in_for_shadow_kingdom }
+		is_part_of_hre = yes
 		culture_group = latin
 	}
 
 	trigger = {
-		always = no			#BT cuts the submission to the emperor malus... pretty harsh depending on how history plays out, especially for an unremovable malus.
+		is_emperor = no
+		NOT = { tag = ITA }
+		capital_scope = {
+			is_part_of_hre = yes
+		}
+		NOT = { is_year = 1550 }
+		NOT = { emperor = { alliance_with = ROOT } }
 	}
 
 	global_unrest = 3
 	stability_cost_modifier = 0.1
 	prestige = -1
 }
-
-
-	
-
 
 
 
@@ -398,13 +397,21 @@ submission_to_emperor = {
 counter_revolution = {
 	potential = {
 		revolution_target_exists = yes
-		is_revolution_target = no
+		is_revolutionary = no
+		any_country = {
+			is_revolution_target = yes
+			OR = {
+				capital_scope = {
+					continent = ROOT
+				}
+				is_neighbor_of = ROOT
+			}
+		}
 	}
 
 	trigger = {
-		capital_scope = { continent = europe }
 		revolution_target_exists = yes
-		is_revolution_target = no
+		is_revolutionary = no
 		is_free_or_tributary_trigger = yes
 		NOT = {
 			revolution_target = {
@@ -430,13 +437,18 @@ counter_revolution = {
 reaction = {
 	potential = {
 		revolution_target_exists = yes
-		capital_scope = { continent = europe }
+		is_revolutionary = no
+		any_country = {
+			is_revolution_target = yes
+			capital_scope = {
+				continent = ROOT
+			}
+		}
 	}
 
 	trigger = {
-		capital_scope = { continent = europe }
 		revolution_target_exists = yes
-		is_revolution_target = no
+		is_revolutionary = no
 		is_free_or_tributary_trigger = yes
 		government = monarchy
 		revolution_target = {
@@ -518,12 +530,12 @@ pentarchy_mod = {
 		}
 	}
 
-	trigger = { #BR Changed to not require direct ownership of the provinces.
-		owns_or_non_sovereign_subject_of = 118 	# Rome
-		owns_or_non_sovereign_subject_of = 151 	# Constantinople
-		owns_or_non_sovereign_subject_of = 2313 # Antioch
-		owns_or_non_sovereign_subject_of = 379 	# Jerusalem
-		owns_or_non_sovereign_subject_of = 358 	# Alexandria
+	trigger = {
+		owns = 118 	# Rome
+		owns = 151 	# Constantinople
+		owns = 2313 # Antioch
+		owns = 379 	# Jerusalem
+		owns = 358 	# Alexandria
 		118 = { religion = orthodox }
 		151 = { religion = orthodox }
 		2313 = { religion = orthodox }
@@ -573,6 +585,70 @@ the_mandate_of_heaven_lost = {
 	global_unrest = 10
 }
 
+lost_control_of_beijing = {
+	potential = {
+		has_reform = celestial_empire
+		has_dlc = "Mandate of Heaven"
+	}
+
+	trigger = {
+		OR = {
+			NOT = { owns = 1816 }
+			NOT = { controls = 1816 }
+		}
+	}
+
+	imperial_mandate = -0.05
+}
+
+lost_control_of_nanjing = {
+	potential = {
+		has_reform = celestial_empire
+		has_dlc = "Mandate of Heaven"
+	}
+
+	trigger = {
+		OR = {
+			NOT = { owns = 1821 }
+			NOT = { controls = 1821 }
+		}
+	}
+
+	imperial_mandate = -0.05
+}
+
+lost_control_of_canton = {
+	potential = {
+		has_reform = celestial_empire
+		has_dlc = "Mandate of Heaven"
+	}
+
+	trigger = {
+		OR = {
+			NOT = { owns = 667 }
+			NOT = { controls = 667 }
+		}
+	}
+
+	imperial_mandate = -0.05
+}
+
+waging_war_for_china = {
+	potential = {
+		has_reform = celestial_empire
+		has_dlc = "Mandate of Heaven"
+	}
+
+	trigger = {
+		is_in_war = {
+			attacker_leader = root
+			casus_belli = cb_chinese_unification
+		}
+	}
+	
+	imperial_mandate = 0.05
+}
+
 ##################################################
 # HRE modifiers
 ##################################################
@@ -584,6 +660,7 @@ hre_dominant_catholic = {
 		OR = {
 			religion = catholic
 			religion = protestant
+			religion = reformed
 		}
 	}
 
@@ -607,12 +684,37 @@ hre_dominant_protestant = {
 		OR = {
 			religion = catholic
 			religion = protestant
+			religion = reformed
 		}
 	}
 
 	trigger = {
 		religion = protestant
 		hre_religion = protestant
+		hre_religion_locked = yes
+	}
+	
+	legitimacy = 0.25
+	tolerance_own = 1
+	global_missionary_strength = 0.01
+	imperial_authority = 0.25
+}
+
+hre_dominant_reformed = {
+	potential = {
+		capital_scope = {
+			continent = europe
+		}
+		OR = {
+			religion = catholic
+			religion = protestant
+			religion = reformed
+		}
+	}
+
+	trigger = {
+		religion = reformed
+		hre_religion = reformed
 		hre_religion_locked = yes
 	}
 	
@@ -656,3 +758,113 @@ golden_age_of_piracy = {
 	privateer_efficiency = 0.2
 }
 
+######################################
+# The Great Peasants' War
+######################################
+
+great_peasants_war_triggered_modifier = {
+	potential = {
+		has_global_flag = great_peasants_war_flag
+		capital_scope = {
+			continent = europe
+		}
+	}
+	trigger = {
+		is_part_of_hre = yes
+		NOT = { has_reform = peasants_republic }
+	}
+	global_unrest = 6
+}
+
+great_peasants_war_concessions_triggered_modifier = {
+	potential = {
+		OR = {
+			has_global_flag = gpw_peasants_win_major
+			has_global_flag = gpw_peasants_win_minor
+		}
+		capital_scope = {
+			continent = europe
+		}
+	}
+	trigger = {
+		is_part_of_hre = yes
+		NOT = { has_reform = peasants_republic }
+	}
+	global_tax_modifier = -0.05
+}
+
+######################################
+# Pope is in the empire
+######################################
+
+pope_in_hre_triggered_modifier = {
+	potential = {
+		PAP = { is_part_of_hre = yes }
+		religion = catholic
+	}
+	trigger = {
+		PAP = { is_part_of_hre = yes }
+		religion = catholic
+		NOT = { is_part_of_hre = yes }
+	}
+	prestige = -0.5
+}
+
+######################################
+# The Italian Wars
+######################################
+
+italian_wars_triggered_modifier = {
+	potential = {
+		has_global_flag = italian_wars_global_flag
+		capital_scope = {
+			continent = europe
+		}
+		religion_group = christian
+	}
+	trigger = {
+		OR = {
+			AND = {
+				capital_scope = { region = italy_region }
+				any_country = {
+					war_with = ROOT
+					religion_group = christian
+					capital_scope = { continent = europe }
+					total_development = 150
+				}
+			}
+			AND = {
+				NOT = { capital_scope = { region = italy_region } }
+				total_development = 150
+				any_country = {
+					war_with = ROOT
+					capital_scope = { region = italy_region }
+				}
+			}
+		}
+	}
+	mercenary_cost = -0.10
+	mercenary_discipline = 0.05
+}
+
+######################################
+# Defense of the Empire
+######################################
+
+defense_of_the_empire_modifier = {
+	potential = {
+		has_dlc = "Emperor"
+		OR = {
+			is_emperor = yes
+			is_elector = yes
+		}
+		hre_reform_passed = emperor_reichskrieg
+	}
+	trigger = {
+		any_country = {
+			war_with = ROOT
+			NOT = { is_part_of_hre = yes }
+		}
+	}
+	war_taxes_cost_modifier = -1.0
+}

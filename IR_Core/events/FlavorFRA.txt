@@ -66,23 +66,28 @@ country_event = {
 	fire_only_once = yes
 	
 	trigger = {
-		tag = FRA
-		NOT = { is_year = 1500 }
-		NOT = { has_country_flag = had_end_of_HYW_france }
-		NOT = {
-			france_region = { owned_by = ENG }
+		OR = {
+			has_global_flag = hyw_mission_resolution
+			AND = {
+				tag = FRA
+				NOT = { is_year = 1500 }
+				NOT = { has_country_flag = had_end_of_HYW_france }
+				NOT = {
+					france_region = { owned_by = ENG }
+				}
+				NOT = {
+					france_region = { owned_by = GBR }
+				}
+				ENG = {
+					NOT = { war_with = FRA }
+				}
+				NOT = { is_subject_of = ENG }
+				GBR = {
+					NOT = { war_with = FRA }
+				}
+				NOT = { is_subject_of = GBR }
+			}
 		}
-		NOT = {
-			france_region = { owned_by = GBR }
-		}
-		ENG = {
-			NOT = { war_with = FRA }
-		}
-		NOT = { is_subject_of = ENG }
-		GBR = {
-			NOT = { war_with = FRA }
-		}
-		NOT = { is_subject_of = GBR }
 	}
 	
 	mean_time_to_happen = {
@@ -122,7 +127,18 @@ country_event = {
 	id = flavor_fra.3105
 	title = "flavor_fra.EVTNAME3105"
 	desc = "flavor_fra.EVTDESC3105"
-	picture = COURT_eventPicture
+	picture = {	
+		trigger = {
+			has_dlc = "Emperor"
+		}
+		picture = ITALIAN_wars_eventPicture
+	}
+	picture = {	
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		picture = COURT_eventPicture
+	} 
 	
 	
 	fire_only_once = yes
@@ -131,6 +147,12 @@ country_event = {
 		NOT = { is_year = 1550 }
 		NOT = { senior_union_with = NAP }
 		NOT = { exists = PRO }
+		ARA = {
+			had_country_flag = {
+				flag = alfonso_died_yes_really
+				days = 7
+			}
+		}
 		OR = {
 			dynasty = "de Valois"
 			dynasty = "d'Anjou"
@@ -148,6 +170,8 @@ country_event = {
 					area = naples_area
 					area = apulia_area
 					area = calabria_area
+					area = western_sicily_area
+					province_id = 120
 				}
 			}
 		}
@@ -160,23 +184,37 @@ country_event = {
 	
 	option = {		# Let us claim what is rightfully Ours!
 		name = "flavor_fra.EVTOPTA3105"
-		every_province = {
+		if = {
 			limit = {
-				OR = {
-					area = sicily_area
-					area = naples_area
-					area = calabria_area
-					area = apulia_area
-					province_id = 120
-				}
-				OR = {
-					owned_by = NAP 
-					owned_by = ARA
-					owned_by = CAS
-					owned_by = SPA
-				}
+				exists = NAP
+				NAP = { is_subject = no }
 			}
-			add_claim = FRA
+			add_casus_belli = {
+				type = cb_restore_personal_union
+				months = 600
+				target = NAP
+			}
+		}
+		else = {
+			every_province = {
+				limit = {
+					OR = {
+						area = sicily_area
+						area = naples_area
+						area = apulia_area
+						area = calabria_area
+						area = western_sicily_area
+						province_id = 120
+					}
+					OR = {
+						owned_by = NAP 
+						owned_by = ARA
+						owned_by = CAS
+						owned_by = SPA
+					}
+				}
+				add_claim = FRA
+			}
 		}
 		every_known_country = {
 			limit = {
@@ -190,8 +228,10 @@ country_event = {
 					OR = {
 						area = sicily_area
 						area = naples_area
-						area = calabria_area
 						area = apulia_area
+						area = calabria_area
+						area = western_sicily_area
+						province_id = 120
 					}
 				}
 			}
@@ -216,8 +256,10 @@ country_event = {
 					OR = {
 						area = sicily_area
 						area = naples_area
-						area = calabria_area
 						area = apulia_area
+						area = calabria_area
+						area = western_sicily_area
+						province_id = 120
 					}
 				}
 			}
@@ -440,7 +482,7 @@ country_event = {
 	}
 }
 
-# Protestant Revolt in Béarn
+# Protestant Revolt in B?arn
 country_event = {
 	id = flavor_fra.3119
 	title = "flavor_fra.EVTNAME3119"
@@ -451,7 +493,7 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		tag = FRA
-		owns = 176		# Béarn
+		owns = 176		# B?arn
 		176 = {
 			has_owner_religion = no
 			religion = protestant
@@ -578,7 +620,7 @@ country_event = {
 	}
 }
 
-# Académie Francaise
+# Acad?mie Francaise
 country_event = {
 	id = flavor_fra.3123
 	title = "flavor_fra.EVTNAME3123"
@@ -706,11 +748,17 @@ country_event = {
 	
 	
 	trigger = {
-		tag = FRA
-		is_year = 1650
-		NOT = { is_year = 1700 }
-		government = monarchy
-		has_regency = no
+		OR = {
+			has_country_flag = versailles_flag
+			AND = {
+				NOT = { has_mission = emp_fra_move_court_to_versailles }
+				tag = FRA
+				is_year = 1650
+				NOT = { is_year = 1700 }
+				government = monarchy
+				has_regency = no
+			}
+		}
 	}
 	
 	mean_time_to_happen = {
@@ -724,6 +772,17 @@ country_event = {
 		add_country_modifier = {
 			name = versailles
 			duration = -1
+		}
+		if = {
+			limit = {
+				has_dlc = "Leviathan"
+			}
+			183 = {
+				add_great_project_tier = {
+					type = versailles
+					tier = 1
+				}
+			}
 		}
 
 	}
@@ -1014,11 +1073,16 @@ country_event = {
 	fire_only_once = yes
 	
 	trigger = {
-		tag = FRA
-		is_year = 1700
-		NOT = { is_year = 1750 }
-		colonial_louisiana = {
-			country_or_vassal_holds = FRA
+		OR = {
+			has_country_flag = fra_louis_mission
+			AND = {
+				tag = FRA
+				is_year = 1700
+				NOT = { is_year = 1750 }
+				colonial_louisiana = {
+					country_or_vassal_holds = FRA
+				}
+			}
 		}
 	}
 	
@@ -1103,7 +1167,7 @@ country_event = {
 	}
 }
 
-# Charles-François de Broglie
+# Charles-Fran?ois de Broglie
 country_event = {
 	id = flavor_fra.3135
 	title = "flavor_fra.EVTNAME3135"
@@ -1128,7 +1192,7 @@ country_event = {
 		add_adm_power = 50
 		define_advisor = {
 			type = statesman
-			name = "Charles François de Broglie"
+			name = "Charles Fran?ois de Broglie"
 			culture = gascon
 			discount = yes
 			skill = 2
@@ -1136,7 +1200,7 @@ country_event = {
 	}
 }
 
-# André-Hercule de Fleury
+# Andr?-Hercule de Fleury
 country_event = {
 	id = flavor_fra.3137
 	title = "flavor_fra.EVTNAME3137"
@@ -1159,7 +1223,7 @@ country_event = {
 		add_adm_power = 50
 		define_advisor = {
 			type = statesman
-			name = "André Hercule de Fleury"
+			name = "Andr? Hercule de Fleury"
 			culture = occitain
 			religion = catholic
 			discount = yes
@@ -1489,7 +1553,7 @@ country_event = {
 	}
 }
 
-# René Descartes
+# Ren? Descartes
 country_event = {
 	id = flavor_fra.5003
 	title = "flavor_fra.EVTNAME5003"
@@ -1559,26 +1623,31 @@ country_event = {
 	desc = "flavor_fra.EVTDESC5"
 	picture = LAND_MILITARY_eventPicture
 	
+	fire_only_once = yes
+	
 	trigger = {
-		tag = FRA
-		government = monarchy
-		treasury = 300
-		183 = { # Ile-de-France
-			controlled_by = FRA
-			owned_by = FRA
-			is_capital = yes
-			has_siege = no
-			NOT = {
-				has_province_modifier = mousquetaires_du_roi
+		OR = {
+			has_country_flag = fra_musketeers_mission
+			AND = {
+				NOT = { has_mission = emp_fra_establish_the_musketeers }
+				tag = FRA
+				government = monarchy
+				treasury = 300
+				183 = { # Ile-de-France
+					controlled_by = FRA
+					owned_by = FRA
+					is_capital = yes
+					has_siege = no
+					NOT = {
+						has_province_modifier = mousquetaires_du_roi
+					}
+				}
+				has_regency = no
+				mil = 6
+				adm_tech = 25
+				is_year = 1600
+				is_free_or_tributary_trigger = yes
 			}
-		}
-		has_regency = no
-		mil = 6
-		adm_tech = 25
-		is_year = 1600
-		is_free_or_tributary_trigger = yes
-		NOT = {
-			has_country_modifier = fra_musketeers_timer
 		}
 	}
 	
@@ -1586,29 +1655,15 @@ country_event = {
 		months = 200
 	}
 	
-	immediate = {
-		hidden_effect = {
-			add_country_modifier = {
-				name = fra_musketeers_timer
-				duration = 18250
-				hidden = yes
-			}
-		}
-	}
-
 	option = {
 		name = "flavor_fra.EVTOPTA5"
-		add_treasury = -300
-		add_army_professionalism = 0.05
+		add_army_professionalism = 0.1
 		183 = { # Ile-de-France
 			add_province_modifier = {
 				name = mousquetaires_du_roi
-				duration = 36500
+				duration = -1
 			}
 		}
-	}
-	option = {
-		name = "flavor_fra.EVTOPTB5"
 	}
 }
 
@@ -1623,56 +1678,52 @@ country_event = {
 	
 	trigger = {
 		tag = ENG
+		is_subject = no
 		exists = FRA
 		NOT = { alliance_with = FRA }
 		NOT = { war_with = FRA }
-		NOT = { is_year = 1455 }
-		is_year = 1446
-		#NOT = { truce_with = FRA }
-		OR = {
-			177 = {
+		NOT = { is_year = 1450 }
+		NOT = { truce_with = FRA }
+		177 = {
+			OR = {
 				owned_by = ENG
+				owner = {
+					is_subject_of = ENG
+				}
 			}
-			10620 = {
-				owned_by = ENG
-			}
-		}		
+		}
 		FRA = {
 			is_subject = no
 		}
-		#has_country_flag = IR_flavor_ENG.1.a.Happened
+		is_year = 1445
 	}
 	
 	mean_time_to_happen = {
-		months = 3
+		months = 12
 	}
 
 	option = {
 		name = "flavor_fra.6.a"
 		ai_chance = {
-			factor = 50
+			factor = 25
 		}
 		tooltip = {
 			177 = {
 				cede_province = FRA
 			}
-			10620 = { 
-				cede_province = FRA
-			}
-			#add_truce_with = FRA
+			add_truce_with = FRA
 		}
 		FRA = { country_event = { id = flavor_fra.8 } }
 		add_prestige = -10
 		add_stability = -1
 		set_country_flag = rb_gave_up_maine
 	}
-	
 	option = {
 		name = "flavor_fra.6.b"
 		ai_chance = {
-			factor = 50
+			factor = 75
 			modifier = {
-				factor = 5
+				factor = 0
 				is_at_war = yes
 			}
 			modifier = {
@@ -1716,9 +1767,6 @@ country_event = {
 			}
 		}
 		177 = {
-			change_controller = FRA
-		}
-		10620 = {
 			change_controller = FRA
 		}
 	}
@@ -1767,24 +1815,151 @@ country_event = {
 	option = {
 		name = "flavor_fra.8.a" #
 		add_prestige = 10
-		#hidden_effect = {
-			#FROM = {
-				#add_truce_with = ROOT
-			#}
-		#}
-		#add_truce_with = FROM
+		hidden_effect = {
+			FROM = {
+				add_truce_with = ROOT
+			}
+		}
+		add_truce_with = FROM
 		177 = {
 			cede_province = FRA
 			hidden_effect = { add_local_autonomy = -50 }
 		}
-		10620 = {
-			cede_province = FRA
-			hidden_effect = { add_local_autonomy = -50 }
-		}
-		#10621 = {
-		#	cede_province = FRA
-		#	hidden_effect = { add_local_autonomy = -50 }
-		#}
 	}
 }
 
+# François Villon
+country_event = {
+	id = flavor_fra.9000
+	title = "flavor_fra.EVTNAME9000"
+	desc = "flavor_fra.EVTDESC9000"
+	picture = REFORM_eventPicture
+	
+	is_triggered_only = yes
+	fire_only_once = yes	
+	trigger = {
+		tag = FRA
+		has_regency = no
+		is_year = 1450
+		NOT = { is_year = 1465 }
+	}
+
+	option = {		# Throw him back in jail
+		name = "flavor_fra.EVTOPTA9000"
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+	}
+
+	option = {		# Bring him to court
+		name = "flavor_fra.EVTOPTB9000"
+		define_advisor = {
+			type = artist
+			name = "François Villon"
+			culture = cosmopolitan_french
+			discount = yes
+			skill = 3
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -10
+			}
+		}
+	}
+
+	option = {		# Bring him to court
+		name = "flavor_fra.EVTOPTC9000"
+		add_prestige = -5
+	}
+}
+
+#New event by Pierre du Plessis
+#Reference is to Louise Marie Thérèse, The Black Nun of Moret
+country_event = {
+	id = flavor_fra.9500
+	title = flavor_fra.9500.name
+	desc = flavor_fra.9500.desc
+	picture = {
+		trigger = { has_dlc = "Rights of Man" }
+		picture = CONSORT_DOING_BADLY_eventPicture
+	}
+	picture = {
+		trigger = { NOT = { has_dlc = "Rights of Man" } }
+		picture = COURT_eventPicture
+	}
+	
+	is_triggered_only = yes
+	fire_only_once = yes	
+
+	trigger = {
+		tag = FRA
+		is_year = 1630
+		NOT = { is_year = 1780 }
+		government = monarchy
+		is_female = no
+		has_consort = yes
+		NOT = { consort_age = 41 }
+		has_heir = yes
+		heir_age = 1
+		religion_group = christian
+		ruler_culture = cosmopolitan_french
+		OR = {
+			consort_culture = cosmopolitan_french
+			any_known_country = {
+				OR = {
+					culture_group = british
+					culture_group = french
+					culture_group = germanic
+					culture_group = scandinavian
+					culture_group = iberian
+					culture_group = latin
+					culture_group = west_slavic
+					culture_group = east_slavic
+					culture_group = byzantine
+				}
+				root = {
+					consort_culture = prev
+				}
+			}
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			export_to_variable = {
+				which = consort_culture_var
+				value = consort_culture
+			}
+		}
+	}
+	after = {
+		set_variable = {
+			which = consort_culture_var
+			value = 0
+		}
+	}
+
+	option = { #Send her to a Convent
+		name = flavor_fra.9500.A
+		add_prestige = -10
+	}
+	option = { #She is clearly my daughter
+		name = flavor_fra.9500.B
+		add_legitimacy = -10
+		reduce_mandate_effect = yes
+	}
+	option = { #Banish this unfaithful wife!
+		name = flavor_fra.9500.C
+		divorce_consort_effect = yes
+	}
+}

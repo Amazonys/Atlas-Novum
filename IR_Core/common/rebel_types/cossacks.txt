@@ -1,0 +1,160 @@
+
+######################################################################
+# Cossack rebels.
+######################################################################
+cossack_rebels = {
+	
+	color = { 190 55 55 }
+	
+	area = nation 					# Stays within the nation
+	government = republic		# Don't care about gov type				
+	defection = none				# Will not defect
+	independence = none				# Does not strive for independence
+	gfx_type = culture_province
+	will_relocate = yes	
+
+	resilient = yes					# Can retreat
+	reinforcing = yes				# Can reinforce
+	general = yes					# Does use generals
+	smart = yes						# Do assault forts, tactically withdraw from battle, etc.
+	unit_transfer = no				# Units do not remain after enforcing demands.
+	
+	artillery = 0.0
+	infantry = 0.4
+	cavalry = 0.6
+	
+	morale = 0.95
+	
+	# Possible handle actions
+	handle_action_negotiate = yes
+	handle_action_stability = yes
+	
+	# The rebel type with the highest modifier for this province gets picked
+	spawn_chance = {
+		factor = 20		
+		modifier = {
+			factor = 0.2
+			is_core = owner
+		}
+		modifier = {
+			factor = 0.2
+			is_overseas = yes # Prefer other types overseas
+		}
+		modifier = {
+			factor = 0.5
+			owner = {
+				primary_culture = ROOT
+			}
+		}
+		modifier = {
+			factor = 0.8
+			religion = owner
+		}
+		modifier = {
+			factor = 0
+			NOT = { owner = { has_estate = estate_cossacks } }		
+		}	
+		modifier = {
+			factor = 0
+			NOT = { has_terrain = steppe }
+		}
+		modifier = {
+			factor = 2.0
+			culture_group = east_slavic
+		}
+		modifier = {
+			factor = 2.0
+			owner = {
+				estate_territory = {
+					estate = estate_cossacks
+					territory = 20
+				}
+			}
+		}
+	}
+ 
+ 	# This is checked for EACH province in the Area of Operations
+	movement_evaluation = {
+		factor = 1
+		modifier = {
+			factor = 0.1
+			units_in_province = 1
+		}
+		modifier = {
+			factor = 0.001
+			controlled_by = REB
+		}
+		modifier = {
+			factor = 2.0
+			is_capital = yes
+		}
+		modifier = {
+			factor = 5.0
+			has_terrain = steppe
+		}		
+		modifier = {
+			factor = 1.5
+			unrest = 2
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 4
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 6
+		}
+	}
+	
+ 	# Province Scope
+ 	siege_won_trigger = {
+ 		NOT = { local_autonomy = 50 }
+		has_terrain = steppe
+ 	}
+	siege_won_effect = {
+		add_local_autonomy = 10	
+		owner = {
+			change_estate_land_share = {
+				estate = estate_cossacks
+				share = 10.0
+				province = ROOT
+			}
+		}
+	}	
+	
+	# Country scope
+	can_negotiate_trigger = {
+		always = yes
+	}
+	
+	# Country scope
+	can_enforce_trigger = {
+		always = yes
+	}
+
+	# Localisation for their demands
+	demands_description = "cossack_rebels_demand"
+	
+	# Country scope
+	demands_enforced_effect = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_lost_to_rebels
+				duration = 10
+				hidden = yes
+			}
+		}
+		create_independent_estate = {
+			estate = estate_cossacks
+			play_as = no
+		}
+		change_estate_land_share = {
+			estate = estate_cossacks
+			share = -30.0
+		}
+		change_estate_land_share = {
+			estate = all
+			share = 20.0
+		}
+	}
+}

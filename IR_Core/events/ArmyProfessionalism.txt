@@ -1,0 +1,1078 @@
+######################################
+# Army Professionalism Events        #
+#                            		 #
+# Written by Henrik Lohmander		 #
+######################################
+
+namespace = army_professionalism_events
+
+#Sack of x
+country_event = {
+	id = army_professionalism_events.1
+	title = army_professionalism_events.1.t
+	desc = army_professionalism_events.1.d
+	picture = NOT_DISCIPLINED_SOLDIERS_eventPicture
+	goto = from
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		NOT = { tag = REB }
+		OR = {
+			FROM = {
+				owner = {
+					is_rival = ROOT
+				}
+			}
+			NOT = { army_professionalism = 0.50 }
+		}
+		NOT = {
+			has_country_modifier = enemies_sacked_city
+		}
+		OR = {
+			NOT = { has_country_flag = had_living_of_the_land }
+			had_country_flag = { flag = had_living_of_the_land days = 12775 } #35 Years
+		}
+		FROM = {
+			development = 15
+			fort_level = 1
+			OR = {
+				NOT = { has_province_flag = was_magdeburgerized }
+				had_province_flag = { flag = was_magdeburgerized days = 18250 } #50 Years
+			}
+			owner = {
+				OR = {
+					NOT = { has_country_flag = was_plundered }
+					had_country_flag = { flag = was_plundered days = 14600 } #40 Years
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = had_living_of_the_land
+			FROM = {
+				set_province_flag = was_magdeburgerized
+				owner = {
+					save_event_target_as = attacked_country
+					set_country_flag = was_plundered
+				} #For prettier tooltip
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 0.5
+			army_professionalism = 0.30
+		}
+		modifier = {
+			factor = 0.5
+			FROM = {
+				owned_by = PAP
+				is_capital = yes
+			}
+		}
+	}
+
+	option = {
+		name = army_professionalism_events.1.b #We We need better discipline! (and salaries)
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 2
+				years_of_income = 0.5
+			}
+		}
+		add_army_professionalism = 0.05
+		add_years_of_income = -0.25
+		FROM = {
+			province_event = { id = army_professionalism_events.2 }
+			tooltip = {
+				add_devastation = 50
+			}
+		}
+	}
+	option = {
+		name = army_professionalism_events.1.a #We must punish the perpetrators
+		ai_chance = {
+			factor = 50
+		}
+		add_prestige = -5
+		FROM = {
+			province_event = { id = army_professionalism_events.18 }
+			tooltip = {
+				add_devastation = 75
+			}
+		}
+		tooltip = {
+			event_target:attacked_country = {
+				add_opinion = {
+					who = ROOT
+					modifier = sack_of_x
+				}
+			}
+		}
+	}
+	option = {
+		name = army_professionalism_events.1.c #Such are the rules of warfare
+		trigger = {
+			NOT = {
+				has_dlc = "Emperor"
+				FROM = {
+					is_capital = yes
+					owned_by = PAP
+				}
+			}
+		}
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 0
+				is_core = FROM
+			}
+			modifier = {
+				factor = 0
+				primary_culture = FROM
+			}
+			modifier = {
+				factor = 5
+				has_reform = steppe_horde
+			}
+		}
+		add_army_professionalism = -0.05
+		add_prestige = -10
+		add_horde_unity = 5
+		add_loot_from_province_effect = yes
+		FROM = {
+			province_event = { id = army_professionalism_events.3 }
+			tooltip = {
+				add_devastation = 100
+				add_base_production = -2
+			}
+		}
+		tooltip = {
+			event_target:attacked_country = {
+				add_opinion = {
+					who = ROOT
+					modifier = sack_of_x
+				}
+				add_country_modifier = {
+					name = "enemies_sacked_city"
+					duration = 3650
+				}
+			}
+		}
+	}
+	option = {
+		name = army_professionalism_events.1.d2 # plunder the curia treasury
+		trigger = {
+			has_dlc = "Emperor"
+			FROM = {
+				is_capital = yes
+				owned_by = PAP
+			}
+		}
+		highlight = yes
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 0
+				is_core = FROM
+			}
+			modifier = {
+				factor = 0
+				primary_culture = FROM
+			}
+			modifier = {
+				factor = 5
+				has_reform = steppe_horde
+			}
+			modifier = {
+				factor = 100
+				NOT = {
+					religion = catholic
+				}
+			}
+			modifier = {
+				factor = 100
+				religion = catholic
+				OR = {
+					ruler_has_personality = sinner_personality
+					ruler_has_personality = malevolent_personality
+				}
+			}
+		}
+		add_treasury = 1000
+		add_army_professionalism = -0.05
+		add_prestige = -10
+		add_horde_unity = 5
+		add_loot_from_province_effect = yes
+		FROM = {
+			province_event = { id = army_professionalism_events.3 }
+			tooltip = {
+				add_devastation = 100
+				add_base_production = -2
+			}
+		}
+		tooltip = {
+			reduce_curia_treasury_big_effect = yes
+			event_target:attacked_country = {
+				add_opinion = {
+					who = ROOT
+					modifier = sack_of_x
+				}
+				add_country_modifier = {
+					name = "enemies_sacked_city"
+					duration = 3650
+				}
+			}
+		}
+	}
+}
+
+#Sack of X
+province_event = {
+	id = army_professionalism_events.2
+	title = army_professionalism_events.2.t
+	desc = army_professionalism_events.2.d
+	picture = NOT_DISCIPLINED_SOLDIERS_eventPicture
+	goto = root
+
+	is_triggered_only = yes
+
+	option = {
+		name = army_professionalism_events.2.a #Barbarians!
+		add_devastation = 50
+		owner = {
+			add_opinion = {
+				who = FROM
+				modifier = sack_of_x
+			}
+		}
+	}
+}
+
+#The total destruction of X
+province_event = {
+	id = army_professionalism_events.3
+	title = army_professionalism_events.3.t
+	desc = {
+		trigger = {
+			owner = { NOT = { tag = PAP } }
+		}
+		desc = army_professionalism_events.3.d
+	}
+	desc = {
+		trigger = {
+			owner = { tag = PAP }
+		}
+		desc = army_professionalism_events.3.d2
+	}
+	picture = NOT_DISCIPLINED_SOLDIERS_eventPicture
+	goto = root
+
+	is_triggered_only = yes
+
+	option = {
+		name = army_professionalism_events.3.a #Barbarians!
+		trigger = {
+			NOT = { 
+				owner = { tag = PAP }
+				has_dlc = "Emperor"
+			}
+		}
+		add_devastation = 100
+		add_base_production = -2
+		owner = {
+			add_country_modifier = {
+				name = "enemies_sacked_city"
+				duration = 3650
+			}
+			add_opinion = {
+				who = FROM
+				modifier = sack_of_x
+			}
+		}
+	}
+	option = {
+		name = army_professionalism_events.3.b
+		trigger = {
+			owner = { tag = PAP }
+			has_dlc = "Emperor"
+		}
+		add_devastation = 100
+		add_base_production = -2
+		reduce_curia_treasury_big_effect = yes
+		owner = {
+			add_country_modifier = {
+				name = "enemies_sacked_city"
+				duration = 3650
+			}
+			add_opinion = {
+				who = FROM
+				modifier = sack_of_x
+			}
+		}
+	}
+}
+
+#Delayed salaries
+country_event = {
+	id = army_professionalism_events.4
+	title = army_professionalism_events.4.t
+	desc = army_professionalism_events.4.d
+	picture = NOT_DISCIPLINED_SOLDIERS_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		is_at_war = yes
+		army_professionalism = 0.1
+		any_neighbor_country = {
+			war_with = ROOT
+			any_owned_province = {
+				controlled_by = ROOT
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_neighbor_country = {
+				limit = {
+					war_with = ROOT
+					any_owned_province = {
+						controlled_by = ROOT
+					}
+				}
+				save_event_target_as = enemy_country
+				random_owned_province = {
+					limit = {
+						controlled_by = ROOT
+					}
+					save_event_target_as = delayed_salaries_province
+				}
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+
+	option = {
+		name = army_professionalism_events.4.a #We must pay the elite troops
+		ai_chance = {
+			factor = 75
+		}
+		add_yearly_manpower = -1.5 #Desertions
+	}
+	option = {
+		name = army_professionalism_events.4.b #Let them live of the land
+		goto = delayed_salaries_province
+		ai_chance = {
+			factor = 25
+		}
+		add_army_professionalism = -0.05
+		event_target:delayed_salaries_province = {
+			area = {
+				limit = {
+					OR = {
+						controlled_by = ROOT
+						AND = {
+							controlled_by = event_target:enemy_country
+							any_neighbor_province = {
+								controlled_by = ROOT
+							}
+						}
+					}
+				}
+				add_devastation = 45
+			}
+		}
+	}
+}
+
+#Peacetime Life
+country_event = {
+	id = army_professionalism_events.5
+	title = army_professionalism_events.5.t
+	desc = army_professionalism_events.5.d
+	picture = NOT_DISCIPLINED_SOLDIERS_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		is_at_war = no
+		NOT = { had_recent_war = 10 } #10 year since last war
+		army_professionalism = 0.20
+		any_owned_province = {
+			OR = {
+				is_in_capital_area = yes
+				fort_level = 2
+				has_building = barracks
+				has_building = training_fields
+				has_building = regimental_camp
+				has_building = conscription_center
+			}
+			NOT = { has_province_modifier = soldiers_stimulating_local_economy }
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+				}
+				save_event_target_as = soldier_province
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					is_in_capital_area = yes
+				}
+				save_event_target_as = soldier_province
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					OR = {
+						fort_level = 2
+						has_building = barracks
+						has_building = training_fields
+						has_building = regimental_camp
+						has_building = conscription_center
+					}
+				}
+				save_event_target_as = soldier_province
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 1.1
+			NOT = { had_recent_war = 20 } #20 year since last war
+		}
+	}
+	
+
+	option = {
+		name = army_professionalism_events.5.a #They must not be allowed other occupations on the side.
+		ai_chance = {
+			factor = 25
+		}
+		add_years_of_income = -0.45
+	}
+	option = {
+		name = army_professionalism_events.5.b #We can let this slip for now.
+		goto = soldier_province
+		ai_chance = {
+			factor = 75
+		}
+		add_army_professionalism = -0.05
+		event_target:soldier_province = {
+			area = {
+				limit = { owned_by = ROOT }
+				add_province_modifier = {
+					name = "soldiers_stimulating_local_economy"
+					duration = 3650
+				}
+			}
+		}
+	}
+}
+
+#Foreign Talent
+country_event = {
+	id = army_professionalism_events.6
+	title = army_professionalism_events.6.t
+	desc = army_professionalism_events.6.d
+	picture = LAND_MILITARY_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		monthly_income = 6 #At least this much
+		NOT = { army_professionalism = 0.8 }
+		is_subject = no
+		any_neighbor_country = {
+			is_subject = no
+			NOT = { overlord_of = ROOT }
+			NOT = { alliance_with = ROOT }
+			NOT = { war_with = ROOT }
+			NOT = { truce_with = ROOT }
+			army_professionalism = 0.25
+			army_professionalism = ROOT
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_neighbor_country = {
+				limit = {
+					is_subject = no
+					NOT = { overlord_of = ROOT }
+					NOT = { alliance_with = ROOT }
+					NOT = { war_with = ROOT }
+					NOT = { truce_with = ROOT }
+					army_professionalism = 0.25
+					army_professionalism = ROOT
+				}
+				save_event_target_as = professional_country
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+
+	option = {
+		name = army_professionalism_events.6.a #
+		ai_chance = {
+			factor = 50
+		}
+		if = {
+			limit = {
+				monthly_income = 10
+			}
+			add_years_of_income = -0.5
+		}
+		else = {
+			add_treasury = -60
+		}
+		add_army_professionalism = 0.05
+		event_target:professional_country = {
+			add_opinion = {
+				modifier = hired_defectors
+				who = ROOT
+			}
+			hidden_effect = {
+				random_list = {
+					25 = { country_event = { id = army_professionalism_events.7 days = 7 } }
+					75 = { }
+				}
+			}
+		}
+	}
+	option = {
+		name = army_professionalism_events.6.b #
+		ai_chance = {
+			factor = 50
+		}
+		event_target:professional_country = {
+			add_opinion = {
+				modifier = refused_to_hire_defectors
+				who = ROOT
+			}
+		}
+	}
+}
+
+
+#Spy Infiltration
+country_event = {
+	id = army_professionalism_events.7
+	title = army_professionalism_events.7.t
+	desc = army_professionalism_events.7.d
+	picture = HEIR_AND_FOREIGN_ADVISOR_eventPicture
+	
+	is_triggered_only = yes
+
+	option = {
+		name = army_professionalism_events.7.a #
+		FROM = {
+			add_spy_network_from = {
+				who = ROOT
+				value = 75
+			}
+		}
+	}
+}
+
+
+#Wargames
+country_event = {
+	id = army_professionalism_events.8
+	title = army_professionalism_events.8.t
+	desc = army_professionalism_events.8.d
+	picture = DISCIPLINED_SOLDIERS_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		is_at_war = no
+		army_professionalism = 0.6
+		NOT = { army_professionalism = 1 }
+		NOT = { has_country_modifier = wargames }
+	}
+	
+	is_triggered_only = yes
+	
+
+	option = {
+		name = army_professionalism_events.8.a #
+		ai_chance = {
+			factor = 75
+		}
+		add_years_of_income = -0.25
+		add_yearly_manpower = -0.25
+		add_prestige = 5
+		add_army_professionalism = 0.05
+		add_country_modifier = {
+			name = "wargames"
+			duration = 3650
+		}
+	}
+	option = {
+		name = army_professionalism_events.8.b #
+		ai_chance = {
+			factor = 25
+		}
+		add_prestige = -5
+	}
+}
+
+#Private Contractors
+country_event = {
+	id = army_professionalism_events.9
+	title = army_professionalism_events.9.t
+	desc = army_professionalism_events.9.d
+	picture = TRADE_GOODS_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		is_at_war = yes
+		army_professionalism = 0.1
+		any_neighbor_country = {
+			war_with = ROOT
+			any_owned_province = {
+				controlled_by = ROOT
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_neighbor_country = {
+				limit = {
+					war_with = ROOT
+					any_owned_province = {
+						controlled_by = ROOT
+					}
+				}
+				save_event_target_as = enemy_country
+			}
+			
+		}
+	}
+
+	option = {
+		name = army_professionalism_events.9.a #Root out the rot!
+		ai_chance = {
+			factor = 75
+		}
+		add_army_professionalism = -0.025
+	}
+	option = {
+		name = army_professionalism_events.9.b #We will have to let it be.
+		ai_chance = {
+			factor = 25
+		}
+		add_corruption = 0.25
+	}
+}
+
+#An Army Career
+country_event = {
+	id = army_professionalism_events.10
+	title = army_professionalism_events.10.t
+	desc = army_professionalism_events.10.d
+	picture = DISCIPLINED_SOLDIERS_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		is_at_war = yes
+		NOT = { army_professionalism = 1 }
+	}
+	
+	is_triggered_only = yes
+	
+
+	option = {
+		name = army_professionalism_events.10.a #
+		ai_chance = {
+			factor = 75
+		}
+		add_army_tradition = 15
+		add_estate_nobles_loyalty_effect = yes
+		reduce_estate_burghers_loyalty_effect = yes
+	}
+	option = {
+		name = army_professionalism_events.10.b #
+		ai_chance = {
+			factor = 25
+		}
+		add_army_tradition = -10
+		add_army_professionalism = 0.025
+		reduce_estate_nobles_loyalty_effect = yes
+		add_estate_burghers_loyalty_effect = yes
+	}
+}
+
+
+#Esprit de Corps
+country_event = {
+	id = army_professionalism_events.11
+	title = army_professionalism_events.11.t
+	desc = army_professionalism_events.11.d
+	picture = DISCIPLINED_SOLDIERS_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		is_at_war = yes
+		NOT = { army_professionalism = 1 }
+	}
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					war_with = ROOT
+				}
+				save_event_target_as = enemy_country
+			}
+		}
+	}
+
+	option = {
+		name = army_professionalism_events.11.a #
+		ai_chance = {
+			factor = 75
+		}
+		add_army_professionalism = 0.03
+	}
+}
+
+#Lack of Officers
+country_event = {
+	id = army_professionalism_events.12
+	title = army_professionalism_events.12.t
+	desc = army_professionalism_events.12.d
+	picture = LAND_MILITARY_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		army_professionalism = 0.5
+	}
+	
+	is_triggered_only = yes
+	
+
+	option = {
+		name = army_professionalism_events.12.a #
+		ai_chance = {
+			factor = 75
+		}
+		add_army_professionalism = -0.05
+	}
+	option = {
+		name = army_professionalism_events.12.b #
+		ai_chance = {
+			factor = 25
+		}
+		add_country_modifier = {
+			name = shortage_of_officers
+			duration = 5475
+		}
+	}
+}
+
+#Local Militias
+country_event = {
+	id = army_professionalism_events.13
+	title = army_professionalism_events.13.t
+	desc = army_professionalism_events.13.d
+	picture = DISCIPLINED_SOLDIERS_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		army_professionalism = 0.5
+		NOT = { has_country_modifier = integration_of_local_militias }
+		NOT = { army_professionalism = 1 }
+	}
+	
+	is_triggered_only = yes
+	
+
+	option = {
+		name = army_professionalism_events.13.a #
+		ai_chance = {
+			factor = 75
+		}
+		add_army_professionalism = -0.05
+	}
+	option = {
+		name = army_professionalism_events.13.b #
+		ai_chance = {
+			factor = 25
+		}
+		add_army_professionalism = 0.025
+		add_country_modifier = {
+			name = "integration_of_local_militias"
+			duration = 3650
+		}
+		add_yearly_manpower = -1
+	}
+}
+
+#Thriving Weapons Industry
+province_event = {
+	id = army_professionalism_events.14
+	title = army_professionalism_events.14.t
+	desc = army_professionalism_events.14.d
+	picture = LAND_MILITARY_eventPicture
+	goto = root
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		has_building = weapons
+		NOT = { has_province_modifier = thriving_weapons_industry }
+		owner = {
+			army_professionalism = 0.4
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 600
+		modifier = {
+			factor = 0.9
+			owner = {
+				army_professionalism = 0.6
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				army_professionalism = 0.8
+			}
+		}
+	}
+	
+
+	option = {
+		name = army_professionalism_events.14.a #
+		add_province_modifier = {
+			name = "thriving_weapons_industry"
+			duration = 3650
+		}
+	}
+}
+
+#Growth of Regimental Towns
+province_event = {
+	id = army_professionalism_events.15
+	title = army_professionalism_events.15.t
+	desc = army_professionalism_events.15.d
+	picture = LAND_MILITARY_eventPicture
+	goto = root
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		OR = {
+			has_building = barracks
+			has_building = training_fields
+			has_building = conscription_center
+			has_building = regimental_camp
+		}
+		is_capital = no
+		NOT = { has_province_flag = regimental_town_flag }
+		NOT = { has_province_modifier = regimental_town }
+		owner = {
+			army_professionalism = 0.4
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 700
+		modifier = {
+			factor = 0.8
+			owner = {
+				army_professionalism = 0.6
+			}
+		}
+		modifier = {
+			factor = 0.8
+			owner = {
+				army_professionalism = 0.8
+			}
+		}
+	}
+	
+
+	option = {
+		name = army_professionalism_events.15.a #
+		add_base_tax = 1
+		add_province_modifier = {
+			name = "regimental_town"
+			duration = 3650
+		}
+		set_province_flag = regimental_town_flag
+	}
+}
+
+#Corrupt Rolls
+country_event = {
+	id = army_professionalism_events.16
+	title = army_professionalism_events.16.t
+	desc = army_professionalism_events.16.d
+	picture = NOT_DISCIPLINED_SOLDIERS_eventPicture
+	goto = cheating_rolls
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		NOT = { army_professionalism = 0.4 }
+		num_of_cities = 5
+		any_owned_province = {
+			is_capital = no
+			NOT = { has_province_modifier = reassessement_provinces }
+			NOT = { has_province_modifier = cheated_rolls }
+			is_state = yes
+		}
+		NOT = { has_country_modifier = corrupt_rolls_cooldown_timer }
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 1.25
+			NOT = { army_professionalism = 0.2 }
+		}
+		modifier = { #hard to get professionalism up high enough before then
+			factor = 0.5
+			NOT = { is_year = 1500 }
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					is_state = yes
+					NOT = { has_province_modifier = reassessement_provinces }
+					NOT = { has_province_modifier = cheated_rolls }
+				}
+				save_event_target_as = cheating_rolls
+			}
+			add_country_modifier = {
+				name = corrupt_rolls_cooldown_timer
+				duration = 7300
+				hidden = yes
+			}
+		}
+	}
+
+	option = {
+		name = army_professionalism_events.16.a #
+		add_army_professionalism = -0.025
+		event_target:cheating_rolls = {
+			area = {
+				limit = {
+					owned_by = ROOT
+					NOT = { has_province_modifier = reassessement_provinces }
+					NOT = { has_province_modifier = cheated_rolls }
+				}
+				add_province_modifier = {
+					name = "cheated_rolls"
+					duration = 3650
+				}
+			}
+		}
+	}
+	option = {
+		name = army_professionalism_events.16.b #
+		reduce_estate_nobles_loyalty_effect = yes
+		add_army_professionalism = 0.025
+		event_target:cheating_rolls = {
+			area = {
+				limit = {
+					owned_by = ROOT
+					NOT = { has_province_modifier = reassessement_provinces }
+					NOT = { has_province_modifier = cheated_rolls }
+				}
+				add_province_modifier = {
+					name = "reassessement_provinces"
+					duration = 3650
+				}
+			}
+		}
+	}
+}
+
+#Maintenance
+country_event = {
+	id = army_professionalism_events.17
+	title = army_professionalism_events.17.t
+	desc = army_professionalism_events.17.d
+	picture = LAND_MILITARY_eventPicture
+
+	trigger = {
+		has_dlc = "Cradle of Civilization"
+		has_country_modifier = gunpowder_core
+		mil_tech = 19
+	}
+	
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+
+	option = {
+		name = army_professionalism_events.17.a #
+		if = {
+			limit = {
+				had_country_flag = { flag = gunpowder_core_activated days = 3650 } 
+				NOT = { army_professionalism = 1 }
+			}
+			add_army_professionalism = 0.025
+		}
+		remove_country_modifier = gunpowder_core
+	}
+}
+
+
+#Sack of X
+province_event = {
+	id = army_professionalism_events.18
+	title = army_professionalism_events.2.t
+	desc = army_professionalism_events.2.d
+	picture = NOT_DISCIPLINED_SOLDIERS_eventPicture
+	goto = root
+
+	is_triggered_only = yes
+
+	option = {
+		name = army_professionalism_events.2.a #Barbarians!
+		add_devastation = 75
+		owner = {
+			add_opinion = {
+				who = FROM
+				modifier = sack_of_x
+			}
+		}
+	}
+}	

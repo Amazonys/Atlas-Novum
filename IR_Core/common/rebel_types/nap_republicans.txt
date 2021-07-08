@@ -1,0 +1,189 @@
+######################################################################
+# Republican Rebels for the Neapolitan Republican Uprising
+######################################################################
+#Should never spawn except via event. Copied from revolutionaries, with changes for special circumstances
+nap_republican_rebels = {
+
+	color = { 50 85 210 }
+
+	area = nation 					# Stays within the nation
+	government = republic			
+	defection = none				# Does not defect
+	independence = none				# Does not strive for independence
+	unit_transfer = yes
+	gfx_type = culture_province	
+	will_relocate = yes	
+	
+	resilient = no
+	reinforcing = yes
+	general = yes
+	smart = yes
+	
+	artillery = 0.1
+	infantry = 0.6
+	cavalry = 0.3
+	
+	morale = 1.1
+	
+	# Possible handle actions
+	handle_action_negotiate = yes
+	handle_action_stability = yes
+	handle_action_build_core = yes
+	handle_action_send_missionary = yes		
+	
+	# The rebel type with the highest modifier for this province gets picked
+	spawn_chance = {
+		factor = 0
+	}
+ 
+ 	# This is checked for EACH province in the Area of Operations
+	movement_evaluation = {
+		factor = 1
+		modifier = {
+			factor = 0.1
+			units_in_province = 1
+		}
+		modifier = {
+			factor = 0.001
+			controlled_by = REB
+		}
+		modifier = {
+			factor = 10
+			is_capital = yes
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 2
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 4
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 6
+		}
+	}
+ 
+ 	# Province Scope
+ 	siege_won_trigger = {
+ 	}
+	siege_won_effect = {
+	}
+	
+	# Country scope
+	can_negotiate_trigger = {
+		is_lesser_in_union = no
+	}
+	
+	# Country scope
+	can_enforce_trigger = {
+		always = yes
+	}
+	
+	# Localisation for their demands
+	demands_description = "establish_a_republic"
+	
+	# Country Scope	
+	demands_enforced_effect = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_lost_to_rebels
+				duration = 10
+				hidden = yes
+			}
+		}
+		add_prestige = -50
+		if = {
+			limit = {
+				is_lesser_in_union = yes
+			}
+			set_country_flag = neapolitan_republic
+			overlord = {
+				add_casus_belli = {
+					type = cb_restore_personal_union
+					target = root
+					months = 240
+				}
+			}
+		}
+		if = {
+			limit = {
+				NOT = { 
+					OR = {
+						government = republic
+						has_reform = papacy_reform
+						has_reform = steppe_horde
+						has_reform = celestial_empire
+						has_reform = iqta
+						has_reform = daimyo
+						has_reform = shogunate
+						has_reform = colonial_government
+						has_reform = native_basic_reform
+						is_revolutionary_republic_trigger = yes
+					}
+				}
+			}
+			change_government_to_republic = yes
+			#set_legacy_government = signoria
+		}
+		if = {
+			limit = {
+				NOT = {
+					OR = {
+						has_reform = papacy_reform
+						has_reform = steppe_horde
+						has_reform = celestial_empire
+						has_reform = iqta
+						has_reform = daimyo
+						has_reform = shogunate
+						has_reform = colonial_government
+						has_reform = native_basic_reform
+						is_revolutionary_republic_trigger = yes
+						has_reform = tribal_federation
+						has_reform = feudal_theocracy
+						has_reform = mamluk_government
+					}
+				}
+			}
+			add_government_reform = signoria_reform
+		}
+		if = {
+			limit = {
+				has_country_flag = nap_republican_uprising_foreign_support
+			}
+			random_country = {
+				limit = {
+					has_country_flag = nap_republican_uprising_supporting_country
+				}
+				root = {
+					define_ruler = {
+						name = nap_foreign_republican
+						dynasty = nap_foreign_republican
+						culture = prev
+						religion = prev
+					}
+					add_opinion = {
+						who = prev
+						modifier = opinion_supported_republican_uprising
+					}
+					reverse_add_opinion = {
+						who = prev
+						modifier = opinion_sponsors_of_republican_uprising
+					}
+				}
+				hidden_effect = {
+					country_event = { id = new_flavour_nap.8 }
+				}
+			}
+			hidden_effect = {
+				clear_saved_name = nap_foreign_republican
+			}
+		}
+		else = {
+			define_ruler = {
+				rebel = yes
+			}
+		}
+	}
+}

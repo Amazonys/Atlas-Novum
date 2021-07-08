@@ -1,0 +1,187 @@
+######################################################################
+# "Anti Tax" rebels. The oppressed.
+######################################################################
+anti_tax_rebels = {
+	
+	color = { 40 140 210 }
+	
+	area = nation 					# Stays within the nation
+	government = any
+	defection = none					# Will defect to the "best" alternative.
+	independence = none				# Does not strive for independence
+	defect_delay = 120
+	gfx_type = culture_province
+	will_relocate = yes	
+	
+	resilient = no					# Disbands on retreat
+	reinforcing = no				# Does not receive reinforcements
+	general = no					# Does not use generals
+	smart = no						# Does not assault forts, tactically withdraw from battle, etc.
+	unit_transfer = no				# Units do not remain after enforcing demands.
+	will_relocate = yes				# Units will relocate if they have sieged all provinces nearby and has to move over sea.
+	
+	artillery = 0.0
+	infantry = 0.9
+	cavalry = 0.1
+	morale = 0.8
+	
+	
+	# Possible handle actions
+	handle_action_negotiate = yes
+	handle_action_stability = yes
+	handle_action_build_core = yes
+	handle_action_send_missionary = yes	
+	
+	# The rebel type with the highest modifier for this province gets picked
+	spawn_chance = {
+		factor = 2
+		modifier = {
+			factor = 10
+			owner = {
+				has_global_flag = great_peasants_war_flag
+				is_part_of_hre = yes
+			}
+		}
+		modifier = {
+			factor = 0.5
+			is_overseas = yes
+		}
+		modifier = {
+			factor = 0.05
+			owner = {
+				OR = {
+					has_country_modifier = the_mandate_of_heaven_lost
+					has_country_modifier = lost_mandate_of_heaven
+				}
+			}
+		}
+		modifier = {
+			factor = 2.0
+			owner = {
+				has_wartaxes = yes
+			}
+		}
+		modifier = {
+			factor = 2.0
+			owner = {
+				war_exhaustion = 4
+			}
+		}
+		modifier = {
+			factor = 100.0
+			owner = {
+				has_disaster = peasant_war
+			}
+		}
+		modifier = {
+			factor = 0.5
+			owner = {
+				NOT = { primary_culture = ROOT } # We want other types instead
+				NOT = { has_disaster = peasant_war }
+			}
+		}
+	}
+ 
+ 	# This is checked for EACH province in the Area of Operations
+	movement_evaluation = {
+		factor = 1
+		modifier = {
+			factor = 0.1
+			units_in_province = 1
+		}
+		modifier = {
+			factor = 0.001
+			controlled_by = REB
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 2
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 4
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 6
+		}
+	}
+	
+ 	# Province Scope
+ 	siege_won_trigger = {
+ 		NOT = { local_autonomy = 50 }
+ 	}
+	siege_won_effect = {
+		add_local_autonomy = 10	
+	}
+	
+	# Country scope
+	can_negotiate_trigger = {
+		always = yes
+	}
+	
+	# Country scope
+	can_enforce_trigger = {
+		always = yes
+	}
+	
+	# Localisation for their demands
+	demands_description = "anti_tax_rebels_demand"
+	
+	# Country scope
+	demands_enforced_effect = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_lost_to_rebels
+				duration = 10
+				hidden = yes
+			}
+		}
+		every_owned_province = {
+			limit = {
+				has_rebel_faction = REB
+				is_overseas = no
+			}
+			add_local_autonomy = 20
+		}
+		if = {
+			limit = { has_disaster = peasant_war }
+			end_disaster = peasant_war
+			clr_country_flag = peasant_protests
+			clr_country_flag = religious_revolt
+			clr_country_flag = obsolete_forces
+#			clr_country_flag = peasants_war_can_end
+			
+			remove_country_modifier = enforce_serfdom	
+			remove_country_modifier = restrict_serfdom
+			remove_country_modifier = religious_intolerance
+			remove_country_modifier = religious_tolerance
+			remove_country_modifier = support_troops
+			remove_country_modifier = obsolete_forces
+			remove_country_modifier = isolate_rebels
+			add_prestige = -50
+		}
+		if = {
+			limit = {
+				OR = {
+					has_global_flag = great_peasants_war_flag
+					has_global_flag = gpw_peasants_win_major
+				}
+				is_part_of_hre = yes
+				NOT = { has_reform = peasants_republic }
+			}
+			country_event = { id = great_peasant_war.2 }
+			hidden_effect = {
+				1 = {
+					change_variable = {
+						which = GPW_counting_variable
+						value = 1
+					}
+				}
+			}
+		}
+		else = {
+			add_prestige = -50
+		}
+	}
+}

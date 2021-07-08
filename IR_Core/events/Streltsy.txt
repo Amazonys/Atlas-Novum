@@ -1,0 +1,891 @@
+###########################################
+# Events for Streltsy Units
+# Written by Henrik Lohmander
+###########################################
+
+namespace = streltsy_events
+
+#Streltsy Protests
+country_event = {
+	id = streltsy_events.1
+	title = streltsy_events.1.t
+	desc = streltsy_events.1.d
+	picture = STRELTSY_MARCHING_eventPicture
+
+	trigger = {
+		has_dlc = "Third Rome"
+		OR = {
+			AND = {
+				government_rank = 1
+				num_of_streltsy = 25
+			}
+			AND = {
+				government_rank = 3
+				num_of_streltsy = 40
+			}
+		}
+		is_in_war = {
+			duration = 1825
+		}
+		NOT = { has_country_modifier = streltsy_concessions }
+		NOT = { has_country_modifier = streltsy_angered }
+		NOT = { has_country_modifier = streltsy_revolted }
+	}
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				save_event_target_as = streltsy_revolt
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 2
+			war_exhaustion = 5
+		}
+		modifier = {
+			factor = 2
+			war_exhaustion = 10
+		}
+		modifier = {
+			factor = 2
+			war_exhaustion = 15
+		}
+		modifier = {
+			factor = 4
+			war_exhaustion = 20
+		}
+		modifier = {
+			factor = 0.5
+			has_country_modifier = streltsy_inspection
+		}
+	}
+
+	option = {
+		name = streltsy_events.1.a #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0
+				num_of_cities = 30
+				army_size_percentage = 0.8
+			}
+		}
+		add_country_modifier = {
+			name = "streltsy_concessions"
+			duration = 10950
+		}
+	}
+	option = {
+		name = streltsy_events.1.b #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0
+				NOT = { army_size_percentage = 0.6 }
+			}
+		}
+		custom_tooltip = streltsy_events.1.b.tt
+		if = {
+			limit = {
+				has_government_mechanic = russian_mechanic
+			}
+			add_government_power = {
+				government_mechanic = russian_mechanic
+				which = MIL
+				amount = -15
+			}
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = { war_exhaustion = 5 }
+				}
+				random_list = {
+					75 = { }
+					25 = { country_event = { id = streltsy_events.2 } }
+				}
+			}
+			if = {
+				limit = {
+					war_exhaustion = 5
+					NOT = { war_exhaustion = 10 }
+				}
+				random_list = {
+					65 = { }
+					35 = { country_event = { id = streltsy_events.2 } }
+				}
+			}
+			if = {
+				limit = {
+					war_exhaustion = 15
+					NOT = { war_exhaustion = 19 }
+				}
+				random_list = {
+					50 = { }
+					50 = { country_event = { id = streltsy_events.2 } }
+				}
+			}
+			if = {
+				limit = {
+					war_exhaustion = 19
+				}
+				random_list = {
+					25 = { }
+					75 = { country_event = { id = streltsy_events.2 } }
+				}
+			}
+		}
+		add_country_modifier = {
+			name = "streltsy_angered"
+			duration = 10950
+		}
+	}
+	option = {
+		name = streltsy_events.1.c #
+		ai_chance = {
+			factor = 0
+		}
+		custom_tooltip = streltsy_events.1.c.tt
+		if = {
+			limit = {
+				has_government_mechanic = russian_mechanic
+			}
+			add_government_power = {
+				government_mechanic = russian_mechanic
+				which = MIL
+				amount = -15
+			}
+		}
+		hidden_effect = {
+			country_event = { id = streltsy_events.2 }
+		}
+	}
+}
+
+#Streltsy Revolt
+country_event = {
+	id = streltsy_events.2
+	title = streltsy_events.2.t
+	desc = streltsy_events.2.d
+	picture = STRELTSY_MARCHING_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = streltsy_events.2.a #
+		trigger = { government = monarchy }
+		remove_country_modifier = streltsy_angered
+		add_country_modifier = {
+			name = "streltsy_revolted"
+			duration = 10950
+		}
+		if = {
+			limit = {
+				NOT = { num_of_streltsy = 30 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 1
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 30
+				NOT = { num_of_streltsy = 45 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 1
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 45
+				NOT = { num_of_streltsy = 60 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 1
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 1
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 60
+				NOT = { num_of_streltsy = 75 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 1
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 1
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 75
+				NOT = { num_of_streltsy = 90 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 1
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 1
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 90
+				NOT = { num_of_streltsy = 105 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 1
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 1
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 105
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 2
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 1
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = streltsy_events.2.a #
+		trigger = {
+			NOT = { government = monarchy }
+		}
+		remove_country_modifier = streltsy_angered
+		add_country_modifier = {
+			name = "streltsy_revolted"
+			duration = 10950
+		}
+		if = {
+			limit = {
+				NOT = { num_of_streltsy = 30 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 1
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 30
+				NOT = { num_of_streltsy = 45 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 1
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 45
+				NOT = { num_of_streltsy = 60 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 1
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 1
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 60
+				NOT = { num_of_streltsy = 75 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 1
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 1
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 75
+				NOT = { num_of_streltsy = 90 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 1
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 1
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 1
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 90
+				NOT = { num_of_streltsy = 105 }
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 1
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 1
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				num_of_streltsy = 105
+			}
+			event_target:streltsy_revolt = {
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 2
+					}
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 2
+				}
+				random_neighbor_province = {
+					limit = {
+						owned_by = ROOT
+						is_capital = no
+					}
+					spawn_rebels = {
+						type = anti_tax_rebels
+						size = 1
+					}
+				}
+			}
+		}
+	}
+}
+
+
+# The Daily Life of the Streltsy
+country_event = {
+	id = streltsy_events.3
+	title = streltsy_events.3.t
+	desc = streltsy_events.3.d
+	picture = PEASANTS_ON_STEPPES_eventPicture
+
+	trigger = {
+		has_dlc = "Third Rome"
+		num_of_streltsy = 5
+		is_at_war = no
+		NOT = { had_recent_war = 6 }
+		has_government_mechanic = russian_mechanic
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = streltsy_events.3.a #Divert funds to train the Streltsy.
+		ai_chance = {
+			factor = 80
+			modifier = {
+				factor = 0
+				NOT = { years_of_income = 0.35 }
+			}
+		}
+		add_years_of_income = -0.25
+		add_army_tradition = 10
+		add_army_professionalism = 0.01
+	}
+	option = { 
+		name = streltsy_events.3.b #There is no need to be alarmed.
+		ai_chance = {
+			factor = 20
+		}
+		add_government_power = {
+			government_mechanic = russian_mechanic
+			which = MIL
+			amount = -25
+		}
+	}
+}
+
+
+# Inspecting the Streltsy
+country_event = {
+	id = streltsy_events.4
+	title = streltsy_events.4.t
+	desc = streltsy_events.4.d
+	picture = STRELTSY_MARCHING_eventPicture
+
+	trigger = {
+		has_dlc = "Third Rome"
+		num_of_streltsy = 5
+		is_at_war = no
+		NOT = { had_recent_war = 6 }
+		mil_tech = 6
+		NOT = {
+			has_country_modifier = streltsy_inspection
+		}
+		has_government_mechanic = russian_mechanic
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = streltsy_events.4.a #It is time we invest in better equipment and renewed inspections.
+		ai_chance = {
+			factor = 80
+			modifier = {
+				factor = 0
+				NOT = { years_of_income = 0.25 }
+			}
+		} 
+		add_years_of_income = -0.25
+		add_army_professionalism = 0.01
+		add_government_power = {
+			government_mechanic = russian_mechanic
+			which = MIL
+			amount = 10
+		}
+		add_country_modifier = {
+			name = "streltsy_inspection"
+			duration = 3650
+		}
+	}
+	option = { 
+		name = streltsy_events.4.b #There is no reason to waste government funds yet.
+		ai_chance = {
+			factor = 20
+		}
+		add_government_power = {
+			government_mechanic = russian_mechanic
+			which = MIL
+			amount = -15
+		}
+	}
+}
+
+# Streltsy Garrisons
+# Bonus events for keeping reasonable amounts of Streltsy
+country_event = {
+	id = streltsy_events.5
+	title = streltsy_events.5.t
+	desc = streltsy_events.5.d
+	picture = STRELTSY_MARCHING_eventPicture
+
+	trigger = {
+		has_dlc = "Third Rome"
+		num_of_streltsy = 5
+		NOT = { has_country_modifier = streltsy_garrison }
+		OR = {
+			AND = {
+				num_of_streltsy = 5
+				NOT = { land_forcelimit = 20 }
+			}
+			AND = {
+				num_of_streltsy = 10
+				NOT = { land_forcelimit = 30 }
+			}
+			AND = {
+				num_of_streltsy = 15
+				NOT = { land_forcelimit = 50 }
+			}
+			AND = {
+				num_of_streltsy = 20
+				NOT = { land_forcelimit = 60 }
+			}
+			AND = {
+				num_of_streltsy = 30
+				NOT = { land_forcelimit = 70 }
+			}
+			AND = {
+				num_of_streltsy = 40
+				NOT = { land_forcelimit = 80 }
+			}
+			num_of_streltsy = 50
+		}
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = streltsy_events.5.a #
+		add_army_professionalism = 0.01
+		add_country_modifier = {
+			name = "streltsy_garrison"
+			duration = 3650
+		}
+		if = {
+			limit = {
+				has_government_mechanic = russian_mechanic
+			}
+			add_government_power = {
+				government_mechanic = russian_mechanic
+				which = MIL
+				amount = 15
+			}
+		}
+	}
+}
+
+# Expansion of the Streltsy
+# Sometimes it's nice to be able to increase the pace for a price.
+country_event = {
+	id = streltsy_events.6
+	title = streltsy_events.6.t
+	desc = streltsy_events.6.d
+	picture = STRELTSY_MARCHING_eventPicture
+
+	trigger = {
+		has_dlc = "Third Rome"
+		OR = {
+			has_reform = principality
+			has_reform = veche_republic
+			has_reform = tsardom
+		}
+		has_government_mechanic = russian_mechanic
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = streltsy_events.6.a #
+		add_government_power = {
+			government_mechanic = russian_mechanic
+			which = MIL
+			amount = 25
+		}
+		add_mil_power = -40
+	}
+	option = {
+		name = streltsy_events.6.b #
+		add_government_power = {
+			government_mechanic = russian_mechanic
+			which = MIL
+			amount = 25
+		}
+		add_years_of_income = -0.25
+	}
+	option = {
+		name = streltsy_events.6.c #
+		add_mil_power = 5
+	}
+}

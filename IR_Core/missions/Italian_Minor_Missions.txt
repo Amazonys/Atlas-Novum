@@ -1,0 +1,287 @@
+italian_minor_group_1 = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = LUC
+			tag = BLG
+			tag = URB
+			tag = VRN
+			tag = PDV
+			tag = SPL
+			tag = PAR
+			tag = MAN
+			tag = MFA
+			tag = SIE
+			tag = FER
+			tag = MOD
+			tag = SZO
+			tag = PIS
+			tag = PGA
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	itm_italian_renaissance = {
+		icon = mission_early_modern_university
+		
+		trigger = {
+			has_institution = renaissance
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = "itm_italian_renaissance_modifier"
+				duration = 7300
+			}
+		}
+	}
+	
+	itm_urbanization = {
+		icon = mission_early_game_buildings
+		required_missions = { itm_italian_renaissance }
+		
+		trigger = {
+			capital_scope = {
+				num_of_times_improved = 3
+			}
+			all_owned_province = {
+				development = 15
+			}
+		}
+		
+		effect = {
+			add_adm_power = 50
+			add_country_modifier = {
+				name = "itm_labor_surplus"
+				duration = 9125
+			}
+		}
+	}
+	
+	itm_merchant_princes = {
+		icon = mission_dominate_home_trade_node
+		required_missions = { itm_urbanization }
+		
+		trigger = {
+			home_trade_node = {
+				trade_share = {
+					country = ROOT
+					share = 33
+				}
+			}
+		}
+		
+		effect = {
+			if = {
+				limit = { has_estate = estate_burghers }
+				add_country_modifier = {
+					name = itm_merchant_princes_prosper
+					duration = 7300
+				}
+			}
+			else = {
+				add_dip_power = 100
+			}
+		}
+	}
+}
+	
+	
+italian_minor_group_3 = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = LUC
+			tag = BLG
+			tag = URB
+			tag = VRN
+			tag = PDV
+			tag = SPL
+			tag = PAR
+			tag = MAN
+			tag = MFA
+			tag = SIE
+			tag = FER
+			tag = MOD
+			tag = SZO
+			tag = PIS
+			tag = PGA
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	itm_princely_rule = {
+		icon = mission_italian_condottiere
+		required_missions = { }
+		
+		trigger = {
+			is_subject = no
+			if = {
+				limit = {
+					OR = {
+						government = monarchy
+						has_reform = dutch_republic
+						has_reform = signoria_reform
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = itm_princely_rule_marriage
+					calc_true_if = {
+						all_ally = {
+							marriage_with = ROOT
+						}
+						amount = 2
+					}
+				}
+			}
+			else = {
+				custom_trigger_tooltip = {
+					tooltip = itm_princely_rule_relations
+					calc_true_if = {
+						all_ally = {
+							has_opinion = {
+								who = ROOT
+								value = 150
+							}
+						}
+						amount = 2
+					}
+				}
+			}
+		}
+		
+		effect = {
+			add_legitimacy = 10
+			add_devotion = 10
+			add_republican_tradition = 10
+			if = {
+				limit = {
+					NOT = { stability = 3 }
+				}
+				add_stability = 1
+			}
+			else = {
+				add_adm_power = 100
+			}
+		}
+	}
+	
+	itm_educated_court = {
+		icon = mission_noble_council
+		required_missions = { itm_princely_rule }
+		
+		trigger = {
+			NOT = { num_of_loans = 1 }
+			has_mil_advisor = yes
+			has_adm_advisor = yes
+			has_dip_advisor = yes
+		}
+		
+		effect = {
+			add_adm_power = 50
+			add_dip_power = 50
+			add_mil_power = 50
+		}
+	}
+	
+	itm_spheres_of_influence = {
+		icon = mission_alliances
+		required_missions = { itm_educated_court }
+		
+		trigger = {
+			custom_trigger_tooltip = {
+				tooltip = itm_two_guaranteed_countries
+				calc_true_if = {
+					all_country = {
+						guaranteed_by = ROOT
+					}
+					amount = 2
+				}
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = itm_influential_government
+				duration = 7300
+			}
+		}
+	}
+	
+	itm_prelate_power = {
+		icon = mission_religious
+		required_missions = { itm_spheres_of_influence }
+		
+		trigger = {
+			if = {
+				limit = {
+					religion = catholic
+				}
+				has_cardinal = yes
+			}
+			else_if = {
+				limit = {
+					religion = protestant
+					has_dlc = "Common Sense"
+				}
+				num_of_aspects = 1
+			}
+			else_if = {
+				limit = {
+					religion = reformed
+					has_dlc = "Wealth of Nations"
+				}
+				has_active_fervor = yes
+			}
+			else_if = {
+				limit = {
+					religion = orthodox
+				}
+				patriarch_authority = 0.75
+			}
+			else = {
+				religious_unity = 1
+				prestige = 50
+			}
+		}
+		
+		effect = {
+			if = {
+				limit = { has_estate = estate_church }
+				add_country_modifier = {
+					name = itm_loyalists_control_the_church
+					duration = 7300
+				}
+			}
+			else = {
+				add_adm_power = 100
+			}
+		}
+	}
+	
+	itm_assuming_control = {
+		icon = mission_monarch_in_throne_room
+		required_missions = { itm_prelate_power }
+		
+		trigger = {
+			OR = {
+				is_papal_controller = yes
+				is_elector = yes
+				owns = 118 # Rome
+			}
+		}
+		
+		effect = {
+			add_country_modifier = {
+				name = itm_italian_powerhouse
+				duration = 9125
+			}
+		}
+	}
+}

@@ -1,0 +1,227 @@
+namespace = holstein
+
+# Dummy incident
+country_event = {
+	id = holstein.1
+	title = holstein.1.t
+	picture = GOOD_WITH_MONARCH_eventPicture
+	desc = holstein.1.d
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			1775 = {
+				owner = {
+					save_event_target_as = holstein_owner
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = holstein.1.a
+		event_target:holstein_owner = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_holstein_bad
+			}
+		}
+		custom_tooltip = demand_holstein_tt
+		hidden_effect = {
+			1775 = {
+				owner = {
+					country_event = { id = holstein.2 days = 3 }
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 100
+				1775 = {
+					owner = {
+						OR = {
+							ai_attitude = {
+								who = ROOT
+								attitude = attitude_rivalry
+							}
+							ai_attitude = {
+								who = ROOT
+								attitude = attitude_hostile
+							}
+							ai_attitude = {
+								who = ROOT
+								attitude = attitude_threatened
+							}
+							ai_attitude = {
+								who = ROOT
+								attitude = attitude_outraged
+							}
+							ai_attitude = {
+								who = ROOT
+								attitude = attitude_disloyal
+							}
+							ai_attitude = {
+								who = ROOT
+								attitude = attitude_rebellious
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = holstein.1.b
+		event_target:holstein_owner = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_holstein_good
+			}
+		}
+		add_imperial_influence = -10
+		1775 = {
+			set_in_empire = no
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 100
+				1775 = {
+					owner = {
+						OR = {
+							ai_attitude = {
+								who = ROOT
+								attitude = attitude_friendly
+							}
+							ai_attitude = {
+								who = ROOT
+								attitude = attitude_loyal
+							}
+							ai_attitude = {
+								who = ROOT
+								attitude = attitude_allied
+							}
+						}
+					}
+				}
+			}
+		}
+	}	
+}
+
+
+# Holstein owner reacts
+country_event = {
+	id = holstein.2
+	title = holstein.1.t
+	picture = GOOD_WITH_MONARCH_eventPicture
+	desc = holstein.2.d
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+	major = yes
+
+	option = { # release holstein
+		name = holstein.2.a
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 1000
+				emperor = {
+					alliance_with = ROOT
+				}
+			}
+		}
+		add_prestige = -10
+		1775 = {
+			if = {
+				limit = {
+					NOT = {
+						is_core = SHL
+					}
+				}
+				add_core = SHL
+			}
+			cede_province = SHL
+			remove_core = ROOT
+		}
+		emperor = {
+			add_imperial_influence = 15
+			create_guarantee = SHL
+			add_opinion = {
+				who = ROOT
+				modifier = ceded_holstein
+			}			
+		}
+	}
+	
+	option = { # refuse to cede holstein
+		name = holstein.2.b
+		ai_chance = {
+			factor = 90
+		}
+		add_prestige = 10
+		emperor = {
+			add_imperial_influence = -15
+			add_opinion = {
+				who = ROOT
+				modifier = refused_to_cede_holstein
+			}
+		}
+	}	
+}
+
+# Startup event for Emperor
+country_event = {
+	id = holstein.3
+	title = holstein.3.t
+	picture = GOOD_WITH_MONARCH_eventPicture
+	desc = holstein.3.d
+	
+	fire_only_once = yes
+	
+	goto = 1775
+	
+	trigger = {	
+		has_dlc = "Emperor"
+		is_emperor = yes
+		OR = {
+			current_age = age_of_absolutism
+			current_age = age_of_revolutions
+		}
+		any_country = {
+			owns = 1775
+			culture_group = scandinavian
+			is_part_of_hre = no
+			num_of_cities = 2
+		}
+		1775 = {
+			is_part_of_hre = yes
+		}
+		NOT = { exists = SHL }
+		NOT = { active_imperial_incident = any }
+	}
+	
+	mean_time_to_happen = {
+		months = 240
+	}
+	
+	immediate = {
+		hidden_effect = {
+			1775 = {
+				owner = {
+					save_event_target_as = holstein_owner
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = holstein.3.a
+		set_imperial_incident = incident_holstein
+	}
+}

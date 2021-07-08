@@ -1,0 +1,2551 @@
+########################################
+# Buddhism Events
+#
+# Written by Henrik Lohmander
+########################################
+
+namespace = buddhism_events
+
+
+#Low Karma - 1 pushes even lower, 2 gives higher Karma at a cost
+
+#Advisor resigns
+#According to The White History of the Dharma the faith for an unjust ruler.
+country_event = {
+	id = buddhism_events.1
+	title = buddhism_events.1.t
+	desc = buddhism_events.1.d
+	picture = BUDDHISM_BAD_eventPicture
+	
+	trigger = {
+		uses_karma = yes
+		has_dlc = "Common Sense"
+		has_regency = no
+		OR = {
+			advisor = philosopher
+			advisor = natural_scientist
+			advisor = artist
+			advisor = treasurer
+			advisor = theologian
+			advisor = master_of_mint
+			advisor = inquisitor
+		}
+		NOT = { karma = -50 }
+	}
+	
+	mean_time_to_happen = {
+		months = 360
+		modifier = {
+			factor = 0.9
+			NOT = { karma = -75 }
+		}
+		modifier = {
+			factor = 0.8
+			NOT = { karma = -80 }
+		}
+	}
+	
+	option = {
+		name = buddhism_events.1.a #
+		add_karma = -15
+		reduce_meritocracy_effect = yes
+		if = {
+			limit = {
+				advisor = philosopher
+			}
+			kill_advisor = philosopher
+		}
+		if = {
+			limit = {
+				advisor = natural_scientist
+			}
+			kill_advisor = natural_scientist
+		}
+		if = {
+			limit = {
+				advisor = artist
+			}
+			kill_advisor = artist
+		}
+		if = {
+			limit = {
+				advisor = treasurer
+			}
+			kill_advisor = treasurer
+		}
+		if = {
+			limit = {
+				advisor = theologian
+			}
+			kill_advisor = theologian
+		}
+		if = {
+			limit = {
+				advisor = master_of_mint
+			}
+			kill_advisor = master_of_mint
+		}
+		if = {
+			limit = {
+				advisor = inquisitor
+			}
+			kill_advisor = inquisitor
+		}
+	}
+}
+
+#Monasteries deteriorating
+province_event = {
+	id = buddhism_events.2
+	title = buddhism_events.2.t
+	desc = buddhism_events.2.d
+	picture = BUDDHISM_MONASTERY_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism ##Theravada 
+			religion = vajrayana
+			religion = mahayana
+		}
+		owner = {
+			OR = {
+				religion = buddhism ##Theravada 
+				religion = vajrayana
+				religion = mahayana
+			}
+			has_regency = no
+			NOT = { karma = -50 }
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 360
+		modifier = {
+			factor = 0.9
+			NOT = { owner = { karma = -75 } }
+		}
+		modifier = {
+			factor = 0.8
+			NOT = { owner = { karma = -80 } }
+		}
+	}
+	
+	option = {
+		name = buddhism_events.2.a #We must do all we can!
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 0
+				NOT = { owner = { years_of_income = 0.1 } }
+			}
+		}
+		owner = {
+			add_years_of_income = -0.05
+			add_karma = 10
+		}
+		if = {
+			limit = {
+				owner = { has_estate = estate_church }
+			}
+			owner = {
+				add_estate_loyalty = {
+					estate = estate_church
+					loyalty = 10
+				}
+			}
+		}
+	}
+	option = {
+		name = buddhism_events.2.b #Perhaps now the land will come to better use.
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0
+				owner = { has_estate = estate_church }
+				owner = {
+					NOT = {
+						estate_loyalty = {
+							estate = estate_church
+							loyalty = 40
+						}
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				owner = { has_estate = estate_church }
+			}
+			owner = {
+				add_estate_loyalty = {
+					estate = estate_church
+					loyalty = -10
+				}
+				scaled_estate_land_share_reduce_effect = {
+					estate = estate_church
+				}
+			}
+		}
+		owner = { add_karma = -10 }
+	}
+}
+
+
+#Monks break their monastic vows
+province_event = {
+	id = buddhism_events.3
+	title = buddhism_events.3.t
+	desc = buddhism_events.3.d
+	picture = BUDDHISM_BAD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism ##Theravada 
+			religion = vajrayana
+			religion = mahayana
+		}
+		is_capital = no
+		NOT = { has_province_modifier = lacking_monastic_discipline }
+		NOT = { has_province_modifier = strict_punishment_of_monks }
+		NOT = { has_province_modifier = cleansing_of_monasteries }
+		NOT = { has_province_modifier = monastaries_blooming }
+		owner = {
+			religion = buddhism
+			has_regency = no
+			NOT = { karma = -50 }
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 300
+		modifier = {
+			factor = 0.8
+			NOT = { owner = { karma = -75 } }
+		}
+		modifier = {
+			factor = 0.7
+			NOT = { owner = { karma = -80 } }
+		}
+	}
+	
+	#All options are acceptable reactions in regards to Karma, but have different other implications.
+	
+	option = {
+		name = buddhism_events.3.a #"We must show gentleness."
+		ai_chance = {
+			factor = 9
+		}
+		owner = { add_karma = 10 }
+		add_province_modifier = {
+			name = "lacking_monastic_discipline"
+			duration = 3650
+		}
+	}
+	option = {
+		name = buddhism_events.3.b #Fine him all movable property and livestock.
+		ai_chance = {
+			factor = 1
+		}
+		trigger = { religion = vajrayana }
+		owner = { add_karma = 10 }
+		add_province_modifier = {
+			name = "strict_punishment_of_monks"
+			duration = 3650
+		}
+	}
+	option = {
+		trigger = { religion = buddhism } #Theravada
+		ai_chance = {
+			factor = 1
+		}
+		name = buddhism_events.3.c #Execute the Monk and anyone who stands by him!
+		owner = { add_karma = 10 }
+		add_province_modifier = {
+			name = "cleansing_of_monasteries"
+			duration = 3650
+		}
+	}
+}
+
+#Pretender (Vajrayana)
+
+country_event = {
+	id = buddhism_events.4
+	title = buddhism_events.4.t
+	desc = buddhism_events.4.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = vajrayana
+		government = monarchy
+		has_regency = no
+		num_of_cities = 3
+		NOT = { karma = -50 }
+	}
+	
+	mean_time_to_happen = {
+		months = 500
+		modifier = {
+			factor = 0.8
+			NOT = { karma = -75 }
+		}
+		modifier = {
+			factor = 0.6
+			NOT = { karma = -80 }
+		}
+	}
+	
+	option = {
+		name = buddhism_events.4.a #"This is an outrage!"
+		random_owned_province = {
+			limit = {
+				is_capital = no
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				religion = vajrayana
+				size = 1
+			}
+		}
+	}
+}
+
+#High Karma
+#1 goes even higher, 2 lowers it for a cost.
+
+#Precedent of RULER
+country_event = {
+	id = buddhism_events.5
+	title = buddhism_events.5.t
+	desc = buddhism_events.5.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		uses_karma = yes
+		government = monarchy
+		has_regency = no
+		num_of_cities = 3
+		karma = 50
+	}
+	
+	mean_time_to_happen = {
+		months = 500
+		modifier = {
+			factor = 0.7
+			karma = 65
+		}
+		modifier = {
+			factor = 0.6
+			karma = 85
+		}
+	}
+	
+	option = {
+		name = buddhism_events.5.a #Make Good use of this.
+		add_karma = 15
+	}
+}
+
+#White Elephant Captured
+
+country_event = {
+	id = buddhism_events.6
+	title = buddhism_events.6.t
+	desc = buddhism_events.6.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = buddhism #theravada
+		government = monarchy
+		has_regency = no
+		num_of_cities = 3
+		karma = 50
+	}
+	
+	mean_time_to_happen = {
+		months = 300
+		modifier = {
+			factor = 0.8
+			karma = 75
+		}
+	}
+	
+	option = {
+		name = buddhism_events.6.a #Take good care of it
+		ai_chance = {
+			factor = 1
+		}
+		add_years_of_income = -0.10 #Taking care of it is expensive
+		add_prestige = 10
+		add_karma = 10
+	}
+	option = {
+		name = buddhism_events.6.b #Sell it
+		ai_chance = {
+			factor = 9
+		}
+		add_years_of_income = 0.05
+		add_prestige = -10
+		add_karma = -10
+	}
+	option = {
+		name = buddhism_events.6.c #It would make an excellent gift!
+		trigger = {
+			any_ally = {
+				is_neighbor_of = ROOT
+				religion = buddhism
+			}
+		}
+		random_ally = {
+			limit = {
+				is_neighbor_of = ROOT
+				religion = buddhism
+			}
+			country_event = { id = buddhism_events.7 }
+			add_opinion = {
+				who = ROOT
+				modifier = gifted_white_elephant
+			}
+		}
+	}
+}
+
+country_event = {
+	id = buddhism_events.7
+	title = buddhism_events.7.t
+	desc = buddhism_events.7.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = buddhism_events.6.a #Let us take good care of it.
+		add_years_of_income = -0.1
+		add_karma = 10
+		add_prestige = 10
+	}
+	option = {
+		name = buddhism_events.6.b #Sell it
+		add_years_of_income = 0.05
+		add_prestige = -10
+		add_karma = -10
+		FROM = {
+			add_opinion = {
+				who = ROOT
+				modifier = sold_our_elephant
+			}
+		}
+	}
+}
+
+#Monastaries Blooming
+province_event = {
+	id = buddhism_events.8
+	title = buddhism_events.8.t
+	desc = buddhism_events.8.d
+	picture = BUDDHISM_MONASTERY_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism ##Theravada 
+			religion = vajrayana
+			religion = mahayana
+		}
+		is_capital = no
+		NOT = { has_province_modifier = lacking_monastic_discipline }
+		NOT = { has_province_modifier = strict_punishment_of_monks }
+		NOT = { has_province_modifier = cleansing_of_monasteries }
+		NOT = { has_province_modifier = monastaries_blooming }
+		owner = {
+			OR = {
+				religion = buddhism ##Theravada 
+				religion = vajrayana
+				religion = mahayana
+			}
+			has_regency = no
+			karma = 50
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 400
+		modifier = {
+			factor = 0.9
+			NOT = { owner = { karma = 75 } }
+		}
+		modifier = {
+			factor = 0.8
+			NOT = { owner = { karma = 80 } }
+		}
+	}
+	
+	option = {
+		name = buddhism_events.8.a #Demand that they share their wealth.
+		ai_chance = {
+			factor = 9
+		}
+		owner = {
+			add_karma = -15
+			add_prestige = -10
+		}
+		add_province_modifier = {
+			name = monastaries_blooming
+			duration = 3650
+		}
+	}
+	option = {
+		name = buddhism_events.8.b #Wonderful!
+		ai_chance = {
+			factor = 1
+		}
+		owner = {
+			add_prestige = 5
+		}
+	}
+}
+
+#Choices to affect Karma
+#Choices to go higher or lower with added aspects that may or may not be tempting.
+
+#Soldiers fleeing their military service to join Monasteries
+country_event = {
+	id = buddhism_events.9
+	title = buddhism_events.9.t
+	desc = buddhism_events.9.d
+	picture = BUDDHISM_MONASTERY_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		uses_karma = yes
+		is_at_war = yes
+		government = monarchy
+		has_regency = no
+		num_of_cities = 3
+		war_exhaustion = 2
+	}
+	
+	mean_time_to_happen = {
+		months = 400
+		modifier = {
+			factor = 0.9
+			war_exhaustion = 5
+		}
+	}
+	
+	option = {
+		name = buddhism_events.9.a #We must remember to be gentle.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				NOT = { karma = -50 }
+			}
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+		add_karma = 10
+		add_war_exhaustion = -1
+	}
+	option = {
+		name = buddhism_events.9.b #Demand that the Monasteries release these 'Monks' to us.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+			modifier = {
+				factor = 0
+				has_estate = estate_church
+				NOT = {
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 40
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -10
+			}
+		}
+		add_karma = -10
+		add_yearly_manpower = 0.5
+	}
+	#option = {
+	#	name = buddhism_events.9.c #Fine the Monasteries for any deserter found.
+	#	add_karma = -5
+	#	add_years_of_income = 0.05
+	#}
+}
+
+#The Wedge-Throw
+province_event = {
+	id = buddhism_events.10
+	title = buddhism_events.10.t
+	desc = buddhism_events.10.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism #Theravada
+			religion = mahayana
+		}
+		trade_goods = grain
+		is_capital = no
+		NOT = { has_province_modifier = wedge_throw }
+		NOT = { has_province_modifier = poor_rice_harvests }
+		owner = {
+			OR = {
+				religion = buddhism #Theravada
+				religion = mahayana
+			}
+			has_regency = no
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 360
+	}
+	
+	option = {
+		name = buddhism_events.10.a #"A reasonable request."
+		custom_tooltip = buddhism_events.10.a.tt
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				NOT = { owner = { karma = -50 } }
+			}
+		}
+		owner = {
+			add_years_of_income = -0.05
+			add_karma = 10
+		}
+		add_province_modifier = {
+			name = "wedge_throw"
+			duration = 1825
+		}
+		set_province_flag = borrowed_money
+	}
+	option = {
+		name = buddhism_events.10.b #"Sadly the state coffers are also famished."
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { karma = 50 }
+			}
+		}
+		owner = {
+			add_karma = -10
+		}
+		add_province_modifier = {
+			name = "poor_rice_harvests"
+			duration = 3650
+		}
+	}
+}
+
+#Payback
+province_event = {
+	id = buddhism_events.11
+	title = buddhism_events.11.t
+	desc = buddhism_events.11.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_province_modifier = wedge_throw
+		owner = {
+			OR = {
+				religion = buddhism #Theravada
+				religion = mahayana
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	option = {
+		name = buddhism_events.11.a #
+		clr_province_flag = borrowed_money
+		remove_province_modifier = wedge_throw
+		owner = {
+			add_years_of_income = 0.05
+		}
+	}
+}
+
+#Farmers unable to Pay Back
+province_event = {
+	id = buddhism_events.12
+	title = buddhism_events.12.t
+	desc = buddhism_events.12.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		NOT = { has_province_modifier = wedge_throw }
+		has_province_flag = borrowed_money
+		owner = {
+			OR = {
+				religion = buddhism #Theravada
+				religion = mahayana
+			}
+			has_regency = no
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 6
+	}
+	
+	option = {
+		name = buddhism_events.12.a #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				NOT = { owner = { karma = -50 } }
+			}
+		}
+		clr_province_flag = borrowed_money
+	}
+	
+	option = {
+		name = buddhism_events.12.b #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { karma = 50 }
+			}
+		}
+		
+		clr_province_flag = borrowed_money
+		owner = {
+			add_karma = -10
+			add_years_of_income = 0.05
+		}
+	}
+}
+
+#"Human Sacrifice"
+province_event = {
+	id = buddhism_events.13
+	title = buddhism_events.13.t
+	desc = buddhism_events.13.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism #Theravada
+			religion = mahayana
+		}
+		is_capital = no
+		NOT = { has_province_modifier = wedge_throw }
+		NOT = { has_province_modifier = poor_rice_harvests }
+		owner = {
+			has_regency = no
+			OR = {
+				religion = buddhism #Theravada
+				religion = mahayana
+			}
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 360
+	}
+	
+	option = {
+		name = buddhism_events.13.a #Compensate the Farmers
+		ai_chance = {
+			factor = 33
+			modifier = {
+				factor = 2
+				owner = { NOT = { karma = -50 } }
+			}
+		}
+		owner = {
+			add_karma = 10
+			add_years_of_income = -0.1
+		}
+		add_province_modifier = {
+			name = "human_sacrifice"
+			duration = 3650
+		}
+	}
+	option = {
+		name = buddhism_events.13.b #Abandon the Idea
+		owner = { add_prestige = -10 }
+		ai_chance = {
+			factor = 33
+			modifier = {
+				factor = 2
+				owner = {
+					NOT = { karma = 50 }
+					karma = -50
+				}
+			}
+		}
+	}
+	option = {
+		name = buddhism_events.13.c #Demand that they work without compensation
+		owner = { add_karma = -5 }
+		ai_chance = {
+			factor = 33
+			modifier = {
+				factor = 2
+				owner = { karma = 50 }
+			}
+		}
+		add_province_modifier = {
+			name = "forced_labor"
+			duration = 3650
+		}
+	}
+}
+
+#Dishonoring the "Hay Sacrifice"
+country_event = {
+	id = buddhism_events.14
+	title = buddhism_events.14.t
+	desc = buddhism_events.14.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism #Theravada
+			religion = mahayana
+		}
+		has_regency = no
+	}
+	
+	mean_time_to_happen = {
+		months = 360
+	}
+	
+	option = {
+		name = buddhism_events.14.a #Levy the tax.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+		}
+		add_karma = -10
+		add_years_of_income = 0.1
+	}
+	option = {
+		name = buddhism_events.14.b #Let us not steal the fruits of their labor.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				NOT = { karma = -50 }
+			}
+		}
+		add_karma = 10
+	}
+}
+
+# Dana / Charity 
+country_event = {
+	id = buddhism_events.15
+	title = buddhism_events.15.t
+	desc = buddhism_events.15.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		uses_karma = yes
+		NOT = { has_country_modifier = grain_for_the_poor }
+		NOT = { has_country_modifier = grain_reserves }
+		has_regency = no
+		stability = 1
+		is_at_war = no
+		NOT = { num_of_rebel_armies = 1 }
+	}
+	
+	mean_time_to_happen = {
+		months = 400
+	}
+	
+	option = {
+		name = buddhism_events.15.a #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				NOT = { karma = -50 }
+			}
+		}
+		add_karma = 15
+		add_country_modifier = {
+			name = "grain_for_the_poor"
+			duration = 3650
+		}
+	}
+	option = {
+		name = buddhism_events.15.b #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+		}
+		add_country_modifier = {
+			name = "grain_reserves"
+			duration = 3650
+		}
+		add_karma = -15
+	}
+}
+
+#Vicious Words?
+province_event = {
+	id = buddhism_events.16
+	title = buddhism_events.16.t
+	desc = buddhism_events.16.d
+	picture = BUDDHISM_BAD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism #Theravada
+			religion = mahayana
+			religion = vajrayana
+		}
+		is_capital = no
+		local_autonomy = 50
+		is_colony = no
+		is_state = yes
+		owner = {
+			OR = {
+				religion = buddhism #Theravada
+				religion = mahayana
+				religion = vajrayana
+			}
+			has_regency = no
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 360
+	}
+	
+	option = {
+		name = buddhism_events.16.a #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { NOT = { karma = -50 } }
+			}
+		}
+		owner = {
+			add_prestige = 5
+			add_karma = 10
+		}
+	}
+	option = {
+		name = buddhism_events.16.b #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { karma = 50 }
+			}
+		}
+		owner = {
+			add_karma = -10
+		}
+		add_local_autonomy = -20
+	}
+}
+
+#Risking Life and Limb for ones people
+country_event = {
+	id = buddhism_events.17
+	title = buddhism_events.17.t
+	desc = buddhism_events.17.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		uses_karma = yes
+		has_regency = no
+		is_monarch_leader = yes
+		any_army = {
+			is_ruler_commanding_unit = yes
+		}
+		NOT = { has_ruler_flag = pariccaga_flag }
+		any_known_country = {
+			offensive_war_with = ROOT
+		}
+	}
+	
+	
+	mean_time_to_happen = {
+		months = 400
+	}
+	
+	option = {
+		name = buddhism_events.17.a #Ok.
+		add_karma = 10
+		set_ruler_flag = pariccaga_flag
+	}
+}
+
+#Personal Austerity
+country_event = {
+	id = buddhism_events.18
+	title = buddhism_events.18.t
+	desc = buddhism_events.18.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = buddhism
+		has_regency = no
+		NOT = { has_ruler_flag = had_tapa }
+	}
+	
+	
+	mean_time_to_happen = {
+		months = 360
+	}
+	
+	option = {
+		name = buddhism_events.18.a #Ok.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				NOT = { karma = -50 }
+			}
+		}
+		add_karma = 10
+		add_prestige = -10
+		set_ruler_flag = had_tapa
+	}
+	option = {
+		name = buddhism_events.18.b #Ok.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+		}
+		add_karma = -10
+		add_legitimacy = -10
+		add_horde_unity = -10
+		set_ruler_flag = had_tapa
+	}
+}
+
+#Good Will
+country_event = {
+	id = buddhism_events.19
+	title = buddhism_events.19.t
+	desc = buddhism_events.19.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		uses_karma = yes
+		has_regency = no
+		NOT = { has_ruler_flag = akkodha }
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_ruler_flag = akkodha
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 600
+	}
+	
+	option = {
+		name = buddhism_events.19.a #Make full use of the situation.
+		add_karma = -10
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+		}
+		add_country_modifier = {
+			name = "political_rival_crushed"
+			duration = 3650
+		}
+	}
+	option = {
+		name = buddhism_events.19.b #A true [Root.Monarch.GetTitle] holds no grudges.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				NOT = { karma = -50 }
+			}
+		}
+		add_karma = 10
+		add_prestige = 5
+	}
+	option = {
+		name = buddhism_events.19.c #This is a time for Charity, let us help this man.
+		ai_chance = {
+			factor = 0
+		}
+		add_karma = 10
+		add_prestige = 15
+		add_years_of_income = -0.15
+		set_ruler_flag = helped_rival
+	}
+}
+
+#Rival Bounces Back - Good Outcome
+country_event = {
+	id = buddhism_events.20
+	title = buddhism_events.20.t
+	desc = buddhism_events.20.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		uses_karma = yes
+		has_ruler_flag = helped_rival
+		had_ruler_flag = { flag = helped_rival days = 730 }
+	}
+	
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+	
+	option = {
+		name = buddhism_events.20.a #
+		clr_ruler_flag = helped_rival
+		add_adm_power = 25
+		define_advisor = {
+			skill = 2
+			type = diplomat
+			discount = yes
+		}
+	}
+}
+
+#Rival Bounces Back - Bad Outcome
+country_event = {
+	id = buddhism_events.21
+	title = buddhism_events.21.t
+	desc = buddhism_events.21.d
+	picture = BUDDHISM_BAD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		uses_karma = yes
+		has_ruler_flag = helped_rival
+		had_ruler_flag = { flag = helped_rival days = 730 }
+	}
+	
+	
+	mean_time_to_happen = {
+		months = 40
+	}
+	
+	option = {
+		name = buddhism_events.21.a #
+		clr_ruler_flag = helped_rival
+		add_adm_power = -25
+	}
+}
+
+#Plight of [Root.GetName]
+province_event = {
+	id = buddhism_events.22
+	title = buddhism_events.22.t
+	desc = buddhism_events.22.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		NOT = { development = 24 }
+		NOT = { has_province_modifier = improvement_program }
+		NOT = { has_province_modifier = hampered_growth }
+		owner = {
+			uses_karma = yes
+			has_regency = no
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 360
+	}
+	
+	option = {
+		name = buddhism_events.22.a #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { NOT = { karma = -50 } }
+			}
+		}
+		owner = {
+			add_karma = 10
+			add_years_of_income = -0.1
+		}
+		add_province_modifier = {
+			name = "improvement_program"
+			duration = 1825
+		}
+	}
+	option = {
+		name = buddhism_events.22.b #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { karma = 50 }
+			}
+		}
+		owner = { add_karma = -15 }
+		add_province_modifier = {
+			name = "hampered_growth"
+			duration = 1825
+		}
+	}
+}
+
+#Inheritance of a Monk
+country_event = {
+	id = buddhism_events.23
+	title = buddhism_events.23.t
+	desc = buddhism_events.23.d
+	picture = BUDDHISM_MONASTERY_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism #Theravada
+			religion = mahayana
+		}
+		has_regency = no
+		any_owned_province = {
+			is_capital = no
+			NOT = { has_province_modifier = hostile_monastery }
+		}
+	}
+	
+
+	mean_time_to_happen = {
+		months = 600
+	}
+	
+	option = {
+		name = buddhism_events.23.a #Rule in favor of the disciple.
+		ai_chance = {
+			factor = 33
+			modifier = {
+				factor = 2
+				NOT = { karma = -50 }
+			}
+		}
+		add_karma = 10
+		add_prestige = 5
+	}
+	option = {
+		name = buddhism_events.23.b #Rule in favor of the Monastery
+		ai_chance = {
+			factor = 33
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+		add_karma = -10
+		add_legitimacy = 5
+		add_horde_unity = 5
+		add_republican_tradition = 5
+	}
+	option = {
+		name = buddhism_events.23.c #Support the lay family of the monk.
+		ai_chance = {
+			factor = 33
+			modifier = {
+				factor = 2
+				karma = 75
+			}
+			modifier = {
+				factor = 0
+				has_estate = estate_church
+				NOT = {
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 40
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -10
+			}
+		}
+		add_karma = -15
+		add_years_of_income = 0.25
+		random_owned_area = {
+			limit = {
+				is_capital = no
+			}
+			add_province_modifier = {
+				name = "hostile_monastery"
+				duration = 3650
+			}
+		}
+	}
+}
+
+
+#Increasingly Powerful Monastery
+province_event = {
+	id = buddhism_events.24
+	title = buddhism_events.24.t
+	desc = buddhism_events.24.d
+	picture = BUDDHISM_MONASTERY_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism #Theravada
+			religion = mahayana
+			religion = vajrayana
+		}
+		is_capital = no
+		is_state = yes
+		NOT = {
+			has_province_modifier = powerful_hostile_monastery
+		}
+		NOT = {
+			has_province_modifier = powerful_benevolent_monastery
+		}
+		NOT = { has_province_modifier = hostile_monastery }
+		local_autonomy = 25
+		owner = {
+			religion = buddhism
+			has_regency = no
+			NOT = {
+				any_owned_province = {
+					has_province_modifier = powerful_benevolent_monastery
+				}
+			}
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 400
+	}
+	
+	option = {
+		name = buddhism_events.24.a #We must try to curb their power
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { NOT = { karma = -50 } }
+			}
+			modifier = {
+				factor = 0
+				owner = {
+					has_estate = estate_church
+					NOT = {
+						estate_loyalty = {
+							estate = estate_church
+							loyalty = 40
+						}
+					}
+				}
+			}
+		}
+		owner = { add_karma = 10 }
+		if = {
+			limit = {
+				owner = {
+					has_estate = estate_church
+				}
+			}
+			owner = {
+				add_estate_loyalty = {
+					estate = estate_church
+					loyalty = -10
+				}
+				take_estate_land_share_small = { estate = estate_church }
+			}
+		}
+		add_local_autonomy = -50
+		add_province_modifier = {
+			name = "powerful_hostile_monastery"
+			duration = 3650
+		}
+	}
+	option = {
+		name = buddhism_events.24.b #Seek their support
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { karma = 50 }
+			}
+		}
+		owner = { add_karma = -10 }
+		if = {
+			limit = {
+				owner = {
+					has_estate = estate_church
+				}
+			}
+			owner = {
+				add_estate_loyalty = {
+					estate = estate_church
+					loyalty = 10
+				}
+				give_estate_land_share_small = { estate = estate_church }
+			}
+		}
+		add_local_autonomy = 25
+		add_province_modifier = {
+			name = "powerful_benevolent_monastery"
+			duration = 3650
+		}
+	}
+}
+
+
+#Banditry
+province_event = {
+	id = buddhism_events.25
+	title = buddhism_events.25.t
+	desc = buddhism_events.25.d
+	picture = BUDDHISM_BAD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism #Theravada
+			religion = mahayana
+			religion = vajrayana
+		}
+		is_capital = no
+		local_autonomy = 25
+		NOT = { has_province_modifier = social_bandit }
+		NOT = {
+			owner = {
+				any_owned_province = {
+					has_province_modifier = social_bandit
+				}
+			}
+		}
+		NOT = {
+			any_neighbor_province = {
+				is_capital = yes
+			}
+		}
+		owner = {
+			OR = {
+				religion = buddhism #Theravada
+				religion = mahayana
+				religion = vajrayana
+			}
+			has_regency = no
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 400
+		modifier = {
+			factor = 0.6
+			local_autonomy = 50
+		}
+	}
+	
+	option = {
+		name = buddhism_events.25.a #We need to deal with these Thieves
+		custom_tooltip = buddhism_events.25.a.tt
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { NOT = { karma = -50 } }
+			}
+		}
+		owner = {
+			add_karma = 10
+			add_mil_power = -50
+		} #Upholding the law
+		add_province_modifier = {
+			name = "social_bandit"
+			duration = -1
+		}
+	}
+	option = {
+		name = buddhism_events.25.b #Let Local Authorities Handle it
+		custom_tooltip = buddhism_events.25.b.tt
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { karma = 50 }
+			}
+		}
+		owner = {
+			add_karma = -10
+		}
+		add_province_modifier = {
+			name = "social_bandit_local_search"
+			duration = -1
+		}
+	}
+}
+
+#Bandits Caught
+province_event = {
+	id = buddhism_events.26
+	title = buddhism_events.26.t
+	desc = buddhism_events.26.d
+	picture = BUDDHISM_BAD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			has_province_modifier = social_bandit
+			has_province_modifier = social_bandit_local_search
+		}
+	}
+	
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 70
+		
+		modifier = {
+			factor = 0.6
+			NOT = { local_autonomy = 50 }
+		}
+		
+		modifier = {
+			factor = 0.3
+			NOT = { local_autonomy = 25 }
+		}
+	}
+	
+	option = {
+		name = buddhism_events.26.a #Death
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { karma = 50 }
+			}
+		}
+		remove_province_modifier = social_bandit
+		remove_province_modifier = social_bandit_local_search
+		owner = { add_karma = -10 }
+		add_local_autonomy = -15
+		if = {	#Only Once
+			limit = {
+				NOT = {
+					owner = {
+						has_country_flag = the_myth_lives_on
+					}
+				}
+			}
+			custom_tooltip = buddhism_events.26.a.tt
+			owner = { set_country_flag = the_myth_lives_on }
+		}
+	}
+	option = {
+		name = buddhism_events.26.b #Banishment
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { NOT = { karma = -50 } }
+			}
+		}
+		owner = {
+			add_karma = 10
+			add_prestige = 5
+		}
+		remove_province_modifier = social_bandit
+		remove_province_modifier = social_bandit_local_search
+		if = {	#Only Once
+			limit = {
+				NOT = {
+					owner = { has_country_flag = bandit_leader_returns }
+				}
+			}
+			custom_tooltip = buddhism_events.26.b.tt
+			owner = { set_country_flag = bandit_leader_returns }
+		}
+	}
+}
+
+#Bandit Leader Returns
+country_event = {
+	id = buddhism_events.27
+	title = buddhism_events.27.t
+	desc = buddhism_events.27.d
+	picture = BUDDHISM_BAD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_country_flag = bandit_leader_returns
+		NOT = {
+			has_country_flag = bandit_leader_returns_happened
+		}
+		had_country_flag = { flag = bandit_leader_returns days = 730 }
+		NOT = {
+			had_country_flag = {
+				flag = bandit_leader_returns days = 7300
+			}
+		} #Would be dead by now
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	option = {
+		name = buddhism_events.27.a #
+		set_country_flag = bandit_leader_returns_happened
+		random_owned_province = {
+			limit = { is_capital = no }
+			add_province_modifier = {
+				name = bandit_leader_returned
+				duration = 730
+			}
+		}
+	}
+}
+
+#The Myth lives on
+country_event = {
+	id = buddhism_events.28
+	title = buddhism_events.28.t
+	desc = buddhism_events.28.d
+	picture = BUDDHISM_BAD_eventPicture
+	
+	
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_country_flag = the_myth_lives_on
+		NOT = { has_country_flag = myth_lives_on_happened }
+		had_country_flag = { flag = the_myth_lives_on days = 730 }
+		NOT = {
+			had_country_flag = {
+				flag = the_myth_lives_on
+				days = 7300
+			}
+		} #Myth would be dead by now
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	option = {
+		name = buddhism_events.28.a #
+		set_country_flag = myth_lives_on_happened
+		add_country_modifier = {
+			name = "social_bandit_myth"
+			duration = 3650
+		}
+	}
+}
+
+#Khanti
+country_event = {
+	id = buddhism_events.29
+	title = buddhism_events.29.t
+	desc = buddhism_events.29.d
+	picture = BUDDHISM_BAD_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		uses_karma = yes
+		has_regency = no
+		any_neighbor_country = {
+			NOT = {
+				alliance_with = ROOT
+				war_with = ROOT
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 360
+	}
+	
+	option = {
+		name = buddhism_events.29.a #Demand that they compensate you for the Insult
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+		}
+		add_karma = -10
+		random_neighbor_country = {
+			limit = {
+				NOT = {
+					alliance_with = ROOT
+					war_with = ROOT
+				}
+			}
+			ROOT = {
+				add_casus_belli = {
+					target = PREV
+					type = cb_insult
+					months = 24
+				}
+			}
+		}
+	}
+	option = {
+		name = buddhism_events.29.b #We must never loose our temper.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				NOT = { karma = -50 }
+			}
+		}
+		add_karma = 10
+		add_prestige = 10
+	}
+}
+
+# Ajjava
+province_event = {
+	id = buddhism_events.30
+	title = buddhism_events.30.t
+	desc = buddhism_events.30.d
+	picture = BUDDHISM_LAMA_eventPicture
+	goto = root
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		NOT = { has_province_modifier = governor_replaced }
+		NOT = { has_province_modifier = buddhist_nepotism }
+		owner = {
+			has_regency = no
+			uses_karma = yes
+		}
+	}
+
+	is_mtth_scaled_to_size = 1
+	
+	mean_time_to_happen = {
+		months = 360
+	}
+	
+	option = {
+		name = buddhism_events.30.a #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { karma = 50 }
+			}
+		}
+		owner = {
+			add_karma = -10
+		}
+		add_province_modifier = {
+			name = "buddhist_nepotism"
+			duration = 3650
+		}
+	}
+	option = {
+		name = buddhism_events.30.b #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				owner = { NOT = { karma = -50 } }
+			}
+		}
+		owner = {
+			add_karma = 10
+		}
+		add_province_modifier = {
+			name = "governor_replaced"
+			duration = 3650
+		}
+	}
+}
+
+#Pali Law Collection
+country_event = {
+	id = buddhism_events.31
+	title = buddhism_events.31.t
+	desc = buddhism_events.31.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			religion = buddhism #Theravada
+			religion = mahayana
+		}
+		OR = {
+			karma = 25
+			NOT = { karma = -25 }
+		}
+		has_regency = no
+		NOT = { has_ruler_flag = pali_law_collection }
+	}
+
+	mean_time_to_happen = {
+		months = 500
+	}
+	
+	option = {
+		name = buddhism_events.31.a #Excellent! Promote these laws.
+		set_ruler_flag = pali_law_collection
+		ai_chance = {
+			factor = 50
+		}
+		trigger = {
+			NOT = { karma = -25 }
+		}
+		add_karma = 10
+		add_prestige = -5
+		custom_tooltip = buddhism_events.31.a.tt1
+	}
+	option = {
+		name = buddhism_events.31.a #Promote these laws.
+		set_ruler_flag = pali_law_collection
+		ai_chance = {
+			factor = 0
+		}
+		trigger = {
+			karma = 25
+		}
+		add_karma = 10
+		add_prestige = 5
+		custom_tooltip = buddhism_events.31.a.tt2
+	}
+	option = {
+		name = buddhism_events.31.b #Let us do what we can to stop this from spreading.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+		}
+		set_ruler_flag = pali_law_collection
+		add_karma = -10
+	}
+}
+
+#Place your bets
+country_event = {
+	id = buddhism_events.32
+	title = buddhism_events.32.t
+	desc = buddhism_events.32.d
+	picture = BUDDHISM_MONASTERY_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = buddhism #Theravada
+		has_regency = no
+		num_of_cities = 5
+		any_owned_province = {
+			is_capital = no
+			NOT = { has_province_modifier = upset_theravada_nobles }
+			NOT = { has_province_modifier = upset_theravada_monks }
+			NOT = { has_province_modifier = pleased_theravada_monks }
+			NOT = { has_province_modifier = pleased_theravada_nobles }
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					NOT = { has_province_modifier = upset_theravada_nobles }
+					NOT = { has_province_modifier = upset_theravada_monks }
+					NOT = { has_province_modifier = pleased_theravada_monks }
+					NOT = { has_province_modifier = pleased_theravada_nobles }
+				}
+				set_province_flag = legal_dispute_buddhism
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					NOT = { has_province_modifier = upset_theravada_nobles }
+					NOT = { has_province_modifier = upset_theravada_monks }
+					NOT = { has_province_modifier = pleased_theravada_monks }
+					NOT = { has_province_modifier = pleased_theravada_nobles }
+					NOT = { has_province_flag = legal_dispute_buddhism }
+				}
+				set_province_flag = legal_dispute_buddhism
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 360
+	}
+	
+	option = {
+		name = buddhism_events.32.a #Demand a retrial with other Lawyers.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				NOT = { karma = -50 }
+			}
+		}
+		add_karma = 10
+	}
+	option = {
+		name = buddhism_events.32.b #Judge in favor of the monastery.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+			modifier = {
+				factor = 0.25
+				has_estate = estate_nobles
+				NOT = {
+					estate_loyalty = {
+						estate = estate_nobles
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_karma = -10
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+			give_estate_land_share_small = { estate = estate_church }
+		}
+		if = {
+			limit = {
+				has_estate = estate_nobles
+			}
+			add_estate_loyalty = {
+				estate = estate_nobles
+				loyalty = -10
+			}
+			take_estate_land_share_small = { estate = estate_nobles }
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = legal_dispute_buddhism
+			}
+			add_province_modifier = {
+				name = "upset_theravada_nobles"
+				duration = 3650
+			}
+			clr_province_flag = legal_dispute_buddhism
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = legal_dispute_buddhism
+			}
+			add_province_modifier = {
+				name = "pleased_theravada_monks"
+				duration = 3650
+			}
+			clr_province_flag = legal_dispute_buddhism
+		}
+	}
+	option = {
+		name = buddhism_events.32.c #Judge in favor of the nobles.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 2
+				karma = 50
+			}
+			modifier = {
+				factor = 0.25
+				has_estate = estate_church
+				NOT = {
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_karma = -10
+		if = {
+			limit = {
+				has_estate = estate_nobles
+			}
+			add_estate_loyalty = {
+				estate = estate_nobles
+				loyalty = 10
+			}
+			give_estate_land_share_small = { estate = estate_nobles }
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -10
+			}
+			take_estate_land_share_small = { estate = estate_church }
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = legal_dispute_buddhism
+			}
+			clr_province_flag = legal_dispute_buddhism
+			add_province_modifier = {
+				name = "upset_theravada_monks"
+				duration = 3650
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = legal_dispute_buddhism
+			}
+			clr_province_flag = legal_dispute_buddhism
+			add_province_modifier = {
+				name = "pleased_theravada_nobles"
+				duration = 3650
+			}
+		}
+	}
+}
+
+#Encountering a Lama - Pagans
+country_event = {
+	id = buddhism_events.33
+	title = buddhism_events.33.t
+	desc = buddhism_events.33.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = tengri_pagan_reformed
+		has_regency = no
+		NOT = { has_dlc = "The Cossacks" } #Meaningless for countries with Syncretic Faith.
+		NOT = { has_country_flag = met_lama }
+		OR = {
+			tibet_region = {
+				controlled_by = ROOT
+			}
+			AND = {
+				is_year = 1530 #Somewhere around the birth of the Yellow Hats
+				any_neighbor_country = {
+					OR = {
+						any_owned_province = {
+							region = tibet_region
+						}
+						religion = vajrayana
+					}
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		set_country_flag = met_lama
+	}
+
+	mean_time_to_happen = {
+		months = 360
+		modifier = {
+			factor = 0.1
+			tibet_region = {
+				controlled_by = ROOT
+			}
+		}
+	}
+	
+	option = {
+		name = buddhism_events.33.a #The time for change has come.
+		ai_chance = {
+			factor = 1
+		}
+		change_religion = vajrayana
+		add_country_modifier = {
+			name = "vajrayana_lama"
+			duration = -1
+		}
+	}
+	option = {
+		name = buddhism_events.33.b #Let's stick to our old ways.
+		ai_chance = {
+			factor = 0
+		}
+		add_prestige = 10
+	}
+}
+
+country_event = {
+	id = buddhism_events.34
+	title = buddhism_events.34.t
+	desc = buddhism_events.34.d
+	picture = BUDDHISM_MONASTERY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = buddhism_events.34.a #
+		add_years_of_income = -0.75
+		add_adm_power = -100
+		capital_scope = {
+			add_province_modifier = {
+				name = "vajrayana_great_monastery"
+				duration = -1
+			}
+		}
+		add_country_modifier = {
+			name = "vajrayana_lama"
+			duration = -1
+		}
+	}
+	option = {
+		name = buddhism_events.34.b #
+		add_prestige = -5
+		add_country_modifier = {
+			name = "influx_of_tibetan_monks"
+			duration = 1835
+		}
+	}
+}
+
+#Shamanic Figures
+country_event = {
+	id = buddhism_events.35
+	title = buddhism_events.35.t
+	desc = buddhism_events.35.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = vajrayana
+		has_country_modifier = vajrayana_lama
+		NOT = { has_country_flag = burned_figures }
+		any_owned_province = {
+			religion_group = pagan
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 260
+	}
+	
+	option = {
+		name = buddhism_events.35.a #
+		set_country_flag = burned_figures
+		add_country_modifier = {
+			name = "destruction_of_idols"
+			duration = 3650
+		}
+	}
+	option = {
+		name = buddhism_events.35.b #
+		set_country_flag = burned_figures
+		add_stability = -1 #For going against the Lama, probably a bad idea unless you really want to play a tolerant country.
+	}
+}
+
+#Death of a Lama
+country_event = {
+	id = buddhism_events.36
+	title = buddhism_events.36.t
+	desc = buddhism_events.36.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = vajrayana
+		has_regency = no
+		has_country_modifier = vajrayana_lama
+		NOT = { has_country_flag = search_for_lama }
+		OR = {
+			NOT = { has_country_flag = reincarnated }
+			had_country_flag = { flag = reincarnated days = 5475 }
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 300
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = search_for_lama
+			clr_country_flag = reincarnated
+		}
+	}
+	
+	option = {
+		name = buddhism_events.36.a #Aid the Search
+		add_adm_power = -50
+		add_karma = 10
+		set_country_flag = helped_search
+	}
+	option = {
+		name = buddhism_events.36.b #Let them sort it out themselves
+		add_karma = -10
+		add_prestige = -10
+	}
+}
+
+#Reincarnation Found
+country_event = {
+	id = buddhism_events.37
+	title = buddhism_events.37.t
+	desc = buddhism_events.37.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = vajrayana
+		has_regency = no
+		has_country_flag = search_for_lama
+		NOT = { has_country_flag = reincarnated }
+	}
+
+	mean_time_to_happen = {
+		months = 20
+		modifier = {
+			factor = 0.5
+			has_country_flag = helped_search
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = helped_search
+			clr_country_flag = search_for_lama
+			set_country_flag = reincarnated
+		}
+	}
+	
+	option = {
+		name = buddhism_events.37.a #Rejoice!
+		add_stability_or_adm_power = yes
+	}
+}
+
+#Legitimacy of Incarnation Questioned
+country_event = {
+	id = buddhism_events.38
+	title = buddhism_events.38.t
+	desc = buddhism_events.38.d
+	picture = BUDDHISM_LAMA_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = vajrayana
+		has_country_flag = reincarnated
+	}
+
+	mean_time_to_happen = {
+		months = 260
+	}
+	
+	option = {
+		name = buddhism_events.38.a #Send envoys to convince them.
+		add_karma = 5
+		add_dip_power = -50
+	}
+	option = {
+		name = buddhism_events.38.b #Send troops to convince them.
+		add_karma = -5
+		random_owned_province = {
+				spawn_rebels = {
+					type = anti_tax_rebels
+					size = 1
+				}
+			}
+	}
+}
+
+#Conversion to Theravada from Pagan
+country_event = {
+	id = buddhism_events.39
+	title = buddhism_events.39.t
+	desc = buddhism_events.39.d
+	picture = BUDDHISM_MONASTERY_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion_group = pagan
+		OR = {
+			NOT = { has_dlc = "The Cossacks" }
+			NOT = { religion = tengri_pagan_reformed } #This event is meaningless with Syncretic Faith.
+		}
+		lanka_area = {
+			owned_by = ROOT
+			religion = buddhism #Theravada
+		}
+		NOT = { has_country_flag = conquered_sri_lanka }
+	}
+	
+	immediate = {
+		set_country_flag = conquered_sri_lanka
+	}
+
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	option = {
+		name = buddhism_events.39.a #
+		change_religion = buddhism #Theravada
+	}
+	option = {
+		name = buddhism_events.39.b #
+		add_years_of_income = 0.25
+	}
+}
+
+#Inviting Lankan Priests
+country_event = {
+	id = buddhism_events.40
+	title = buddhism_events.40.t
+	desc = buddhism_events.40.d
+	picture = BUDDHISM_MONASTERY_eventPicture
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		religion = buddhism #Theravada
+		NOT = { has_country_modifier = monks_from_ceylon }
+		NOT = { has_country_flag = sent_embassy_to_ceylon }
+		NOT = { has_ruler_modifier = supporting_local_monastic_traditions }
+		NOT = { primary_culture = sinhala }
+		2099 = {
+			NOT = {
+				owned_by = ROOT
+			}
+			owner = {
+				religion = buddhism #Theravada
+				is_at_war = no
+				prestige = 50
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 580
+	}
+	
+	option = {
+		name = buddhism_events.40.a #Let us send an embassy.
+		set_country_flag = sent_embassy_to_ceylon
+		ai_chance = {
+			factor = 99
+			modifier = {
+				factor = 0
+				NOT = {
+					has_opinion = {
+						who = CEY
+						value = -50
+					}
+				}
+			}
+		}
+		add_dip_power = -50
+		2099 = {
+			owner = {
+				country_event = { id = buddhism_events.41 days = 60 }
+			}
+		}
+	}
+	option = {
+		name = buddhism_events.40.b #Support our own lineages instead.
+		set_country_flag = sent_embassy_to_ceylon
+		ai_chance = {
+			factor = 1
+		}
+		add_ruler_modifier = {
+			name = "supporting_local_monastic_traditions"
+		}
+	}
+}
+
+#An Embassy from [From.GetName]
+country_event = {
+	id = buddhism_events.41
+	title = buddhism_events.41.t
+	desc = buddhism_events.41.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = buddhism_events.41.a #Allow it
+		ai_chance = {
+			factor = 99
+			modifier = {
+				factor = 0
+				NOT = {
+					has_opinion = {
+						who = FROM
+						value = -50
+					}
+				}
+			}
+		}
+		add_dip_power = 50
+		add_prestige = 10
+		add_opinion = {
+			who = FROM
+			modifier = lankan_monks_sent
+		}
+		FROM = {
+			country_event = { id = buddhism_events.42 days = 30 }
+		}
+	}
+	option = {
+		name = buddhism_events.41.b #They shall do no such thing!
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+					has_opinion = {
+						who = FROM
+						value = -50
+					}
+			}
+		}
+		add_opinion = {
+			who = FROM
+			modifier = no_lankan_monks_sent
+		}
+		FROM = {
+			country_event = { id = buddhism_events.43 days = 30 }
+		}
+	}
+}
+
+#Monks Arrive
+country_event = {
+	id = buddhism_events.42
+	title = buddhism_events.42.t
+	desc = buddhism_events.42.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = buddhism_events.42.a #
+		add_country_modifier = {
+			name = "monks_from_ceylon"
+			duration = 18250 # 50 Years
+		}
+		add_opinion = {
+			who = FROM
+			modifier = lankan_monks_sent
+		}
+	}
+
+}
+
+#No Monks for You
+country_event = {
+	id = buddhism_events.43
+	title = buddhism_events.43.t
+	desc = buddhism_events.43.d
+	picture = BUDDHISM_GOOD_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = buddhism_events.43.a #
+		add_prestige = -10
+		add_opinion = {
+			who = FROM
+			modifier = no_lankan_monks_sent
+		}
+	}
+
+}

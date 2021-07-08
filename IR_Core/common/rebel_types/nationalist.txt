@@ -1,0 +1,281 @@
+######################################################################
+# Separatist rebels. Freedom!!!
+######################################################################
+nationalist_rebels = {
+
+	color = { 25 180 25 }
+
+	area = nation_rebel_tag 			# Stays within provinces of their rebel tag
+	government = any				# No special preference
+	defection = nation_rebel_tag			# If the country seeks independence, defection specifies what type of provinces it wants.
+	independence = nation_rebel_tag 		# Seeks independence for spawn province culture. Will not spawn at all if there is no suitable tag.
+	defect_delay = 60				# Can spontaneously declare independence after 60 months (earliest)
+	unit_transfer = yes				# Units switch allegiance after enforcing demands.
+	gfx_type = culture_province	
+	will_relocate = yes	
+	
+	resilient = no
+	reinforcing = yes
+	general = yes				
+	smart = yes
+	
+	artillery = 0.1
+	infantry = 0.6
+	cavalry = 0.3
+	
+	morale = 1.0
+
+	# Possible handle actions
+	handle_action_negotiate = yes
+	handle_action_stability = yes
+	handle_action_build_core = yes
+	handle_action_send_missionary = yes		
+	handle_action_change_culture = yes
+	
+	# The rebel type with the highest modifier for this province gets picked
+	spawn_chance = {
+		factor = 10
+		modifier = {
+			factor = 0.01
+			NOT = { nationalism = 1 }
+			owner = {
+				OR = {
+					accepted_culture = ROOT
+					culture_group = ROOT
+					primary_culture = ROOT
+				}
+				OR = {
+					NOT = { has_reform = celestial_empire }
+					has_country_modifier = the_mandate_of_heaven
+					AND = {
+						has_reform = celestial_empire
+						has_dlc = "Mandate of Heaven"
+						imperial_mandate = 80
+					}
+				}
+			}
+			tolerance_to_this = 0			
+	 	}
+		modifier = {
+			factor = 0.01
+			region = france_region
+			has_owner_religion = no
+			owner = { has_disaster = french_wars_of_religion }			
+	 	}
+		modifier = {
+			factor = 0.01
+			owner = {
+				culture_group = ROOT
+				has_reform = celestial_empire
+				OR = {
+					has_country_modifier = the_mandate_of_heaven
+					AND = {
+						has_dlc = "Mandate of Heaven"
+						imperial_mandate = 80
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 100
+			owner = {
+				NOT = { primary_culture = ROOT }
+				has_reform = celestial_empire
+				OR = {
+					has_country_modifier = the_mandate_of_heaven_lost
+					has_country_modifier = lost_mandate_of_heaven
+					AND = {
+						has_dlc = "Mandate of Heaven"
+						NOT = { imperial_mandate = 50 } 
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 10
+			nationalism = 1
+		}
+		modifier = {
+			factor = 15
+			has_province_modifier = court_and_country_hardline_vs_separatists
+		}
+	 	modifier = {
+			factor = 0.001
+			is_colony = yes
+		}
+		modifier = {
+			factor = 0.05
+			is_overseas = yes
+			has_owner_religion = yes
+		}
+		modifier = {
+			factor = 2
+			has_province_modifier = "suppress_minority"
+		}
+		modifier = {
+			factor = 1.2
+			NOT = { is_core = owner }
+		}		
+		modifier = {
+			factor = 1.5
+			owner = {
+				NOT = { stability = 0 }
+			}
+		}
+		modifier = {
+			factor = 1.5
+			owner = {
+				NOT = { stability = -2 }
+			}
+		}
+		modifier = {
+			factor = 3
+			owner = {
+				NOT = { primary_culture = ROOT }
+			}
+		}
+		modifier = {
+			factor = 1.5
+			owner = {
+				NOT = { culture_group = ROOT }
+			}
+		}
+		modifier = {
+			factor = 0.4
+			owner = {
+				accepted_culture = ROOT
+				NOT = { has_country_modifier = the_mandate_of_heaven_lost }
+				OR = {
+					NOT = { has_dlc = "Mandate of Heaven" }
+					AND = {
+						has_dlc = "Mandate of Heaven"
+						NOT = { has_country_modifier = lost_mandate_of_heaven }
+						NOT = { has_reform = celestial_empire }
+					}
+					AND = {
+						has_dlc = "Mandate of Heaven"
+						has_reform = celestial_empire
+						imperial_mandate = 80
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 2
+			NOT = { tolerance_to_this = 1 }
+		}
+		modifier = {
+			factor = 2
+			NOT = { tolerance_to_this = -1 }
+		}
+		modifier = {
+			factor = 2
+			NOT = { tolerance_to_this = -2 }
+		}
+		modifier = {
+			factor = 1.3
+			owner = {
+				NOT = { legitimacy_or_horde_unity = 66 }
+			}
+		}
+		modifier = {
+			factor = 1.3
+			owner = {
+				NOT = { legitimacy_or_horde_unity = 75 }
+			}
+		}
+	}
+ 
+ 	# This is checked for EACH province in the Area of Operations
+	movement_evaluation = {
+		factor = 1
+		modifier = {
+			factor = 0.1
+			units_in_province = 1
+		}
+		modifier = {
+			factor = 0.001
+			controlled_by = REB
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 2
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 4
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 6
+		}
+	}
+ 
+ 	# Province Scope
+ 	siege_won_trigger = {
+ 		culture = REB
+ 	}
+	siege_won_effect = {
+		if = {
+			limit = { NOT = { is_core = REB } }
+			add_core = REB
+		}
+		add_nationalism = 10 # Add ten extra years of nationalism
+	}
+	
+	# Country scope
+	can_negotiate_trigger = {
+		is_at_war = no
+	}
+	
+	# Country scope
+	can_enforce_trigger = {
+		always = yes
+	}
+	
+	# Localisation for their demands
+	demands_description = "nationalist_rebels_demand"
+	
+	# Country scope
+	demands_enforced_effect = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_lost_to_rebels
+				duration = 10
+				hidden = yes
+			}
+		}
+		add_prestige = -10	
+		if = {
+			limit = {
+				exists = REB
+			}
+			every_owned_province = {
+				limit = {
+					has_rebel_faction = REB
+					culture = REB
+				}
+				if = {
+					limit = { NOT = { is_core = REB } }
+					add_core = REB
+				}			
+				cede_province = REB
+			}			
+		}
+		if = {
+			limit = {
+				NOT = { exists = REB }
+			}
+			every_owned_province = {
+				limit = {
+					has_rebel_faction = REB
+					culture = REB
+					NOT = { is_core = REB }
+					culture = REB
+				}
+				add_core = REB
+			}
+			create_vassal = REB
+		}		
+	}
+}

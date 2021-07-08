@@ -1,0 +1,260 @@
+######################################################################
+# Revolutionary rebels. Civil War factions.
+######################################################################
+revolutionary_rebels = {
+
+	color = { 50 85 210 }
+
+	area = nation 					# Stays within the nation
+	government = republic			
+	defection = none				# Does not defect
+	independence = none				# Does not strive for independence
+	unit_transfer = yes
+	gfx_type = culture_province	
+	will_relocate = yes	
+	
+	resilient = no
+	reinforcing = yes
+	general = yes
+	smart = yes
+	revolutionary = yes
+	
+	artillery = 0.1
+	infantry = 0.6
+	cavalry = 0.3
+	
+	morale = 1.1
+	
+	# Possible handle actions
+	handle_action_negotiate = no
+	handle_action_stability = yes
+	handle_action_build_core = yes
+	handle_action_send_missionary = yes		
+	
+	# The rebel type with the highest modifier for this province gets picked
+	spawn_chance = {
+		factor = 1
+		modifier = {
+			factor = 0
+			owner = {
+				has_parliament = yes
+			}
+		}		
+		modifier = {
+			factor = 0
+			owner = {
+				is_revolutionary = yes
+			}
+		}	
+		modifier = {
+			factor = 2
+			is_year = 1700
+		}
+		modifier = {
+			factor = 2
+			is_year = 1740
+		}
+		modifier = {
+			factor = 2
+			is_year = 1780
+		}
+		modifier = {
+			factor = 2
+			has_revolution_in_province = yes
+		}
+		modifier = {
+			factor = 0.05
+			is_overseas = yes
+		}
+		modifier = {
+			factor = 0.25
+			NOT = { is_year = 1600 }
+		}
+		modifier = {
+			factor = 5.0
+			owner = {
+				has_disaster = aspiration_for_liberty
+			}
+		}
+		modifier = {
+			factor = 5.0
+			owner = { has_disaster = revolution }
+		}		
+		
+
+		modifier = {
+			factor = 0.1
+			owner = {
+				NOT = { has_institution = enlightenment }
+			}
+		}
+
+	}
+ 
+ 	# This is checked for EACH province in the Area of Operations
+	movement_evaluation = {
+		factor = 1
+		modifier = {
+			factor = 0.1
+			units_in_province = 1
+		}
+		modifier = {
+			factor = 0.001
+			controlled_by = REB
+		}
+		modifier = {
+			factor = 10
+			is_capital = yes
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 2
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 4
+		}
+		modifier = {
+			factor = 1.5
+			unrest = 6
+		}
+	}
+ 
+ 	# Province Scope
+ 	siege_won_trigger = {
+ 	}
+	siege_won_effect = {
+	}
+	
+	# Country scope
+	can_negotiate_trigger = {
+		always = no
+	}
+	
+	# Country scope
+	can_enforce_trigger = {
+		always = yes
+	}
+	
+	# Localisation for their demands
+	demands_description = "revolutionary_rebels_demand"
+	
+	# Country Scope	
+	demands_enforced_effect = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_lost_to_rebels
+				duration = 10
+				hidden = yes
+			}
+			add_country_modifier = { #So only this one will end the Revolution disaster
+				name = just_lost_to_revolutionary_rebels
+				duration = 10
+				hidden = yes
+			}
+		}
+		add_prestige = -50
+		if = {
+			limit = {
+				has_disaster = revolution
+			}
+			custom_tooltip = the_revolution_will_succeed
+			tooltip = {
+				if = {
+					limit = { NOT = { government = republic } }
+					change_government_to_republic = yes
+				}
+				if = {
+					limit = { NOT = { revolution_target_exists = yes } }
+					add_government_reform = revolutionary_republic_reform
+				}
+				else = {
+					add_government_reform = junior_revolutionary_republic_reform
+				}
+			}
+			hidden_effect = {
+				country_event = { id = revolution.10 } #Generic
+				country_event = { id = revolution.15 } #France (non-monarchy)
+				country_event = { id = flavor_rus.2000 } #Russia
+				country_event = { id = revolution.31 } #Spain
+				country_event = { id = revolution.32 } #Scandinavia
+				country_event = { id = revolution.33 } #UK
+				country_event = { id = revolution.34 } #Ottomans
+				country_event = { id = revolution.37 } #Germans
+				country_event = { id = revolution.38 } #Austria and HRE
+				country_event = { id = revolution.39 } #Netherlands
+				country_event = { id = revolution.40 } #China
+				country_event = { id = revolution.41 } #Indians
+			}
+		}
+		else_if = {
+			limit = { has_disaster = french_revolution }
+			country_event = { id = french_revolution.2 }
+		}
+		else = {
+			if = {
+				limit = {
+					NOT = { 
+						OR = {
+							government = republic
+							has_reform = papacy_reform
+							has_reform = steppe_horde
+							has_reform = celestial_empire
+							has_reform = iqta
+							has_reform = daimyo
+							has_reform = shogunate
+							has_reform = colonial_government
+							has_reform = native_basic_reform
+							is_revolutionary_republic_trigger = yes
+						}
+					}
+				}
+				change_government_to_republic = yes
+				#set_legacy_government = constitutional_republic
+			}
+			if = {
+				limit = {
+					NOT = {
+						OR = {
+							has_reform = papacy_reform
+							has_reform = steppe_horde
+							has_reform = celestial_empire
+							has_reform = iqta
+							has_reform = daimyo
+							has_reform = shogunate
+							has_reform = colonial_government
+							has_reform = native_basic_reform
+							is_revolutionary_republic_trigger = yes
+							has_reform = tribal_federation
+							has_reform = feudal_theocracy
+							has_reform = mamluk_government
+						}
+					}
+				}
+				add_government_reform = parliamentary_reform
+			}
+			define_ruler = {
+				rebel = yes
+			}
+		}
+		if = {
+			limit = { has_disaster = aspiration_for_liberty }
+			end_disaster = aspiration_for_liberty
+			clr_country_flag = liberalism
+			remove_country_modifier = reduceed_war_expenditures
+			remove_country_modifier = decreased_morale
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man"
+				is_revolutionary_republic_trigger = yes
+			}
+			add_faction_influence = {
+				faction = rr_jacobins
+				influence = 15
+			}
+			remove_country_modifier = constitutional_project
+			remove_country_modifier = consolidation_of_power
+		}
+	}
+}
