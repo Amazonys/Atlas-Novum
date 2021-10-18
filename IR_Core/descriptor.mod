@@ -1,4 +1,4 @@
-name="Imperialism Reinvigorated: Manual Install"
+name="Imperialism Reinvigorated: Fork"
 path="C:/Users/Amyzonis/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/IR_Core"
 replace_path="common/bookmarks"
 replace_path="common/buildings"
