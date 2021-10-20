@@ -345,7 +345,6 @@ bri_2 = {
 	ai = yes
 	potential = {
 		NOT = { map_setup = map_setup_random }
-		is_random_new_world = no
 		tag = BRI
 	}
 	has_country_shield = yes
@@ -355,38 +354,101 @@ bri_2 = {
 		required_missions = {  }
 		provinces_to_highlight = {
 			province_id = 170
-			OR = {
-				has_dock_building_trigger = no
-				NOT = { owned_by = ROOT }
-				NOT = { controlled_by = ROOT }
+			province_id = 172
+			AND = {
+				OR = {
+					has_building = jetty
+					NOT = { owned_by = ROOT }
+					NOT = { controlled_by = ROOT }
+				}
+				OR = {
+					has_building = shipwright
+					NOT = { owned_by = ROOT }
+					NOT = { controlled_by = ROOT }
+				}
 			}
-		}
+		}	
 		trigger = {
 			170 = {
 				owned_by = ROOT
 				controlled_by = ROOT
-				has_dock_building_trigger = yes
+				AND = {
+					has_building = jetty
+					has_building = shipwright
+				}
 			}
-		}
+			172	= {
+				owned_by = ROOT
+				controlled_by = ROOT
+				AND = {
+					has_building = jetty
+					has_building = shipwright
+				}
+			}
+			has_diplo = 100
+		}	
 		effect = {
 			if = {
 				limit = {
 					170 = {
 						NOT = {
-							has_building = drydock
+							has_building = wharf
 						}
 					}
 				}
 				170 = {
-					hidden_effect = { remove_building = dock }
-					add_building = drydock
+					hidden_effect = { remove_building = jetty }
+					add_building = wharf
+				}
+				limit = {
+					170 = {
+						NOT = {
+							has_building = shipyard
+						}
+					}
+				}
+				170 = {
+					hidden_effect = { remove_building = shipwright }
+					add_building = shipyard
 				}
 			}
 			170 = {
 				add_unit_construction = {
 					type = heavy_ship
-					amount = 5
-					speed = 1
+					amount = 2
+					speed = 0.8
+					cost = 0
+				}
+			}
+			if = {
+				limit = {
+					172 = {
+						NOT = {
+							has_building = shipyard
+						}
+					}
+				}
+				172 = {
+					hidden_effect = { remove_building = shipwright }
+					add_building = shipyard
+				}
+				limit = {
+					170 = {
+						NOT = {
+							has_building = wharf
+						}
+					}
+				}
+				170 = {
+					hidden_effect = { remove_building = jetty }
+					add_building = wharf
+				}
+			}
+			172 = {
+				add_unit_construction = {
+					type = heavy_ship
+					amount = 3
+					speed = 0.8
 					cost = 0
 				}
 			}
@@ -397,27 +459,29 @@ bri_2 = {
 				}
 				add_claim = root
 			}
+			add_dip_power = -100
+			add_country_modifier = {
+				name = bri_breton_ships
+				duration = -1
+			}
 		}
 	}
 	bri_new_brittany = {
 		icon = mission_invade_island
 		required_missions = { bri_brest }
 		provinces_to_highlight = {
-			colonial_region = colonial_canada
+			region = canada_region
 			NOT = { country_or_non_sovereign_subject_holds = root }
 			has_port = yes
 			has_discovered = root
 		}
 		trigger = {
-			custom_trigger_tooltip = {
-				tooltip = has_colony_in_colonial_canada
-				colonial_canada = {
-					owner = {
-						is_colonial_nation_of = root
-					}
+				num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+					value = 5 
+					region = canada_region
+					is_city = yes
 				}
 			}
-		}
 		effect = {
 			add_country_modifier = {
 				name = bri_colonialism
@@ -425,9 +489,38 @@ bri_2 = {
 			}
 		}
 	}
-	bri_better_weather = {
+	bri_western_france = {
 		icon = mission_iberian_conquistador
 		required_missions = { bri_new_brittany }
+		provinces_to_highlight = {
+			region = canada_region
+			NOT = { country_or_non_sovereign_subject_holds = root }
+			has_discovered = root
+		}
+		trigger = {
+			num_of_colonies = 3
+			}	
+		effect = {
+			capital_scope = {
+				add_base_tax = 2
+				add_base_production = 2
+				add_base_manpower = 2
+			}
+			every_subject_country = { 
+				limit = {
+					is_subject_of_type = colony
+				}
+				capital_scope = {
+				add_base_tax = 1
+				add_base_production = 1
+				add_base_manpower = 1
+				}
+			}
+		}
+	}
+	bri_better_weather = {
+		icon = mission_iberian_conquistador
+		required_missions = { bri_western_france }
 		provinces_to_highlight = {
 			colonial_region = colonial_the_carribean
 			NOT = { country_or_non_sovereign_subject_holds = root }
@@ -456,7 +549,7 @@ bri_2 = {
 	}
 	bri_atlantic_trade = {
 		icon = mission_dominate_home_trade_node
-		position = 5
+		position = 6
 		required_missions = { bri_better_weather }
 		provinces_to_highlight = {
 			#the two Atlantic trade nodes
