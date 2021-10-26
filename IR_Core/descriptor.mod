@@ -14,6 +14,7 @@ replace_path="history/diplomacy"
 replace_path="history/provinces"
 replace_path="history/wars"
 replace_path="missions"
+replace_path="events"
 picture="IR_icon.png"
 supported_version="1.31.*.*"
 tags={
