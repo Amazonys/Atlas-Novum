@@ -1,0 +1,1178 @@
+###########################################################
+# Events for the Jains Estate
+#
+# written by Daniel Tolman
+###########################################################
+
+namespace = jains_estate_events
+
+province_event = {
+	id = jains_estate_events.1
+	title = jains_estate_events.1.t
+	desc = jains_estate_events.1.d
+	picture = 11_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = jains_estate_events.1.a #Yes
+	}
+}
+
+# Advancement of the Jains
+country_event = {
+	id = jains_estate_events.2
+	title = jains_estate_events.2.t
+	desc = jains_estate_events.2.d
+	picture = 11_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_jains
+				modifier = EST_VAL_JAINS_ADVANCE
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_jains
+				modifier = EST_VAL_JAINS_DECLINE
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = jains_estate_events.1.a #Ok
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAINS_ADVANCE
+			influence = 10
+			duration = 5475
+		}
+	}
+}
+
+# Decline of the Jains
+country_event = {
+	id = jains_estate_events.3
+	title = jains_estate_events.3.t
+	desc = jains_estate_events.3.d
+	picture = 10_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_jains
+				modifier = EST_VAL_JAINS_ADVANCE
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_jains
+				modifier = EST_VAL_JAINS_DECLINE
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = jains_estate_events.1.a #Ok
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAINS_DECLINE
+			influence = -10
+			duration = 5475
+		}
+	}
+}
+
+# Jains resist persecution
+country_event = {
+	id = jains_estate_events.4
+	title = jains_estate_events.4.t
+	desc = jains_estate_events.4.d
+	picture = 10_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		NOT = {
+			estate_loyalty = {
+				estate = estate_jains
+				loyalty = 30
+			}
+		}
+		NOT = {
+			has_country_modifier = jain_resistance
+		}
+		estate_territory = { 
+			estate = estate_jains
+			territory = 1
+		}
+		any_owned_province = {
+			NOT = { has_province_modifier = passive_resistance }
+			OR = {
+				religion_group = dharmic
+				religion = buddhism
+				religion = vajrayana
+				religion = mahayana
+			}
+			is_capital = no
+			is_city = yes
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			while = {
+				limit = {
+					NOT = { 
+						development_in_provinces = {
+							has_province_flag = jain_passive_resistance
+							value = estate
+							estate = estate_jains
+						}
+					}
+					any_owned_province = {
+						NOT = { has_province_modifier = passive_resistance }
+						OR = {
+							religion_group = dharmic
+							religion = buddhism
+							religion = vajrayana
+							religion = mahayana
+						}
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = jain_passive_resistance }
+					}
+				}
+				random_owned_province = {
+					limit = {
+						NOT = { has_province_modifier = passive_resistance }
+						OR = {
+							religion_group = dharmic
+							religion = buddhism
+							religion = vajrayana
+							religion = mahayana
+						}
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = jain_passive_resistance }
+					}
+					set_province_flag = jain_passive_resistance
+				}
+			}
+		}
+	}
+
+	option = {
+		name = jains_estate_events.4.a
+		add_country_modifier = {
+			name = jain_resistance
+			duration = 5475
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = jain_passive_resistance
+			}
+			add_province_modifier = {
+				name = passive_resistance
+				duration = 5475
+			}
+		}
+	}
+
+	after = {
+		every_owned_province = {
+			limit = {
+				has_province_flag = jain_passive_resistance
+			}
+			clr_province_flag = jain_passive_resistance
+		}
+	}
+}
+
+# Jain moneylenders call in debts to Vaisya guilds
+country_event = {
+	id = jains_estate_events.5
+	title = jains_estate_events.5.t
+	desc = jains_estate_events.5.d
+	picture = 11_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		has_estate = estate_vaisyas
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_jains
+				modifier = EST_VAL_JAINS_PAYMENT
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_jains
+				modifier = EST_VAL_JAINS_PAYMENT_DENIED
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = { # make them pay
+		name = jains_estate_events.5.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_jains
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.2
+				estate_influence = {
+					estate = estate_jains
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_vaisyas
+						loyalty = 50
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_vaisyas
+					influence = 80
+				}
+			}
+		}
+		add_country_modifier = {
+			name = vaisya_merchant_debt
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAINS_PAYMENT
+			influence = 15
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = EST_VAL_JAINS_PAYMENT
+			influence = -15
+			duration = 5475
+		}
+	}
+	
+	option = { # demand forgiveness of debt
+		name = jains_estate_events.5.b
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_jains
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_jains
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_vaisyas
+						loyalty = 50
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_vaisyas
+					influence = 80
+				}
+			}
+		}
+		add_country_modifier = {
+			name = jain_debt_forgiven
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAINS_PAYMENT_DENIED
+			influence = -15
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = EST_VAL_JAINS_PAYMENT_DENIED
+			influence = 15
+			duration = 5475
+		}
+	}
+	
+	option = { # pay ourselves
+		name = jains_estate_events.5.c
+		ai_chance = {
+			factor = 100
+			modifier = {
+				factor = 0
+				NOT = { years_of_income = 1.5 }
+			}
+		}
+		add_years_of_income = -1
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAINS_PAYMENT
+			influence = 5
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = 15
+		}
+		add_estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = 15
+		}
+	}
+}
+
+# Jain or Brahmin bankers?
+# Hindus only
+country_event = {
+	id = jains_estate_events.6
+	title = jains_estate_events.6.t
+	desc = jains_estate_events.6.d
+	picture = 11_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		has_estate = estate_brahmins
+		religion = hinduism
+		NOT = {
+			has_country_modifier = preferred_jain_bankers
+		}
+		NOT = {
+			has_country_modifier = preferred_brahmin_bankers
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = { # jain bankers
+		name = jains_estate_events.6.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.2
+				estate_influence = {
+					estate = estate_jains
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_brahmins
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_jains
+						loyalty = 55
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_brahmins
+						loyalty = 50
+					}
+				}
+			}
+		}
+		add_country_modifier = {
+			name = preferred_jain_bankers
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAINS_PREFERRED_BANKERS
+			influence = 15
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_brahmins
+			desc = EST_VAL_JAINS_PREFERRED_BANKERS
+			influence = -15
+			duration = 5475
+		}
+	}
+	option = { # brahmin bankers
+		name = jains_estate_events.6.b
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.2
+				estate_influence = {
+					estate = estate_brahmins
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_jains
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_brahmins
+						loyalty = 55
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_jains
+						loyalty = 50
+					}
+				}
+			}
+		}
+		add_country_modifier = {
+			name = preferred_brahmin_bankers
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_BRAHMINS_PREFERRED_BANKERS
+			influence = -15
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_brahmins
+			desc = EST_VAL_BRAHMINS_PREFERRED_BANKERS
+			influence = 15
+			duration = 5475
+		}
+	}
+	
+}
+
+# Jain Administration
+# High influence high loyalty
+country_event = {
+	id = jains_estate_events.7
+	title = jains_estate_events.7.t
+	desc = jains_estate_events.7.d
+	picture = 11_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		estate_loyalty = {
+			estate = estate_jains
+			loyalty = 60
+		}
+		estate_influence = {
+			estate = estate_jains
+			influence = 60
+		}
+		NOT = {
+			has_country_modifier = jain_administration
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = jains_estate_events.7.a
+		add_adm_power = 50
+		add_years_of_income = 0.5
+		add_country_modifier = {
+			name = jain_administration
+			duration = 7300
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAIN_ADMINISTRATION
+			influence = 10
+			duration = 7300
+		}
+	}
+}
+
+# Paryushana
+country_event = {
+	id = jains_estate_events.8
+	title = jains_estate_events.8.t
+	desc = jains_estate_events.8.d
+	picture = 10_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		NOT = {
+			any_owned_province = {
+				has_province_modifier = paryushana
+			}
+		}
+		NOT = {
+			any_owned_province = {
+				has_province_modifier = suppressed_jain_festivals
+			}
+		}
+		any_owned_province = {
+			is_territory = no
+			OR = {
+				religion_group = dharmic
+				religion = buddhism
+				religion = vajrayana
+				religion = mahayana
+			}
+			is_capital = no
+			is_city = yes
+		}
+		estate_territory = { 
+			estate = estate_jains
+			territory = 1
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			while = {
+				limit = {
+					NOT = { 
+						development_in_provinces = {
+							has_province_flag = paryushana_prov_flag
+							value = estate
+							estate = estate_jains
+						}
+					}
+					any_owned_province = {
+						is_territory = no
+						OR = {
+							religion_group = dharmic
+							religion = buddhism
+							religion = vajrayana
+							religion = mahayana
+						}
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = paryushana_prov_flag }
+					}
+				}
+				random_owned_province = {
+					limit = {
+						is_territory = no
+						OR = {
+							religion_group = dharmic
+							religion = buddhism
+							religion = vajrayana
+							religion = mahayana
+						}
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = paryushana_prov_flag }
+					}
+					set_province_flag = paryushana_prov_flag
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = jains_estate_events.8.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0
+				NOT = { years_of_income = 0.6 }
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_jains
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				has_estate = estate_church
+				NOT = {
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_years_of_income = -0.5
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = 15
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -10
+			}
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = paryushana_prov_flag
+			}
+			add_province_modifier = {
+				name = paryushana
+				duration = 5475
+			}
+		}
+		hidden_effect = {
+			every_owned_province = {
+				limit = { has_province_flag = paryushana_prov_flag }
+				clr_province_flag = paryushana_prov_flag
+			}
+		}
+	}
+	option = {
+		name = jains_estate_events.8.b
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_jains
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				has_estate = estate_church
+				NOT = {
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = -15
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = paryushana_prov_flag
+			}
+			add_province_modifier = {
+				name = suppressed_jain_festivals
+				duration = 5475
+			}
+		}
+		hidden_effect = {
+			every_owned_province = {
+				limit = { has_province_flag = paryushana_prov_flag }
+				clr_province_flag = paryushana_prov_flag
+			}
+		}
+	}
+}
+
+# Jainism on Trial
+country_event = {
+	id = jains_estate_events.9
+	title = jains_estate_events.9.t
+	desc = jains_estate_events.9.d
+	picture = 10_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		has_estate = estate_church
+		religion_group = muslim
+		NOT = {
+			has_country_modifier = jain_theological_debates
+		}
+		NOT = {
+			has_country_modifier = jains_denounced_as_khafirs
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = jains_estate_events.9.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_jains
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.2
+				estate_influence = {
+					estate = estate_jains
+					influence = 80
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_church
+					influence = 80
+				}
+			}
+			modifier = {
+				factor = 0.8
+				has_estate = estate_brahmins
+				NOT = {
+					estate_loyalty = {
+						estate = estate_brahmins
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_piety = -0.15
+		add_country_modifier = {
+			name = jain_theological_debates # more tolerance heathen
+			duration = 7300
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = 10
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAINS_ARE_THEISTS
+			influence = 10
+			duration = 7300
+		}
+		add_estate_influence_modifier = {
+			estate = estate_church
+			desc = EST_VAL_JAINS_ARE_THEISTS
+			influence = -10
+			duration = 7300
+		}
+		if = {
+			limit = {
+				has_estate = estate_brahmins
+			}
+			add_estate_loyalty = {
+				estate = estate_brahmins
+				loyalty = -10
+			}
+		}
+	}
+	
+	option = {
+		name = jains_estate_events.9.b
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_jains
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_jains
+					influence = 80
+				}
+			}
+			modifier = {
+				factor = 0.2
+				estate_influence = {
+					estate = estate_church
+					influence = 80
+				}
+			}
+			modifier = {
+				factor = 1.2
+				has_estate = estate_brahmins
+				NOT = {
+					estate_loyalty = {
+						estate = estate_brahmins
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_piety = 0.15
+		add_country_modifier = {
+			name = jains_denounced_as_khafirs
+			duration = 7300
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = -20
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAINS_ARE_KHAFIRS
+			influence = -10
+			duration = 7300
+		}
+		add_estate_influence_modifier = {
+			estate = estate_church
+			desc = EST_VAL_JAINS_ARE_KHAFIRS
+			influence = 10
+			duration = 7300
+		}
+		if = {
+			limit = {
+				has_estate = estate_brahmins
+			}
+			add_estate_loyalty = {
+				estate = estate_brahmins
+				loyalty = 10
+			}
+		}
+	}
+}
+
+# Jains make demands
+country_event = {
+	id = jains_estate_events.10
+	title = jains_estate_events.10.t
+	desc = jains_estate_events.10.d
+	picture = 11_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		estate_influence = {
+			estate = estate_jains
+			influence = 70
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				modifier = EST_VAL_JAIN_RELIGIOUS_CONCESSIONS
+				estate = estate_jains
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				modifier = EST_VAL_JAIN_RELIGIOUS_CONCESSIONS_DENIED
+				estate = estate_jains
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = jains_estate_events.10.a
+		ai_chance = {
+			factor = 0
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAIN_RELIGIOUS_CONCESSIONS
+			influence = 20
+			duration = 7300
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = 20
+		}
+		if = {
+			limit = {
+				has_estate = estate_brahmins
+			}
+			add_estate_loyalty = {
+				estate = estate_brahmins
+				loyalty = -20
+			}
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -20
+			}
+		}
+		add_country_modifier = {
+			name = jain_religious_concessions
+			duration = 7300
+		}
+	}
+	
+	option = {
+		name = jains_estate_events.10.b
+		ai_chance = {
+			factor = 1
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAIN_RELIGIOUS_CONCESSIONS_DENIED
+			influence = -20
+			duration = 7300
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = -20
+		}
+		if = {
+			limit = {
+				has_estate = estate_brahmins
+			}
+			add_estate_loyalty = {
+				estate = estate_brahmins
+				loyalty = 10
+			}
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+	}
+}
+
+# Jain Peshwa
+# Based on Bhamashah
+country_event = {
+	id = jains_estate_events.11
+	title = jains_estate_events.11.t
+	desc = jains_estate_events.11.d
+	picture = 11_Jain_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_jains
+		estate_influence = {
+			estate = estate_jains
+			influence = 70
+		}
+		NOT = {
+			has_country_modifier = brahmin_peshwa
+		}
+		NOT = {
+			has_country_modifier = brahmin_peshwa_nonhindu
+		}
+		has_regency = no
+		NOT = {
+			has_estate_influence_modifier = {
+				modifier = EST_VAL_JAIN_PESHWA
+				estate = estate_jains
+			}
+		}	
+		NOT = {
+			has_estate_influence_modifier = {
+				modifier = EST_VAL_JAIN_PESHWA_REFUSED
+				estate = estate_jains
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = jain_advisor
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	option = { # appoint him as Peshwa
+		name = jains_estate_events.11.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.2
+				estate_influence = {
+					estate = estate_jains
+					influence = 70
+				}
+			}
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAIN_PESHWA
+			influence = 20
+			duration = 7300
+		}
+		add_country_modifier = {
+			name = jain_peshwa
+			duration = 7300
+		}
+	}
+	
+	option = { # give him a minor office
+		name = jains_estate_events.11.b
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_jains
+						loyalty = 50
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_jains
+					influence = 80
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_jains
+			loyalty = -10
+		}
+		add_estate_influence_modifier = {
+			estate = estate_jains
+			desc = EST_VAL_JAIN_PESHWA_REFUSED
+			influence = -10
+			duration = 7300
+		}
+	}
+	
+	after = {
+		clear_saved_name = jain_advisor
+	}
+}
