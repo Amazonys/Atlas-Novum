@@ -30,7 +30,7 @@ on_startup = {
 	}
 	events = {
 		muslim_school_events.20 #Pick School
-#		flavor_fra.15000 #Make the French Revolution happen if starting in 1789
+	#flavor_fra.15000 #Make the French Revolution happen if starting in 1789
 	}
 	if = {
 		limit = {
@@ -81,6 +81,7 @@ on_startup = {
 # country
 on_religion_change = {
 	on_religion_change_estate_privileges_effect = yes
+	judaism_on_religion_change_effect = yes
 	###removes catholic modifiers
 		remove_country_modifier = counter_reformation
 		remove_country_modifier = the_statue_in_restraint_of_appeals
@@ -102,6 +103,7 @@ on_religion_change = {
 		limit = {
 			has_reform = feudal_theocracy
 			NOT = { religion_group = muslim }
+			NOT = { religion_group = zoroastrian_group }
 		}
 		remove_government_reform = feudal_theocracy
 	}
@@ -170,6 +172,12 @@ on_religion_change = {
 		set_country_flag = converted_to_protestantism
 	}
 	if = {
+		limit = {
+			religion = hussite
+		}
+		remove_country_modifier = hussite_persecution
+	}
+	if = {
 		limit = { has_country_modifier = bav_religious_mandate_mod }
 		remove_country_modifier = bav_religious_mandate_mod
 	}
@@ -186,6 +194,19 @@ on_religion_change = {
 		every_owned_province = {
 			limit = { has_province_modifier = sufi_shrine }
 			remove_province_modifier = sufi_shrine
+		}
+	}
+	if = {
+		limit = {
+			religion = shamanism
+			has_country_modifier = son_fetishism_as_secondary_religion
+		}
+		remove_country_modifier = son_fetishism_as_secondary_religion
+		every_owned_province = {
+			limit = {
+				has_province_modifier = son_fetishism_as_secondary_religion_province
+			}
+			remove_province_modifier = son_fetishism_as_secondary_religion_province
 		}
 	}
 	events = {
@@ -411,6 +432,15 @@ on_war_won = {
 			}
 		}
 	}
+	if = {
+		limit = {
+			ROOT = {
+				religion = jewish
+				has_church_aspect = judaism_purim_teachings_aspect
+			}
+		}
+		add_church_power = 10
+	}
 }
 
 # country
@@ -465,7 +495,18 @@ on_battle_won_country = {
 			}
 		}
 		ROOT = { set_country_flag = albanian_victory }
-	}	
+	}
+	if = {
+		limit = {
+			ROOT = {
+				religion = jewish
+				has_church_aspect = judaism_purim_teachings_aspect
+			}
+		}
+		ROOT = {
+			add_war_exhaustion = -0.05
+		}
+	}
 }
 
 # country
@@ -550,7 +591,32 @@ on_battle_won_unit = {
 		unit_owner = {
 			country_event = { id = majapahit.2 days = 2 }
 		}
-	}	
+	}
+	if = {
+		limit = {
+			unit_owner = {
+				mission_completed = son_military_expertise
+				NOT = { mission_completed = son_win_battles }
+			}
+		}
+		unit_owner = {
+			change_variable = {
+				which = son_fight_counter
+				value = 1
+			}
+		}
+		if = {
+			limit = {
+				is_ruler_commanding_unit = yes
+			}
+			unit_owner = {
+				change_variable = {
+					which = son_fight_counter
+					value = 1
+				}
+			}
+		}
+	}
 }
 
 # #Unit Scope OnAction for Battle Lost
@@ -661,10 +727,29 @@ on_siege_won_country = {
 		}
 		THU = { country_event = { id = flavor_sax.10 } } # Ask Emperor for Saxon Electorate
 	}
+	if = {
+		limit = {
+			ROOT = {
+				religion = jewish
+				has_church_aspect = judaism_remember_passover_aspect
+			}
+			FROM = {
+				owner = {
+					war_with = ROOT
+				}
+				fort_level = 1
+			}
+		}
+		ROOT = {
+			add_church_power = 5
+		}
+	}
+	grant_manpower_from_capital_slave_raid = yes
 	events = {
 		tyw_events.14 # Fall of Prague in Religious War
 		flavor_oir.5 # Oirats capture Beijing
 		flavor_lna.1 # Emerald Buddha
+		flavor_son.14 # Djenne surrenders to Songhai Trigger
 	}
 	random_events = {
 		10 = army_professionalism_events.1 #City Sacked
@@ -767,12 +852,22 @@ on_new_monarch = {
 		}
 		country_event = { id = china_events.32 }	# History of last ruler
 	}
+	if = {
+		limit = {
+			religion = jewish
+		}
+		clr_country_flag = ruler_is_messiah
+	}
 	# ambrosian_republic_effect = yes
 	succession_culture_religion_effect = yes
 	sheik_ul_islam_effect = yes
 	hab_remove_mission_mods_if_not_emperor_effect = yes
 	thu_remain_von_wettin_effect = yes
 	ladislaus_postumus_union_effect = yes
+	if = {
+		limit = { has_any_heir_cult_active = yes }
+		remove_heir_cult = yes
+	}
 	events = {
 		tribal_succession.1		# Harsh anti-tribals.
 		9492 					# Remove some event modifiers
@@ -849,7 +944,7 @@ on_monarch_death = {
 		}
 		BRA = {
 			clr_country_flag = albrecht_achilles_flag #Just to be sure
-			kill_heir = yes #If Albrecht Achilles dies in Ansbach he will also be dead in Brandenburg, will appear as normal death of heir to BRA.
+			kill_heir = {} #If Albrecht Achilles dies in Ansbach he will also be dead in Brandenburg, will appear as normal death of heir to BRA.
 		}
 	}
 	if = {
@@ -882,6 +977,19 @@ on_monarch_death = {
 	}
 	burgundian_inheritance_start_effect = yes
 	ladislaus_postumus_king_died_effect = yes
+	if = {
+		limit = {
+			OR = {
+				has_country_flag = no_stab_hit_on_ruler_death
+				has_a_primary_cult_selected = yes
+			}
+			OR = {
+				government = tribal
+				government = monarchy
+			}
+		}
+		add_stability = 1
+	}
 	events = {
 		flavor_wal.1 # Vlad the Impaler. So that he doesn't try to usurp his father.
 		flavor_nav.4 # Navarra succession event
@@ -891,6 +999,8 @@ on_monarch_death = {
 		flavor_tus.22 # Medici Pope
 		flavor_tus.24 # death of the Medici Pope
 		majapahit.8 # Majapahit pretenders
+		flavor_mal.11 # Mali pretenders
+		flavor_mal.47 # Pilgrimage ends prematurely
 	}
 }
 
@@ -940,6 +1050,7 @@ on_new_term_election = {
 	events = {
 		700		# Election event
 		elections.720		# Dutch Republic
+		elections.800	# Lottery election
 		pirates.1
 	}
 }
@@ -1036,6 +1147,10 @@ on_heir_death = {
 		limit = { primary_culture = maori }
 		country_event = { id = polynesian.26 }
 	}
+	if = {
+		limit = { has_any_heir_cult_active = yes }
+		remove_heir_cult = yes
+	}
 }
 
 # country
@@ -1124,6 +1239,24 @@ on_queen_death = {
 
 # country
 on_new_heir = {
+	if = {
+		limit = { has_any_heir_cult_active = yes }
+		remove_heir_cult = yes
+	}
+	if = {
+		limit = {
+			has_country_flag = enabled_cult_for_heirs
+		}
+		country_event = {
+			id = fetishist_flavor.600
+		}
+	}
+	if = {
+		limit = {
+			has_country_flag = had_bmv
+		}
+		clr_country_flag = had_bmv
+	}
 }
 
 # country
@@ -3326,6 +3459,16 @@ on_five_year_pulse_4 = {
 		}
 		clr_country_flag = advisor_events_mil
 	}
+	#Clearing of Jewish events flags
+	if = {
+		limit = {
+			had_country_flag = {
+				flag = shalosh_regalim
+				days = 365
+			}
+		}
+		clr_country_flag = shalosh_regalim
+	}
 }
 
 # El Dorado
@@ -3768,10 +3911,40 @@ on_lose_great_power_status = {
 # province
 on_province_religion_converted = {
 	on_province_religion_converted_estate_privileges_effect = yes
+	if = {
+		limit = {
+			owner = {
+				has_country_modifier = son_fetishism_as_secondary_religion
+			}
+			religion = shamanism
+			NOT = { has_province_modifier = son_fetishism_as_secondary_religion_province }
+		}
+		add_province_modifier = {
+			name = son_fetishism_as_secondary_religion_province
+			duration = -1
+			desc = son_fetishism_as_secondary_religion_province_desc
+		}
+	}
+	else_if = {
+		limit = {
+			OR = {
+				owner = {
+					NOT = { has_country_modifier = son_fetishism_as_secondary_religion }
+				}
+				NOT = { religion = shamanism }
+			}
+			has_province_modifier = son_fetishism_as_secondary_religion_province
+		}
+		remove_province_modifier = son_fetishism_as_secondary_religion_province
+	}
+	judaism_on_province_change_religion_or_change_owner_effect = yes
 }
 
 # province
 on_province_culture_converted = {
+	on_province_culture_converted_estate_privilges_effect = yes
+	judaism_on_province_culture_converted_effect = yes
+	kongo_on_province_change_culture_or_change_owner_effect = yes
 }
 
 # THIS = Province, FROM = Country who Propogated
@@ -3877,6 +4050,8 @@ on_province_owner_change = {
 		remove_province_modifier = sufi_shrine
 	}
 	on_province_owner_change_estate_privileges_effect = yes
+	judaism_on_province_change_religion_or_change_owner_effect = yes
+	kongo_on_province_change_culture_or_change_owner_effect = yes
 	
 	if = {
 		limit = {
@@ -3897,6 +4072,84 @@ on_province_owner_change = {
 			name = grain_production_improved
 			duration = 7300
 		}
+	}
+
+	if = {
+		limit = {
+			trade_goods = gold
+			NOT = { has_province_modifier = estate_burghers_control_over_gold_mine }
+			owner = {
+				has_estate_privilege = estate_burghers_control_over_the_mint
+			}
+		}
+		add_province_modifier = {
+			name = estate_burghers_control_over_gold_mine
+			duration = -1
+		}
+	}
+	if = {
+		limit = {
+			owner = {
+				religion = ROOT
+				culture_group = ROOT
+				has_estate_privilege = estate_church_one_faith_one_culture
+			}
+			NOT = { has_province_modifier = estate_church_united_faith_and_culture }
+		}
+		add_province_modifier = {
+			name = estate_church_united_faith_and_culture
+			duration = -1
+		}
+	}
+	if = {
+		limit = {
+			owner = {
+				NOT = { culture_group = ROOT }
+				has_owner_accepted_culture = no
+				has_estate_privilege = estate_church_one_faith_one_culture
+			}
+			NOT = { has_province_modifier = estate_church_false_culture }
+		}
+		add_province_modifier = {
+			name = estate_church_false_culture
+			duration = -1
+		}
+	}
+	if = {
+		limit = {
+			owner = {
+				has_country_modifier = son_fetishism_as_secondary_religion
+			}
+			religion = shamanism
+			NOT = { has_province_modifier = son_fetishism_as_secondary_religion_province }
+		}
+		add_province_modifier = {
+			name = son_fetishism_as_secondary_religion_province
+			duration = -1
+			desc = son_fetishism_as_secondary_religion_province_desc
+		}
+	}
+	
+	if = {
+		limit = {
+			province_id = 379
+			owner = {
+				NOT = { religion = jewish }
+			}
+		}
+		remove_country_modifier = third_temple_country_modifier
+	}
+	else_if = {
+		limit = {
+			OR = {
+				owner = {
+					NOT = { has_country_modifier = son_fetishism_as_secondary_religion }
+				}
+				NOT = { religion = shamanism }
+			}
+			has_province_modifier = son_fetishism_as_secondary_religion_province
+		}
+		remove_province_modifier = son_fetishism_as_secondary_religion_province
 	}
 }
 
@@ -4024,10 +4277,18 @@ on_regiment_recruited = {
 
 }
 
-# THIS = Province, FROM = Country
+# THIS = Province, FROM = Country, ROOT = Merc Unit
 on_mercenary_recruited = {
-	FROM = {
-		add_army_professionalism = -0.05
+	if = {
+		limit = {
+			OR = {
+				FROM = { NOT = { has_country_flag = oyo_cavalry_do_not_consume_ap } }
+				ROOT = { NOT = { mercenary_company = merc_oyo_cavalry } }
+			}
+		}
+		FROM = {
+			add_army_professionalism = -0.05
+		}
 	}
 }
 
@@ -4054,6 +4315,9 @@ on_remove_pasha = {
 on_janissaries_raised = {
 }
 
+on_cawa_raised = {
+}
+
 on_revolutionary_guard_raised = {
 }
 
@@ -4075,7 +4339,31 @@ on_center_of_trade_downgrade = {
 }
 
 on_culture_promoted = {
-
+	if = {
+		limit = {
+			has_estate_privilege = estate_church_one_faith_one_culture
+		}
+		every_owned_province = {
+			limit = {
+				has_province_modifier = estate_church_false_culture
+				has_owner_accepted_culture = yes
+			}
+			remove_province_modifier = estate_church_false_culture
+			if = {
+				limit = {
+					owner = {
+						religion = PREV
+					}
+				}
+				add_province_modifier = {
+					name = estate_church_united_faith_and_culture
+					duration = -1
+				}
+			}
+		}
+	}
+	judaism_on_culture_promoted_effect = yes
+	kongo_on_culture_promoted_effect = yes
 }
 
 # FROM = Previous Country, ROOT = Province
@@ -4378,6 +4666,7 @@ on_federation_leader_change = {
 
 #FROM = country pillaged, ROOT = country doing the pillaging
 on_pillaged_capital = {
+	slave_raid_pillage_capital_effect = yes
 }
 
 #FROM = country dev was transferred from, ROOT = country doing the transferring
@@ -4401,6 +4690,59 @@ on_estate_led_regency_surpassed = {
 			NOT = {
 				estate_led_regency_influence = 70
 			}
+			OR = {
+				AND = {
+					has_estate_led_regency = {
+						estate = estate_burghers
+					}
+					NOT = {
+						has_estate_loyalty_modifier = {
+							estate = estate_church
+							modifier = REFUSED_REGENCY
+						}
+					}
+					NOT = {
+						has_estate_loyalty_modifier = {
+							estate = estate_nobles
+							modifier = REFUSED_REGENCY
+						}
+					}
+				}
+				AND = {
+					has_estate_led_regency = {
+						estate = estate_church
+					}
+					NOT = {
+						has_estate_loyalty_modifier = {
+							estate = estate_burghers
+							modifier = REFUSED_REGENCY
+						}
+					}
+					NOT = {
+						has_estate_loyalty_modifier = {
+							estate = estate_nobles
+							modifier = REFUSED_REGENCY
+						}
+					}
+				}
+				AND = {
+					has_estate_led_regency = {
+						estate = estate_nobles
+					}
+					NOT = {
+						has_estate_loyalty_modifier = {
+							estate = estate_burghers
+							modifier = REFUSED_REGENCY
+						}
+					}
+					NOT = {
+						has_estate_loyalty_modifier = {
+							estate = estate_church
+							modifier = REFUSED_REGENCY
+						}
+					}
+				}
+			}
 		}
 		country_event = { id = estate_regency_events.1 }
 	}
@@ -4413,5 +4755,95 @@ on_extended_regency = {
 		100 = extended_regency_events.6
 		
 		300 = 0
+	}
+}
+
+on_estate_removed = {
+	if = {
+		limit = {
+			has_country_modifier = dhimmi_building_restrictions
+			NOT = {
+				has_estate = estate_dhimmi
+			}
+		}
+		remove_country_modifier = dhimmi_building_restrictions
+	}
+}
+
+on_colonist_boosting_colony = {
+	hidden_effect = {
+		if = {
+			limit = {
+				OR = {
+					religion = noreligion
+					#test if colonists outnumber natives
+					variable_arithmetic_trigger = {
+						custom_tooltip = colonysize_is_larger_than_nativesize_tt
+						export_to_variable = {
+							which = vab_colonysize
+							value = trigger_value:colonysize
+						}
+						export_to_variable = {
+							which = vab_nativesize
+							value = trigger_value:native_size
+						}
+						check_variable = {
+							which = vab_colonysize
+							which = vab_nativesize
+						}
+					}
+					is_in_capital_area = yes
+					OR = {
+						continent = north_america
+						continent = south_america
+						continent = new_world
+					}
+					NOT = {
+						OR = {
+							has_dlc = "Dharma"
+							has_dlc = "Wealth of Nations"
+						}
+					}
+				}
+			}
+			change_religion = FROM
+		}
+		if = {
+			limit = {
+				OR = {
+					culture = noculture
+					#test if colonists outnumber natives
+					variable_arithmetic_trigger = {
+						custom_tooltip = colonysize_is_larger_than_nativesize_tt
+						export_to_variable = {
+							which = vab_colonysize
+							value = trigger_value:colonysize
+						}
+						export_to_variable = {
+							which = vab_nativesize
+							value = trigger_value:native_size
+						}
+						check_variable = {
+							which = vab_colonysize
+							which = vab_nativesize
+						}
+					}
+					is_in_capital_area = yes
+					OR = {
+						continent = north_america
+						continent = south_america
+						continent = new_world
+					}
+					NOT = {
+						OR = {
+							has_dlc = "Dharma"
+							has_dlc = "Wealth of Nations"
+						}
+					}
+				}
+			}
+			change_culture = FROM
+			change_original_culture = FROM
+		}
 	}
 }
