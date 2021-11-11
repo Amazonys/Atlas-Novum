@@ -1,0 +1,214 @@
+#All are Country Scope unless otherwise stated.
+
+#Consorts
+create_new_internal_consort_effect = { #Don't use if you want more options with different random consorts.
+	if = {
+		limit = {
+			has_dlc = "Rights of Man"
+			has_consort = no
+		}
+		define_consort = {
+			country_of_origin = ROOT
+		}
+	}
+}
+
+divorce_consort_effect = {
+
+	#Foreign consort family expresses anger
+	if = {
+		limit = {
+			OR = {
+				NOT = { religion = catholic }
+				AND = {
+					religion = catholic
+					NOT = { exists = PAP }
+				}
+			}
+			has_foreign_consort = yes
+		}
+
+		random_country = {
+			limit = { has_given_consort_to = ROOT } 
+
+			hidden_effect = { country_event = { id = consort_events.205 days = 1 } } 
+
+			tooltip = {
+				add_opinion = {
+					who = ROOT
+					modifier = offended_by_divorce	
+				}
+
+				add_casus_belli = {
+					target = ROOT
+					type = cb_insult
+					months = 60
+				}
+			}
+		}
+	}
+
+	#Local consort family expresses anger
+	if = {
+		limit = {
+			OR = {
+				NOT = { religion = catholic }
+				AND = {
+					religion = catholic
+					NOT = { exists = PAP }
+				}
+			}
+			has_foreign_consort = no
+			any_owned_province = {
+				has_province_modifier = domain_of_spouses_family
+			}
+		}
+
+		every_owned_province = {
+			limit = { has_province_modifier = domain_of_spouses_family } 
+			add_or_extend_province_modifier_effect = {
+				MODIFIER = angered_nobles
+				DURATION = 7300
+			}
+		}
+	}
+
+	#Set aside first wife and select another
+	if = {
+		limit = { NOT = { religion_group = christian } }
+
+		custom_tooltip = divorce.a.tt
+
+		hidden_effect = {	
+			if = {
+				limit = { NOT = { any_country = { has_given_consort_to = ROOT } } }
+				remove_consort = yes
+				country_event = { id = consort_events.206 }
+			}
+		}
+	
+		define_consort = { }
+	}
+
+	#Divorce
+	if = {
+		limit = {
+			OR = {
+				AND = {
+					religion_group = christian
+					NOT = { religion = catholic }
+				}
+				AND = {
+					religion = catholic
+					NOT = { exists = PAP }
+				}
+			}
+		}
+
+		custom_tooltip = divorce.b.tt
+		
+		hidden_effect = {	
+			if = {
+				limit = { NOT = { any_country = { has_given_consort_to = ROOT } } }
+				remove_consort = yes
+				country_event = { id = consort_events.206 }
+			}
+		}
+	}
+
+	#Papal dispensation
+	if = {
+		limit = {
+			religion = catholic 
+			exists = PAP
+		}
+
+		#How much influence will you spend?
+		country_event = { id = consort_events.201 }
+	}
+
+	#Prestige hit
+	if = {
+		limit = {
+			OR = {
+				NOT = { religion = catholic }
+				AND = {
+					NOT = { exists = PAP }
+					religion = catholic
+				}
+			}
+		}
+		add_prestige = -15
+	}
+}
+
+save_origin_of_consort_effect = { #Used for all internal consorts.
+	if = { # finds and saves foreign country as origin
+		limit = {
+			has_foreign_consort = yes
+			any_country = { has_given_consort_to = ROOT }
+		}
+		random_country = {
+			limit = { has_given_consort_to = ROOT }
+			save_event_target_as = origin_of_consort
+		}
+	}
+	if = { # finds and saves local province as origin
+		limit = {
+			has_foreign_consort = no
+			any_owned_province = { has_province_modifier = domain_of_spouses_family }
+		}
+		random_owned_province = {
+			limit = { has_province_modifier = domain_of_spouses_family }
+			save_event_target_as = origin_of_consort
+		}
+	}
+	if = { # finds and saves local province as origin
+		limit = {
+			has_foreign_consort = no
+			has_ruler_flag = has_lowborn_consort
+			any_owned_province = { has_province_modifier = home_of_consort }
+		}
+		random_owned_province = {
+			limit = { has_province_modifier = home_of_consort }
+			save_event_target_as = origin_of_consort
+		}
+	}
+	if = { # if all else fails: use this consort_flag to set a triggered desc
+		limit = {
+			NOT = { has_saved_event_target = origin_of_consort }
+		}
+		set_consort_flag = home_province_lost
+	}
+}
+
+#Heirs
+increase_heir_dip_effect = {
+	if = {
+		limit = { NOT = { heir_dip = 6 } }
+		change_heir_dip = 1
+		ELSE = {
+			add_dip_power = 50
+		}
+	}
+}
+increase_heir_adm_effect = {
+	if = {
+		limit = { NOT = { heir_adm = 6 } }
+		change_heir_adm = 1
+		ELSE = {
+			add_adm_power = 50
+		}
+	}
+}
+increase_heir_mil_effect = {
+	if = {
+		limit = { NOT = { heir_mil = 6 } }
+		change_heir_mil = 1
+		ELSE = {
+			add_mil_power = 50
+		}
+	}
+}
+
+#Rulers
