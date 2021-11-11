@@ -16,7 +16,7 @@ replace_path="history/wars"
 replace_path="missions"
 replace_path="events"
 picture="IR_icon.png"
-supported_version="1.31.*.*"
+supported_version="1.32.*.*"
 tags={
 	"Missions and Decisions"
 	"Historical"
