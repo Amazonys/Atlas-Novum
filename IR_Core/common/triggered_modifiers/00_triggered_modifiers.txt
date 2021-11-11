@@ -3,7 +3,6 @@
 #
 # Effects are fully scriptable here.
 
-#NB: The reason why this file exists in Byzantine Resurgence is because attempting to modify them through another file causes the game to duplicate the modifier. //Dub
 ###########################################
 # Discovery of the East Indian trade route.
 ###########################################
@@ -303,12 +302,10 @@ catholic_rome = {
 
 	trigger = {	
 		NOT = { overlord_of = PAP }
-		owns_or_vassal_of = 118 # Roma
-		#BR Changed to requiring you to move your capital to Rome instead to not get the modifier. I regard this as you claiming rightful control of the city.
-		NOT = { capital = 118 }
-		# NOT = { tag = ITA }
-		# NOT = { tag = ROM }
-		# NOT = { tag = ITL }			#BtP
+		owns_or_vassal_of = 118 # Roma		
+		NOT = { tag = ITA }
+		NOT = { tag = HLR }
+		NOT = { tag = ROM }
 	}
 
 	papal_influence = -10
@@ -327,7 +324,31 @@ papal_subjugation = {
 	trigger = {	
 		overlord_of = PAP
 		NOT = { tag = ITA }
-		NOT = { tag = ITL }			#BtP
+		NOT = { tag = HLR }
+		if = {
+			limit = {
+				is_emperor = yes
+				has_dlc = "Emperor"
+			}
+			OR = {
+				PAP = {
+					NOT = { is_part_of_hre = yes }	#Needs to be written like that for localization purpose
+				}
+				NOT = { hre_reform_passed = emperor_privilegia_de_non_appelando }
+			}
+		}
+		else_if = {
+			limit = {
+				is_emperor = yes
+				NOT = { has_dlc = "Emperor" }
+			}
+			OR = {
+				PAP = {
+					NOT = { is_part_of_hre = yes }	#Needs to be written like that for localization purpose
+				}
+				NOT = { hre_reform_passed = privilegia_de_non_appelando }
+			}
+		}
 	}
 
 	diplomatic_reputation = -2
@@ -367,28 +388,6 @@ rapid_collapse_of_society = {
 	
 }
 
-
-######################################
-# Italian - Submission to Emperor
-######################################
-submission_to_emperor = {
-	potential = {
-		has_global_flag = italians_leave_hre
-		NOT = { has_country_flag = reined_in_for_shadow_kingdom }
-		is_part_of_hre = yes
-		culture_group = latin
-	}
-
-	trigger = {
-		always = no			#BT cuts the submission to the emperor malus... pretty harsh depending on how history plays out, especially for an unremovable malus.
-	}
-
-	global_unrest = 3
-	stability_cost_modifier = 0.1
-	prestige = -1
-}
-
-
 ######################################
 # Italian - Submission to Emperor
 ######################################
@@ -426,8 +425,11 @@ counter_revolution = {
 		is_revolutionary = no
 		any_country = {
 			is_revolution_target = yes
-			capital_scope = {
-				continent = ROOT
+			OR = {
+				capital_scope = {
+					continent = ROOT
+				}
+				is_neighbor_of = ROOT
 			}
 		}
 	}
@@ -890,4 +892,35 @@ defense_of_the_empire_modifier = {
 		}
 	}
 	war_taxes_cost_modifier = -1.0
+}
+
+######################################
+# Judaism Defensive Aspect
+######################################
+
+judaism_yom_kippur_aspect_war_modifier = {
+	potential = {
+		religion = jewish
+		has_church_aspect = judaism_yom_kippur_aspect
+	}
+	trigger = {
+		is_at_war = yes
+	}
+	manpower_recovery_speed = 0.1
+	church_power_modifier = 0.05
+}
+
+judaism_yom_kippur_aspect_defensive_war_modifier = {
+	potential = {
+		religion = jewish
+		has_church_aspect = judaism_yom_kippur_aspect
+	}
+	trigger = {
+		is_at_war = yes
+		is_in_war = {
+			defenders = ROOT
+		}
+	}
+	manpower_recovery_speed = 0.1
+	church_power_modifier = 0.05
 }
