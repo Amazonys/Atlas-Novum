@@ -5,4 +5,4 @@ tags={
 }
 supported_version="1.32.*.*"
 name="Amyzonis' GFX REDUX: Manual Install"
-path="mod/Imperialism-Reinvigorated/AmyzGFX"
+path="mod/Atlas-Novum/AmyzGFX"

@@ -1,0 +1,664 @@
+namespace = emp_mission_events
+
+# The Pope cedes Avignon to Provence
+country_event = {
+	id = emp_mission_events.1
+	title = emp_mission_events.1.t
+	desc = emp_mission_events.1.d
+	picture = POPE_PREACHING_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = emp_mission_events.1.a #Agree
+		202 = { cede_province = PRO add_core = PRO remove_core = PAP }
+	}
+	option = {
+		name = emp_mission_events.1.b #Refuse
+		ai_chance = { factor = 0 }
+	}
+}
+
+# Geneva wants to join the Confederacy
+country_event = {
+	id = emp_mission_events.2
+	title = emp_mission_events.2.t
+	desc = emp_mission_events.2.d
+	picture = CITY_VIEW_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = emp_mission_events.2.a
+		vassalize = GNV
+	}
+}
+
+# The Geneva Conventions
+country_event = {
+	id = emp_mission_events.3
+	title = emp_mission_events.3.t
+	desc = emp_mission_events.3.d
+	picture = RELIGIOUS_CONVERSION_eventPicture
+	
+	is_triggered_only = yes
+	major = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					OR = {
+						religion = protestant
+						religion = reformed
+					}
+					capital_scope = {
+						continent = europe
+					}
+				}
+				save_event_target_as = geneva_conventions_1
+				set_country_flag = geneva_conventions_target
+			}
+			random_country = {
+				limit = {
+					OR = {
+						religion = protestant
+						religion = reformed
+					}
+					capital_scope = {
+						continent = europe
+					}
+					NOT = { has_country_flag = geneva_conventions_target }
+					has_regency = no
+				}
+				set_country_flag = geneva_conventions_target
+				save_event_target_as = geneva_conventions_2
+			}
+			random_country = {
+				limit = {
+					OR = {
+						religion = protestant
+						religion = reformed
+					}
+					capital_scope = {
+						continent = europe
+					}
+					NOT = { has_country_flag = geneva_conventions_target }
+				}
+				save_event_target_as = geneva_conventions_3
+			}
+		}
+	}
+	
+	option = {
+		name = emp_mission_events.3.a
+		custom_tooltip = geneva_religious_center
+		4720 = {
+			add_province_triggered_modifier = religious_center
+		}
+		every_country = {
+			limit = {
+				OR = {
+					religion = protestant
+					religion = reformed
+					religion = anglican
+					religion = hussite
+				}
+				capital_scope = {
+					continent = europe
+				}
+				NOT = { tag = SWI }
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_geneva_conventions
+			}
+		}
+	}
+}
+
+# Geneva overlord notified of increased liberty desire
+country_event = {
+	id = emp_mission_events.4
+	title = emp_mission_events.4.t
+	desc = emp_mission_events.4.d
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # do not let them go
+		name = "emp_mission_events.4.a"
+		ai_chance = {
+			factor = 0
+		}
+		tooltip = {
+			GNV = {	add_liberty_desire = 100 }		
+			FROM = {
+				support_independence_of = GNV
+			}
+		}
+	}
+	option = { # let them join SWI
+		name = "emp_mission_events.4.b"
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1000
+				tag = SAV
+			}
+		}
+		SWI = {
+			tooltip = {
+				create_subject = {
+					subject_type = vassal
+					subject = GNV
+				}
+			}
+			country_event = { id = emp_mission_events.2 }
+		}
+	}
+}
+
+# The HRE is crowned by the Pope
+country_event = {
+	id = emp_mission_events.5
+	title = emp_mission_events.5.t
+	desc = emp_mission_events.5.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = emp_mission_events.5.a
+		if = {
+			limit = {
+				exists = PAP
+			}
+			PAP = {
+				add_opinion = { who = ROOT modifier = opinion_hre_crowned_by_the_pope }
+			}
+		}
+		add_country_modifier = {
+			name = "roman_hre"
+			duration = -1
+		}
+	}
+}
+
+# The Fire of Moscow
+country_event = {
+	id = emp_mission_events.6
+	title = emp_mission_events.6.t
+	desc = emp_mission_events.6.d
+	picture = COUNTRY_COLLAPSE_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			295 = {
+				owner = {
+					save_event_target_as = firestarter_country
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = emp_mission_events.6.a
+		295 = {
+			add_base_tax = -4
+			add_base_production = -4
+			add_base_manpower = -4
+		}
+	}
+}
+
+# Smashing of the Ducal Ring of Normandy
+country_event = {
+	id = emp_mission_events.7
+	title = emp_mission_events.7.t
+	desc = {
+		trigger = {
+			has_adm_advisor = yes
+			has_dip_advisor = yes
+			has_mil_advisor = yes
+		}
+		desc = emp_mission_events.7.d
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				has_adm_advisor = yes
+				has_dip_advisor = yes
+				has_mil_advisor = yes
+			}
+		}
+		desc = emp_mission_events.7.d2
+	}
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = emp_mission_events.7.a
+		change_estate_land_share = {
+			estate = all
+			share = -2
+		}
+		normandy_area = {
+			limit = {
+				owned_by = ROOT
+				is_core = NRM
+			}
+			remove_core = NRM
+		}
+	}
+}
+
+# Bohemia decides the fate of Brandenburg
+country_event = {
+	id = emp_mission_events.8
+	title = emp_mission_events.8.t
+	desc = emp_mission_events.8.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = emp_mission_events.8.a
+		trigger = {
+			NOT = { 
+				BRA = {	junior_union_with = ROOT }
+			}
+		}
+		if = {
+			limit = {
+				BRA = {
+					NOT = {
+						government = monarchy
+					}
+				}
+			}
+			BRA = {
+				change_government = monarchy
+				add_government_reform = feudalism_reform
+			}
+		}
+		create_union = BRA
+		BRA = {
+			add_liberty_desire = 20
+		}
+		if = {
+			limit = {
+				BRA = {
+					is_elector = yes
+				}
+			}
+			custom_tooltip = legitimate_subject_elector_tt
+			hidden_effect = {
+				BRA = {
+					add_country_modifier = {
+						hidden = yes
+						name = "legitimate_subject_elector_modifer"
+						duration = -1
+					}
+				}
+			}
+		}
+	}
+	option = { # restore the march of brandenburg
+		name = emp_mission_events.8.b
+		trigger = {
+			NOT = { 
+				BRA = {	march_of = ROOT }
+			}
+		}
+		create_march = BRA
+		BRA = {
+			add_liberty_desire = -20
+		}
+		if = {
+			limit = {
+				BRA = {
+					is_elector = yes
+				}
+			}
+			custom_tooltip = legitimate_subject_elector_tt
+			hidden_effect = {
+				BRA = {
+					add_country_modifier = {
+						hidden = yes
+						name = "legitimate_subject_elector_modifer"
+						duration = -1
+					}
+				}
+			}
+		}
+	}
+	option = { # The current situation suits us
+		name = emp_mission_events.8.c
+		add_prestige = 5
+		if = {
+			limit = {
+				BRA = {
+					is_elector = yes
+				}
+			}
+			custom_tooltip = legitimate_subject_elector_tt
+			hidden_effect = {
+				BRA = {
+					add_country_modifier = {
+						hidden = yes
+						name = "legitimate_subject_elector_modifer"
+						duration = -1
+					}
+				}
+			}
+		}
+	}
+}
+
+# Bohemia decides the fate of Saxony
+country_event = {
+	id = emp_mission_events.9
+	title = emp_mission_events.9.t
+	desc = emp_mission_events.9.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # make it a PU, so that there's no election score penalty for having them as a subject
+		name = emp_mission_events.8.a
+		trigger = {
+			NOT = { 
+				SAX = {	junior_union_with = ROOT }
+			}
+		}
+		if = {
+			limit = {
+				SAX = {
+					NOT = {
+						government = monarchy
+					}
+				}
+			}
+			SAX = {
+				change_government = monarchy
+				add_government_reform = feudalism_reform
+			}
+		}
+		create_union = SAX
+		SAX = {
+			add_liberty_desire = 20
+		}
+		if = {
+			limit = {
+				SAX = {
+					is_elector = yes
+				}
+			}
+			custom_tooltip = legitimate_subject_elector_tt
+			hidden_effect = {
+				SAX = {
+					add_country_modifier = {
+						hidden = yes
+						name = "legitimate_subject_elector_modifer"
+						duration = -1
+					}
+				}
+			}
+		}
+	}
+	option = { # keep them as a vassal
+		name = emp_mission_events.8.c
+		add_prestige = 5
+		if = {
+			limit = {
+				SAX = {
+					is_elector = yes
+				}
+			}
+			custom_tooltip = legitimate_subject_elector_tt
+			hidden_effect = {
+				SAX = {
+					add_country_modifier = {
+						hidden = yes
+						name = "legitimate_subject_elector_modifer"
+						duration = -1
+					}
+				}
+			}
+		}
+	}
+}
+
+# The Duke of Alençon by Daniel Tolman
+
+country_event = {
+	id = emp_mission_events.10
+	title = emp_mission_events.10.t
+	desc = "emp_mission_events.10.d"
+	picture = REFORM_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = FRA
+		has_estate_privilege = estate_nobles_french_strong_duchies
+		owns = 1879
+		1879 = { is_capital = no }
+		is_at_war = no
+	}
+	
+	mean_time_to_happen = {
+		months = 3
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = {
+						1879 = {
+							NOT = { is_core = ALE }
+						}
+					}
+				}
+				1879 = { add_core = ALE	}
+			}
+		}
+	}
+	
+	option = { # restore the duke
+		name = emp_mission_events.10.a
+		hidden_effect = {
+			release = ALE
+		}
+		vassalize = ALE
+		hidden_effect = {
+			ALE = {
+				change_government = monarchy
+				add_government_reform = feudalism_reform
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_year = 1476
+				}
+			}
+			ALE = {
+				define_ruler = {
+					name = "Jean II"
+					dynasty = "de Valois"
+				}
+			}
+		}
+		else = {
+			ALE = {
+				define_ruler = {
+					dynasty = "de Valois"
+				}
+			}
+		}
+		if = {
+			limit = {
+				1879 = {
+					is_core = FRA
+				}
+			}
+			1879 = { remove_core = FRA }
+		}
+		add_estate_influence_modifier = {
+			estate = estate_nobles
+			desc = EST_VAL_DUKE_OF_ALENCON
+			influence = 10
+			duration = 7300
+		}
+	}
+	
+	option = {
+		name = emp_mission_events.10.b
+		ai_chance = { factor = 0 }
+		add_stability = -1
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = -20
+		}
+	}
+}
+
+
+# Swabian nations join the rising Swabia
+country_event = {
+	id = emp_mission_events.11
+	title = emp_mission_events.11.name
+	desc = emp_mission_events.11.desc
+	picture = CONQUEST_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # join them
+		name = emp_mission_events.11.a
+		
+		from = {
+			hidden_effect = { country_event = { id = emp_mission_events.13 } }
+			tooltip = { inherit = root }
+		}
+		if = {
+			limit = { ai = no }
+			custom_tooltip = full_annexation_tooltip
+		}
+
+		ai_chance = {
+			factor = 1.5
+			modifier = {
+				factor = 0.5
+				NOT = {
+					has_opinion = {
+						who = from
+						value = 100
+					}
+				}
+			}
+			modifier = {
+				factor = 2
+				has_opinion = {
+					who = from
+					value = 150
+				}
+			}
+			modifier = {
+				factor = 2
+				has_opinion = {
+					who = from
+					value = 190
+				}
+			}
+			modifier = {
+				factor = 0.5
+				num_of_cities = 3
+			}
+			modifier = {
+				factor = 0.1
+				num_of_cities = 5
+			}
+		}
+	}
+	option = { # do not join them
+		name = emp_mission_events.11.b
+
+		add_stability = -1
+		from = { country_event = { id = emp_mission_events.12 } }
+		
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				has_opinion = {
+					who = from
+					value = 120
+				}
+				NOT = {
+					num_of_cities = 5
+				}
+			}
+		}
+	}
+}
+
+# They said no to .11
+country_event = {
+	id = emp_mission_events.12
+	title = emp_mission_events.12.name
+	desc = emp_mission_events.12.desc
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = UNFORTUNATE
+		from = {
+			every_owned_province = {
+				limit = {
+					culture = swabian
+				}
+				add_claim = root
+			}
+		}
+	}
+}
+
+# They said yes to .11
+country_event = {
+	id = emp_mission_events.13
+	title = emp_mission_events.13.name
+	desc = emp_mission_events.13.desc
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EXCELLENT
+		inherit = from
+	}
+}
+
+
+
+country_event = {
+	id = emp_mission_events.14
+	title = emp_mission_events.14.name
+	desc = emp_mission_events.14.desc
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = OH_NO
+		tooltip = {
+			from = { vassalize = root }
+		}
+	}
+}

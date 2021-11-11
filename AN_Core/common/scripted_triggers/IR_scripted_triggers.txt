@@ -1,0 +1,533 @@
+# GENERAL
+#############
+climate_hot = { 
+	OR = {
+		has_province_modifier = climate_sicco 
+		has_province_modifier = climate_outback
+		has_province_modifier = climate_chaparral
+		has_province_modifier = climate_cerradic
+		has_province_modifier = climate_tropical
+	}
+}
+climate_warm = { 
+	OR = {
+		has_province_modifier = climate_xeric
+		has_province_modifier = climate_levante
+		has_province_modifier = climate_mediterranean
+		has_province_modifier = climate_calidic
+		has_province_modifier = climate_pantanal
+	}
+}
+climate_temperate = { 
+	OR = {
+		has_province_modifier = climate_veldt 
+		has_province_modifier = climate_chaco
+		has_province_modifier = climate_temperate
+		has_province_modifier = climate_mesothermal
+		has_province_modifier = climate_subtropical
+	}
+}
+climate_cool = {
+	OR = {
+		has_province_modifier = climate_montane
+		has_province_modifier = climate_pratumic
+		has_province_modifier = climate_continental
+		has_province_modifier = climate_nemoral
+		has_province_modifier = climate_cascadic
+	}
+}
+climate_cold = {
+	OR = {
+		has_province_modifier = climate_polar
+		has_province_modifier = climate_boreal
+		has_province_modifier = climate_hemiboreal
+		has_province_modifier = climate_oceanic
+		has_province_modifier = climate_maritime
+	}
+}
+####
+climate_parched = { 
+	OR = {
+		has_province_modifier = climate_sicco 
+		has_province_modifier = climate_xeric
+		has_province_modifier = climate_veldt
+		has_province_modifier = climate_montane
+		has_province_modifier = climate_polar
+	}
+}
+climate_dry = { 
+	OR = {
+		has_province_modifier = climate_outback
+		has_province_modifier = climate_levante
+		has_province_modifier = climate_chaco
+		has_province_modifier = climate_pratumic
+		has_province_modifier = climate_boreal
+	}
+}
+climate_optimal = { 
+	OR = {
+		has_province_modifier = climate_chaparral 
+		has_province_modifier = climate_mediterranean
+		has_province_modifier = climate_temperate
+		has_province_modifier = climate_continental
+		has_province_modifier = climate_hemiboreal
+	}
+}
+climate_humid = {
+	OR = {
+		has_province_modifier = climate_cerradic
+		has_province_modifier = climate_calidic
+		has_province_modifier = climate_mesothermal
+		has_province_modifier = climate_nemoral
+		has_province_modifier = climate_oceanic
+	}
+}
+climate_wet = {
+	OR = {
+		has_province_modifier = climate_tropical
+		has_province_modifier = climate_pantanal
+		has_province_modifier = climate_subtropical
+		has_province_modifier = climate_cascadic
+		has_province_modifier = climate_maritime
+	}
+}
+##############
+is_colonizer_tech_group = { 
+	OR = {
+		technology_group = western 
+		technology_group = eastern 
+		technology_group = ottoman #Ottomans are a alt-hist stretch
+		#technology_group = muslim #NOT including muslim tech group - no colonies really held by them
+		#muslim Andalusia or Canary owning Morocco or Mali maybe at some point for some more alt history, but not now
+	}
+}
+is_fief_domain_tech = {
+	has_institution = feudalism
+	OR = {
+		technology_group = western 
+		technology_group = eastern 
+		technology_group = ottoman
+		technology_group = muslim
+		technology_group = indian 
+		technology_group = chinese
+		technology_group = indochinese
+		technology_group = malay_group
+		technology_group = high_american
+	}
+	NOT = { OR = { has_reform = primitive_mechanic has_reform = tribe_mechanic } }
+	#CANNOT BE PRIMITIVE, TRIBAL, or REPUBLIC (removed by pop demand) - excludes Japan currently as well in lieu of Daimyo has_reform = republic_mechanic 
+}
+
+#COMMON TRIGGERS
+#### added to allow for other tributary CBs independent of MoH system
+is_free_or_china_tributary_trigger = {
+	custom_trigger_tooltip = {
+		tooltip = is_free_or_tributary_trigger_tooltip
+		OR = {
+			is_subject = no
+			AND = {
+				is_subject_of_type = tributary_state
+				overlord = { is_emperor_of_china = yes }
+			}
+		}
+	}
+}
+
+country_or_non_sovereign_subject_controls = {
+	custom_trigger_tooltip = {
+		tooltip = country_or_non_sovereign_subject_controls.tooltip
+		controller = { 
+			OR = { 
+				tag = ROOT
+				is_subject_of = ROOT
+			}
+			NOT = { is_subject_of_type = tributary_state } 
+		}
+	}
+}
+
+
+#
+
+IR_formable_trigger = {
+	num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+		$PROVINCES$ = yes
+		value = $AMOUNT$
+	}
+}
+
+#country_or_non_sovereign_subject_controls = {
+#	custom_trigger_tooltip = {
+#		tooltip = country_or_non_sovereign_subject_controls.tooltip
+#		controller = { 
+#			OR = { 
+#				tag = $TAG$
+#				is_subject_of = $TAG$
+#			}
+#			NOT = { is_subject_of_type = tributary_state } 
+#		}
+#	}
+#}
+
+country_or_coalition_controls = {
+	custom_trigger_tooltip = {
+		tooltip = country_or_coalition_controls.tooltip
+		controller = { OR = { tag = $TAG$ is_subject_of = $TAG$ has_country_flag = coalition_member_@$TAG$ } }
+	}
+}
+
+#MISSION TRIGGERS
+conquest_mission_trigger = {
+	custom_trigger_tooltip = {
+		tooltip = $TOOLTIP$
+		NOT = {
+			any_province = {
+				$PROVINCES$ = yes
+				NOT = { $OWNER_TYPE$ = ROOT }
+			}
+		}
+		NOT = {
+			any_province = {
+				$PROVINCES$ = yes
+				NOT = { is_city = yes }
+			}
+		}
+	}
+}
+
+control_mission_trigger = {
+	custom_trigger_tooltip = {
+		tooltip = $TOOLTIP$
+		NOT = {
+			any_province = {
+				$PROVINCES$ = yes
+				#if = {
+				#	limit = { owner = { ai = yes } NOT = { has_global_flag = IR_control_missions_disabled } }
+					NOT = { country_or_non_sovereign_subject_controls = yes }
+				#}
+				#else_if = {
+				#	limit = { owner = { ai = no } }
+				#	NOT = { country_or_non_sovereign_subject_holds = ROOT }
+				#}
+			}
+		}
+	}
+}
+
+discover_mission_trigger = {
+	custom_trigger_tooltip = {
+		tooltip = $TOOLTIP$
+		calc_true_if = {
+			all_province = {
+				$PROVINCES$ = yes
+				has_discovered = ROOT
+			}
+			amount = $NUM$
+		}
+	}
+}
+
+num_colonized_mission_trigger = {
+	custom_trigger_tooltip = {
+		tooltip = $TOOLTIP$
+		num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+			$PROVINCES$ = yes
+			is_city = yes
+			value = $NUM$
+		}
+	}
+}
+
+vassalize_mission_trigger = {
+	custom_trigger_tooltip = {
+		tooltip = $TOOLTIP$
+		if = { 
+			limit = { $TAG$ = { exists = yes } }
+			$TAG$ = { 
+				is_subject_of = ROOT 
+				NOT = { is_subject_of_type = tributary_state }
+			}
+			NOT = {
+				any_province = {
+					is_core = $TAG$
+					NOT = {	country_or_non_sovereign_subject_holds = ROOT }
+				}
+			}
+		}
+		else_if = {
+			limit = { $TAG$ = { exists = no } }
+			NOT = {
+				any_province = {
+					is_core = $TAG$
+					NOT = {	owned_by = ROOT }
+				}
+			}
+		}
+	}
+}
+
+event_mission_trigger = {
+	custom_trigger_tooltip = {
+		tooltip = $TOOLTIP$
+		OR = {
+			has_country_flag = $EVENT$_happened
+			is_year = $BYPASS_DATE$
+		}
+	}
+}
+
+#DISEASE AND FAMINE
+IR_disease_free = {
+	NOT = { 
+		OR = { 
+			has_province_modifier = measles
+			has_province_modifier = plague
+			has_province_modifier = yellow_fever
+			has_province_modifier = smallpox
+			has_province_modifier = typhus
+			has_province_modifier = influenza
+			has_province_modifier = cholera
+			has_province_modifier = malaria
+			has_province_modifier = salmonella
+			has_province_modifier = pox_americana
+			has_province_modifier = pox_pacifica
+			has_province_modifier = great_pox
+		}
+	}
+}
+IR_famine_free = {
+	NOT = { 
+		OR = { 
+			has_province_modifier = famine_1
+			has_province_modifier = famine_2
+			has_province_modifier = famine_3
+			has_province_modifier = famine_4
+		}
+	}
+}
+
+#ESTATE TRIGGERS -
+###simplified code for general reoccuring code that needs to always be shared with eachother
+IR_peasant_freedom_exceptions = {
+	OR = {
+	has_reform = peasants_republic
+	primary_culture = frisian
+	tag = SWE
+	tag = FIN
+	tag = NOR
+	}
+}
+
+IR_all_estates_disasters = {
+	OR = {
+		has_disaster = estate_church_disaster
+		has_disaster = estate_burghers_disaster
+		has_disaster = estate_brahmins_disaster
+		has_disaster = estate_vaisyas_disaster
+		has_disaster = estate_jains_disaster
+	}
+}
+
+IR_no_estate_triggers = {
+	NOT = { has_reform = pirate_republic_reform }
+	NOT = { has_government_attribute = is_merchant_republic }
+	NOT = { has_reform = veche_republic }
+	NOT = { has_reform = trading_city }
+	NOT = { is_revolutionary_republic_trigger = yes }
+	NOT = { has_reform = cossacks_reform }
+	NOT = { government = native }
+	NOT = { has_reform = siberian_tribe }
+	OR = {
+		NOT = { has_reform = celestial_empire }
+		has_dlc = "Mandate of Heaven"
+	}
+	is_nomad = no
+	is_colonial_nation = no
+	NOT = { has_reform = revolutionary_empire_reform }
+}
+
+##############################
+#PROBABLY NEEDS A FULL OVERHAUL
+
+###
+#SETUP & CRUSADER TAG GROUPINGS
+setup_priority_tag = {
+	OR = {
+		#majors
+		tag = SWE
+		tag = DAN
+		tag = NOR
+		tag = ENG
+		tag = FRA
+		is_subject_of = FRA
+		tag = ARA
+		is_subject_of = ARA
+		tag = CAS
+		is_subject_of = CAS
+		tag = POR
+		is_subject_of = POR
+		tag = BUR
+		tag = MOS
+		tag = BRA
+		tag = STY
+		tag = HUN
+		tag = HAB
+		tag = POL
+		tag = SWZ
+	
+		#special	
+		is_emperor = yes
+		is_emperor_of_china = yes
+		is_elector = yes
+		has_reform = free_city
+		is_subject_of_type = daimyo_vassal
+		is_subject_of_type = confederate
+		government_rank = 4
+		culture_group = malay
+	}
+}
+setup_priority_oceania_tag = {
+	OR = {
+		#polynesia 
+		primary_culture = tongic
+		primary_culture = samoic
+		primary_culture = fijian
+		#kiribati # 12/4 - AMYZ LIMITING
+		#primary_culture = i_kiribati
+		#society
+		tag = THT
+		tag = RAI
+		tag = BBR
+		tag = HUH
+		#hawaii
+		tag = HWI
+		tag = KAA
+		tag = OAH
+		tag = MOK
+		tag = MAU
+		tag = HNA
+		#marquesas
+		tag = TEL
+		tag = TPI
+		tag = UPO
+		tag = PEP
+		tag = NKU
+		#maori
+		primary_culture = maori_culture
+	}
+}
+setup_priority_north_america_tag = {
+	OR = {
+		tag = IRO
+		tag = HUR
+		tag = SHA
+		#navajo
+		tag = NAH
+		#cherokee
+		tag = CHE
+		#columbia
+		tag = CNK
+		#mesoamerica
+		technology_group = mesoamerican
+	}
+}
+setup_priority_south_america_tag = {
+	#OR = {
+		technology_group = andean
+	#}
+}
+setup_priority_africa_tag = {
+	OR = {
+		tag = ZAN
+		tag = MLI
+		tag = MBA
+		tag = MAL
+		tag = SON
+		tag = TMB
+		tag = KON
+		tag = BSM
+		tag = FZA
+		tag = GDM
+		tag = GHD
+		tag = ZAB
+	}
+}
+crusader_kingdom = {
+	OR = {
+		tag = LTE
+		tag = KOJ 
+		tag = BSS
+		tag = ALX
+		tag = AFR
+		tag = MR1
+	}
+}
+crusader_state = {
+	OR = {
+		tag = KNI
+		tag = CYP
+		tag = ATH
+		tag = NAX
+		tag = CEP
+		tag = LES
+		tag = ACH
+		tag = NEG
+		tag = CIO
+		tag = CDA
+		tag = AIN
+	}
+}
+##
+trade_good_price_high = {
+    OR = {
+    	trade_goods = silk
+    	trade_goods = dyes
+    	trade_goods = ivory
+    	trade_goods = gems
+    	trade_goods = coal
+    	trade_goods = books
+    	trade_goods = silver
+    }
+}
+trade_good_price_med = {
+    OR = {
+    	trade_goods = cocoa
+		trade_goods = cotton
+		trade_goods = sugar
+    	trade_goods = coffee
+		trade_goods = tobacco
+    	trade_goods = spices
+   		trade_goods = chinaware
+   		trade_goods = glass
+   		trade_goods = paper
+  		trade_goods = iron
+    	trade_goods = copper
+   		trade_goods = salt
+   		trade_goods = cloth
+   		trade_goods = whales
+   		trade_goods = olives
+   		trade_goods = marble
+   		trade_goods = dates
+    }
+}
+
+#BR - NEEDS EDITING/REPLACEMENT
+#Note: Tooltip is slightly broken.
+does_tag_exist_and_have_less_than_provided_dev_trigger = {
+	custom_trigger_tooltip = {
+		tooltip = does_tag_have_less_than_provided_dev_trigger_tooltip
+		exists = $TAG$
+		NOT = { total_development = $DEV$ }
+	}
+}
+tag_does_not_exist_or_is_subject_of_scope = {
+	custom_trigger_tooltip = {
+		tooltip = tag_does_not_exist_or_is_subject_of_scope_tooltip
+		OR = {
+			NOT = { exists = $TAG$ }
+			$TAG$ = {
+				is_subject_of = $SCOPE$
+			}
+		}
+	}
+}

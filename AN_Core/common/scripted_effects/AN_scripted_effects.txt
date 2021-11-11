@@ -1,0 +1,713 @@
+# IR CUSTOM SCRIPTED EFFECTS
+## MISSION OVERHAUL
+complete_module_1 = {
+	if = {
+		limit = { 
+			mission_completed = $PREREQ_1$
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			$MODULE$_L = { clr_country_flag = $MODULE$_L set_country_flag = IR_temp_select_L } 
+			$MODULE$_R = { clr_country_flag = $MODULE$_R set_country_flag = IR_temp_select_R }  
+		}
+		add_country_flag = $MODULE$_completed
+		country_event = { id = IR_mission_$TAG$.1 days = 0 } 
+	}
+}
+complete_module_2 = {
+	if = {
+		limit = { 
+			mission_completed = $PREREQ_1$
+			mission_completed = $PREREQ_2$
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			$MODULE$_L = { clr_country_flag = $MODULE$_L set_country_flag = IR_temp_select_L } 
+			$MODULE$_R = { clr_country_flag = $MODULE$_R set_country_flag = IR_temp_select_R }   
+		}
+		add_country_flag = $MODULE$_completed
+		country_event = { id = IR_mission_$TAG$.1 days = 0 } 
+	}
+}
+complete_module_3 = {
+	if = {
+		limit = { 
+			mission_completed = $PREREQ_1$
+			mission_completed = $PREREQ_2$
+			mission_completed = $PREREQ_3$
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			$MODULE$_L = { clr_country_flag = $MODULE$_L set_country_flag = IR_temp_select_L } 
+			$MODULE$_R = { clr_country_flag = $MODULE$_R set_country_flag = IR_temp_select_R }  
+		}
+		add_country_flag = $MODULE$_completed
+		country_event = { id = IR_mission_$TAG$.1 days = 0 } 
+	}
+}
+complete_module_4 = {
+	if = {
+		limit = { 
+			mission_completed = $PREREQ_1$
+			mission_completed = $PREREQ_2$
+			mission_completed = $PREREQ_3$
+			mission_completed = $PREREQ_4$
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			$MODULE$_L = { clr_country_flag = $MODULE$_L set_country_flag = IR_temp_select_L } 
+			$MODULE$_R = { clr_country_flag = $MODULE$_R set_country_flag = IR_temp_select_R }  
+		}
+		add_country_flag = $MODULE$_completed
+		country_event = { id = IR_mission_$TAG$.1 days = 0 } 
+	}
+}
+complete_module_5 = {
+	if = {
+		limit = { 
+			mission_completed = $PREREQ_1$
+			mission_completed = $PREREQ_2$
+			mission_completed = $PREREQ_3$
+			mission_completed = $PREREQ_4$
+			mission_completed = $PREREQ_5$
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			$MODULE$_L = { clr_country_flag = $MODULE$_L set_country_flag = IR_temp_select_L } 
+			$MODULE$_R = { clr_country_flag = $MODULE$_R set_country_flag = IR_temp_select_R }  
+		}
+		add_country_flag = $MODULE$_completed
+		country_event = { id = IR_mission_$TAG$.1 days = 0 } 
+	}
+}
+
+
+# MISSION REWARDS
+control_mission_cede = {
+	hidden_effect = {
+		every_province = {
+			limit = { $PROVINCES$ = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+			change_controller = ROOT 
+			set_province_flag = cede_prov@ROOT
+			if = {
+				limit = { controller = { NOT = { has_country_flag = cede_to_tag@ROOT } } }
+				controller = { 
+					set_country_flag = cede_to_tag@ROOT 
+					save_event_target_as = cede_to_tag
+				}
+			}
+			if = {
+				limit = { owner = { NOT = { has_country_flag = cede_prompt@ROOT } } }
+				owner = { 
+					set_country_flag = cede_prompt@ROOT 
+					country_event = { id = IR_seize.1 days = 1 }
+				}
+			}
+		}
+	}
+	tooltip = {
+		custom_tooltip = control_mission_cede.tooltip
+		every_province = {
+			limit = { $PROVINCES$ = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } }
+			cede_province = ROOT
+		}
+	}
+}
+
+province_group_cede = {
+	every_province = {
+		limit = { $PROVINCES$ = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = $TAG$ }
+		cede_province = PREV
+	}
+}
+
+discover_mission_cede = { # NEW CODE
+	if = { 
+		limit = { $PROVINCE_ID$ = { is_empty = yes } NOT = { has_global_flag = IR_discovery_missions_disabled } }
+		hidden_effect = {
+			$PROVINCE_ID$ = {
+				change_trade_goods = $TRADE_GOOD$
+				change_religion = ROOT	
+				change_culture = ROOT
+				add_territorial_core = ROOT	
+			}
+		}
+		add_treasury = $COST$
+		$PROVINCE_ID$ = { 
+			cede_province = ROOT 
+			add_building = $BUILDING$
+		}
+	}
+	else_if = { 
+		limit = { $PROVINCE_ID$ = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } NOT = { has_global_flag = IR_discovery_missions_disabled } }
+		if = {
+			limit = { 
+				$PROVINCE_ID$ = { owner = { is_colonizer_tech_group = no } }
+			}
+			hidden_effect = {
+				$PROVINCE_ID$ = {
+					owner = { country_event = { id = orion_seize.1 days = 0 } }
+					change_trade_goods = $TRADE_GOOD$
+					add_territorial_core = ROOT	
+				}	
+			}
+			add_treasury = $COST$
+			$PROVINCE_ID$ = { 
+				cede_province = ROOT 
+				add_building = $BUILDING$
+			}
+		}
+		else = { #changed from #else_if
+		#	limit = { $PROVINCE_ID$ = { owner = { is_colonizer_tech_group = yes } } }
+			$PROVINCE_ID$ = { add_permanent_claim = ROOT }
+		}
+	}
+}
+
+discover_mission_cede_alt = { # NO BUILDING
+	if = { 
+		limit = { $PROVINCE_ID$ = { is_empty = yes } NOT = { has_global_flag = IR_discovery_missions_disabled } }
+		hidden_effect = {
+			$PROVINCE_ID$ = {
+				change_trade_goods = $TRADE_GOOD$
+				change_religion = ROOT	
+				change_culture = ROOT
+				add_territorial_core = ROOT	
+			}
+		}
+		add_treasury = $COST$
+		$PROVINCE_ID$ = { 
+			cede_province = ROOT 
+			#add_building = $BUILDING$
+		}
+	}
+	else_if = { 
+		limit = { $PROVINCE_ID$ = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } NOT = { has_global_flag = IR_discovery_missions_disabled } }
+		if = {
+			limit = { 
+				$PROVINCE_ID$ = { owner = { is_colonizer_tech_group = no } }
+			}
+			hidden_effect = {
+				$PROVINCE_ID$ = {
+					owner = { country_event = { id = orion_seize.1 days = 0 } }
+					change_trade_goods = $TRADE_GOOD$
+					add_territorial_core = ROOT	
+				}	
+			}
+			add_treasury = $COST$
+			$PROVINCE_ID$ = { 
+				cede_province = ROOT 
+				#add_building = $BUILDING$
+			}
+		}
+		else = { #changed from #else_if
+		#	limit = { $PROVINCE_ID$ = { owner = { is_colonizer_tech_group = yes } } }
+			$PROVINCE_ID$ = { add_permanent_claim = ROOT }
+		}
+	}
+}
+
+colony_mission_cede = {
+	add_treasury = $COST$
+	custom_tooltip = $TOOLTIP$
+	every_province = {
+		limit = { $PROVINCES$ = yes NOT = { owned_by = ROOT } }
+		if = { 
+			limit = { is_empty = yes  NOT = { has_global_flag = IR_colony_missions_disabled } }
+			hidden_effect = {
+				change_religion = ROOT	
+				change_culture = ROOT
+				add_territorial_core = ROOT	
+				cede_province = ROOT
+			}
+		}
+		else_if = { 
+			limit = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } NOT = { has_global_flag = IR_colony_missions_disabled } }
+			if = {
+				limit = { owner = { is_colonizer_tech_group = no } }
+				hidden_effect = {
+					owner = { country_event = { id = orion_seize.1 days = 0 } }
+					add_territorial_core = ROOT		
+					cede_province = ROOT 
+				}
+			}
+			else = { add_permanent_claim = ROOT }
+		}
+	}
+}
+
+assign_claim_core = {
+	hidden_effect = {
+		every_province = {
+			limit = {
+				$PROVINCES$ = yes
+				NOT = { country_or_non_sovereign_subject_holds = PREV }
+                NOT = { is_$TYPE$ = PREV }
+			}
+			add_$TYPE$ = PREV
+		}
+	}
+}
+
+assign_group_trade_goods = {
+	#hidden_effect = {
+		every_province = {
+			limit = { $PROVINCES$ = yes NOT = { trade_goods = $TRADE_GOOD$ } }
+			change_trade_goods = $TRADE_GOOD$
+		}
+	#}
+}
+
+assign_group_building = {
+	#hidden_effect = {
+		every_province = {
+			limit = { $PROVINCES$ = yes NOT = { has_building = $BUILDING$ } }
+			add_building = $BUILDING$
+		}
+	#}
+}
+
+assign_group_prov_modifier = {
+	tooltip = {
+		10034 = {
+			add_province_modifier = {
+				name = $MODIFIER$
+				duration = $DURATION$
+			}
+		}
+	}
+	hidden_effect = {
+		every_province = {
+			limit = {
+				$PROVINCES$ = yes
+				is_$TYPE$ = yes
+				NOT = { has_province_modifier = $MODIFIER$ }
+			}
+			add_province_modifier = {
+				name = $MODIFIER$
+				duration = $DURATION$
+			}
+		}
+	}
+}
+
+#this does not use the 10034 "Any highlighed province"
+assign_group_prov_modifier_alt = {
+	#tooltip = {
+	#	10034 = {
+	#		add_province_modifier = {
+	#			name = $MODIFIER$
+	#			duration = $DURATION$
+	#		}
+	#	}
+	#}
+	#hidden_effect = {
+		every_province = {
+			limit = {
+				$PROVINCES$ = yes
+				is_$TYPE$ = yes
+				NOT = { has_province_modifier = $MODIFIER$ }
+			}
+			add_province_modifier = {
+				name = $MODIFIER$
+				duration = $DURATION$
+			}
+		}
+	#}
+}
+
+#COLONY RESERVATIONS WITH MODIFIERS
+#this does not use the 10034 
+assign_colony_reserve = {
+	tooltip = {
+		10034 = {
+			add_permanent_province_modifier = {
+				name = $MODIFIER$
+				duration = $DURATION$
+			}
+		}
+	}
+	hidden_effect = {
+		every_province = {
+			limit = {
+				$PROVINCES$ = yes
+				OR = {
+					is_empty = yes
+					is_colony = yes
+				}
+				NOT = { has_province_modifier = $MODIFIER$ }
+			}
+			add_permanent_province_modifier = {
+				name = $MODIFIER$
+				duration = $DURATION$
+			}
+		}
+	}
+}
+
+assign_colony_reserve_alt = {
+	#tooltip = {
+	#	10034 = {
+	#		add_permanent_province_modifier = {
+	#			name = $MODIFIER$
+	#			duration = $DURATION$
+	#		}
+	#	}
+	#}
+	#hidden_effect = {
+		every_province = {
+			limit = {
+				$PROVINCES$ = yes
+				OR = {
+					is_empty = yes
+					is_colony = yes
+				}
+				NOT = { has_province_modifier = $MODIFIER$ }
+			}
+			add_permanent_province_modifier = {
+				name = $MODIFIER$
+				duration = $DURATION$
+			}
+		}
+	#}
+}
+
+# GENERAL EFFECTS
+custom_subject = {
+	custom_tooltip = $TOOLTIP$
+	hidden_effect = {
+		every_province = {
+			limit = { $PROVINCES$ = yes }
+			add_core = $TAG$
+			cede_province = $TAG$
+		}
+		create_subject = {
+			subject_type = $SUBJECT_TYPE$
+			subject = $TAG$
+		}
+		hidden_effect = {
+			$TAG$ = {
+				if = {
+					limit = { NOT = { primary_culture = $CULTURE$ } }
+					change_primary_culture = $CULTURE$
+				}
+				if = {
+					limit = { NOT = { religion = $RELIGION$ } }
+					change_religion = $RELIGION$
+				}
+			}
+		}
+	}
+}
+custom_ruler = {
+	define_ruler = {
+		name = $LEADER$
+		dynasty = $DYNASTY$
+		adm = $ADM$
+		dip = $DIP$
+		mil = $MIL$
+		age = $AGE$
+		claim = $CLAIM$
+		culture = $CULTURE$
+		religion = $RELIGION$
+		fixed = $FIXED$
+		$GENDER$ = yes
+	}
+}
+
+IR_establish_subject = {
+	$CAPITAL$ = {
+		add_core = $TAG$
+		remove_core = ROOT
+	}
+	release = $TAG$
+	every_province = {
+		limit = { $PROVINCES$ = yes }
+		if = {
+			limit = { owned_by = ROOT }
+			if = {
+				limit = { is_core = ROOT }
+				remove_core = ROOT
+				if = {
+					limit = { NOT = { is_core = $TAG$ } }
+					add_core = $TAG$
+				}
+			}
+			cede_province = $TAG$
+		}
+		else = {
+			add_permanent_claim = $TAG$
+		}
+	}
+	create_subject = {
+		subject_type = $SUBJECT_TYPE$
+		subject = $TAG$
+	}
+	hidden_effect = { $TAG$ = { set_government_rank = 1 } }
+}
+
+IR_establish_crusader_state = {
+	#$CAPITAL$ = {
+	#	add_core = $TAG$
+	#	remove_core = ROOT
+	#}
+	release = $TAG$
+	every_province = {
+		limit = { $PROVINCES$ = yes }
+		if = {
+			limit = { owned_by = ROOT }
+			hidden_effect = {
+				if = {
+					limit = { is_core = ROOT }
+					remove_core = ROOT
+					if = {
+						limit = { NOT = { is_core = $TAG$ } }
+						add_core = $TAG$
+					}
+				}
+			}
+			cede_province = $TAG$
+		}
+		else = { add_permanent_claim = $TAG$ }
+	}
+	create_subject = {
+		subject_type = fief
+		subject = $TAG$
+	}
+	$TAG$ = {
+		set_government_rank = $RANK$
+		change_government = theocracy
+		if = {
+			limit = {
+				has_dlc = "Dharma"
+			}
+			add_government_reform = holy_state_reform
+			adopt_reform_progress = ROOT
+		}
+		else = {
+			set_legacy_government = monastic_order_government
+		}
+		if = { 
+			limit = { $CAPITAL$ = { owned_by = ROOT } }
+			set_capital = $CAPITAL$
+		}
+		#define_ruler = {}
+		hidden_effect = { 
+			add_devotion = 100 #Because appparently it's COMPLETELY random. So let's make sure they start at 100.
+			if = {
+				limit = { NOT = { religion = catholic } }
+				change_religion = catholic
+			}
+		} 
+	}	
+}
+
+## Tag/subject integrations without gaining their armies/navies
+integrate_tag = { # REPLACEMENT
+	#custom_tooltip = $TOOLTIP$
+	tooltip = { 
+		inherit = $TAG$
+	}
+	hidden_effect = {
+		$TAG$ = {
+			every_owned_province = {
+				add_core = ROOT
+				cede_province = ROOT
+			}
+		}
+	}
+}
+
+integrate_subject = { #PENDING DELETION ONCE ALL REFERENCES CHANGED TO integrate_tag
+	#custom_tooltip = $TOOLTIP$
+	tooltip = { 
+		inherit = $TAG$
+	}
+	hidden_effect = {
+		$TAG$ = {
+			every_owned_province = {
+				add_core = ROOT
+				cede_province = ROOT
+			}
+		}
+	}
+}
+
+#GENERAL SCRIPTED EFFECTS
+consolidate_region = {
+	custom_tooltip = $TOOLTIP$
+	hidden_effect = {
+		every_province = {
+			limit = { country_or_non_sovereign_subject_holds = ROOT is_city = yes $PROVINCES$ = yes }
+			cede_province = ROOT
+			add_territorial_core = ROOT
+		}
+	}
+}
+
+develop_region = {
+	custom_tooltip = $TOOLTIP$
+	hidden_effect = {
+		every_province = {
+			limit = { $OWNER_TYPE$ = $TAG$ $PROVINCES$ = yes }
+			add_base_tax = $TAX$
+			add_base_production = $PROD$
+			add_base_manpower = $MIL$
+		}
+	}
+}
+
+upgrade_gov_rank = {
+	custom_tooltip = $TOOLTIP$
+	trigger_switch = {
+		on_trigger = government_rank
+		4 = { set_government_rank = 5 }
+		3 = { set_government_rank = 4 }
+		2 = { set_government_rank = 3 }
+		1 = { set_government_rank = 2 }
+	}
+}
+
+#FAMINE & DISEASE WEALTH/POP LOSS
+IR_low_wealth_loss = {
+	trigger_switch = {
+		on_trigger = base_tax
+		30 = { add_base_tax = -8 }
+		26 = { add_base_tax = -7 }
+		22 = { add_base_tax = -6 }
+		18 = { add_base_tax = -5 }
+		14 = { add_base_tax = -4 }
+		10 = { add_base_tax = -3 }
+		6 = { add_base_tax = -2 }
+		2 = { add_base_tax = -1 }
+	}
+}
+
+IR_mid_wealth_loss = {
+	trigger_switch = {
+		on_trigger = base_tax
+		30 = { add_base_tax = -15 }
+		28 = { add_base_tax = -14 }
+		26 = { add_base_tax = -13 }
+		24 = { add_base_tax = -12 }
+		22 = { add_base_tax = -11 }
+		20 = { add_base_tax = -10 }
+		18 = { add_base_tax = -9 }
+		16 = { add_base_tax = -8 }
+		14 = { add_base_tax = -7 }
+		12 = { add_base_tax = -6 }
+		10 = { add_base_tax = -5 }
+		8 = { add_base_tax = -4 }
+		6 = { add_base_tax = -3 }
+		4 = { add_base_tax = -2 }
+		2 = { add_base_tax = -1 }
+	}
+}
+
+IR_high_wealth_loss = {
+	trigger_switch = {
+		on_trigger = base_tax
+		30 = { add_base_tax = -18 }
+		28 = { add_base_tax = -17 }
+		26 = { add_base_tax = -16 }
+		24 = { add_base_tax = -15 }
+		22 = { add_base_tax = -14 }
+		20 = { add_base_tax = -13 }
+		18 = { add_base_tax = -12 }
+		16 = { add_base_tax = -11 }
+		14 = { add_base_tax = -10 }
+		12 = { add_base_tax = -9 }
+		10 = { add_base_tax = -8 }
+		8 = { add_base_tax = -7 }	
+		6 = { add_base_tax = -5 }
+		4 = { add_base_tax = -3 }
+		2 = { add_base_tax = -1 }
+	}
+}
+
+IR_low_pop_loss = {
+	trigger_switch = {
+		on_trigger = base_manpower
+		30 = { add_base_manpower = -8 }
+		26 = { add_base_manpower = -7 }
+		22 = { add_base_manpower = -6 }
+		18 = { add_base_manpower = -5 }
+		14 = { add_base_manpower = -4 }
+		10 = { add_base_manpower = -3 }
+		6 = { add_base_manpower = -2 }
+		2 = { add_base_manpower = -1 }
+	}
+}
+
+IR_mid_pop_loss = {
+	trigger_switch = {
+		on_trigger = base_manpower
+		30 = { add_base_manpower = -15 }
+		28 = { add_base_manpower = -14 }
+		26 = { add_base_manpower = -13 }
+		24 = { add_base_manpower = -12 }
+		22 = { add_base_manpower = -11 }
+		20 = { add_base_manpower = -10 }
+		18 = { add_base_manpower = -9 }
+		16 = { add_base_manpower = -8 }
+		14 = { add_base_manpower = -7 }
+		12 = { add_base_manpower = -6 }
+		10 = { add_base_manpower = -5 }
+		8 = { add_base_manpower = -4 }
+		6 = { add_base_manpower = -3 }
+		4 = { add_base_manpower = -2 }
+		2 = { add_base_manpower = -1 }
+	}
+}
+
+IR_high_pop_loss = {
+	trigger_switch = {
+		on_trigger = base_manpower
+		30 = { add_base_manpower = -18 }
+		28 = { add_base_manpower = -17 }
+		26 = { add_base_manpower = -16 }
+		24 = { add_base_manpower = -15 }
+		22 = { add_base_manpower = -14 }
+		20 = { add_base_manpower = -13 }
+		18 = { add_base_manpower = -12 }
+		16 = { add_base_manpower = -11 }
+		14 = { add_base_manpower = -10 }
+		12 = { add_base_manpower = -9 }
+		10 = { add_base_manpower = -8 }
+		8 = { add_base_manpower = -7 }	
+		6 = { add_base_manpower = -5 }
+		4 = { add_base_manpower = -3 }
+		2 = { add_base_manpower = -1 }
+	}
+}
+
+#UNUSED CURRENTLY
+discover_region = {
+	custom_tooltip = $TOOLTIP$
+	hidden_effect = {
+		$PROVINCES$ = {
+			discover_country = ROOT
+		}
+	}
+}
+
+discover_province_group = {
+	every_province = {
+		limit = { $PROVINCES$ = yes NOT = { has_discovered = ROOT } }
+		discover_province = ROOT
+	}	
+}
+
+set_kingdom_rank = {
+	custom_tooltip = $TOOLTIP$
+	hidden_effect = {
+		if = { limit = { NOT = { government_rank = 4 } } set_government_rank = 4 }
+	}
+}
+
+set_empire_rank = {
+	custom_tooltip = $TOOLTIP$
+	hidden_effect = {
+		if = { limit = { NOT = { government_rank = 5 } } set_government_rank = 5 }
+	}
+}

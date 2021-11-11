@@ -1,0 +1,304 @@
+
+country_decisions = {
+	fra_centralization = {
+		major = yes
+		potential = {
+			always = no #TEMP
+			tag = FRA
+			NOT = { has_country_flag = fra_centralize_4 }
+			NOT = { has_reform = french_monarchy }
+			has_reform = french_crown
+		}
+		allow = {
+            stability = 1
+            legitimacy = 90
+	        NOT = { has_country_modifier = fra_centralize_timer }
+		}
+		effect = {
+			if = {
+				limit = { has_country_flag = fra_centralize_3 }
+				set_country_flag = fra_centralize_4
+				add_country_modifier = {
+					name = "fra_centralize_4"
+					duration = -1
+				}
+			}
+			else_if = {
+				limit = { has_country_flag = fra_centralize_2 }
+				set_country_flag = fra_centralize_3
+				add_country_modifier = {
+					name = "fra_centralize_3"
+					duration = -1
+				}
+			}
+			else_if = {
+				limit = { has_country_flag = fra_centralize }
+				set_country_flag = fra_centralize_2
+				add_country_modifier = {
+					name = "fra_centralize_2"
+					duration = -1
+				}
+			}
+			else_if = {
+				set_country_flag = fra_centralize
+				add_country_modifier = {
+					name = "fra_centralize"
+					duration = -1
+				}
+			}
+			add_prestige = 10
+			add_legitimacy = -20
+			add_country_modifier = {
+				name = "fra_centralize_timer"
+				duration = 10950
+			}
+        }
+		ai_will_do = {
+			factor = 1000
+        }
+	}
+	
+	edict_of_moulins = {
+		major = yes
+		potential = {
+			always = no #TEMP
+			tag = FRA
+			NOT = { has_country_flag = edict_of_moulins }
+			has_reform = french_crown
+		}
+		allow = {
+            has_country_modifier = fra_centralize_4
+            stability = 1
+            legitimacy = 100
+	        NOT = { current_age = age_of_discovery }
+		}
+		effect = {
+            set_country_flag = edict_of_moulins
+			add_government_reform  = french_monarchy
+			add_prestige = 25
+			
+            add_country_modifier = {
+				name = "centralised_state"
+				duration = 7300
+			}
+			custom_tooltip = edict_of_moulins.tooltip
+			hidden_effect = {
+				every_subject_country = {
+					limit = { is_subject_of_type = fief }
+					every_owned_province = {
+						add_core = ROOT
+						cede_province = ROOT
+					}
+				}
+			}
+        }
+		ai_will_do = {
+			factor = 1000
+        }
+	}	
+	
+	unite_cantons = {
+		major = yes
+		potential = {
+			NOT = { has_country_flag = formed_switzerland_flag }
+			NOT = { tag = WES }
+			NOT = { tag = GER }
+			NOT = { tag = NGC }
+			NOT = { tag = SGC }
+			NOT = { tag = PRU }
+			NOT = { tag = DNC }
+			NOT = { tag = DPU }
+			NOT = { tag = HSA }
+			NOT = { tag = SWA }
+			NOT = { tag = FKN }
+			NOT = { tag = RHN }
+			NOT = { tag = HAN }
+			NOT = { tag = SWI }
+			NOT = { tag = POM }
+			NOT = { tag = HAB }
+			SWI = { exists = no }
+			is_nomad = no
+			OR = {
+				primary_culture = swiss
+			}
+		}
+		provinces_to_highlight = {
+			OR = {
+				area = switzerland_area
+				area = romandie_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		allow = {
+			switzerland_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT 
+			}
+			romandie_area = { 
+				type = all
+				country_or_non_sovereign_subject_holds = ROOT 
+			}
+			is_at_war = no
+			OR = {
+				current_age = age_of_absolutism
+				current_age = age_of_revolutions
+			}
+		}
+		effect = {
+			# integrate cantons
+			custom_tooltip = integrate_cantons.tooltip
+			hidden_effect = {
+				every_subject_country = {
+					limit = { is_subject_of_type = confederate }
+					every_owned_province = {
+						add_core = ROOT
+						cede_province = ROOT
+					}
+				}
+			}
+			change_tag = SWI
+			if = {
+				limit = { NOT = { government_rank = 2 } is_part_of_hre = no }
+				set_government_rank = 2
+			}
+			add_country_modifier = {
+				name = "centralization_modifier"
+				duration = 7300
+			}
+			add_prestige = 25
+			if = {
+				limit = {
+					has_custom_ideas = no
+					NOT = { has_idea_group = SWI_ideas }
+				}
+				country_event = { id = ideagroups.1 } #Swap Ideas
+			}
+			set_country_flag = formed_switzerland_flag
+		}
+		ai_will_do = {
+			factor = 1000
+        }
+	}	
+	
+	pol_invite_jews = {
+		#major = yes
+		potential = {
+			OR = {
+				tag = POL
+				tag = PLC	
+			}
+            NOT = { current_age = age_of_discovery }
+            NOT = { 
+            	num_of_owned_provinces_with = {
+					value = 4
+					religion = jewish
+				}
+            }
+		}
+		allow = {
+			is_at_war = no
+			3220 = { religion = jewish has_province_modifier = pol_qahal }
+            NOT = { has_country_modifier = jews_accepted }
+		}
+		effect = {
+			add_country_modifier = {
+				name = "jews_accepted"
+				duration = 7300
+			}
+			custom_tooltip = jews_invited.tooltip
+			hidden_effect = {
+				random_owned_province = {
+					limit = { 
+						religion = ROOT 
+						NOT = { development = 20 } 
+						OR = {
+							area = lithuania_area
+							area = samogitia_area
+							area = red_ruthenia_area
+							area = podolia_volhynia_area
+							area = volhynia_area
+							area = sandomierz_area
+						}
+					}
+					change_religion = jewish
+					owner = {
+						change_estate_land_share = {
+							estate = estate_burghers
+							share = 2.5
+						}
+					}
+					add_base_tax = 2
+					add_base_production = 2
+					add_province_modifier = {
+						name = "pol_qahal"
+						duration = -1
+					}
+				}
+			}
+        }
+		ai_will_do = {
+			factor = 1000
+        }
+	}
+	
+	#generic_fief_edict = {
+	#	major = yes
+	#	potential = {
+	#		
+	#		any_subject_country = {
+	#			is_subject_of = ROOT
+	#			is_subject_of_type = fief
+	#		}
+	#		NOT = { has_country_modifier = centralised_state }
+	#	}
+	#	allow = {
+    #       stability = 1
+    #       legitimacy = 100
+    #       OR = { 
+	#      	 	current_age = age_of_absolutism
+	#      	 	current_age = age_of_revolutions
+	#     	 }
+	#	}
+	#	effect = {
+    #       add_country_modifier = {
+	#			name = "centralised_state"
+	#			duration = 7300
+	#		}
+	#		custom_tooltip = integrate_fiefs.tooltip
+	#		hidden_effect = {
+	#			every_subject_country = {
+	#				limit = { is_subject_of_type = fief NOT = { num_of_cities = 9 } }
+	#				every_owned_province = {
+	#					add_core = ROOT
+	#					cede_province = ROOT
+	#				}
+	#			}
+	#		}
+    #    }
+	#	ai_will_do = {
+	#		factor = 1000
+    #   }
+	#}
+	
+	#reform_republic_for_peasants = {
+	#	major = yes
+	#	potential = {
+	#		OR = {
+	#			culture_group = french
+	#			culture_group = germanic
+	#			culture_group = scandinavian
+	#			culture_group = occitan
+	#			culture_group = latin
+	#			culture_group = iberian
+	#		}
+    #        government = republic
+	#		has_country_flag = IR_peasants_empowered
+	#	}
+	#	allow = {
+	#		is_at_war = no
+	#	}
+	#	effect = {
+	#		set_legacy_government = peasants_republic_legacy
+    #    }
+	#}
+}

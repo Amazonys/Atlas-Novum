@@ -1,0 +1,209 @@
+french_minor_missions = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		OR = {
+			tag = NRM
+			tag = ALE
+			tag = ORL
+			tag = CHP
+			tag = NEV
+			tag = BER
+			tag = BOU
+			tag = AMG
+			tag = AUV
+			tag = GUY
+			tag = FOI
+			tag = TOU
+			tag = DAU
+			tag = PIC
+		}
+		NOT = { map_setup = map_setup_random }
+	}
+	has_country_shield = yes
+	
+	french_minors_independence = {
+		icon = mission_empire
+		required_missions = {  }
+		provinces_to_highlight = {
+		}
+		trigger = {
+			is_subject = no
+		}
+		effect = {
+			add_prestige = 25
+			add_legitimacy = 25
+			capital_scope = {
+				area = {
+					limit = {
+						NOT = { is_core = ROOT }
+						NOT = { is_permanent_claim = ROOT }
+					}
+					add_permanent_claim = ROOT
+				}
+			}
+		}
+	}
+	french_minors_claim_state = {
+		icon = mission_unite_home_region
+		required_missions = { french_minors_independence }
+		provinces_to_highlight = {
+			OR = {
+				area_for_scope_province = {
+					is_capital_of = ROOT
+				}
+				is_core = ROOT
+			}
+			NOT = { owned_by = ROOT }
+		}
+		trigger = {
+			if = {
+				limit = {
+					OR = {
+						tag = ORL
+						tag = AMG
+					}
+				}
+				OR = {
+					capital_scope = {
+						area_for_scope_province = {
+							type = all
+							owned_by = ROOT
+						}
+					}
+					custom_trigger_tooltip = {
+						tooltip = own_all_cores_fra_minors
+						NOT = {
+							any_province = {
+								is_core = ROOT
+								NOT = { owned_by = ROOT }
+							}
+						}
+					}
+				}
+			}
+			else = {
+				capital_scope = {
+					area_for_scope_province = {
+						type = all
+						owned_by = ROOT
+					}
+				}
+			}
+		}
+		effect = {
+			create_general = { tradition = 100 }
+			ile_de_france_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	french_minors_paris = {
+		icon = mission_early_modern_university
+		required_missions = { french_minors_claim_state }
+		provinces_to_highlight = {
+			province_id = 183
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+			}
+		}
+		trigger = {
+			owns_core_province = 183
+		}
+		effect = {
+			add_mil_power = 200
+			france_region = {
+				limit = {
+					owned_by = FRA
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	french_minors_become_france = {
+		icon = mission_monarch_in_throne_room
+		required_missions = { french_minors_paris }
+		provinces_to_highlight = {
+			owned_by = FRA
+		}
+		trigger = {
+			is_subject = no
+			owns_core_province = 183
+			NOT = {
+				exists = FRA
+			}
+			is_at_war = no
+		}
+		effect = {
+			# can form france without meeting normal requirements
+			if = {
+				limit = {
+					primary_culture = occitain
+					owns_core_province = 203
+				}
+				201 = {
+					move_capital_effect = yes
+				}
+			}
+			else_if = {
+				limit = {
+					primary_culture = occitain
+					owns_core_province = 196
+				}
+				196 = {
+					move_capital_effect = yes
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						primary_culture = aquitaine
+						primary_culture = gascon
+					}
+					owns_core_province = 174
+				}
+				174 = {
+					move_capital_effect = yes
+				}
+			}
+			else = {
+				183 = {
+					move_capital_effect = yes
+				}
+			}
+			change_tag = FRA
+			swap_non_generic_missions = yes
+			remove_non_electors_emperors_from_empire_effect = yes
+			if = {
+				limit = {
+					NOT = { government_rank = 2 }
+				}
+				set_government_rank = 2
+			}
+			france_region = {
+				limit = {
+					NOT = { owned_by = ROOT }
+				}
+				add_permanent_claim = FRA
+			}
+			add_country_modifier = {
+				name = "centralization_modifier"
+				duration = 7300
+			}
+			add_prestige = 25
+			if = {
+				limit = {
+					has_custom_ideas = no
+				}
+				country_event = { id = ideagroups.1 } #Swap Ideas
+			}
+			set_country_flag = formed_france_flag
+		}
+	}
+}

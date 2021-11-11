@@ -1,5 +1,5 @@
-name="Imperialism Reinvigorated: Manual Install"
-path="C:/Users/Amyzonis/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/IR_Core"
+name="Atlas Novum: Manual Install"
+path="C:/Users/Amyzonis/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/AN_Core"
 replace_path="common/bookmarks"
 replace_path="common/buildings"
 replace_path="common/colonial_regions"

@@ -1,0 +1,511 @@
+namespace = monument_events
+
+# Monument reaches highest tier
+country_event = {
+    id = monument_events.1
+    title = monument_events.1.t
+    desc = monument_events.1.d
+	picture = GREAT_BUILDING_eventPicture
+	goto = monument_province
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		any_owned_province = {
+			has_great_project = {
+				type = any
+				tier = 3
+			}
+			NOT = { has_province_flag = monument_triggered_highest_tier_event_flag }	#The same monument shouldn't trigger this event multiple times
+		}
+		NOT = { has_country_modifier = monumental_pride }
+	}
+	
+	 immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_great_project = {
+						type = any
+						tier = 3
+					}
+				}
+				save_event_target_as = monument_province
+				set_province_flag = monument_triggered_highest_tier_event_flag
+			}
+		}
+    }
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+
+    option = { #great!
+        name = monument_events.1.a
+		if = {
+			limit = {
+				NOT = { stability = 1 }
+			}
+			add_stability = 1
+		}
+		else = {
+			add_prestige = 20
+		}
+		add_country_modifier = {
+			name = monumental_pride
+			duration = 3650
+		}
+    }
+}
+
+# Monument in poor state
+country_event = {
+    id = monument_events.2
+    title = monument_events.2.t
+    desc = monument_events.2.d
+	picture = ADVISOR_eventPicture
+	goto = monument_province_2
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		any_owned_province = {
+			has_great_project = {
+				type = any
+				tier = 0
+			}
+			OR = {
+				NOT = { has_province_flag = monument_neglected_monument_flag }
+				had_province_flag = {
+					flag = monument_triggered_highest_tier_event_flag
+					days = 1825
+				}
+			}
+		}
+		NOT = { has_country_modifier = monument_boost }
+	}
+	
+	 immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_great_project = {
+						type = any
+						tier = 0
+					}
+					OR = {
+						NOT = { has_province_flag = monument_neglected_monument_flag }
+						had_province_flag = {
+							flag = monument_neglected_monument_flag
+							days = 1825
+						}
+					}
+				}
+				save_event_target_as = monument_province_2
+				if = {
+					limit = {
+						event_target:monument_province_2 = {
+							has_province_flag = monument_neglected_monument_flag
+						}
+					}
+					event_target:monument_province_2 = {
+						clr_province_flag = monument_neglected_monument_flag
+					}
+				}
+			}
+		}
+    }
+	
+	mean_time_to_happen = {
+		months = 800
+	}
+
+    option = { #use some money to boost it
+        name = monument_events.2.a
+        add_years_of_income = -0.5
+		add_country_modifier = {
+			name = monument_boost
+			duration = 1825
+		}
+    }
+    option = { #ignore it
+        name = monument_events.2.b
+        event_target:monument_province_2 = {
+			add_unrest = 2
+			hidden_effect = {
+				set_province_flag = monument_neglected_monument_flag
+			}
+		}
+    }
+}
+
+# Saint Peter's Basilica
+country_event = {
+    id = monument_events.3
+    title = monument_events.3.t
+    desc = monument_events.3.d
+	picture = ST_PETERS_CHURCH_eventPicture
+	goto = basilica_province
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		tag = PAP
+		religion = catholic
+		any_owned_province = {
+			has_great_project = {
+				type = stpeters_cathedral
+				tier = 3
+			}
+			religion = catholic
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_great_project = {
+						type = stpeters_cathedral
+						tier = 3
+					}
+					religion = catholic
+				}
+				save_event_target_as = basilica_province
+			}
+		}
+    }
+	
+	mean_time_to_happen = {
+		months = 180
+	}
+
+    option = { #hold a big mass
+        name = monument_events.3.a
+		add_years_of_income = -0.25
+		every_ally = {
+			limit = {
+				religion = catholic
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_st_peters
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = 10
+		}
+    }
+    option = { #church of the people
+        name = monument_events.3.b
+        event_target:basilica_province = {
+			add_unrest = -3
+		}
+		random_owned_province = {
+			limit = {
+				religion = catholic
+				NOT = {
+					has_great_project = {
+						type = stpeters_cathedral
+						tier = 3
+					}
+				}
+			}
+			add_unrest = -2
+		}
+		add_country_modifier = {
+			name = monument_church_of_the_people
+			duration = 7300
+		}
+    }
+}
+
+# Pilgrimage Shwedagon Pagoda
+country_event = {
+    id = monument_events.4
+    title = monument_events.4.t
+    desc = monument_events.4.d
+	picture = SHWEDAGON_PAGON_eventPicture
+	goto = pagoda_province
+	
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	 immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_great_project = {
+						type = shwedagon_pagoda
+						tier = 3
+					}
+					religion = buddhism
+				}
+				save_event_target_as = pagoda_province
+			}
+		}
+    }
+
+    option = { #tax the pilgrims
+        name = monument_events.4.a
+        add_country_modifier = {
+			name = shwedagon_pilgrimage
+			duration = 3650
+		}
+		event_target:pagoda_province = {
+			add_unrest = 3
+		}
+    }
+    option = { #donate flowers and candles
+        name = monument_events.4.b
+        add_years_of_income = -0.1
+		add_stability = 1
+		event_target:pagoda_province = {
+			add_unrest = -3
+			if = {
+				limit = { NOT = { is_core = ROOT } }
+				add_core = ROOT
+			}
+		}
+    }
+}
+
+# Borobudur Temple
+country_event = {
+    id = monument_events.5
+    title = monument_events.5.t
+    desc = monument_events.5.d
+	picture = BUDDHA_eventPicture
+	goto = borobudur_province
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		any_owned_province = {
+			has_great_project = {
+				type = borobudur_temple
+				tier = 3
+			}
+		}
+		if = {
+			limit = { tag = SUN }
+			has_mission = sun_borobudur
+			mission_completed = sun_borobudur
+		}			
+	}
+	
+	 immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_great_project = {
+						type = borobudur_temple
+						tier = 3
+					}
+				}
+				save_event_target_as = borobudur_province
+			}
+		}
+    }
+	
+	mean_time_to_happen = {
+		months = 180
+		modifier = {
+			factor = 0.1
+			OR = {
+				tag = SUN
+				tag = MAJ
+			}
+		}
+		modifier = {
+			factor = 0.8
+			OR = {
+				has_adm_advisor = yes
+				has_dip_advisor = yes
+				has_mil_advisor = yes
+			}
+		}
+	}
+
+    option = { #superiority over majahit
+        name = monument_events.5.a
+        trigger = { tag = SUN exists = MAJ }
+		event_target:borobudur_province = {
+			if = {
+				limit = { NOT = { is_core = ROOT } }
+				add_core = ROOT
+			}
+		}
+		add_casus_belli = {
+			type = cb_vassalize_mission
+			months = 300
+			target = MAJ
+		}
+    }
+	
+	option = { #superiority over sunda
+        name = monument_events.5.b
+        trigger = { tag = MAJ exists = SUN }
+		event_target:borobudur_province = {
+			if = {
+				limit = { NOT = { is_core = ROOT } }
+				add_core = ROOT
+			}
+		}
+		add_casus_belli = {
+			type = cb_vassalize_mission 
+			months = 300
+			target = SUN
+		}
+    }
+	
+	option = { #send our advisor to take care of it
+        name = monument_events.5.c
+        trigger = { 
+			NOT = {
+				OR = {
+					tag = SUN
+					tag = MAJ
+				}
+			}
+			OR = {
+				has_adm_advisor = yes
+				has_dip_advisor = yes
+				has_mil_advisor = yes
+			}
+		}
+		event_target:borobudur_province = {
+			if = {
+				limit = { NOT = { is_core = ROOT } }
+				add_core = ROOT
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = 10
+		}
+		if = {
+			limit = {
+				has_adm_advisor = yes
+			}
+			remove_advisor_by_category = ADM
+		}
+		else_if = {
+			limit = {
+				has_dip_advisor = yes
+			}
+			remove_advisor_by_category = DIP
+		}
+		else_if = {
+			limit = {
+				has_mil_advisor = yes
+			}
+			remove_advisor_by_category = MIL
+		}		
+    }
+	
+    option = { #move our capital there
+        name = monument_events.5.e
+        if = {
+			limit = { is_capital = no }
+			set_capital = event_target:borobudur_province
+		}
+		event_target:borobudur_province = {
+			add_unrest = -3
+			if = {
+				limit = { NOT = { is_core = ROOT } }
+				add_core = ROOT
+			}
+		}
+    }
+}
+
+# Hidden Parthenon event to update it with the minaret
+country_event = {
+    id = monument_events.6
+    title = monument_events.6.t
+    desc = monument_events.6.d
+	picture = GREAT_BUILDING_eventPicture
+	
+	hidden = yes
+
+	trigger = {
+		if = {
+			limit = {
+				has_dlc = "Leviathan"
+			}
+			146 = {
+				has_great_project = {
+					type = parthenon
+					tier = 1
+				}
+			}
+		}
+		NOT = { has_global_flag = parthenon_now_mosque }
+		owns = 146
+		OR = {
+			146 = { religion_group = muslim }
+			religion_group = muslim
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+    option = { #Update Parthenon
+        name = monument_events.6.a
+		set_global_flag = parthenon_now_mosque
+		show_ambient_object = parthenon_minaret
+		hide_ambient_object = parthenon
+
+		ai_chance = {
+			factor = 1
+		}
+    }
+}
+
+# Hidden Parthenon event to update it without the minaret
+country_event = {
+    id = monument_events.7
+    title = monument_events.7.t
+    desc = monument_events.7.d
+	picture = GREAT_BUILDING_eventPicture
+	
+	hidden = yes
+
+	trigger = {
+		if = {
+			limit = {
+				has_dlc = "Leviathan"
+			}
+			146 = {
+				has_great_project = {
+					type = parthenon
+					tier = 1
+				}
+			}
+		}
+		has_global_flag = parthenon_now_mosque
+		owns = 146
+		NOT = { religion_group = muslim }
+		146 = { NOT = { religion_group = muslim } }
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+    option = { #Update Parthenon
+        name = monument_events.7.a
+		clr_global_flag = parthenon_now_mosque
+		show_ambient_object = parthenon
+		hide_ambient_object = parthenon_minaret
+
+		ai_chance = {
+			factor = 1
+		}
+    }
+}

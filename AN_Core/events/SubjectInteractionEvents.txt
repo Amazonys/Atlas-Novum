@@ -1,0 +1,2467 @@
+########################################
+# Events for Subject Interaction
+#
+# written by Sara Wendel-Örtqvist
+########################################
+
+namespace = subject_interaction_events
+
+### Action: Place Relative on Throne - In Vassal (if both Monarchies) ###
+
+# Pretender from previous dynasty rises
+country_event = {
+	id = subject_interaction_events.1
+	title = subject_interaction_events.1.t
+	desc = subject_interaction_events.1.d
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		is_subject_other_than_tributary_trigger = yes
+		government = monarchy
+		has_new_dynasty = yes
+		any_known_country = {
+			overlord_of = ROOT
+			dynasty = ROOT
+			NOT = {
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_sent_help }
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_refused_send_help }
+			}
+		}
+		NOT = {
+			num_of_rebel_armies = 1
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.1.a # Ask for help from Overlord
+		random_owned_province = {
+			limit = {
+				is_capital = yes
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 3
+			}
+		}
+		random_known_country = {
+			limit = {
+				overlord_of = ROOT
+			}
+			country_event = {
+				id = subject_interaction_events.2
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.1.b # Deal with it ourselves
+		add_prestige = 10
+		random_owned_province = {
+			limit = {
+				is_capital = yes
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 2
+			}
+		}
+	}
+}
+
+# Vassal has problem with pretender rebels
+country_event = {
+	id = subject_interaction_events.2
+	title = subject_interaction_events.2.t
+	desc = subject_interaction_events.2.d
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = subject_interaction_events.2.a
+		add_treasury = -100
+		add_manpower = -2
+		FROM = {
+			set_country_flag = si_pretender_help_flag
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sent_help
+			}
+			country_event = {
+				id = subject_interaction_events.3
+			}
+			tooltip = {
+				add_treasury = 100
+				add_manpower = 2
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.2.b
+		FROM = {
+			set_country_flag = si_no_help_flag
+			country_event = {
+				id = subject_interaction_events.3
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_refused_send_help
+			}
+		}
+	}
+}
+
+# Help Arrives?
+country_event = {
+	id = subject_interaction_events.3
+	title = subject_interaction_events.3.t
+	desc = subject_interaction_events.3.d
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = subject_interaction_events.3.a
+		trigger = {
+			has_country_flag = si_pretender_help_flag
+		}
+		add_treasury = 100
+		add_manpower = 2
+		tooltip = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sent_help
+			}
+		}
+		clr_country_flag = si_pretender_help_flag
+	}
+	option = {
+		name = subject_interaction_events.3.b
+		trigger = {
+			has_country_flag = si_no_help_flag
+		}
+		tooltip = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_refused_send_help
+			}
+		}
+		clr_country_flag = si_no_help_flag
+	}
+}
+
+# Incompetent Relative
+country_event = {
+	id = subject_interaction_events.4
+	title = subject_interaction_events.4.t
+	desc = subject_interaction_events.4.d
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_regency = no
+		any_subject_country = {
+			is_lesser_in_union = no
+			government = monarchy
+			has_regency = no
+			has_new_dynasty = yes
+			dynasty = ROOT
+			NOT = {
+				adm = 3
+				dip = 3
+				mil = 3
+			}
+		}
+		NOT = {
+			has_country_modifier = si_incompetent_ruler_timer
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = si_incompetent_ruler_timer
+				duration = 1825
+				hidden = yes
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.4.a
+		add_legitimacy = -10
+		add_horde_unity = -10
+		random_subject_country = {
+			limit = {
+				government = monarchy
+				has_regency = no
+				has_new_dynasty = yes
+				dynasty = ROOT
+				NOT = {
+					adm = 3
+					dip = 3
+					mil = 3
+				}
+			}
+			define_ruler = {
+				dynasty = ROOT
+				culture = ROOT
+				religion = ROOT
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.4.b
+		add_prestige = 10
+	}
+}
+
+# Competent Relative
+country_event = {
+	id = subject_interaction_events.5
+	title = subject_interaction_events.5.t
+	desc = subject_interaction_events.5.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_regency = no
+		government = monarchy
+		NOT = { has_reform = celestial_empire }
+		NOT = { legitimacy_or_horde_unity = 100 }
+		any_subject_country = {
+			government = monarchy
+			has_regency = no
+			has_new_dynasty = yes
+			dynasty = ROOT
+			OR = {
+				adm = 3
+				dip = 3
+				mil = 3
+			}
+		}
+		NOT = {
+			has_country_modifier = si_competent_ruler_timer
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = si_competent_ruler_timer
+				duration = 1825
+				hidden = yes
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.5.a
+		if = {
+			limit = { NOT = { legitimacy_or_horde_unity = 91 } }
+			add_legitimacy = 10
+			add_horde_unity = 10
+		}
+		if = {
+			limit = {
+				legitimacy_or_horde_unity = 91
+			}
+			add_prestige = 10
+		}
+	}
+}
+
+# Cousin Claims Chair of [Root.Country.GetName]
+country_event = {
+	id = subject_interaction_events.6
+	title = subject_interaction_events.6.t
+	desc = subject_interaction_events.6.d
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_regency = no
+		government = monarchy
+		NOT = { has_reform = steppe_horde }
+		religion_group = christian
+		num_of_cities = 2
+		NOT = {
+			legitimacy = 50
+		}
+		any_subject_country = {
+			OR = {
+				is_vassal = yes
+				is_march = yes
+			}
+			government = monarchy
+			has_regency = no
+			has_new_dynasty = yes
+			dynasty = ROOT
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					government = monarchy
+					has_regency = no
+					has_new_dynasty = yes
+					dynasty = ROOT
+					OR = {
+						is_vassal = yes
+						is_march = yes
+					}
+				}
+				set_country_flag = si_subject_state
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.6.a # Depose our cousin!
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_subject_state
+			}
+			define_ruler = {
+				dynasty = ROOT
+				culture = ROOT
+				religion = ROOT
+			}
+			random_province = {
+				limit = {
+					owned_by = ROOT
+					NOT = {
+						is_capital = yes
+					}
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					friend = PREV
+					size = 1
+				}
+			}
+			clr_country_flag = si_subject_state
+		}
+	}
+	option = {
+		name = subject_interaction_events.6.b
+		add_corruption = 0.5
+		add_treasury = -100
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_subject_state
+			}
+			add_treasury = 100
+			clr_country_flag = si_subject_state
+		}
+	}
+}
+
+# Manpower Misused
+country_event = {
+	id = subject_interaction_events.7
+	title = subject_interaction_events.7.t
+	desc = subject_interaction_events.7.d
+	picture = MILITARY_CAMP_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			has_subsidize_armies = yes
+			is_at_war = no
+			NOT = {
+				culture_group = ROOT
+				religion = ROOT
+			}
+			NOT = {
+				has_opinion_modifier = { who = ROOT modifier = opinion_reprimanded }
+				has_opinion_modifier = { who = ROOT modifier = opinion_resourceful }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					has_subsidize_armies = yes
+					is_at_war = no
+					NOT = {
+						culture_group = ROOT
+						religion = ROOT
+					}
+				}
+				set_country_flag = si_subject_state
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.7.a
+		add_prestige = 10
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_subject_state
+			}
+			set_country_flag = si_reprimanded_flag
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_reprimanded
+			}
+			country_event = {
+				id = subject_interaction_events.8
+			}
+			clr_country_flag = si_subject_state
+		}
+	}
+	option = {
+		name = subject_interaction_events.7.b
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_subject_state
+			}
+			set_country_flag = si_resourceful_flag
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_resourceful
+			}
+			country_event = {
+				id = subject_interaction_events.8
+			}
+			clr_country_flag = si_subject_state
+		}
+	}
+}
+
+# Resourceful or Reprimanded
+country_event = {
+	id = subject_interaction_events.8
+	title = subject_interaction_events.8.t
+	desc = subject_interaction_events.8.d
+	picture = MILITARY_CAMP_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = subject_interaction_events.8.a
+		trigger = {
+			has_country_flag = si_reprimanded_flag
+		}
+		tooltip = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_reprimanded
+			}
+		}
+		clr_country_flag = si_reprimanded_flag
+	}
+	option = {
+		name = subject_interaction_events.8.b
+		trigger = {
+			has_country_flag = si_resourceful_flag
+		}
+		tooltip = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_resourceful
+			}
+		}
+		clr_country_flag = si_resourceful_flag
+	}
+}
+
+# The Manpower Menace
+country_event = {
+	id = subject_interaction_events.9
+	title = subject_interaction_events.9.t
+	desc = subject_interaction_events.9.d
+	picture = MILITARY_CAMP_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_subsidize_armies = yes
+		is_at_war = no
+		has_truce = no
+		NOT = { war_exhaustion = 1 }
+		is_subject_other_than_tributary_trigger = yes
+		any_known_country = {
+			overlord_of = ROOT
+			NOT = {
+				culture_group = ROOT
+				religion = ROOT
+			}
+		}
+		NOT = {
+			has_country_modifier = bad_discipline
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.9.a
+		add_yearly_manpower = -2.5
+		random_known_country = {
+			limit = {
+				overlord_of = ROOT
+				NOT = {
+					culture_group = ROOT
+					religion = ROOT
+				}
+			}
+			set_country_flag = si_purge_flag
+			country_event = {
+				id = subject_interaction_events.10
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_purged_manpower
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.9.b
+		add_prestige = 5
+		add_country_modifier = {
+			name = "bad_discipline"
+			duration = 3650
+		}
+	}
+}
+
+# Manpower Menace in [From.Country.GetName]
+country_event = {
+	id = subject_interaction_events.10
+	title = subject_interaction_events.10.t
+	desc = subject_interaction_events.10.d
+	picture = MILITARY_CAMP_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = subject_interaction_events.10.a
+		add_yearly_manpower = 1
+		tooltip = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_purged_manpower
+			}
+		}
+	}
+}
+
+# Complains about quality of soldiers, demands more money for upkeep
+country_event = {
+	id = subject_interaction_events.11
+	title = subject_interaction_events.11.t
+	desc = subject_interaction_events.11.d
+	picture = LAND_MILITARY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_subsidize_armies = yes
+		is_subject_other_than_tributary_trigger = yes
+		any_known_country = {
+			overlord_of = ROOT
+			manpower = 8
+			treasury = 65
+			NOT = {
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_sent_general }
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_sent_advisor }
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_sent_gold_manpower }
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_sent_nothing }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+		
+		modifier = {
+			factor = 0.5
+			has_country_modifier = bad_discipline
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.11.a
+		random_known_country = {
+			limit = {
+				overlord_of = ROOT
+			}
+			country_event = {
+				id = subject_interaction_events.12
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.11.b
+		add_prestige = 10
+	}
+}
+
+# Subject asks for upkeep
+country_event = {
+	id = subject_interaction_events.12
+	title = subject_interaction_events.12.t
+	desc = subject_interaction_events.12.d
+	picture = LAND_MILITARY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = subject_interaction_events.12.a
+		add_army_tradition = -5
+		FROM = {
+			tooltip = {
+				create_general = { tradition = 50 }
+			}
+			set_country_flag = si_sent_general_flag
+			country_event = {
+				id = subject_interaction_events.13
+				tooltip = subject_interaction_events.13.tt1
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sent_general
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.12.b
+		add_treasury = -25
+		FROM = {
+			tooltip = {
+				define_advisor = {
+					type = army_reformer
+					skill = 2
+					discount = yes
+				}
+			}
+			set_country_flag = si_sent_advisor_flag
+			country_event = {
+				id = subject_interaction_events.13
+				tooltip = subject_interaction_events.13.tt2
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sent_advisor
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.12.c
+		add_treasury = -50
+		add_manpower = -5
+		FROM = {
+			tooltip = {
+				add_treasury = 50
+				add_manpower = 5
+			}
+			set_country_flag = si_sent_gold_flag
+			country_event = {
+				id = subject_interaction_events.13
+				tooltip = subject_interaction_events.13.tt3
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sent_gold_manpower
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.12.e
+		FROM = {
+			set_country_flag = si_sent_nothing_flag
+			country_event = {
+				id = subject_interaction_events.13
+				tooltip = subject_interaction_events.13.tt4
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sent_nothing
+			}
+		}
+	}
+}
+
+# What did they send?
+country_event = {
+	id = subject_interaction_events.13
+	title = subject_interaction_events.13.t
+	desc = subject_interaction_events.13.d
+	picture = LAND_MILITARY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = subject_interaction_events.13.a
+		trigger = {
+			has_country_flag = si_sent_general_flag
+		}
+		create_general = { tradition = 50 }
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_sent_general
+			}
+		}
+		clr_country_flag = si_sent_general_flag
+	}
+	option = {
+		name = subject_interaction_events.13.b
+		trigger = {
+			has_country_flag = si_sent_advisor_flag
+		}
+		define_advisor = {
+			type = army_reformer
+			skill = 2
+			discount = yes
+			culture = FROM
+			religion = FROM
+		}
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_sent_advisor
+			}
+		}
+		clr_country_flag = si_sent_advisor_flag
+	}
+	option = {
+		name = subject_interaction_events.13.c
+		trigger = {
+			has_country_flag = si_sent_gold_flag
+		}
+		add_years_of_income = 0.1
+		add_yearly_manpower = 2.5
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_sent_gold_manpower
+			}
+		}
+		clr_country_flag = si_sent_gold_flag
+	}
+	option = {
+		name = subject_interaction_events.13.e
+		trigger = {
+			has_country_flag = si_sent_nothing_flag
+		}
+		tooltip = {
+			add_opinion = {
+				who = FROM
+				modifier = opinion_sent_nothing
+			}
+		}
+		clr_country_flag = si_sent_nothing_flag
+	}
+}
+
+# Embargoes and Smugglers
+country_event = {
+	id = subject_interaction_events.14
+	title = subject_interaction_events.14.t
+	desc = subject_interaction_events.14.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		has_embargo_rivals = yes
+		is_subject_other_than_tributary_trigger = yes
+		NOT = {
+			has_country_modifier = si_state_smuggling
+		}
+		any_known_country = {
+			overlord_of = ROOT
+			NOT = {
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_smuggling_hindered }
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_small_smuggling_ok }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.14.a
+		custom_tooltip = subject_interaction_events.14.ct
+		add_country_modifier = {
+			name = si_state_smuggling
+			duration = -1
+		}
+	}
+	option = {
+		name = subject_interaction_events.14.b
+		add_prestige = 5
+	}
+}
+
+# Our Vassal's Smugglers
+country_event = {
+	id = subject_interaction_events.15
+	title = subject_interaction_events.15.t
+	desc = subject_interaction_events.15.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			has_embargo_rivals = yes
+			has_country_modifier = si_state_smuggling
+			NOT = {
+				has_opinion_modifier = { who = ROOT modifier = opinion_smuggling_hindered }
+				has_opinion_modifier = { who = ROOT modifier = opinion_small_smuggling_ok }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					has_embargo_rivals = yes
+					has_country_modifier = si_state_smuggling
+				}
+				set_country_flag = si_smuggler_vassal_flag
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.15.a
+		ai_chance = {
+			factor = 1
+		}
+		add_prestige = 10
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_smuggler_vassal_flag
+			}
+			set_country_flag = si_stop_smuggling_flag
+			country_event = {
+				id = subject_interaction_events.16
+				tooltip = subject_interaction_events.16.tt1
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_smuggling_hindered
+			}
+			tooltip = {
+				remove_country_modifier = si_state_smuggling
+			}
+			clr_country_flag = si_smuggler_vassal_flag
+		}
+	}
+	option = {
+		name = subject_interaction_events.15.b
+		ai_chance = {
+			factor = 0
+		}
+		add_years_of_income = 0.25
+		add_prestige = -10
+		every_subject_country = {
+			limit = { NOT = { has_country_flag = si_smuggler_vassal_flag } }
+			add_liberty_desire = 5
+		}
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_smuggler_vassal_flag
+			}
+			set_country_flag = si_small_smuggling_flag
+			country_event = {
+				id = subject_interaction_events.16
+				tooltip = subject_interaction_events.16.tt2
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_small_smuggling_ok
+			}
+			clr_country_flag = si_smuggler_vassal_flag
+		}
+	}
+}
+
+# Busted!
+country_event = {
+	id = subject_interaction_events.16
+	title = subject_interaction_events.16.t
+	desc = subject_interaction_events.16.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = subject_interaction_events.16.a
+		trigger = {
+			has_country_flag = si_stop_smuggling_flag
+		}
+		remove_country_modifier = si_state_smuggling
+		tooltip = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_smuggling_hindered
+			}
+		}
+		clr_country_flag = si_stop_smuggling_flag
+	}
+	option = {
+		name = subject_interaction_events.16.b
+		trigger = {
+			has_country_flag = si_small_smuggling_flag
+		}
+		tooltip = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_small_smuggling_ok
+			}
+		}
+		clr_country_flag = si_small_smuggling_flag
+	}
+}
+
+# War Never Changes
+country_event = {
+	id = subject_interaction_events.17
+	title = subject_interaction_events.17.t
+	desc = subject_interaction_events.17.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		is_at_war = yes
+		any_subject_country = {
+			is_at_war = no
+			has_scutage = yes
+		}
+		NOT = {
+			has_country_modifier = si_scutage_unwilling_vassals
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.17.a
+		add_country_modifier = {
+			name = si_scutage_unwilling_vassals
+			duration = 1825
+		}
+	}
+}
+
+# Benefits of Scutage
+country_event = {
+	id = subject_interaction_events.18
+	title = subject_interaction_events.18.t
+	desc = subject_interaction_events.18.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			had_recent_war = 2
+			has_truce = yes
+			is_at_war = yes
+		}
+		any_subject_country = {
+			is_at_war = no
+			has_scutage = yes
+		}
+		NOT = {
+			has_country_modifier = si_scutage_unwilling_vassals
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.18.a
+		every_subject_country = {
+			limit = {
+				is_at_war = no
+				has_scutage = yes
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_scutage_benefits
+			}
+		}
+	}
+}
+
+# Chaotic Conscripts
+country_event = {
+	id = subject_interaction_events.19
+	title = subject_interaction_events.19.t
+	desc = subject_interaction_events.19.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			has_subsidize_armies = yes
+			any_owned_province = {
+				any_neighbor_province = {
+					owned_by = ROOT
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+		
+		modifier = {
+			factor = 0.5
+			has_country_modifier = bad_discipline
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					has_subsidize_armies = yes
+					any_owned_province = {
+						any_neighbor_province = {
+							owned_by = ROOT
+						}
+					}
+				}
+				set_country_flag = si_vassal_rebels_flag
+				random_owned_province = {
+					limit = {	
+						any_neighbor_province = {
+							owned_by = ROOT
+						}
+					}
+					set_province_flag = si_province_rebels_flag
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.19.a
+		random_owned_province = {
+			limit = {
+				any_neighbor_province = {
+					has_province_flag = si_province_rebels_flag
+				}
+			}
+			spawn_rebels = {
+				type = noble_rebels
+				size = 1
+			}
+		}
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_vassal_rebels_flag
+			}
+			random_owned_province = {
+				limit = {
+					has_province_flag = si_province_rebels_flag
+				}
+				clr_province_flag = si_province_rebels_flag
+				spawn_rebels = {
+					type = noble_rebels
+					size = 1
+				}
+			}
+			clr_country_flag = si_vassal_rebels_flag
+		}
+	}
+	option = {
+		name = subject_interaction_events.19.b
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					has_country_flag = si_vassal_rebels_flag
+				}
+				clr_country_flag = si_vassal_rebels_flag
+				random_owned_province = {
+					limit = {
+						has_province_flag = si_province_rebels_flag
+					}
+					clr_province_flag = si_province_rebels_flag
+				}
+			}
+		}
+		add_mil_power = -25
+		add_army_tradition = -5
+	}
+}
+
+# Squandering Loyalists
+country_event = {
+	id = subject_interaction_events.20
+	title = subject_interaction_events.20.t
+	desc = subject_interaction_events.20.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_known_country = {
+			has_support_loyalists = yes
+			junior_union_with = ROOT
+			NOT = {
+				has_country_modifier = si_squandering_loyalists_timer
+			}
+		}
+		NOT = {
+			has_country_modifier = si_squandering_loyalists_timer
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = si_squandering_loyalists_timer
+				duration = 1825
+				hidden = yes
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.20.a
+		add_adm_power = -50 #
+	}
+	option = {
+		name = subject_interaction_events.20.b
+		add_years_of_income = -0.25
+	}
+}
+
+# The Loyalist Embarrassement
+country_event = {
+	id = subject_interaction_events.21
+	title = subject_interaction_events.21.t
+	desc = subject_interaction_events.21.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_known_country = {
+			has_support_loyalists = yes
+			junior_union_with = ROOT
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.21.a
+		add_prestige = -10
+		random_known_country = {
+			limit = {
+				has_support_loyalists = yes
+				junior_union_with = ROOT
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_embarrasing_loyalists
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.21.b
+		add_dip_power = -50
+	}
+}
+
+# Successful Loyalists
+country_event = {
+	id = subject_interaction_events.22
+	title = subject_interaction_events.22.t
+	desc = subject_interaction_events.22.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_known_country = {
+			has_support_loyalists = yes
+			junior_union_with = ROOT
+			NOT = {
+				has_country_modifier = si_liberty_desire_timer
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+				has_support_loyalists = yes
+					junior_union_with = ROOT
+				}
+				add_country_modifier = {
+					name = si_liberty_desire_timer
+					duration = 1825
+					hidden = yes
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.22.a
+		random_known_country = {
+			limit = {
+				has_country_modifier = si_liberty_desire_timer
+			}
+			add_liberty_desire = -5
+		}
+	}
+}
+
+# Loyalists cause Rebellion
+country_event = {
+	id = subject_interaction_events.23
+	title = subject_interaction_events.23.t
+	desc = subject_interaction_events.23.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_known_country = {
+			has_support_loyalists = yes
+			junior_union_with = ROOT
+			NOT = {
+				stability = 1
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					has_support_loyalists = yes
+					junior_union_with = ROOT
+					NOT = {
+						stability = 1
+					}
+				}
+				set_country_flag = si_loyalist_rebellion_flag
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.23.a
+		add_prestige = -5
+		random_known_country = {
+			limit = {
+				has_country_flag = si_loyalist_rebellion_flag
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = nationalist_rebels
+					size = 1
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = yes
+				}
+				spawn_rebels = {
+					type = nationalist_rebels
+					size = 1
+				}
+			}
+			clr_country_flag = si_loyalist_rebellion_flag		
+		}
+	}
+	option = {
+		name = subject_interaction_events.23.b
+		random_known_country = {
+			limit = {
+				has_country_flag = si_loyalist_rebellion_flag
+			}
+			add_liberty_desire = 10
+			
+			random_owned_province = {
+				limit = {
+					is_capital = no
+				}
+				spawn_rebels = {
+					type = nationalist_rebels
+					size = 1
+				}
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = yes
+				}
+				spawn_rebels = {
+					type = nationalist_rebels
+					size = 1
+				}
+			}
+			clr_country_flag = si_loyalist_rebellion_flag
+		}
+	}
+}
+
+# The Cruel Behavior of Uncouth Officers
+country_event = {
+	id = subject_interaction_events.24
+	title = subject_interaction_events.24.t
+	desc = subject_interaction_events.24.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			has_send_officers = yes
+			NOT = {
+				has_opinion_modifier = { who = ROOT modifier = opinion_cruel_officers }
+				has_opinion_modifier = { who = ROOT modifier = opinion_excellent_officers }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.24.a
+		random_subject_country = {
+			limit = {
+				has_send_officers = yes
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_cruel_officers
+			}
+		}
+	}
+}
+
+# A Gentleman and an Officer
+country_event = {
+	id = subject_interaction_events.25
+	title = subject_interaction_events.25.t
+	desc = subject_interaction_events.25.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			has_send_officers = yes
+			NOT = {
+				has_opinion_modifier = { who = ROOT modifier = opinion_cruel_officers }
+				has_opinion_modifier = { who = ROOT modifier = opinion_excellent_officers }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.25.a
+		add_prestige = 5
+		add_mil_power = 50
+		random_subject_country = {
+			limit = {
+				has_send_officers = yes
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_excellent_officers
+			}
+		}
+	}
+}
+
+# The more we sell, the more we sow, the more we grow
+country_event = {
+	id = subject_interaction_events.26
+	title = subject_interaction_events.26.t
+	desc = subject_interaction_events.26.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			has_divert_trade = yes
+			NOT = {
+				has_opinion_modifier = { who = ROOT modifier = opinion_export_good }
+				has_opinion_modifier = { who = ROOT modifier = opinion_export_bad }
+				has_country_modifier = si_enchanced_production
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.26.a
+		add_country_modifier = {
+			name = si_better_exports
+			duration = 3650
+		}
+		random_subject_country = {
+			limit = {
+				has_divert_trade = yes
+				NOT = {
+					has_opinion_modifier = { who = ROOT modifier = opinion_export_good }
+					has_opinion_modifier = { who = ROOT modifier = opinion_export_bad }
+				}
+			}
+			add_country_modifier = {
+				name = si_enchanced_production
+				duration = 3650
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_export_good
+			}
+		}
+	}
+}
+
+# Exacerbation Export Effects
+country_event = {
+	id = subject_interaction_events.27
+	title = subject_interaction_events.27.t
+	desc = subject_interaction_events.27.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			has_divert_trade = yes
+			NOT = {
+				has_opinion_modifier = { who = ROOT modifier = opinion_export_good }
+				has_opinion_modifier = { who = ROOT modifier = opinion_export_bad }
+				has_country_modifier = si_enchanced_production
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = subject_interaction_events.27.a
+		random_subject_country = {
+			limit = {
+				has_divert_trade = yes
+				NOT = {
+					has_opinion_modifier = { who = ROOT modifier = opinion_export_good }
+					has_opinion_modifier = { who = ROOT modifier = opinion_export_bad }
+				}
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_export_bad
+			}
+		}
+	}
+}
+
+
+
+
+# Legitimacy Questioned
+country_event = {
+	id = subject_interaction_events.29
+	title = subject_interaction_events.29.t
+	desc = subject_interaction_events.29.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		NOT = { legitimacy_or_horde_unity = 50 }
+		government = monarchy
+		NOT = { has_reform = celestial_empire }
+		any_subject_country = {
+			government = monarchy
+			OR = {
+				NOT = {
+					has_opinion = { who = ROOT value = 0 }
+				}
+				liberty_desire = 50
+				legitimacy_or_horde_unity = 75
+			}
+			NOT = {
+				has_opinion_modifier = { who = ROOT modifier = opinion_low_legitimacy }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					government = monarchy
+					OR = {
+						NOT = {
+							has_opinion = { who = ROOT value = 0 }
+						}
+						liberty_desire = 50
+						legitimacy_or_horde_unity = 75
+					}
+					NOT = {
+						has_opinion_modifier = { who = ROOT modifier = opinion_low_legitimacy }
+					}
+				}
+				set_country_flag = si_legitimacy_flag
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.29.a
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_legitimacy_flag
+			}
+			add_liberty_desire = 10
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_low_legitimacy
+			}
+			clr_country_flag = si_legitimacy_flag
+		}
+	}
+	option = {
+		name = subject_interaction_events.29.b
+		add_prestige = -5
+		add_legitimacy = -5
+		add_horde_unity = -5
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_legitimacy_flag
+			}
+			clr_country_flag = si_legitimacy_flag
+		}
+	}
+}
+
+# The Hole Called Bankruptcy
+country_event = {
+	id = subject_interaction_events.30
+	title = subject_interaction_events.30.t
+	desc = subject_interaction_events.30.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			is_bankrupt = yes
+		}
+		NOT = {
+			has_country_modifier = si_bankrupt_timer
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = si_bankrupt_timer
+				duration = 365
+				hidden = yes
+			}
+			random_subject_country = {
+				limit = {
+					is_bankrupt = yes
+				}
+				set_country_flag = si_bankrupt_flag
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.30.a
+		add_treasury = -100
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_bankrupt_flag
+			}
+			add_treasury = 100
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_money_sent
+			}
+			clr_country_flag = si_bankrupt_flag
+		}
+	}
+	option = {
+		name = subject_interaction_events.30.b
+		add_prestige = 10
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_bankrupt_flag
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_no_money
+			}
+			clr_country_flag = si_bankrupt_flag
+		}
+	}
+}
+
+# The Question of Province
+country_event = {
+	id = subject_interaction_events.31
+	title = subject_interaction_events.31.t
+	desc = subject_interaction_events.31.d
+	picture = RELIGION_eventPicture
+	goto = location_province
+	
+	is_triggered_only = yes
+	
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			is_colonial_nation = no
+			is_subject_other_than_tributary_trigger = yes
+			num_of_cities = 2
+			any_owned_province = {
+				any_neighbor_province = {
+					owned_by = ROOT
+				}
+				OR = {
+					is_claim = ROOT
+					is_core = ROOT
+				}
+				controlled_by = owner
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					is_subject_other_than_tributary_trigger = yes
+					num_of_cities = 2
+					any_owned_province = {
+						any_neighbor_province = {
+							owned_by = ROOT
+						}
+						OR = {
+							is_core = ROOT
+							is_claim = ROOT
+						}
+					}
+				}
+				set_country_flag = si_core_flag
+				random_owned_province = {
+					limit = {
+						any_neighbor_province = {
+							owned_by = ROOT
+						}
+						OR = {
+							is_core = ROOT
+							is_claim = ROOT
+						}
+						controlled_by = owner
+					}
+					set_province_flag = si_provincecore_flag
+					save_event_target_as = location_province
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = subject_interaction_events.31.a
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_core_flag
+			}
+			clr_country_flag = si_core_flag
+			random_owned_province = {
+				limit = {
+					has_province_flag = si_provincecore_flag
+				}
+				cede_province = ROOT
+				clr_province_flag = si_provincecore_flag
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_took_province
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.31.b
+		random_subject_country = {
+			limit = {
+				has_country_flag = si_core_flag
+			}
+			clr_country_flag = si_core_flag
+			random_owned_province = {
+				limit = {
+					has_province_flag = si_provincecore_flag
+				}
+				if = {
+					limit = {
+						is_core = ROOT
+					}
+					remove_core = ROOT
+				}
+				if = {
+					limit = {
+						is_claim = ROOT
+					}
+					remove_claim = ROOT
+				}
+				clr_province_flag = si_provincecore_flag
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.31.c
+		add_prestige = -10
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					has_country_flag = si_core_flag
+				}
+				clr_country_flag = si_core_flag
+				random_owned_province = {
+					limit = {
+						has_province_flag = si_provincecore_flag
+					}
+					clr_province_flag = si_provincecore_flag
+				}
+			}
+		}
+	}
+}
+
+### Scripted and written by Wallain ###
+
+# Subject turns against you
+country_event = {
+	id = subject_interaction_events.32
+	title = subject_interaction_events.32.t
+	desc = subject_interaction_events.32.d
+	picture = ACCUSATION_eventPicture
+  
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		overextension_percentage = 1.01
+		any_subject_country = {
+			is_at_war = no
+		}
+	}
+  
+	mean_time_to_happen = {
+		days = 1
+		
+		modifier = {
+			factor = 0.75
+			overextension_percentage = 1.5
+		}
+		modifier = {
+			factor = 0.75
+			overextension_percentage = 2.0
+		}
+		modifier = {
+			factor = 0.75
+			overextension_percentage = 2.5
+		}
+	}
+  
+	immediate = {
+		random_subject_country = {
+			limit = { is_at_war = no }
+			set_country_flag = targeted_subject_turning_against_overlord_si
+		}
+	}
+  
+	option = {
+		name = subject_interaction_events.32.a	#
+		random_subject_country = {
+			limit = {
+				has_country_flag = targeted_subject_turning_against_overlord_si
+			}
+			tooltip = {
+				add_liberty_desire = 15
+				add_opinion = { who = ROOT modifier = opinion_tyrant_overlord }
+			}
+			hidden_effect = {
+				add_opinion = { who = ROOT modifier = opinion_tyrant_overlord }
+				country_event = { id = subject_interaction_events.33 }
+				clr_country_flag = targeted_subject_turning_against_overlord_si
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.32.b  
+		add_dip_power = -45
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					has_country_flag = targeted_subject_turning_against_overlord_si
+				}
+				clr_country_flag = targeted_subject_turning_against_overlord_si
+			}
+		}
+	}
+}
+
+# Liege makes an example out of us
+country_event = {
+	id = subject_interaction_events.33
+	title = subject_interaction_events.33.t
+	desc = subject_interaction_events.33.d
+	picture = BAD_WITH_MONARCH_eventPicture
+  
+	is_triggered_only = yes
+  
+	option = {
+		name = subject_interaction_events.33.a  
+		add_liberty_desire = 15
+	}
+}
+
+# Loyal Subjects
+country_event = {
+	id = subject_interaction_events.34
+	title = subject_interaction_events.34.t
+	desc = subject_interaction_events.34.d
+	picture = COURT_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		calc_true_if = {
+			all_subject_country = {
+				has_opinion = {
+					who = ROOT
+					value = 125
+				}
+				NOT = { liberty_desire = 10 }
+			}
+			amount = 3
+		}
+	}
+  
+	mean_time_to_happen = {
+		days = 1
+	}
+  
+	option = {
+		name = subject_interaction_events.34.a	# Long term gain
+		add_country_modifier = {
+			name = "loyal_subjects"
+			duration = 1825 #About 5 years
+		}
+	}
+	option = {
+		name = subject_interaction_events.34.b	# Short term gain
+		add_dip_power = 60
+	}
+}
+
+# Disloyal Subjects
+country_event = {
+	id = subject_interaction_events.35
+	title = subject_interaction_events.35.t
+	desc = subject_interaction_events.35.d
+	picture = ASSASSINATION_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		calc_true_if = {
+			all_subject_country = {
+				NOT = {
+					has_opinion = {
+					who = ROOT
+					value = 0
+					}
+				}
+				liberty_desire = 40
+			}
+			amount = 3
+		}
+	}
+  
+	mean_time_to_happen = {
+		days = 1
+	}
+  
+	option = {
+		name = subject_interaction_events.35.a	# Long term loss
+		add_country_modifier = {
+			name = "disloyal_subjects"
+			duration = 1825 #About 5 years
+		}
+	}
+	option = {
+		name = subject_interaction_events.35.b	# Short term loss
+		add_dip_power = -60
+	}
+}
+
+# Cannon Fodder
+country_event = {
+	id = subject_interaction_events.36
+	title = subject_interaction_events.36.t
+	desc = subject_interaction_events.36.d
+	picture = BATTLE_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		NOT = { manpower_percentage = 0.1 }
+		any_subject_country = {
+			manpower_percentage = 0.75
+			NOT = { is_colonial_nation_of = ROOT }
+		}
+	}
+  
+	mean_time_to_happen = {
+		days = 1
+	}
+  
+	immediate = {
+		random_subject_country = {
+			limit = {
+				manpower_percentage = 0.75
+				NOT = { is_colonial_nation_of = ROOT }
+			}
+			set_country_flag = subject_with_high_manpower_si
+		}
+	}
+  
+	option = {
+		name = subject_interaction_events.36.a  
+		add_yearly_manpower = 1
+		random_subject_country = {
+			limit = {
+				has_country_flag = subject_with_high_manpower_si
+			}
+			tooltip = {
+				add_liberty_desire = 15
+				add_opinion = { who = ROOT modifier = opinion_tyrant_overlord }
+			}
+			hidden_effect = {
+				country_event = { id = subject_interaction_events.37 }
+				clr_country_flag = subject_with_high_manpower_si
+				add_opinion = { who = ROOT modifier = opinion_tyrant_overlord }
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.36.b  
+		add_prestige = -10
+		random_subject_country = {
+			limit = {
+				has_country_flag = subject_with_high_manpower_si
+			}
+			clr_country_flag = subject_with_high_manpower_si
+		}
+	}
+}
+
+# Cannon Fodder - Subject Message
+country_event = {
+	id = subject_interaction_events.37
+	title = subject_interaction_events.37.t
+	desc = subject_interaction_events.37.d
+	picture = REFORM_eventPicture
+  
+	is_triggered_only = yes
+  
+	option = {
+		name = subject_interaction_events.37.a  
+		add_liberty_desire = 15
+		add_yearly_manpower = -0.5
+	}
+}
+
+# An extra tax
+country_event = {
+	id = subject_interaction_events.38
+	title = subject_interaction_events.38.t
+	desc = subject_interaction_events.38.d
+	picture = BANKRUPTCY_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		OR = {
+			inflation = 10
+			is_bankrupt = yes
+			num_of_loans = 8
+		}
+		any_subject_country = {
+			NOT = {
+				OR = {
+					inflation = 10
+					is_bankrupt = yes
+					num_of_loans = 8
+				}
+			}
+		}
+	}
+  
+	mean_time_to_happen = {
+		days = 1
+	}
+  
+	immediate = {
+		random_subject_country = {
+			limit = {
+				NOT = {
+					OR = {
+					inflation = 3
+					is_bankrupt = yes
+					num_of_loans = 2
+					}
+				}
+				NOT = { is_colonial_nation_of = ROOT }
+			}
+			set_country_flag = subject_with_stable_economy_si
+		}
+	}
+  
+	option = {
+		name = subject_interaction_events.38.a  
+		add_years_of_income = 0.15
+		random_subject_country = {
+			limit = {
+				has_country_flag = subject_with_stable_economy_si
+			}
+			tooltip = {
+				add_liberty_desire = 15
+				add_opinion = { who = ROOT modifier = opinion_tyrant_overlord }
+			}
+			hidden_effect = {
+				country_event = { id = subject_interaction_events.39 }
+				clr_country_flag = subject_with_stable_economy_si
+				add_opinion = { who = ROOT modifier = opinion_tyrant_overlord }
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.38.b  
+		add_prestige = 10
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					has_country_flag = subject_with_stable_economy_si
+				}
+				clr_country_flag = subject_with_stable_economy_si
+			}
+		}
+	}
+}
+
+# An extra tax - Subject Message
+country_event = {
+	id = subject_interaction_events.39
+	title = subject_interaction_events.39.t
+	desc = subject_interaction_events.39.d
+	picture = BANKRUPTCY_eventPicture
+  
+	is_triggered_only = yes
+  
+	option = {
+		name = subject_interaction_events.39.a  
+		add_liberty_desire = 15
+		add_years_of_income = -0.5
+	}
+}
+
+#Rightful Ownership - Subject
+country_event = {
+	id = subject_interaction_events.40
+	title = subject_interaction_events.40.t
+	desc = subject_interaction_events.40.d
+	picture = RELIGION_eventPicture
+  
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		overlord = {
+			num_of_cities = 2
+			any_owned_province = {
+				controlled_by = THIS
+				is_capital = no
+				OR = {
+					AND = {
+						is_claim = ROOT
+						any_neighbor_province = {
+							owned_by = root
+						}
+					}
+					is_core = ROOT
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			overlord = {
+				random_owned_province = {
+					limit = {
+						controlled_by = THIS
+						is_capital = no
+						OR = {
+							AND = {
+								is_claim = ROOT
+								any_neighbor_province = {
+									owned_by = root
+								}
+							}
+							is_core = ROOT
+						}
+					}
+					save_event_target_as = rightful_province
+				}
+			}
+		}
+	}
+  
+	mean_time_to_happen = {
+		days = 1
+	}
+  
+	option = {
+		name = subject_interaction_events.40.a
+		overlord = { country_event = { id = subject_interaction_events.41 } }
+	}
+	option = {
+		name = subject_interaction_events.40.b
+		add_prestige = 10
+		event_target:rightful_province = {
+			remove_core = ROOT
+			remove_claim = ROOT
+		}
+	}
+}
+
+# Rightful Ownership
+country_event = {
+	id = subject_interaction_events.41
+	title = subject_interaction_events.41.t
+	desc = subject_interaction_events.41.d
+	picture = LIBERUM_VETO_eventPicture
+  
+	is_triggered_only = yes
+  
+	option = {
+		name = subject_interaction_events.41.a
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 0
+				event_target:rightful_province = {
+					development = 20
+				}
+			}
+			modifier = {
+				factor = 0.5
+				event_target:rightful_province = {
+					development = 15
+				}
+			}
+			modifier = {
+				factor = 1.25
+				event_target:rightful_province = {
+					has_owner_culture = no
+				}
+			}
+			modifier = {
+				factor = 1.5
+				event_target:rightful_province = {
+					is_core = FROM
+				}
+			}
+		}
+		event_target:rightful_province = {
+			remove_core = ROOT
+			remove_claim = ROOT
+			cede_province = FROM
+		}
+		FROM = { add_opinion = { who = ROOT modifier = opinion_gave_province } }
+	}
+	option = {
+		name = subject_interaction_events.41.b
+		ai_chance = {
+			factor = 75
+		}
+		add_prestige = 10
+		FROM = {
+			tooltip = {
+				add_liberty_desire = 15
+				add_opinion = { who = ROOT modifier = opinion_tyrant_overlord }
+			}
+			hidden_effect = {
+				country_event = { id = subject_interaction_events.42 }
+				add_opinion = { who = ROOT modifier = opinion_tyrant_overlord }
+			}
+		}
+	}
+}
+
+# Rightful Ownership Refused!
+country_event = {
+	id = subject_interaction_events.42
+	title = subject_interaction_events.42.t
+	desc = subject_interaction_events.42.d
+	picture = CITY_DEVELOPMENT_eventPicture
+  
+	is_triggered_only = yes
+  
+	option = {
+		name = subject_interaction_events.42.a  
+		add_prestige = -10
+		add_liberty_desire = 15
+	}
+}
+
+# Subject is exhausted from war
+country_event = {
+	id = subject_interaction_events.43
+	title = subject_interaction_events.43.t
+	desc = subject_interaction_events.43.d
+	picture = FAMINE_eventPicture
+  
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Common Sense"
+		any_subject_country = {
+			war_exhaustion = 7
+		}
+	}
+  
+	mean_time_to_happen = {
+		days = 1
+	}
+  
+	immediate = {
+		random_subject_country = {
+			limit = {
+				war_exhaustion = 7
+			}
+			set_country_flag = targeted_subject_with_high_we_si
+		}
+	}
+  
+	option = {
+		name = subject_interaction_events.43.a	#
+		add_years_of_income = -0.25
+		random_subject_country = {
+			limit = {
+				has_country_flag = targeted_subject_with_high_we_si
+			}
+			tooltip = {
+				add_war_exhaustion = -4
+				add_opinion = { who = ROOT modifier = opinion_benevolent_overlord }
+			}
+			hidden_effect = {
+				add_opinion = { who = ROOT modifier = opinion_benevolent_overlord }
+				country_event = { id = subject_interaction_events.44 }
+				clr_country_flag = targeted_subject_with_high_we_si
+			}
+		}
+	}
+	option = {
+		name = subject_interaction_events.43.b  
+		add_prestige = 10
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					has_country_flag = targeted_subject_with_high_we_si
+				}
+				clr_country_flag = targeted_subject_with_high_we_si
+			}
+		}
+	}
+}
+
+# Subject notification
+country_event = {
+	id = subject_interaction_events.44
+	title = subject_interaction_events.44.t
+	desc = subject_interaction_events.44.d
+	picture = CITY_DEVELOPMENT_eventPicture
+  
+	is_triggered_only = yes
+  
+	option = {
+		name = subject_interaction_events.44.a  
+		add_war_exhaustion = -4
+	}
+}
+
+# No longer subject - smugglers removed
+country_event = {
+	id = subject_interaction_events.45
+	title = subject_interaction_events.45.t
+	desc = subject_interaction_events.45.d
+	picture = RELIGION_eventPicture
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	trigger = {
+		has_country_modifier = si_state_smuggling
+		is_free_or_tributary_trigger = yes
+	}
+	
+	option = {
+		name = subject_interaction_events.45.a
+		remove_country_modifier = si_state_smuggling
+	}
+}
+
+country_event = {
+	id = subject_interaction_events.46
+	title = subject_interaction_events.46.t
+	desc = subject_interaction_events.46.d
+	picture = RELIGION_eventPicture
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	trigger = {
+		has_country_modifier = si_state_smuggling
+		has_embargo_rivals = no
+		
+	}
+	
+	option = {
+		name = subject_interaction_events.45.a
+		remove_country_modifier = si_state_smuggling
+	}
+}
+
