@@ -1,5 +1,4 @@
 name="Atlas Novum: Manual Install"
-path="C:/Users/Amyzonis/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/AN_Core"
 replace_path="common/bookmarks"
 replace_path="common/buildings"
 replace_path="common/colonial_regions"
@@ -15,8 +14,7 @@ replace_path="history/provinces"
 replace_path="history/wars"
 replace_path="missions"
 replace_path="events"
-picture="IR_icon.png"
-supported_version="1.32.*.*"
+picture="AN_icon.png"
 tags={
 	"Missions and Decisions"
 	"Historical"
@@ -28,3 +26,5 @@ tags={
 	"Trade"
 	"Graphics"
 }
+supported_version="1.32.*.*"
+path="C:/Users/Amyzonis/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/AN_Core"

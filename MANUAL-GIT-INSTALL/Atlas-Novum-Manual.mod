@@ -13,8 +13,8 @@ replace_path="history/diplomacy"
 replace_path="history/provinces"
 replace_path="history/wars"
 replace_path="missions"
-replace_path="events"
-picture="AN_icon.png"
+picture="IR_icon.png"
+supported_version="1.32.*.*"
 tags={
 	"Missions and Decisions"
 	"Historical"
@@ -26,5 +26,5 @@ tags={
 	"Trade"
 	"Graphics"
 }
-supported_version="1.32.*.*"
-path="C:/Users/Amyzonis/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/AN_Core"
+path="mod/Atlas-Novum/AN_Core"
+remote_file_id="1889865558"
