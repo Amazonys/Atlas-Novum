@@ -1,0 +1,269 @@
+alb_1 = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential = {
+		NOT = { map_setup = map_setup_random }
+		tag = ALB
+	}
+	has_country_shield = yes
+	
+	alb_skanderbeg_rebellion = {
+		icon = mission_italian_condottiere
+		required_missions = { }
+		provinces_to_highlight = {
+			province_id = 4175
+			NOT = { owned_by = ROOT }
+		}
+		trigger = {
+			is_subject = no
+			stability = 1
+			4175 = { owned_by = ROOT }
+			army_size_percentage = 1
+		}
+		effect = {
+			add_country_modifier = {
+				name = "skanderbeg_rebellion"
+				duration = 7300
+			}
+		}
+	}
+	alb_withstand_the_turks = {
+		icon = mission_non-western_soldiers
+		required_missions = { alb_skanderbeg_rebellion }
+		provinces_to_highlight = {
+			province_id = 4175
+			OR = {
+				NOT = {	owned_by = ROOT }
+				NOT = {	is_core = ROOT }
+			}
+		}
+		trigger = {
+			is_year = 1468
+			owns_core_province = 4175
+			is_subject = no
+		}
+		effect = {
+			add_country_modifier = {
+				name = "albanian_diplomacy"
+				duration = 7300
+			}
+			if = {
+				limit = {
+					NAP = {
+						is_subject = no
+					}
+				}
+				NAP = {
+					add_opinion = {
+						who = ROOT
+						modifier = opinion_nominal_albanian_fealty
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					NAP = {
+						is_subject = yes
+					}
+				}
+				NAP = {
+					overlord = {
+						add_opinion = {
+							who = ROOT
+							modifier = opinion_nominal_albanian_fealty
+						}
+					}
+				}
+			}
+			if = {
+				limit = {
+					exists = PAP
+					religion = catholic
+				}
+				PAP = {
+					add_opinion = {
+						who = ROOT
+						modifier = opinion_pap_albania
+					}
+				}
+			}
+			if = {
+				limit = {
+					exists = POL
+					POL = { religion = catholic }
+				}
+				POL = {
+					add_opinion = {
+						who = ROOT
+						modifier = opinion_legacy_of_varna
+					}
+				}
+			}
+			if = {
+				limit = {
+					exists = HUN
+					HUN = { religion = catholic }
+				}
+				HUN = {
+					add_opinion = {
+						who = ROOT
+						modifier = opinion_legacy_of_varna
+					}
+				}
+			}
+			if = {
+				limit = {
+					exists = BOH
+					BOH = { religion = catholic }
+				}
+				BOH = {
+					add_opinion = {
+						who = ROOT
+						modifier = opinion_legacy_of_varna
+					}
+				}
+			}
+			if = {
+				limit = {
+					exists = LIT
+					LIT = { religion = catholic }
+				}
+				LIT = {
+					add_opinion = {
+						who = ROOT
+						modifier = opinion_legacy_of_varna
+					}
+				}
+			}
+			if = {
+				limit = {
+					exists = TEU
+					TEU = { religion = catholic }
+				}
+				TEU = {
+					add_opinion = {
+						who = ROOT
+						modifier = opinion_legacy_of_varna
+					}
+				}
+			}
+		}
+	}
+	alb_inspire_resistance = {
+		icon = mission_build_up_to_force_limit
+		required_missions = { alb_withstand_the_turks }
+		provinces_to_highlight = {
+			owned_by = TUR
+		}
+		trigger = {
+			if = {
+				limit = {
+					exists = TUR
+				}
+				custom_trigger_tooltip = {
+					tooltip = albanian_victory_tt
+					has_country_flag = albanian_victory
+				}
+			}
+			else = {
+				num_of_cities = 10
+			}
+			if = {
+				limit = {
+					exists = TUR
+					TUR = {
+						any_owned_province = {
+							region = balkan_region
+						}
+					}
+				}
+				has_spy_network_in = {
+					who = TUR
+					value = 50
+				}
+			}
+			else = {
+				any_rival_country = {
+					has_spy_network_from = {
+						who = ROOT
+						value = 50
+					}
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "alb_inspire_resistance"
+				duration = -1
+			}
+			custom_tooltip = albanian_inspiration_tt
+			hidden_effect = {
+				balkan_region = {
+					limit = {
+						owned_by = TUR
+						religion_group = christian
+					}
+					add_unrest = 10
+				}
+			}
+		}
+	}
+	alb_lord_of_albania = {
+		icon = mission_empire
+		required_missions = { }
+		provinces_to_highlight = {
+			area = albania_area
+			OR = {
+				NOT = {	owned_by = ROOT }
+				NOT = {	is_core = ROOT }
+			}
+		}
+		trigger = {
+			albania_area = {
+				type = all
+				owned_by = ROOT
+				is_core = ROOT
+			}
+		}
+		effect = {
+			add_mil_power = 200
+			custom_tooltip = ottoman_balkans_alb_tt
+			hidden_effect = {
+				balkan_region = {
+					limit = {
+						owned_by = TUR
+						NOT = {
+							is_claim = ROOT
+						}
+						NOT = {
+							is_core = ROOT
+						}
+					}
+					add_claim = ROOT
+				}
+			}
+		}
+	}
+	alb_end_turkish_rule = {
+		icon = mission_crusade_for_varna
+		required_missions = { alb_lord_of_albania }
+		provinces_to_highlight = {
+			region = balkan_region
+			owned_by = TUR
+		}
+		trigger = {
+			balkan_region = {
+				type = all
+				NOT = { owned_by = TUR }
+			}
+		}
+		effect = {
+			change_mil = 1
+			add_country_modifier = {
+				name = "legacy_of_skanderbeg"
+				duration = -1
+			}
+		}
+	}
+}
