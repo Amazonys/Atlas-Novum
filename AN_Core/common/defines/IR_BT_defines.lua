@@ -4,8 +4,8 @@
 -- NDefines.NGame.START_DATE = "1291.5.18" --from 1444.11.11 - per Draiocht's 1291
 NDefines.NGame.END_DATE = "1900.1.2" --from 1821.1.2
 NDefines.NGame.MAX_COLONIAL_NATIONS = 100 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
-NDefines.NGame.MAX_CLIENT_STATES = 50		-- Max is 100 -- TODO: Lower this to 75 after 1.18 (used to start at K75 for some reason)
-NDefines.NGame.MAX_ESTATE_COUNTRIES = 50			 -- 50				-- Max is 100
+NDefines.NGame.MAX_CLIENT_STATES = 50		-- Max is 100 -- Lower this to 75 after 1.18 (used to start at K75 for some reason)
+NDefines.NGame.MAX_ESTATE_COUNTRIES = 50		-- Max is 100
 NDefines.NGame.MAX_TRADING_CITIES = 10 -- 75	-- Max is 100
 NDefines.NGame.MAX_CUSTOM_COUNTRIES = 50 -- 75				-- Max is 100
 
@@ -68,7 +68,7 @@ NDefines.NDiplomacy.PEACE_COST_DEMAND_CAPITAL_MULT = 2
  --Empire of China
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.03			-- from 0p06
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_DEVASTATION = -2.5			-- from -5p0
-NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_TRIBUTARY_DEV = 0.075			-- from 0p15
+NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_TRIBUTARY_DEV = 0.05		-- from 0p15
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_NONTRIBUTARY_DEV = -0.15			-- from -0p3
 NDefines.NDiplomacy.TRIBUTE_BASE_ADM = 0.03			-- from 0p03
 NDefines.NDiplomacy.TRIBUTE_BASE_DIP = 0.03			-- from 0p03
@@ -204,7 +204,7 @@ NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
  --Necessary
 --NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable 
-NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.5						-- _EDEF_TRADE_WIND_STRENGTH_
+NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.25						-- _EDEF_TRADE_WIND_STRENGTH_
 NDefines.NEconomy.TRADED_FRACTION_FOR_BONUS = 0.1				-- _EDEF_TRADED_FRACTION_FOR_BONUS_
 
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
@@ -285,7 +285,7 @@ NDefines.NMilitary.TRANSPORT_COST = 10							-- _was 12
 
  --NAI changes
 NDefines.NAI.DEVELOPMENT_CAP_BASE = 100			-- from 10
-NDefines.NAI.DEVELOPMENT_CAP_MULT = 3 -- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
+NDefines.NAI.DEVELOPMENT_CAP_MULT = 10 -- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
 NDefines.NAI.PEACE_TERMS_RELEASE_ANNEXED_SIZE_MULT = 0.005			-- from 0p01
 
 NDefines.NAI.DIPLOMATIC_ACTION_VASSALIZE_DEVELOPMENT_FACTOR = 10			-- from 20
