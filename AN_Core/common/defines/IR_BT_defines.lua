@@ -215,6 +215,7 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local auto
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
  --NMilitary changes
+NDefines.NMilitary.BASE_COMBAT_WIDTH = 10
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 42			-- from 50
 NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.1			-- from 0p25
