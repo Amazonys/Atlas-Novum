@@ -324,6 +324,7 @@ NDefines.NGraphics.CITY_SPRAWL_AMOUNT = 1.0			-- from 3p0
 
  --NEngine 
 NDefines.NEngine.EVENT_PROCESS_OFFSET = 90				-- Events are checked every X day per character or province (1 is ideal, but CPU heavy)
+--N0Defines.NEngine.TRIGGER_PROFILING_SAMPLING_RATE = 100000			-- Sampling rate for trigger profiling (Every nth call is recorded)
 
   --NReligion changes
 NDefines.NReligion.CONSECRATE_PATRIARCH_THRESHOLD = 60			-- from 30
@@ -334,7 +335,7 @@ NDefines.NReligion.MAX_CHRISTIAN_RELIGIOUS_CENTERS = 5 --was 3
 NDefines.NReligion.MIN_CARDINALS = 12									-- Least amount of cardinals/ Starting cardinals
 NDefines.NReligion.MAX_CARDINALS = 24									-- Max amount of cardinals
 NDefines.NReligion.MAX_CARDINALS_PER_COUNTRY = 6							-- Max cardinals in a single country
-NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 50.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
+NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 30.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 600.0							-- WAS 200 -- When a cardinal is chosen the formula is diving a countrys development by this number.
 NDefines.NReligion.NUMBER_OF_POSSIBLE_CARDINALS = 5						-- Number of cardinals from said number of most successful provinces to be randomly picked from
 
