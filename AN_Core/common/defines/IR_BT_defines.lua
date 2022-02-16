@@ -60,6 +60,7 @@ NDefines.NDiplomacy.PEACE_COST_RELEASE_VASSAL = 0.6		-- from 0p5
 NDefines.NDiplomacy.PEACE_COST_CONVERSION = 0.1		-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   I know people love their beliefs and resist religious change but the absurdly high price of this made it only possible against very small tags where it was usually preferable to just annex   Now this might be useful
 NDefines.NDiplomacy.PEACE_COST_RELEASE = 1			-- from 2
 NDefines.NDiplomacy.ANNEX_DIP_COST_PER_DEVELOPMENT = 4 -- from 8
+NDefines.NDiplomacy.PEACE_COST_PILLAGE_CAPITAL = 2 -- from 1
 
 NDefines.NDiplomacy.PEACE_COST_DEMAND_NON_OCCUPIED_PROVINCE_MULT = 1.5
 NDefines.NDiplomacy.PEACE_COST_DEMAND_CAPITAL_MULT = 2
@@ -135,6 +136,10 @@ NDefines.NCountry.REVOLT_SIZE_BASE = 3	-- from 4
 NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03			-- % each tech increases size of rebels by this percent.
 NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 NDefines.NCountry.CROWN_LANDS_ALERT_THRESHOLD = 35
+
+NDefines.NCountry.PILLAGE_CAPITAL_DEVELOPMENT_DECREASE = 0.1 -- from 0.2
+NDefines.NCountry.PILLAGE_CAPITAL_MAX_DEV_PILLAGED = 1 -- from 2
+
 --PROSPERITY/DEV CHANGES
 NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -2.5				-- monthly tick - WAS -2, ASSUME THAT THIS IS THE DEVASTATION REDUCTION, LETS SET TO -1 FOR NOW, PENDING TESTING
 NDefines.NCountry.PROSPERITY_INCREASE_SIZE= 0.5				-- if diceroll of d20< monarch stat, while possible ot increase - WAS 1, TURNED TO 0 CAUSE WHY SHOULD MONARCH INCREASE PROSP?? - PROBABLY SHOULD HANDLE THIS THROUGH EVENT/EDICT
@@ -313,6 +318,7 @@ NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_DISABLE_VERSUS_PLAYER_ENEMIES =
  --Peace Deals
 NDefines.NAI.PEACE_INCONCLUSIVE_THRESHOLD = 0
 NDefines.NAI.PEACE_TERMS_VASSAL_BASE_MULT = 10.0 -- only applied if the AI has vassalize priority
+NDefines.NAI.PEACE_TERMS_PILLAGE_CAPITAL_MULT = 1.0 -- from 2
  -- abandon union
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_BASE_FACTOR = 10 --  was 60     AI scoring to abandoning Personal Union (given high enough LD and strength).
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 5 --  was 2.5      Threshold in relative strength for AI to give up on Personal Union.
