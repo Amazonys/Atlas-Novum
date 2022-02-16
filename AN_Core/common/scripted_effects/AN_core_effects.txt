@@ -1,5 +1,5 @@
 # CLIMATE
-IR_check_climate = {
+AN_check_climate = {
 	hidden_effect = {
 		set_variable = { which = IR_prov_climate value = 0 }
 		if = {
@@ -222,7 +222,7 @@ IR_check_climate = {
 
 
 # DEVELOPMENT
-IR_check_dev_variables = {
+AN_check_dev_variables = {
 	hidden_effect = {
 		set_variable = { which = IR_wealth_production value = 0 }
 		set_variable = { which = IR_wealth_growth value = 0 }
@@ -233,6 +233,8 @@ IR_check_dev_variables = {
 		set_variable = { which = IR_prov_pop value = 0 }
 		set_variable = { which = IR_prov_infrastructure value = 0 }
 		set_variable = { which = IR_prov_infrastructure_cap value = 0 }
+		set_variable = { which = AN_migration_factor value = 0 }
+		set_variable = { which = AN_migration_growth value = 0 }
 		set_variable = { which = IR_InfrPrjCC value = 0 }
 		set_variable = { which = IR_InfrPrjIL value = 0 }
 		
@@ -266,7 +268,7 @@ IR_check_dev_variables = {
 			which = IR_prov_pop
 		}
 		###
-		IR_check_climate = yes
+		AN_check_climate = yes
 		###
 		
 		change_variable = {
@@ -391,27 +393,7 @@ IR_check_dev_variables = {
 				change_variable = { which = IR_prov_infrastructure_cap value = 1 }
 			}
 		}
-		#Buildings
-		#Urban
-		trigger_switch = { 
-			on_trigger = has_building
-			village = { 
-				change_variable = { which = IR_prov_infrastructure_cap  value = 4 }
-				change_variable = { which = IR_prov_pop_cap  value = 4 }
-			}
-			town = { 
-				change_variable = { which = IR_prov_infrastructure_cap  value = 8 }
-				change_variable = { which = IR_prov_pop_cap  value = 8 }
-			}
-			city = {
-				change_variable = { which = IR_prov_infrastructure_cap  value = 12 }
-				change_variable = { which = IR_prov_pop_cap  value = 12 }
-			} 
-			metropolis = { 
-				change_variable = { which = IR_prov_infrastructure_cap  value = 16 }
-				change_variable = { which = IR_prov_pop_cap  value = 16 }
-			}
-		}
+		
 		## terrain features
 		trigger_switch = { #for ones that will never cross over - slightly reduces calc
 			on_trigger = has_province_modifier
@@ -616,32 +598,67 @@ IR_check_dev_variables = {
 		}
 		
 		##
-		#famine %
-		set_variable = { which = IR_prov_famine_chance value = 0 }
-		change_variable = {
-			which = IR_prov_famine_chance
-			which = IR_prov_pop
+		
+		#Migration		
+		trigger_switch = { 
+			on_trigger = has_building
+			village = { 
+				change_variable = { which = IR_prov_infrastructure_cap  value = 4 }
+				change_variable = { which = IR_prov_pop_cap  value = 4 }
+				change_variable = { which = AN_migration_factor value = 1 }
+			}
+			town = { 
+				change_variable = { which = IR_prov_infrastructure_cap  value = 8 }
+				change_variable = { which = IR_prov_pop_cap  value = 8 }
+				change_variable = { which = AN_migration_factor value = 2 }
+			}
+			city = {
+				change_variable = { which = IR_prov_infrastructure_cap  value = 12 }
+				change_variable = { which = IR_prov_pop_cap  value = 12 }
+				change_variable = { which = AN_migration_factor value = 3 }
+			} 
+			metropolis = { 
+				change_variable = { which = IR_prov_infrastructure_cap  value = 16 }
+				change_variable = { which = IR_prov_pop_cap  value = 16 }
+				change_variable = { which = AN_migration_factor value = 4 }
+			}
 		}
-		subtract_variable = {
-			which = IR_prov_famine_chance
+		
+		change_variable = {
+			which = AN_migration_factor
 			which = IR_prov_pop_cap
 		}
-		trigger_switch = {
-			on_trigger = has_building
-			training_fields = { subtract_variable = { which = IR_prov_famine_chance value = 1 } }
-			infirmary = { subtract_variable = { which = IR_prov_famine_chance value = 2 } }
-			hospital = { subtract_variable = { which = IR_prov_famine_chance value = 3 } }
-			public_sanitation = { subtract_variable = { which = IR_prov_famine_chance value = 4 } }
+		subtract_variable = {
+			which = AN_migration_factor
+			which = IR_prov_pop
+		}
+		#change_variable = {
+		#	which = IR_pop_production
+		#	which = AN_available_pop_cap
+		#}
+		
+		if = {
+			limit = { NOT = { check_variable = { which = AN_migration_factor value = 0 } } }
+			multiply_variable = {
+				which = AN_migration_factor
+				value = 3
+			}
+		}	
+		else_if = {
+			limit = { check_variable = { which = AN_migration_factor value = 0 } }
+			multiply_variable = {
+				which = AN_migration_factor
+				value = 0.35
+			}
+		}
+		#Buildings
+		#Urban
+		if = {
+			limit = { NOT = { OR = { has_building = village has_building = town has_building = city has_building = metropolis } } }
+			subtract_variable = { which = AN_migration_factor value = 3 }
 		}
 	
-		#multiply_variable = {
-		#	which = IR_pop_production 
-		#	which = IR_growth_efficiency
-		#}
-		#multiply_variable = {
-		#	which = IR_wealth_production 
-		#	which = IR_growth_efficiency
-		#}
+		
 		#Census View
 		change_variable = {
 			which = IR_pop_growth
@@ -659,16 +676,180 @@ IR_check_dev_variables = {
 			which = IR_wealth_growth
 			which = IR_logistics
 		}		
+		#
+		
+		if = { 
+			limit = { check_variable = { which = IR_pop_growth value = 0 } }
+			change_variable = {
+				which = AN_migration_growth
+				which = IR_pop_growth
+			}
+			if = { limit = { OR = { has_building = farm_estate has_building = fishery has_building = plantations has_building = mills has_building = orchard has_building = pasture has_building = mine has_building = quarry has_building = lodge } }
+				multiply_variable = {
+					which = IR_pop_growth
+					value = 0.25
+				}
+				multiply_variable = {
+					which = AN_migration_growth
+					value = 0.75
+				}
+			}
+			else_if = { limit = { has_building = village }
+				multiply_variable = {
+					which = IR_pop_growth
+					value = 0.75
+				}
+				multiply_variable = {
+					which = AN_migration_growth
+					value = 0.25
+				}
+			}
+			else_if = { limit = { has_building = town }
+				multiply_variable = {
+					which = IR_pop_growth
+					value = 0.8
+				}
+				multiply_variable = {
+					which = AN_migration_growth
+					value = 0.2
+				}
+			}
+			else_if = { limit = { has_building = city }
+				multiply_variable = {
+					which = IR_pop_growth
+					value = 0.9
+				}
+				multiply_variable = {
+					which = AN_migration_growth
+					value = 0.1
+				}
+			}
+			else_if = { limit = { has_building = metropolis }
+				multiply_variable = {
+					which = AN_migration_growth
+					value = 0
+				}
+			}
+			else = {
+				multiply_variable = {
+					which = IR_pop_growth
+					value = 0.5
+				}
+				multiply_variable = {
+					which = AN_migration_growth
+					value = 0.5
+				}
+			}
+		}
+		else = {
+			set_variable = {
+				which = AN_migration_growth
+				value = 0
+			}
+		}
 	}
 }
 
-IR_dev_calc = {
+AN_migration_calc = {
 	hidden_effect = {
-	#IR_check_dev_variables = yes
+		AN_check_dev_variables = yes
+		set_variable = { which = AN_sum_E which = AN_migration_growth }
+		set_variable = { which = AN_sum_I which = AN_migration_factor }
+		if = { 
+			limit = { check_variable = { which = AN_migration_growth value = 0 } }
+			if = { limit = { owner = { technology_group = western } } 4400 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = eastern } } 4401 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = ottoman } } 1781 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = muslim } } 1782 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = indian } } 1783 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = chinese } } 1784 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = japanese_group } } 1785 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = indochinese } } 1786 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = malay_group } } 1787 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = nomad_group } } 1788 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = siberian_group } } 1789 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = east_african } } 1790 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = sub_saharan } } 1791 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = central_african } } 4168 = { change_variable = { which = AN_sum_E which = PREV } } } 			
+			else_if = { limit = { owner = { technology_group = papuan } } 1796 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = australian } } 1797 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = oceanic } } 1798 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = north_american } } 1799 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = mesoamerican } } 1801 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = south_american } } 1802 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = andean } } 1803 = { change_variable = { which = AN_sum_E which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = high_american } } 1804 = { change_variable = { which = AN_sum_E which = PREV } } } 
+		}
+		if = { 
+			limit = { check_variable = { which = AN_migration_factor value = 0 } }
+			if = { limit = { owner = { technology_group = western } } 4400 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = eastern } } 4401 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = ottoman } } 1781 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = muslim } } 1782 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = indian } } 1783 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = chinese } } 1784 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = japanese_group } } 1785 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = indochinese } } 1786 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = malay_group } } 1787 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = nomad_group } } 1788 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = siberian_group } } 1789 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = east_african } } 1790 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = sub_saharan } } 1791 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = central_african } } 4168 = { change_variable = { which = AN_sum_I which = PREV } } } 				
+			else_if = { limit = { owner = { technology_group = papuan } } 1796 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = australian } } 1797 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = oceanic } } 1798 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = north_american } } 1799 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = mesoamerican } } 1801 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = south_american } } 1802 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = andean } } 1803 = { change_variable = { which = AN_sum_I which = PREV } } } 
+			else_if = { limit = { owner = { technology_group = high_american } } 1804 = { change_variable = { which = AN_sum_I which = PREV } } } 
+		}
+	}	
+}
+
+
+AN_dev_calc = {
+	hidden_effect = {
+		if = {
+			limit = { check_variable = { which = AN_migration_factor value = 0 } }
+			if = { limit = { owner = { technology_group = western } } 4400 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = eastern } } 4401 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = ottoman } }  1781 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = muslim } } 1782 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = indian } } 1783 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = chinese } } 1784 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = japanese_group } } 1785 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = indochinese } } 1786 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = malay_group } } 1787 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = nomad_group } } 1788 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = siberian_group } } 1789 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = east_african } } 1790 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = sub_saharan } } 1791 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = central_african } } 4168 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }				
+			else_if = { limit = { owner = { technology_group = papuan } } 1796 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = australian } } 1797 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = oceanic } } 1798 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = north_american } } 1799 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = mesoamerican } } 1801 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = south_american } } 1802 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = andean } } 1803 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			else_if = { limit = { owner = { technology_group = high_american } } 1804 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
+			
+			set_variable = { which = AN_migration_progress which = AN_migration_factor } 
+			divide_variable = { which = AN_migration_progress which = AN_sum_I }
+			multiply_variable = { which = AN_migration_progress which = AN_sum_E }
+
+			change_variable = {
+				which = IR_pop_progress
+				which = AN_migration_progress
+			}
+		}
 		change_variable = {
 			which = IR_pop_progress
 			which = IR_pop_growth
 		}
+		
 		change_variable = {
 			which = IR_wealth_progress
 			which = IR_wealth_growth
@@ -685,17 +866,6 @@ IR_dev_calc = {
 				value = 100
 			}
 		}
-		#else_if = { # lose wealth
-		#	limit = { NOT = { check_variable = { which = IR_wealth_progress value = 1 } } }
-		#	if = {
-		#		limit = { base_tax = 2 }
-		#		add_base_tax = -1
-		#	}
-		#	set_variable = {
-		#		which = IR_wealth_progress
-		#		value = 99
-		#	}
-		#}
 		#POP CALC
 		if = {
 			limit = { 
@@ -705,23 +875,7 @@ IR_dev_calc = {
 				which = IR_pop_progress
 				value = 100
 			}
-			if = {
-				limit = { base_manpower = 4 NOT = { OR = { has_province_modifier = is_rural has_building = village has_building = town has_building = city has_building = metropolis } } }
-				add_base_manpower = 1
-				province_event = { id = IR_development.4 days = 0 }
-			}
-			else_if = {
-				limit = { has_province_modifier = is_rural }
-				owner = {
-					random_owned_province = {
-						limit = { OR = { has_building = village has_building = town has_building = city has_building = metropolis } }
-						add_base_manpower = 1
-					}
-				}
-			}
-			else = { 
-				add_base_manpower = 1
-			}
+			add_base_manpower = 1
 		}
 		else_if = { # lose pop
 			limit = { NOT = { check_variable = { which = IR_pop_progress value = 1 } } }
@@ -736,13 +890,14 @@ IR_dev_calc = {
 		}
 		
 		
-		
 	
 		#Famine calc
-		if = {
-			limit = { base_manpower = 2 } #WILL ONLY CHECK IF YOU HAVE POPULATION TO LOSE - OTHERWISE IS MOOT
-			IR_check_famine = yes
-		}
+		#if = {
+		#	limit = { base_manpower = 2 } #WILL ONLY CHECK IF YOU HAVE POPULATION TO LOSE - OTHERWISE IS MOOT
+		#	IR_check_famine = yes
+		#}
 	}
 }
+
+
 
