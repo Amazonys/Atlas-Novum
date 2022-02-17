@@ -1,0 +1,214 @@
+########################################
+# Events for Hausa
+#
+# written by Ogulcan Yildirim
+########################################
+
+namespace = flavor_hau
+normal_or_historical_nations = yes
+
+#Ask allies for militaristic aid
+country_event = {
+	id = flavor_hau.1
+	title = flavor_hau.1.t
+	desc = flavor_hau.1.d
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			random_ally = {
+				save_event_target_as = first_ally
+			}
+			random_ally = {
+				limit = {
+					NOT = { tag = event_target:first_ally }
+				}
+				save_event_target_as = second_ally
+			}
+		}
+	}
+	
+	option = {	#Good idea
+		name = flavor_hau.1.a
+		event_target:first_ally = {
+			country_event = {
+				id = flavor_hau.2
+			}
+		}
+		event_target:second_ally = {
+			country_event = {
+				id = flavor_hau.2
+			}
+		}
+		ai_chance = { factor = 0 }
+	}
+	
+	option = {	#Nah
+		name = flavor_hau.1.b
+		add_mil_power = 80
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Gets asked for help
+country_event = {
+	id = flavor_hau.2
+	title = flavor_hau.2.t
+	desc = flavor_hau.2.d
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {	#Good idea
+		name = flavor_hau.2.a
+		FROM = {
+			country_event = {
+				id = flavor_hau.3
+			}
+		}
+		add_mil_power = -25
+		add_manpower = -1
+		reverse_add_opinion = {
+			who = FROM
+			modifier = hau_military_support
+		}
+		add_trust = {
+			who = FROM
+			value = 10
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { alliance_with = FROM }
+			}
+		}
+	}
+	
+	option = {	#Nah
+		name = flavor_hau.2.b
+		FROM = {
+			country_event = {
+				id = flavor_hau.4
+			}
+		}
+		reverse_add_opinion = {
+			who = FROM
+			modifier = hau_refused_to_help
+		}
+		add_trust = {
+			who = FROM
+			value = -10
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				alliance_with = FROM
+			}
+		}
+	}
+}
+
+#Receives help
+country_event = {
+	id = flavor_hau.3
+	title = flavor_hau.3.t
+	desc = flavor_hau.3.d
+	picture = AFRICAN_BATTLE_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {	#Nice
+		name = flavor_hau.3.a
+		add_army_tradition = 15
+		add_manpower = 1
+		tooltip = {
+			FROM = {
+				reverse_add_opinion = {
+					who = ROOT
+					modifier = hau_military_support
+				}
+				add_trust = {
+					who = ROOT
+					value = 10
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#Help gets refused
+country_event = {
+	id = flavor_hau.4
+	title = flavor_hau.4.t
+	desc = flavor_hau.4.d
+	picture = AFRICAN_BAD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {	#Oof
+		name = flavor_hau.4.a
+		add_mil_power = 20
+		tooltip = {
+			FROM = {
+				reverse_add_opinion = {
+					who = ROOT
+					modifier = hau_refused_to_help
+				}
+				add_trust = {
+					who = ROOT
+					value = -10
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#Contact with the Fulani
+country_event = {
+	id = flavor_hau.5
+	title = flavor_hau.5.t
+	desc = flavor_hau.5.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = flavor_hau.5.a
+		if = {
+			limit = {
+				NOT = { accepted_culture = fulani }
+				OR = {
+					NOT = { government_rank = 3 }
+					AND = {
+						NOT = { culture_group = sahelian }
+						government_rank = 3
+					}
+				}
+			}
+			add_accepted_culture = fulani
+		}
+		else = {
+			add_dip_power = 50
+		}
+		define_advisor = {
+			type = theologian
+			skill = 3
+			cost_multiplier = 0.25
+			culture = fulani
+			religion = sunni
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}

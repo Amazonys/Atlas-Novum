@@ -1,0 +1,364 @@
+# Flavor Events for the Powhatan (written by Veronica Pazos)
+
+namespace = flavor_pow
+normal_or_historical_nations = yes
+
+# First Contact
+country_event = {
+	id = flavor_pow.1
+	title = flavor_pow.1.t
+	desc = flavor_pow.1.d
+	picture = COLONIZATION_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		primary_culture = powhatan
+		has_dlc = "Leviathan"
+		any_country = {
+			capital_scope = { continent = europe }
+			any_owned_province = {
+				continent = north_america
+			}
+			NOT = { tag = ENG }
+			NOT = { tag = GBR }
+		}
+		NOT = { has_country_flag = the_virginia_company }
+		NOT = { has_country_flag = european_first_contact }
+	}
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = {
+		name = flavor_pow.1.a
+		add_reform_progress_small_effect = yes
+		add_country_modifier = {
+			name = pow_first_contact
+			duration = 7300
+		}
+		random_owned_province = {
+			limit = {
+				base_production = 2
+			}
+			add_base_production = -1
+		}
+		set_country_flag = european_first_contact
+	}
+}
+
+# The Virginia Company
+country_event = {
+	id = flavor_pow.2
+	title = flavor_pow.2.t
+	desc = flavor_pow.2.d
+	picture = COLONIZATION_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		primary_culture = powhatan
+		has_dlc = "Leviathan"
+		is_year = 1606
+		NOT = { has_country_flag = the_virginia_company }
+		has_country_flag = european_first_contact
+		if = {
+			limit = {
+				exists = ENG
+			}
+			ENG = {
+				any_owned_province = { continent = north_america }
+			}
+		}
+		else_if = {
+			limit = {
+				exists = GBR
+			}
+			GBR = {
+				any_owned_province = { continent = north_america }
+			}
+		}
+		else = {
+			any_known_country = {
+				capital_scope = { continent = europe }
+				any_owned_province = { continent = north_america }
+				culture_group = british
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = { #embrace feudalism
+		name = flavor_pow.2.a
+		set_country_flag = the_virginia_company
+		add_reform_progress_small_effect = yes
+		capital_scope = {
+			add_institution_embracement = {
+				which = feudalism
+				value = 50
+			}
+		}
+	}
+	
+	option = { #maybe not
+		name = flavor_pow.2.b
+		set_country_flag = the_virginia_company
+		add_reform_progress_small_effect = yes
+		add_tribal_allegiance = 25
+	}
+}
+
+# Anglo-Powhatan Wars
+country_event = {
+	id = flavor_pow.3
+	title = flavor_pow.3.t
+	desc = flavor_pow.3.d
+	picture = BATTLE_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		primary_culture = powhatan
+		has_dlc = "Leviathan"
+		is_year = 1609
+		has_country_flag = the_virginia_company
+		NOT = { has_country_flag = anglopowhatan_wars }
+		if = {
+			limit = {
+				exists = ENG
+			}
+			ENG = {
+				war_with = ROOT
+			}
+		}
+		else_if = {
+			limit = {
+				exists = GBR
+			}
+			GBR = {
+				war_with = ROOT
+			}
+		}
+		else = {
+			any_known_country = {
+				capital_scope = { continent = europe }
+				NOT = { tag = CAS }
+				NOT = { tag = FRA }
+				war_with = ROOT
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 32
+		
+		modifier = {
+			factor = 0.5
+			war_with = ENG
+		}
+		modifier = {
+			factor = 0.9
+			war_with = GBR
+		}
+	}
+	
+	option = { # The time has come to crush some tea sippers' heads!
+		name = flavor_pow.3.b
+		add_army_tradition = 25
+		add_mil_power = 100
+		set_country_flag = anglopowhatan_wars
+	}
+	
+	option = { # We will need allies to defeat them!
+		name = flavor_pow.3.c
+		if = {
+			limit = {
+				exists = CAS
+			}
+			CAS = {
+				add_opinion = {
+					who = ROOT
+					modifier = the_enemy_of_my_enemy
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				exists = SPA
+			}
+			SPA = {
+				add_opinion = {
+					who = ROOT
+					modifier = the_enemy_of_my_enemy
+				}
+			}
+		}
+		if = {
+			limit = {
+				exists = FRA
+			}
+			FRA = {
+				add_opinion = {
+					who = ROOT
+					modifier = the_enemy_of_my_enemy
+				}
+			}
+		}
+		every_country = {
+			limit = {
+				OR = {
+					if = {
+						limit = {
+							exists = GBR
+						}
+						is_rival = GBR
+					}
+					else = {
+						is_rival = ENG
+					}
+				}
+				NOT = { tag = SPA }	#Already covered
+				NOT = { tag = CAS }	#Already covered
+				NOT = { tag = FRA }	#Already covered
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = the_enemy_of_my_enemy
+			}
+		}
+		set_country_flag = anglopowhatan_wars
+	}
+}
+
+# Tribal Trade
+country_event = {
+	id = flavor_pow.4
+	title = flavor_pow.4.t
+	desc = flavor_pow.4.d
+	picture = ECONOMY_eventPicture
+	
+	trigger = {
+		primary_culture = powhatan
+		has_dlc = "Leviathan"
+		any_owned_province = {
+			OR = {
+				has_building = native_storehouse
+				has_building = workshop
+				has_building = marketplace
+			}
+		}
+		any_ally = {
+			technology_group = north_american
+			any_owned_province = {
+				continent = north_america
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 360
+		modifier = {
+			factor = 0.8
+			religion = totemism
+		}
+	}
+	
+	option = { #change trade_goods to copper
+		name = flavor_pow.4.a
+		random_owned_province = {
+			limit = {
+				NOT = { trade_goods = copper }
+			}
+			change_trade_goods = copper
+		}
+	}
+	
+	option = { #don't change
+		name = flavor_pow.4.b
+		every_owned_province = {
+			limit = {
+				is_core = ROOT
+			}
+			add_province_modifier = {
+				name = "pow_indigenous_trade_goods"
+				duration = 1825
+			}
+		}
+	}
+}
+
+# European Trade
+country_event = {
+	id = flavor_pow.5
+	title = flavor_pow.5.t
+	desc = flavor_pow.5.d
+	picture = ECONOMY_eventPicture
+	
+	trigger = {
+		primary_culture = powhatan
+		has_dlc = "Leviathan"
+		OR = {
+			has_country_flag = the_virginia_company
+			has_country_flag = european_first_contact
+		}
+		any_known_country = {
+			capital_scope = { continent = europe }
+			any_owned_province = {
+				continent = north_america
+			}
+			NOT = { war_with = ROOT }
+		}
+		any_owned_province = {
+			base_production = 2
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 480
+		modifier = {
+			factor = 0.6
+			has_idea_group = economic_ideas
+		}
+	}
+	
+	option = { #change trade_goods to iron
+		name = flavor_pow.5.a
+		random_owned_province = {
+			limit = {
+				NOT = { trade_goods = iron }
+				base_production = 2
+			}
+			add_base_production = -1
+			change_trade_goods = iron
+		}
+	}
+	
+	option = { #change trade_goods to wool
+		name = flavor_pow.5.b
+		random_owned_province = {
+			limit = {
+				NOT = { trade_goods = wool }
+				base_production = 2
+			}
+			add_base_production = -1
+			change_trade_goods = wool
+		}
+	}
+	
+	option = { #don't change
+		name = flavor_pow.5.c
+		every_owned_province = {
+			limit = {
+				is_core = ROOT
+			}
+			add_province_modifier = {
+				name = "pow_indigenous_trade_goods"
+				duration = 1825
+			}
+		}
+	}
+}

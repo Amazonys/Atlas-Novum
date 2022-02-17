@@ -1,0 +1,128 @@
+namespace = tribal_succession
+
+# Tribal Succession Crisis
+country_event = {
+	id = tribal_succession.1
+	title = tribal_succession.1.t
+	desc = tribal_succession.1.d
+	picture = KING_SICK_IN_BED_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_reform = steppe_horde
+			has_reform = tribal_federation
+		}
+		NOT = { has_country_flag = no_new_succession_crisis_if_pretender_rebels }
+		num_of_cities = 4
+		OR = {
+			NOT = { legitimacy_or_horde_unity = 50 }
+			has_regency = yes
+		}
+		OR = {
+			NOT = { tag = CRI }
+			has_global_flag = death_of_haji_giray
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = { legitimacy_or_horde_unity = 50 }
+				}
+				random_owned_province = {
+					limit = {
+						is_capital = no
+						is_state = yes
+					}
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 2
+						win = yes
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = tribal_succession.1.a
+		trigger = {
+			NOT = { legitimacy_or_horde_unity = 50 }
+		}
+		if = {
+			limit = {
+				any_owned_province = {
+					NOT = { is_core = ROOT }
+					can_spawn_rebels = nationalist_rebels
+				}
+			}
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						NOT = { is_core = ROOT }
+						can_spawn_rebels = nationalist_rebels
+					}
+					nationalist_rebels = 1
+				}
+			}
+			custom_tooltip = tribal_succession_crisis_non_cores_will_revolt
+		}
+		add_ruler_modifier = {
+			name = "tribal_succession_crisis"
+		}
+		custom_tooltip = tribal_crisis_can_end_when
+	}
+	
+	option = {
+		name = tribal_succession.1.b
+		trigger = {
+			has_regency = yes
+		}
+		if = {
+			limit = {
+				has_consort_regency = yes
+			}
+			remove_consort = yes
+		}
+		define_ruler = {
+			dynasty = ROOT #Uncles, or other relatives were by far the most likely coup-makers
+		}
+		kill_heir = {}
+		add_horde_unity = -25
+	}
+}
+
+# Succession Secured!
+country_event = {
+	id = tribal_succession.2
+	title = tribal_succession.2.t
+	desc = tribal_succession.2.d
+	picture = NEW_HEIR_eventPicture
+	
+	trigger = {
+		OR = {
+			has_reform = steppe_horde
+			has_reform = tribal_federation
+		}
+		has_ruler_modifier = tribal_succession_crisis
+		NOT = {
+			has_spawned_rebels = pretender_rebels
+		}
+		has_regency = no
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = tribal_succession.2.a
+		remove_country_modifier = tribal_succession_crisis
+		add_stability_or_adm_power = yes
+		add_horde_unity = 25
+	}
+}
+	

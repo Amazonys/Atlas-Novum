@@ -1,0 +1,631 @@
+namespace = curia
+
+# Pope siphons money from the Curia treasury
+country_event = {
+	id = curia.1
+	title = curia.1.t
+	desc = curia.1.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes # on pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		tag = PAP
+		NOT = { has_country_modifier = restoring_curia_treasury }
+	}
+	
+	option = { # just resting in my account
+		name = curia.1.a
+		add_years_of_income = 0.5
+		add_corruption = 2
+		reduce_curia_treasury_medium_effect = yes
+	}
+	option = { # return the money
+		name = curia.1.b
+		add_years_of_income = -0.5
+		add_country_modifier = {
+			name = "restoring_curia_treasury"
+			duration = 3650
+		}
+	}
+}
+
+# The Pope's Bankers
+# Curia treasury is stored in Italian banks, including the Medici bank
+country_event = {
+	id = curia.2
+	title = curia.2.t
+	desc = curia.2.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes # on pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		tag = PAP
+		any_country = {
+			religion = catholic
+			OR = {
+				AND = {
+					culture_group = latin
+					government = republic
+				}
+			}
+			NOT = { war_with = ROOT }
+			NOT = { is_rival = ROOT }
+			NOT = { has_country_flag = wont_bank_for_pope }
+		}
+		curia_treasury_size = 50
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					exists = TUS
+					TUS = {
+						religion = catholic
+						NOT = { war_with = ROOT }
+						NOT = { is_rival = ROOT }
+						NOT = { has_country_flag = wont_bank_for_pope }
+					}
+				}
+				TUS = {
+					save_event_target_as = papal_banker_country
+				}
+			}	
+			else_if = {
+				limit = {
+					exists = LAN
+					LAN = {
+						religion = catholic
+						NOT = { war_with = ROOT }
+						NOT = { is_rival = ROOT }
+						NOT = { has_country_flag = wont_bank_for_pope }
+					}
+				}
+				LAN = {
+					save_event_target_as = papal_banker_country
+				}
+			}
+			else = {
+				random_country = {
+					limit = {
+						religion = catholic
+						OR = {
+							AND = {
+								culture_group = latin
+								government = republic
+							}
+						}
+						NOT = { war_with = ROOT }
+						NOT = { is_rival = ROOT }
+						NOT = { has_country_flag = wont_bank_for_pope }
+					}
+					save_event_target_as = papal_banker_country
+				}
+			}
+		}
+	}
+	
+	option = { # the cost of doing business
+		name = curia.2.a
+		reduce_curia_treasury_medium_effect = yes
+		set_country_flag = pope_pays_bankers
+		event_target:papal_banker_country = {
+			country_event = { id = curia.3 days = 3 }
+		}
+	}
+	option = {
+		name = curia.2.b
+		set_country_flag = pope_wont_pay_bankers
+		event_target:papal_banker_country = {
+			country_event = { id = curia.3 days = 3 }
+			tooltip = {
+				add_opinion = {
+					who = PAP
+					modifier = pope_not_paying_bank
+				}
+			}
+		}
+	}
+}
+
+# For banker country
+country_event = {
+	id = curia.3
+	title = curia.3.t
+	desc = {
+		trigger = {
+			PAP = { has_country_flag = pope_pays_bankers }
+		}
+		desc = curia.3.d
+	}
+	desc = {
+		trigger = {
+			PAP = { has_country_flag = pope_wont_pay_bankers }
+		}
+		desc = curia.3.d2
+	}
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = curia.3.a
+		trigger = {
+			PAP = { has_country_flag = pope_pays_bankers }
+		}
+		add_years_of_income = 0.25
+	}
+	option = {
+		name = curia.3.b
+		trigger = {
+			PAP = { has_country_flag = pope_wont_pay_bankers }
+		}
+		add_opinion = {
+			who = PAP
+			modifier = pope_not_paying_bank
+		}
+	}
+	
+	after = {
+		PAP = {
+			clr_country_flag = pope_pays_bankers
+			clr_country_flag = pope_wont_pay_bankers
+		}
+	}
+}
+
+# War in Italy, Curia bankers move money to a secure location
+	# for banker country
+country_event = {
+	id = curia.4
+	title = curia.4.t
+	desc = curia.4.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes # on pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		culture_group = latin
+		religion = catholic
+		NOT = { tag = PAP }
+		is_at_war = yes
+		war_exhaustion = 3
+		PAP = {
+			NOT = { war_with = ROOT }
+			NOT = { is_rival = ROOT }
+		}
+		NOT = { has_country_modifier = unreliable_papal_banker }
+		NOT = {
+			any_country = {
+				OR = {
+					has_country_flag = moving_curia_money
+					has_country_flag = protecting_curia_money
+				}				
+			}
+		}
+		curia_treasury_size = 1000
+	}
+	
+	option = {
+		name = curia.4.a
+		if = {
+			limit = {
+				exists = PAP
+			}
+			PAP = { country_event = { id = curia.5 days = 3 } }
+		}
+		add_prestige = -5
+		reduce_curia_treasury_huge_effect = yes
+		set_country_flag = moving_curia_money
+		custom_tooltip = moving_treasury_tt
+	}
+	option = {
+		name = curia.4.b
+		add_prestige = 5
+		set_country_flag = protecting_curia_money
+		custom_tooltip = protecting_treasury_tt
+	}
+}
+
+# Pope is notified of money being moved
+country_event = {
+	id = curia.5
+	title = curia.5.t
+	desc = curia.5.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = curia.5.a
+		ai_chance = { 
+			factor = 5 
+		}
+		tooltip = {
+			reduce_curia_treasury_huge_effect = yes
+		}
+	}
+	option = {
+		name = curia.5.b
+		ai_chance = { 
+			factor = 1 
+			modifier = {
+				factor = 0
+				alliance_with = FROM
+			}
+		}
+		add_treasury = -50
+		tooltip = {
+			FROM = {
+				add_opinion = {
+					who = ROOT
+					modifier = pope_ambushed_curia_money
+				}
+			}
+		}
+		add_curia_treasury_huge_effect = yes
+		FROM = { country_event = { id = curia.6 days = 7 } }
+	}
+}
+
+# for bank country if money ambushed
+country_event = {
+	id = curia.6
+	title = curia.6.t
+	desc = curia.6.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes
+	
+	
+	option = {
+		name = curia.6.a
+		add_opinion = {
+			who = FROM
+			modifier = pope_ambushed_curia_money
+		}
+		set_country_flag = wont_bank_for_pope
+		clr_country_flag = moving_curia_money
+	}
+}
+
+# Peace is restored, bankers return money to the curia treasury
+country_event = {
+	id = curia.7
+	title = curia.7.t
+	desc = curia.7.d
+	picture = BAD_POPE_eventPicture
+	
+	trigger = {
+		has_dlc = "Emperor"
+		OR = {
+			has_country_flag = protecting_curia_money
+			has_country_flag = moving_curia_money
+		}
+		is_at_war = no
+	}
+	
+	mean_time_to_happen = {
+		months = 3
+	}
+	
+	option = {
+		name = curia.7.a
+		add_curia_treasury_huge_effect = yes
+		add_country_modifier = {
+			name = reliable_papal_banker
+			duration = 5475
+		}
+		clr_country_flag = protecting_curia_money
+		clr_country_flag = moving_curia_money
+	}	
+}
+
+# Country loses its capital, the money disappears
+country_event = {
+	id = curia.8
+	title = curia.8.t
+	desc = curia.8.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Emperor"
+		FROM = { owned_by = ROOT is_capital = yes }
+		has_country_flag = protecting_curia_money
+	}
+	
+	option = {
+		name = curia.8.a
+		reduce_curia_treasury_huge_effect = yes
+		add_country_modifier = {
+			name = "unreliable_papal_banker"
+			duration = 5475
+		}
+		clr_country_flag = protecting_curia_money
+	}
+}
+
+# A generous donation
+# For a country that contributes a lot to the treasury
+country_event = {
+	id = curia.9
+	title = curia.9.t
+	desc = curia.9.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes # on pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		religion = catholic
+		curia_treasury_contribution = 1
+		NOT = { tag = PAP }
+		NOT = { num_of_loans = 1 }
+		is_bankrupt = no
+		NOT = {
+			has_country_modifier = withholding_tithes
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = noble_name
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	option = {
+		name = curia.9.a
+		add_curia_treasury_big_effect = yes
+		add_years_of_income = -0.5
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+	}
+	option = {
+		name = curia.9.b # make the nobles contribute
+		trigger = {
+			has_estate = estate_nobles
+		}
+		add_curia_treasury_big_effect = yes
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = -10
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+	}
+	option = {
+		name = curia.9.c # enough is enough
+		add_papal_influence = -10
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -10
+			}
+		}
+	}
+}
+
+# Country taxes the church
+country_event = {
+	id = curia.10
+	title = curia.10.t
+	desc = curia.10.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes # on pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		religion = catholic
+		NOT = { tag = PAP }
+		has_estate = estate_church
+		OR = {
+			num_of_loans = 5
+			is_in_deficit = yes
+			is_bankrupt = yes
+		}
+		NOT = {
+			has_country_modifier = withholding_tithes
+		}
+	}
+	
+	option = {
+		name = curia.10.a
+		add_country_modifier = {
+			name = "withholding_tithes"
+			duration = 7300
+		}		
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -10
+			}
+		}
+		add_papal_influence = -10
+	}
+	option = {
+		name = curia.10.b
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+		add_papal_influence = 10
+	}
+}
+
+
+# Treasury income is low (probably because of heretics), big country asked to tithe more
+# Country responds to request to increase tithes
+country_event = {
+	id = curia.11
+	title = curia.11.t
+	desc = curia.11.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		religion = catholic
+		NOT = { curia_treasury_income = 5 }
+		curia_treasury_contribution = 1
+		NOT = { tag = PAP }
+		is_religion_enabled = protestant
+		NOT = { has_country_modifier = increased_tithing }
+	}
+	
+	option = {
+		name = curia.11.a
+		add_papal_influence = 15
+		add_country_modifier = {
+			name = "increased_tithing"
+			duration = 18250
+		}
+	}
+	option = {
+		name = curia.11.b
+		add_papal_influence = -15
+	}
+}
+
+# Use the Curia treasury to fund a crusade
+country_event = {
+	id = curia.12
+	title = curia.12.t
+	desc = curia.12.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes # on pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		tag = PAP
+		any_country = {
+			is_in_war = {
+				attacker_leader = THIS
+				casus_belli = cb_crusade
+			}
+			religion = catholic
+			NOT = { tag = PAP }
+			NOT = { war_with = PAP }
+			NOT = {
+				has_opinion_modifier = {
+					who = ROOT
+					modifier = opinion_pope_supported_crusade
+				}
+			}
+		}
+		curia_treasury_size = 100
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					is_in_war = {
+						attacker_leader = THIS
+						casus_belli = cb_crusade
+					}
+					religion = catholic
+					NOT = { tag = PAP }
+					NOT = {
+						has_opinion_modifier = {
+							who = ROOT
+							modifier = opinion_pope_supported_crusade
+						}
+					}
+				}
+				save_event_target_as = crusading_country
+				random_country = {
+					limit = {
+						is_in_war = {
+							attacker_leader = PREV
+							defender_leader = THIS
+							casus_belli = cb_crusade
+						}
+					}
+					save_event_target_as = crusade_target_country
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = curia.12.a
+		reduce_curia_treasury_big_effect = yes
+		event_target:crusading_country = {
+			country_event = { id = curia.13 days = 3 }
+			tooltip = {
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_pope_supported_crusade
+				}
+			}
+		}
+		event_target:crusade_target_country = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_support_crusade_against_us
+			}
+		}
+	}
+	option = {
+		name = curia.12.b
+		add_prestige = -5
+	}
+}
+
+# Crusader receives Curia funding
+country_event = {
+	id = curia.13
+	title = curia.13.t
+	desc = curia.13.d
+	picture = BAD_POPE_eventPicture
+	
+	is_triggered_only = yes
+		
+	option = {
+		name = curia.13.a
+		add_years_of_income = 1
+		add_opinion = {
+			who = ROOT
+			modifier = opinion_pope_supported_crusade
+		}
+	}
+}

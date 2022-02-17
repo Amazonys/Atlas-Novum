@@ -1,0 +1,480 @@
+namespace = janissary_decadence
+
+
+
+# Janissary Decadence
+country_event = {
+	id = janissary_decadence.1
+	title = janissary_decadence.1.t
+	picture = REVOLUTION_eventPicture
+	
+	desc = {
+		trigger = {
+			OR = {
+				has_loyal_sheikh_ul_islam_trigger = yes
+				has_ruler_modifier = the_sheikh_ul_islam
+			}
+		}
+		desc = janissary_decadence.1.d
+	}
+	desc = {
+		trigger = {
+			NOT = { has_ruler_modifier = the_sheikh_ul_islam }
+			has_loyal_sheikh_ul_islam_trigger = no
+		}
+		desc = janissary_decadence.1.d.nosheikh
+	}
+	
+	major = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		set_country_flag = had_janissary_decadence
+	}
+	
+	option = {		# Most worrisome
+		name = janissary_decadence.1.a
+		add_prestige = -20
+		add_legitimacy = -10
+		add_stability = -2
+		if = {
+			limit = { employed_advisor = { category = ADM } }
+			remove_advisor_by_category = ADM
+		}
+		if = {
+			limit = { employed_advisor = { category = DIP } }
+			remove_advisor_by_category = DIP
+		}
+		if = {
+			limit = { employed_advisor = { category = MIL } }
+			remove_advisor_by_category = MIL
+		}
+		remove_country_modifier = janissaries_upset
+		remove_country_modifier = janissary_landholders
+		remove_country_modifier = strictly_enforced_janissary_discipline
+		remove_country_modifier = janissaries_disciplined
+		remove_country_modifier = janissaries_denied_reward
+	}
+}
+
+# Death of [Root.Monarch.GetName]
+country_event = {
+	id = janissary_decadence.2
+	title = janissary_decadence.2.t
+	desc = janissary_decadence.2.d
+	picture = ASSASSINATION_eventPicture
+	
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	trigger = {
+		NOT = { legitimacy = 80 }
+	}
+	
+	
+	option = {		# Long live [Root.Heir.GetName]!
+		name = janissary_decadence.2.a
+		trigger = {
+			has_heir = yes
+			NOT = { heir_age = 13 }
+		}
+		kill_ruler = yes
+	}
+	option = {		# This is a disgrace to the [Root.Monarch.Dynasty.GetName] line!
+		name = janissary_decadence.2.b
+		trigger = {
+			OR = {
+				has_heir = no
+				heir_age = 13
+			}
+		}
+		if = {
+			limit = { has_heir = yes }
+			kill_heir = { allow_new_heir = no }
+		}
+		if = {
+			limit = { has_dlc = "Rights of Man" }
+			kill_ruler = yes #Followed by event for having no heir
+		}
+		else = {
+			define_ruler = {
+				dynasty = ROOT
+				male = yes
+				max_random_adm = 3
+				max_random_mil = 3
+				max_random_dip = 3
+			}
+			if = {
+				limit = {
+					has_states_general_mechanic = yes
+				}
+				change_statists_vs_orangists = 1
+			}
+		}
+	}
+}
+
+# Offices Awarded
+country_event = {
+	id = janissary_decadence.3
+	title = janissary_decadence.3.t
+	desc = janissary_decadence.3.d
+	picture = REVOLUTION_eventPicture
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {		# 
+		name = janissary_decadence.3.a
+		add_corruption = 1
+	}
+}
+
+# The Threat of the Janissaries
+country_event = {
+	id = janissary_decadence.4
+	title = janissary_decadence.4.t
+	desc = janissary_decadence.4.d
+	picture = REVOLUTION_eventPicture
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {		# 
+		name = janissary_decadence.4.a
+		add_years_of_income = -1
+	}
+	option = {		# 
+		name = janissary_decadence.4.b
+		add_disaster_modifier = {
+			name = janissary_coup_pay
+			duration = -1
+			disaster = janissary_decadence
+		}
+	}
+	option = {		# 
+		name = janissary_decadence.4.c
+		capital_scope = {
+			spawn_rebels = {
+				type = pretender_rebels
+				culture = turkish
+				religion = ROOT
+				size = 3
+			}
+		}
+	}
+}
+
+# Oppression
+country_event = {
+	id = janissary_decadence.5
+	title = janissary_decadence.5.t
+	desc = janissary_decadence.5.d
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		any_owned_province = {
+			is_in_capital_area = yes
+			is_capital = no
+		}	
+	}
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	immediate = {
+		random_owned_province = {
+			limit = {
+				is_in_capital_area = yes
+				is_capital = no
+			}
+			save_event_target_as = oppressed_province
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {		# This will not be forgotten
+	name = janissary_decadence.5.a
+		add_legitimacy = 5
+		event_target:oppressed_province = {
+			spawn_rebels = {
+				type = anti_tax_rebels
+				size = 2
+			}
+		}
+	}
+}
+
+
+# Loyal Minister
+country_event = {
+	id = janissary_decadence.6
+	title = janissary_decadence.6.t
+	desc = janissary_decadence.6.d
+	picture = BATTLE_eventPicture
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+		
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = great_minister
+				type = advisor
+				scope = ROOT
+			}
+			random_list = {
+				33 = { set_country_flag = great_adm_minister }
+				33 = { set_country_flag = great_dip_minister }
+				33 = { set_country_flag = great_mil_minister }
+			}
+		}
+	}
+	
+	option = {		# 
+		name = janissary_decadence.6.a
+		add_stability = 1
+		trigger_switch = {
+			on_trigger = has_country_flag
+			great_adm_minister = {
+				define_advisor = {
+					name = great_minister
+					type = theologian
+					skill = 3
+					discount = yes
+				}
+			}
+			great_adm_minister = {
+				define_advisor = {
+					name = great_minister
+					type = statesman
+					skill = 3
+					discount = yes
+				}
+			}
+			great_adm_minister = {
+				define_advisor = {
+					name = great_minister
+					type = army_reformer
+					skill = 3
+					discount = yes
+				}
+			}
+		}
+		capital_scope = {
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 3
+				culture = turkish
+				religion = ROOT
+			}
+		}
+	}
+	option = {		# 
+		name = janissary_decadence.6.b
+		add_legitimacy = -5
+	}
+	after = {
+		clear_saved_name = great_minister
+		trigger_switch = {
+			on_trigger = has_country_flag
+			great_adm_minister = { clr_country_flag = great_adm_minister }
+			great_dip_minister = { clr_country_flag = great_dip_minister }
+			great_mil_minister = { clr_country_flag = great_mil_minister }
+		}
+	}
+}
+
+# Janissaries Demand Advisors' Heads
+country_event = {
+	id = janissary_decadence.7
+	title = janissary_decadence.7.t
+	desc = janissary_decadence.7.d
+	picture = REVOLUTION_eventPicture
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {		# 
+		name = janissary_decadence.7.a
+		if = {
+			limit = {
+				employed_advisor = {
+					category = ADM
+				}
+			}
+			remove_advisor_by_category = ADM
+		}
+		add_adm_power = -50
+	}
+	option = {		# 
+		name = janissary_decadence.7.b
+		capital_scope = {
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 1
+				culture = turkish
+				religion = ROOT
+			}
+		}
+	}
+}
+
+# The Chastening of the Janissaries
+country_event = {
+	id = janissary_decadence.100
+	title = janissary_decadence.100.t
+	
+	desc = {
+		desc = janissary_decadence.100.d
+		trigger = { has_country_flag = yoklama }
+	}
+	desc = {
+		desc = janissary_decadence.100.da
+		trigger = { NOT = { has_country_flag = yoklama } }
+	}
+	picture = REVOLUTION_eventPicture
+	
+	major = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					has_owner_culture = yes
+				}
+				save_event_target_as = janissary_revolt_origin
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					development = 10
+					has_owner_culture = yes
+				}
+				save_event_target_as = janissary_revolt_origin
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					development = 15
+					has_owner_culture = yes
+				}
+				save_event_target_as = janissary_revolt_origin
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					development = 20
+					has_owner_culture = yes
+				}
+				save_event_target_as = janissary_revolt_origin
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					has_owner_culture = no
+				}
+				save_event_target_as = janissary_revolt_second_origin
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					development = 10
+					has_owner_culture = no
+				}
+				save_event_target_as = janissary_revolt_second_origin
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					development = 15
+					has_owner_culture = no
+				}
+				save_event_target_as = janissary_revolt_second_origin
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					development = 20
+					has_owner_culture = no
+				}
+				save_event_target_as = janissary_revolt_second_origin
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					development = 25
+					has_owner_culture = no
+				}
+				save_event_target_as = janissary_revolt_second_origin
+			}
+			random_owned_province = {
+				limit = {
+					is_in_capital_area = yes
+					is_capital = no
+					development = 25
+					has_owner_culture = no
+				}
+				save_event_target_as = janissary_revolt_second_origin
+			}
+		}
+	}
+	
+	option = {		# Disband the Janissaries
+		name = janissary_decadence.100.a
+		if = {
+			limit = { has_country_flag = yoklama }
+			event_target:janissary_revolt_second_origin = {
+				spawn_rebels = {
+					size = 3
+					type = pretender_rebels
+					culture = turkish
+					religion = ROOT
+				}
+			}
+			event_target:janissary_revolt_origin = {
+				spawn_rebels = {
+					size = 2
+					type = pretender_rebels
+					culture = turkish
+					religion = ROOT
+				}
+			}
+		}
+		else = {
+			add_stability = 1
+		}
+	}
+}
+

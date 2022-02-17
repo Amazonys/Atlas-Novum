@@ -1,0 +1,351 @@
+namespace = dai_disaster
+
+# Start event - Pick a side
+country_event = {
+	id = dai_disaster.1
+	title = dai_disaster.1.t
+	desc = dai_disaster.1.d
+	picture = CIVIL_WAR_eventPicture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = { # Le (or Nguyen if later) dynasty in the south
+		name = dai_disaster.1.a
+		trigger = {
+			num_of_owned_provinces_with = {
+				value = 1
+				OR = {
+					area = vietnam_area
+					area = cambodia_area
+					area = mekong_area
+					area = angkor_area
+					area = champa_area
+					area = tay_nguyen_area
+					region = malaya_region
+					region = indonesia_region
+				}
+			}
+		}
+		set_country_flag = dai_southern_dynasty
+		custom_tooltip = north_vietnam_breaks_away
+		if = {
+			limit = {
+				current_age = age_of_reformation
+				NOT = { dynasty = Le }
+			}
+			define_ruler = {
+				dynasty = Le
+			}
+		}
+		else_if = {
+			limit = {
+				NOT = { current_age = age_of_reformation }
+				NOT = { dynasty = Nguyen }
+			}
+			define_ruler = {
+				dynasty = Nguyen
+			}
+		}
+		country_event = {
+			id = dai_disaster.2
+		}
+	}
+	option = { # Mac (or Trinh if later) dynasty in the north
+		name = dai_disaster.1.b
+		trigger = {
+			num_of_owned_provinces_with = {
+				value = 1
+				OR = {
+					area = north_laos_area
+					area = central_thai_area
+					area = northern_thai_area
+					area = red_river_delta_area
+					area = sukhothai_area
+					area = champasak_area
+					area = khorat_area
+					area = vientiane_area
+					superregion = china_superregion
+					region = burma_region
+				}
+			}
+		}
+		set_country_flag = dai_northern_dynasty
+		custom_tooltip = south_vietnam_breaks_away
+		if = {
+			limit = {
+				current_age = age_of_reformation
+				NOT = { dynasty = Mac }
+			}
+			define_ruler = {
+				dynasty = Mac
+			}
+		}
+		else_if = {
+			limit = {
+				NOT = { current_age = age_of_reformation }
+				NOT = { dynasty = Trinh }
+			}
+			define_ruler = {
+				dynasty = Trinh
+			}
+		}
+		country_event = {
+			id = dai_disaster.2
+		}
+	}
+}
+
+# Dai Viet splits in two
+country_event = {
+	id = dai_disaster.2
+	title = dai_disaster.2.t
+	desc = dai_disaster.2.d
+	picture = CIVIL_WAR_eventPicture
+
+	is_triggered_only = yes
+	major = yes
+	fire_only_once = yes
+	
+	immediate = {
+		hidden_effect = {
+			# Create Northern country if Dai Viet picked the Southern Dynasty
+			if = {
+				limit = {
+					has_country_flag = dai_southern_dynasty
+				}
+				every_owned_province = {
+					limit = {
+						is_core = ROOT
+						OR = {
+							area = north_laos_area
+							area = central_thai_area
+							area = northern_thai_area
+							area = red_river_delta_area
+							area = sukhothai_area
+							area = champasak_area
+							area = khorat_area
+							area = vientiane_area
+							superregion = china_superregion
+							region = burma_region
+						}
+					}
+					add_core = TOK
+				}
+				release = TOK
+				TOK = {
+					change_government = monarchy
+					add_government_reform = confucian_bureaucracy
+					if = {
+						limit = {
+							current_age = age_of_reformation
+						}
+						define_ruler = {
+							dynasty = "Mac"
+						}
+					}
+					else = {
+						define_ruler = {
+							dynasty = "Trinh"
+						}
+					}
+				}
+				every_subject_country = {
+					limit = {
+						capital_scope = {
+							OR = {
+								area = north_laos_area
+								area = central_thai_area
+								area = northern_thai_area
+								area = red_river_delta_area
+								area = sukhothai_area
+								area = champasak_area
+								area = vientiane_area
+								superregion = china_superregion
+								region = burma_region
+							}
+						}
+					}
+					TOK = {
+						vassalize = PREV
+					}
+				}
+				every_owned_province = {
+					add_core = TOK
+				}
+				TOK = {
+					save_event_target_as = vietnam_rival_dynasty
+				}
+			}
+			# Create Southern country if Dai Viet picked the Northern Dynasty
+			else = {
+				every_owned_province = {
+					limit = {
+						is_core = ROOT
+						OR = {
+							area = vietnam_area
+							area = cambodia_area
+							area = mekong_area
+							area = angkor_area
+							area = champa_area
+							area = tay_nguyen_area
+							region = malaya_region
+							region = indonesia_region
+						}
+					}
+					add_core = ANN
+				}
+				release = ANN
+				ANN = {
+					change_government = monarchy
+					add_government_reform = confucian_bureaucracy
+					if = {
+						limit = {
+							current_age = age_of_reformation
+						}
+						define_ruler = {
+							dynasty = "Le"
+						}
+					}
+					else = {
+						define_ruler = {
+							dynasty = "Nguyen" 
+						}
+					}
+				}
+				every_subject_country = {
+					limit = {
+						capital_scope = {
+							OR = {
+								area = vietnam_area
+								area = cambodia_area
+								area = mekong_area
+								area = angkor_area
+								area = champa_area
+								area = tay_nguyen_area
+								region = malaya_region
+								region = indonesia_region
+							}
+						}
+					}
+					ANN = {
+						vassalize = PREV
+					}
+				}
+				every_owned_province = {
+					add_core = ANN
+				}
+				ANN = {
+					save_event_target_as = vietnam_rival_dynasty
+				}
+			}
+		}
+	}
+	
+	option = { # for the southern dynasty
+		name = dai_disaster.2.a
+		trigger = {
+			has_country_flag = dai_southern_dynasty
+		}
+		change_tag = ANN
+		end_disaster = northern_and_southern_dynasties
+		hidden_effect = {
+			TOK = {
+				capital_scope = {
+					build_to_forcelimit = {
+						infantry = 0.6
+						cavalry = 0.3
+						artillery = 0.1
+					}
+				}
+			}
+			if = {
+				limit = {
+					TOK = {
+						any_owned_province = {
+							has_port = yes
+						}
+					}
+				}
+				TOK = {
+					random_owned_province = {
+						limit = {
+							has_port = yes
+						}
+						build_to_forcelimit = {
+							galley = 0.6
+							transport = 0.3
+							light_ship = 0.1
+						}
+					}
+				}
+			}
+		}
+	}
+	option = { # for the northern dynasty
+		name = dai_disaster.2.a
+		trigger = {
+			has_country_flag = dai_northern_dynasty
+		}
+		change_tag = TOK
+		end_disaster = northern_and_southern_dynasties
+		hidden_effect = {
+			ANN = {
+				capital_scope = {
+					build_to_forcelimit = {
+						infantry = 0.6
+						cavalry = 0.3
+						artillery = 0.1
+					}
+				}
+			}
+			if = {
+				limit = {
+					ANN = {
+						any_owned_province = {
+							has_port = yes
+						}
+					}
+				}
+				ANN = {
+					random_owned_province = {
+						limit = {
+							has_port = yes
+						}
+						build_to_forcelimit = {
+							galley = 0.6
+							transport = 0.3
+							light_ship = 0.1
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# Warning event
+country_event = {
+	id = dai_disaster.3
+	title = dai_disaster.3.t
+	desc = dai_disaster.3.d
+	picture = CIVIL_WAR_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		tag = DAI
+		NOT = { mission_completed = mnd_dai_prevent_division }
+	}
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = {
+		name = dai_disaster.3.a
+		add_stability = -1
+		custom_tooltip = do_your_missions_tt
+	}
+}

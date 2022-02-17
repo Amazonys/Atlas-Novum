@@ -1,0 +1,4078 @@
+####################################################
+###           New Court Flavour Events           ###
+###           by Pierre du Plessis               ###
+####################################################
+
+namespace = new_court_flavour_events
+
+#first event
+country_event = {
+	id = new_court_flavour_events.1
+	title = new_court_flavour_events.1.name
+	desc = new_court_flavour_events.1.desc
+	
+	picture = ADVISOR_eventPicture
+
+	trigger = {
+		is_colonial_nation = no
+		
+		NOT = { 
+			has_country_modifier = recent_liaising_advisor_timer
+			has_country_flag = advisor_events_adm
+			has_country_flag = advisor_events_dip
+			has_country_flag = advisor_events_mil
+			has_regency = yes
+		}
+	
+		any_known_country = {
+			is_colonial_nation = no
+			is_subject = no
+
+			#need a contact in their court
+			employed_advisor = {
+				category = DIP
+			}
+			root = {
+				employed_advisor = {
+					culture = prev
+				}
+			}
+			NOT = {
+				OR = {
+					has_regency = yes
+					has_country_modifier = recent_liaising_advisor_timer
+					war_with = root
+					primary_culture = root
+
+					alliance_with = root
+					
+					root = {
+						OR = {
+							ruler_culture = prev
+							is_rival = prev
+							overlord_of = prev
+						}
+					}
+					is_rival = root
+					overlord_of = root
+					
+					has_opinion = { who = root value = 80 }
+				}
+			}
+		}
+	}
+
+	#reasonably rare
+	mean_time_to_happen = {
+		years = 75
+	}
+
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = recent_liaising_advisor_timer #50 years
+				duration = 18250
+				hidden = yes
+			}
+			random_known_country = {
+				limit = {
+					is_colonial_nation = no
+					is_subject = no
+					employed_advisor = {
+						category = DIP
+					}
+					root = {
+						employed_advisor = {
+							culture = prev
+						}
+					}
+					NOT = {
+						OR = {
+							has_country_modifier = recent_liaising_advisor_timer
+							war_with = root
+							primary_culture = root
+
+							alliance_with = root
+							
+							root = {
+								OR = {
+									ruler_culture = prev
+									is_rival = prev
+									overlord_of = prev
+								}
+							}
+							is_rival = root
+							overlord_of = root
+
+							has_opinion = { who = root value = 80 }
+						}
+					}
+				}
+
+				save_event_target_as = advisor_liaisons_target_country
+				
+				root = { #set flags to make sure correct advisor is used in locs.
+					if = {
+						limit = {
+							employed_advisor = {
+								category = ADM
+								culture = prev
+							}
+						}
+						set_country_flag = advisor_events_adm
+					}
+					else_if = {
+						limit = {
+							employed_advisor = {
+								category = DIP
+								culture = prev
+							}
+						}
+						set_country_flag = advisor_events_dip
+					}
+					else_if = {
+						limit = {
+							employed_advisor = {
+								category = MIL
+								culture = prev
+							}
+						}
+						set_country_flag = advisor_events_mil
+					}
+				}
+			}
+		}
+	}
+
+	option = { #Yes
+		name = new_court_flavour_events.1.A
+		custom_tooltip = new_court_flavour_events.1.A.tooltip
+
+		hidden_effect = {
+			event_target:advisor_liaisons_target_country = {
+				add_country_modifier = {
+					name = recent_liaising_advisor_timer
+					duration = 18250
+					hidden = yes
+				}
+			}
+			if = {
+				limit = {
+					NOT = {
+						event_target:advisor_liaisons_target_country = { has_opinion = { who = root value = 25 } } #traitor chain makes no sense if they are friendly to you
+					}
+					OR = {
+						AND = { #need a second advisor as accuser
+							has_country_flag = advisor_events_adm
+							OR = {
+								employed_advisor = {
+									category = DIP
+								}
+								employed_advisor = {
+									category = MIL
+								}
+							}
+						}
+						AND = {
+							has_country_flag = advisor_events_dip
+							OR = {
+								employed_advisor = {
+									category = ADM
+								}
+								employed_advisor = {
+									category = MIL
+								}
+							}
+						}
+						AND = {
+							has_country_flag = advisor_events_mil
+							OR = {
+								employed_advisor = {
+									category = DIP
+								}
+								employed_advisor = {
+									category = ADM
+								}
+							}
+						}
+					}
+				}
+				random_list = {
+					2 = { #67% chance that all is as it seems
+						event_target:advisor_liaisons_target_country = {
+							country_event = { id = new_court_flavour_events.2 days = 15 }
+						}
+					}
+					1 = { #33% chance of deceit
+						country_event = { id = new_court_flavour_events.10 days = 15 }
+					}
+				}
+			}
+			else = {
+				event_target:advisor_liaisons_target_country = {
+					country_event = { id = new_court_flavour_events.2 days = 15 }
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = { #always nice for player to get events :)
+				factor = 1.5
+				event_target:advisor_liaisons_target_country = {
+					ai = no
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = { has_opinion = { who = event_target:advisor_liaisons_target_country value = -100 } }
+			}
+			modifier = {
+				factor = 0.5
+				NOT = { has_opinion = { who = event_target:advisor_liaisons_target_country value = -50 } }
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = event_target:advisor_liaisons_target_country value = 25 }
+			}
+			modifier = {
+				factor = 2
+				has_opinion = { who = event_target:advisor_liaisons_target_country value = 50 }
+			}
+			
+			modifier = {
+				factor = 2
+				NOT = {
+					army_strength = {
+						who = event_target:advisor_liaisons_target_country
+						value = 0.75
+					}
+				}
+			}
+			modifier = {
+				factor = 2
+				NOT = {
+					army_strength = {
+						who = event_target:advisor_liaisons_target_country
+						value = 0.5
+					}
+				}
+			}
+			modifier = {
+				factor = 0.75
+				army_strength = {
+					who = event_target:advisor_liaisons_target_country
+					value = 1.5
+				}
+			}
+		}
+	}
+	option = { #No
+		name = new_court_flavour_events.1.B
+
+		add_prestige = 15
+		
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+		}
+	}
+}
+
+
+#Target country gets to choose response
+country_event = {
+	id = new_court_flavour_events.2
+	title = new_court_flavour_events.2.name
+	desc = new_court_flavour_events.2.desc
+	
+	picture = DIPLOMACY_eventPicture
+
+	trigger = {
+		#just in case (firing the advisor and not replacing them would break the localisations)
+		OR = {
+			from = {
+				has_country_flag = advisor_events_adm
+				employed_advisor = {
+					category = ADM
+				}
+			}
+			from = {
+				has_country_flag = advisor_events_dip
+				employed_advisor = {
+					category = DIP
+				}
+			}
+			from = {
+				has_country_flag = advisor_events_mil
+				employed_advisor = {
+					category = MIL
+				}
+			}
+		}
+		from = {
+			exists = yes
+		}
+	}
+
+	is_triggered_only = yes
+
+	option = { #Yes
+		name = new_court_flavour_events.2.A
+		
+		from = {
+			add_opinion = {
+				who = root
+				modifier = opinion_court_events_accept
+			}
+			hidden_effect = {
+				country_event = { id = new_court_flavour_events.3 days = 15 }
+			}
+		}
+
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				NOT = {
+					has_opinion = { who = from value = -50 }
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					has_opinion = { who = from value = -25 }
+				}
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = from value = 20 }
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = from value = 35 }
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = from value = 50 }
+			}
+			modifier = {
+				factor = 2
+				NOT = {
+					army_strength = {
+						who = from
+						value = 0.75
+					}
+				}
+			}
+			modifier = {
+				factor = 2
+				NOT = {
+					army_strength = {
+						who = from
+						value = 0.5
+					}
+				}
+			}
+		}
+	}
+	option = { #No
+		name = new_court_flavour_events.2.B
+
+		from = {
+			add_opinion = {
+				who = root
+				modifier = opinion_court_events_rebuke_1
+			}
+			hidden_effect = {
+				country_event = { id = new_court_flavour_events.4 days = 15 }
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 1.5
+				NOT = {
+					has_opinion = { who = from value = -50 }
+				}
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					has_opinion = { who = from value = -25 }
+				}
+			}
+			modifier = {
+				factor = 0.75
+				has_opinion = { who = from value = 25 }
+			}
+			modifier = {
+				factor = 0.75
+				has_opinion = { who = from value = 50 }
+			}
+		}
+	}
+	option = { #Most certainly not
+		name = new_court_flavour_events.2.C
+
+		add_prestige = 15
+		remove_advisor_by_category = DIP
+
+		from = {
+			add_opinion = {
+				who = root
+				modifier = opinion_court_events_rebuke
+			}
+			hidden_effect = {
+				country_event = { id = new_court_flavour_events.5 days = 15 }
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 2
+				NOT = {
+					has_opinion = { who = from value = -50 }
+				}
+			}
+			modifier = {
+				factor = 2
+				NOT = {
+					has_opinion = { who = from value = -25 }
+				}
+			}
+			modifier = {
+				factor = 0.5
+				has_opinion = { who = from value = 25 }
+			}
+			modifier = {
+				factor = 0.5
+				has_opinion = { who = from value = 50 }
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					army_strength = {
+						who = from
+						value = 0.9
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					army_strength = {
+						who = from
+						value = 0.65
+					}
+				}
+			}
+			#Special Cases
+			modifier = { #One must not insult the Pope
+				factor = 0
+				religion = catholic
+				from = {
+					tag = PAP
+				}
+			}
+		}
+
+		trigger = {
+			employed_advisor = {
+				category = DIP
+			}
+		}
+	}
+}
+
+#Answer: Yes
+country_event = {
+	id = new_court_flavour_events.3
+	title = new_court_flavour_events.3.name
+	desc = {
+		trigger = {
+			NOT = { has_country_flag = new_court_flavour_events_trust }
+		}
+		desc = new_court_flavour_events.3.desc
+	}
+	desc = {
+		trigger = {
+			has_country_flag = new_court_flavour_events_trust
+		}
+		desc = new_court_flavour_events.3.desc2
+	}
+	
+	picture = ADVISOR_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			AND = {
+				has_country_flag = advisor_events_adm
+				employed_advisor = {
+					category = ADM
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_dip
+				employed_advisor = {
+					category = DIP
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_mil
+				employed_advisor = {
+					category = MIL
+				}
+			}
+		}
+		from = {
+			exists = yes
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+		
+		from = {
+			add_opinion = {
+				who = root
+				modifier = opinion_court_events_accept
+			}
+		}
+	}
+	
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+			if = {
+				limit = {
+					has_country_flag = new_court_flavour_events_trust
+				}
+				clr_country_flag = new_court_flavour_events_trust
+			}
+		}
+	}
+}
+
+#Answer: No
+country_event = {
+	id = new_court_flavour_events.4
+	title = new_court_flavour_events.4.name
+	desc = {
+		trigger = {
+			NOT = { has_country_flag = new_court_flavour_events_trust }
+		}
+		desc = new_court_flavour_events.4.desc
+	}
+	desc = {
+		trigger = {
+			has_country_flag = new_court_flavour_events_trust
+		}
+		desc = new_court_flavour_events.4.desc2
+	}
+	picture = ADVISOR_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			AND = {
+				has_country_flag = advisor_events_adm
+				employed_advisor = {
+					category = ADM
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_dip
+				employed_advisor = {
+					category = DIP
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_mil
+				employed_advisor = {
+					category = MIL
+				}
+			}
+		}
+		from = {
+			exists = yes
+		}
+	}
+
+	option = { #They said no, it makes sense to me that you lose some prestige
+		name = UNFORTUNATE
+		
+		add_prestige = -15
+	}
+	
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+			if = {
+				limit = {
+					has_country_flag = new_court_flavour_events_trust
+				}
+				clr_country_flag = new_court_flavour_events_trust
+			}
+		}
+	}
+}
+
+#Answer: Definitely No
+country_event = {
+	id = new_court_flavour_events.5
+	title = new_court_flavour_events.5.name
+	desc = {
+		trigger = {
+			NOT = { has_country_flag = new_court_flavour_events_trust }
+		}
+		desc = new_court_flavour_events.5.desc
+	}
+	desc = {
+		trigger = {
+			has_country_flag = new_court_flavour_events_trust
+		}
+		desc = new_court_flavour_events.5.desc2
+	}
+	picture = ACCUSATION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			AND = {
+				has_country_flag = advisor_events_adm
+				employed_advisor = {
+					category = ADM
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_dip
+				employed_advisor = {
+					category = DIP
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_mil
+				employed_advisor = {
+					category = MIL
+				}
+			}
+		}
+		from = {
+			exists = yes
+		}
+	}
+
+	option = {
+		name = new_court_flavour_events.5.option
+
+		#They said no, it makes sense to me that you lose some prestige
+		add_prestige = -15
+		
+		from = {
+			add_opinion = {
+				who = root
+				modifier = opinion_court_events_rebuke
+			}
+		}
+	}
+	
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+			if = {
+				limit = {
+					has_country_flag = new_court_flavour_events_trust
+				}
+				clr_country_flag = new_court_flavour_events_trust
+			}
+		}
+	}
+}
+
+
+#Allegations of Deceit
+country_event = {
+	id = new_court_flavour_events.10
+	title = new_court_flavour_events.10.name
+	desc = {
+		trigger = {
+			has_country_flag = new_court_flavour_events_2adm
+		}
+		desc = new_court_flavour_events.10.desc.adm
+	}
+	desc = {
+		trigger = {
+			has_country_flag = new_court_flavour_events_2dip
+		}
+		desc = new_court_flavour_events.10.desc.dip
+	}
+	desc = {
+		trigger = {
+			has_country_flag = new_court_flavour_events_2mil
+		}
+		desc = new_court_flavour_events.10.desc.mil
+	}
+	picture = ACCUSATION_eventPicture
+
+	trigger = {
+		OR = {
+			AND = {
+				has_country_flag = advisor_events_adm
+				employed_advisor = {
+					category = ADM
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_dip
+				employed_advisor = {
+					category = DIP
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_mil
+				employed_advisor = {
+					category = MIL
+				}
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					has_country_flag = advisor_events_adm
+				}
+				if = {
+					limit = {
+						employed_advisor = {
+							category = DIP
+						}
+					}
+					set_country_flag = new_court_flavour_events_2dip
+				}
+				else = {
+					set_country_flag = new_court_flavour_events_2mil
+				}
+			}
+			else_if = {
+				limit = {
+					has_country_flag = advisor_events_dip
+				}
+				if = {
+					limit = {
+						employed_advisor = {
+							category = ADM
+						}
+					}
+					set_country_flag = new_court_flavour_events_2adm
+				}
+				else = {
+					set_country_flag = new_court_flavour_events_2mil
+				}
+			}
+			else_if = {
+				limit = {
+					employed_advisor = {
+						category = ADM
+					}
+				}
+				set_country_flag = new_court_flavour_events_2adm
+			}
+			else = {
+				set_country_flag = new_court_flavour_events_2dip
+			}
+		}
+	}
+
+	option = { #Trust them
+		name = new_court_flavour_events.10.A
+
+		random_list = {
+			1 = { #Stay loyal
+				custom_tooltip = new_court_flavour_events.10.A.tt1
+				
+				hidden_effect = {
+					#Flag to change descriptions so events don't need to be duplicated
+					set_country_flag = new_court_flavour_events_trust
+					event_target:advisor_liaisons_target_country = {
+						country_event = { id = new_court_flavour_events.2 days = 10 }
+					}
+				}
+			}
+			1 = { #Betrays you
+				custom_tooltip = new_court_flavour_events.10.A.tt2
+				
+				hidden_effect = {
+					event_target:advisor_liaisons_target_country = {
+						country_event = { id = new_court_flavour_events.12 days = 15 }
+					}
+				}
+			}
+		}
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = { #Arrest them
+		name = new_court_flavour_events.10.B
+		custom_tooltip = new_court_flavour_events.10.B.tt
+
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				remove_advisor_by_category = ADM
+			}
+			advisor_events_dip = {
+				remove_advisor_by_category = DIP
+			}
+			advisor_events_mil = {
+				remove_advisor_by_category = MIL
+			}
+		}
+		hidden_effect = {
+			event_target:advisor_liaisons_target_country = {
+				country_event = { id = new_court_flavour_events.15 }
+			}
+		}
+		ai_chance = { #this is the more logical response
+			factor = 2
+		}
+	}
+}
+
+#Betrayed
+country_event = {
+	id = new_court_flavour_events.11
+	title = new_court_flavour_events.11.name
+	
+	desc = {
+		trigger = {
+			has_country_flag = new_court_flavour_events_2adm
+		}
+		desc = new_court_flavour_events.11.desc.adm
+	}
+	desc = {
+		trigger = {
+			has_country_flag = new_court_flavour_events_2dip
+		}
+		desc = new_court_flavour_events.11.desc.dip
+	}
+	desc = {
+		trigger = {
+			has_country_flag = new_court_flavour_events_2mil
+		}
+		desc = new_court_flavour_events.11.desc.mil
+	}
+	
+	picture = ACCUSATION_eventPicture
+
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				has_country_flag = advisor_events_adm
+				employed_advisor = {
+					category = ADM
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_dip
+				employed_advisor = {
+					category = DIP
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_mil
+				employed_advisor = {
+					category = MIL
+				}
+			}
+		}
+	}
+
+	option = {
+		name = UNFORTUNATE
+
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				remove_advisor_by_category_no_action = ADM
+
+				add_adm_power = -100
+			}
+			advisor_events_dip = {
+				remove_advisor_by_category_no_action = DIP
+
+				add_dip_power = -100
+			}
+			advisor_events_mil = {
+				remove_advisor_by_category_no_action = MIL
+
+				add_mil_power = -100
+			}
+		}
+	}
+	
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = new_court_flavour_events_2adm }
+				advisor_events_dip = { clr_country_flag = new_court_flavour_events_2dip }
+				advisor_events_mil = { clr_country_flag = new_court_flavour_events_2mil }
+			}
+		}
+	}
+}
+
+#Other side. Gets to choose whether to take in traitor or send them back. Uses saved name because can't swap owner of advisor
+country_event = {
+	id = new_court_flavour_events.12
+	title = new_court_flavour_events.12.name
+	desc = new_court_flavour_events.12.desc
+
+	picture = ADVISOR_eventPicture
+
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			from = {
+				has_country_flag = advisor_events_adm
+				employed_advisor = {
+					category = ADM
+				}
+			}
+			from = {
+				has_country_flag = advisor_events_dip
+				employed_advisor = {
+					category = DIP
+				}
+			}
+			from = {
+				has_country_flag = advisor_events_mil
+				employed_advisor = {
+					category = MIL
+				}
+			}
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = advisor_traitor
+				type = advisor
+				scope = ROOT
+			}
+			if = {
+				limit = {
+					NOT = { monthly_income = 15 }
+				}
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 1					
+				}
+			}
+			else_if = {
+				limit = {
+					NOT = { monthly_income = 25 }
+				}
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 2					
+				}
+			}
+			else = {
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 3
+				}
+			}
+		}
+	}
+
+	option = { #take them in
+		name = new_court_flavour_events.12.A
+
+		hidden_effect = {
+			from = { country_event = { id = new_court_flavour_events.11 } }
+		}
+
+		if = {
+			limit = {
+				from = {
+					has_country_flag = advisor_events_adm
+				}
+			}
+			add_adm_power = 100
+			custom_tooltip = new_court_flavour_events_add_traitor_tooltip_adm
+		}
+		else_if = {
+			limit = {
+				from = {
+					has_country_flag = advisor_events_dip
+				}
+			}
+			add_dip_power = 100
+			custom_tooltip = new_court_flavour_events_add_traitor_tooltip_dip
+		}
+		else = {
+			add_mil_power = 100
+			custom_tooltip = new_court_flavour_events_add_traitor_tooltip_mil
+		}
+		
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = { monthly_income = 15 }
+				}
+				generate_traitor_advisor_effect = {
+					skill_level = 1
+				}
+			}
+			else_if = {
+				limit = {
+					NOT = { monthly_income = 25 }
+				}
+				generate_traitor_advisor_effect = {
+					skill_level = 2
+				}
+			}
+			else = {
+				generate_traitor_advisor_effect = {
+					skill_level = 3
+				}
+			}
+		}
+
+		from = {
+			add_opinion = {
+				modifier = opinion_court_events_annoyed
+				who = root
+			}
+		}
+
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 0.25
+				NOT = {
+					army_strength = {
+						who = from
+						value = 0.75
+					}
+				}
+			}
+			modifier = {
+				factor = 0.25
+				has_opinion = { who = from value = 50 }
+			}
+		}
+	}
+
+	option = { #turn them away
+		name = new_court_flavour_events.12.B
+
+		add_prestige = 20
+
+		from = {
+			add_opinion = {
+				modifier = opinion_court_events_grateful
+				who = root
+			}
+		}
+
+		hidden_effect = {
+			from = {
+				country_event = { id = new_court_flavour_events.13 }
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			clear_saved_name = advisor_traitor
+			set_variable = {
+				which = event_advisor_skill_level
+				value = 0					
+			}
+		}
+	}
+}
+
+
+#Betrayed but other country let you know
+country_event = {
+	id = new_court_flavour_events.13
+	title = new_court_flavour_events.13.name
+	desc = new_court_flavour_events.13.desc
+	picture = ACCUSATION_eventPicture
+
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				has_country_flag = advisor_events_adm
+				employed_advisor = {
+					category = ADM
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_dip
+				employed_advisor = {
+					category = DIP
+				}
+			}
+			AND = {
+				has_country_flag = advisor_events_mil
+				employed_advisor = {
+					category = MIL
+				}
+			}
+		}
+	}
+
+	option = {
+		name = new_court_flavour_events.13.option
+		
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				remove_advisor_by_category_no_action = ADM
+			}
+			advisor_events_dip = {
+				remove_advisor_by_category_no_action = DIP
+			}
+			advisor_events_mil = {
+				remove_advisor_by_category_no_action = MIL
+			}
+		}
+	}
+	
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = new_court_flavour_events_2adm }
+				advisor_events_dip = { clr_country_flag = new_court_flavour_events_2dip }
+				advisor_events_mil = { clr_country_flag = new_court_flavour_events_2mil }
+			}
+		}
+	}
+}
+
+#Other country is given the opportunity to complain
+country_event = {
+	id = new_court_flavour_events.15
+	title = new_court_flavour_events.15.name
+	desc = new_court_flavour_events.15.desc
+
+	picture = ACCUSATION_eventPicture
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = advisor_traitor
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+
+	option = { #interfere
+		name = new_court_flavour_events.15.A
+
+		add_prestige = 20
+
+		from = {
+			add_opinion = {
+				modifier = opinion_court_events_interfered
+				who = root
+			}
+			hidden_effect = {
+				country_event = { id = new_court_flavour_events.16 days = 10 }
+			}
+		}
+	}
+
+	option = { #Don't interfere
+		name = new_court_flavour_events.15.B
+
+		add_prestige = -20
+		
+		hidden_effect = {
+			clear_saved_name = advisor_traitor
+			
+			from = {
+				trigger_switch = {
+					on_trigger = has_country_flag
+					advisor_events_adm = { clr_country_flag = advisor_events_adm }
+					advisor_events_dip = { clr_country_flag = advisor_events_dip }
+					advisor_events_mil = { clr_country_flag = advisor_events_mil }
+				}
+				trigger_switch = {
+					on_trigger = has_country_flag
+					advisor_events_adm = { clr_country_flag = new_court_flavour_events_2adm }
+					advisor_events_dip = { clr_country_flag = new_court_flavour_events_2dip }
+					advisor_events_mil = { clr_country_flag = new_court_flavour_events_2mil }
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				NOT = {
+					has_opinion = { who = from value = -50 }
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					has_opinion = { who = from value = -25 }
+				}
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = from value = 20 }
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = from value = 35 }
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = from value = 50 }
+			}
+			modifier = {
+				factor = 2
+				NOT = {
+					army_strength = {
+						who = from
+						value = 0.75
+					}
+				}
+			}
+			modifier = {
+				factor = 2
+				NOT = {
+					army_strength = {
+						who = from
+						value = 0.5
+					}
+				}
+			}
+		}
+	}
+}
+
+#The complaint
+country_event = {
+	id = new_court_flavour_events.16
+	title = new_court_flavour_events.16.name
+	desc = new_court_flavour_events.16.desc
+
+	picture = ACCUSATION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		from = {
+			exists = yes
+		}
+	}
+
+	option = { #yes
+		name = new_court_flavour_events.16.A
+
+		add_prestige = -20
+		
+		from = {
+			add_opinion = {
+				modifier = opinion_court_events_released_compatriot
+				who = root
+			}
+			hidden_effect = {
+				country_event = { id = new_court_flavour_events.17 days = 10 }
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				NOT = {
+					has_opinion = { who = from value = -50 }
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					has_opinion = { who = from value = -25 }
+				}
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = from value = 20 }
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = from value = 35 }
+			}
+			modifier = {
+				factor = 1.5
+				has_opinion = { who = from value = 50 }
+			}
+			modifier = {
+				factor = 2
+				NOT = {
+					army_strength = {
+						who = from
+						value = 0.75
+					}
+				}
+			}
+			modifier = {
+				factor = 2
+				NOT = {
+					army_strength = {
+						who = from
+						value = 0.5
+					}
+				}
+			}
+		}
+	}
+	
+	option = { #no
+		name = new_court_flavour_events.16.B
+		
+		from = {
+			add_opinion = {
+				modifier = opinion_court_events_held_compatriot
+				who = root
+			}
+			hidden_effect = {
+				country_event = { id = new_court_flavour_events.18 days = 10 }
+			}
+		}
+
+		ai_chance = {
+			factor = 2
+		}
+	}
+}
+
+#Agreement
+country_event = {
+	id = new_court_flavour_events.17
+	title = new_court_flavour_events.17.name
+	desc = new_court_flavour_events.17.desc
+
+	picture = ACCUSATION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		from = {
+			exists = yes
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = { monthly_income = 15 }
+				}
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 1					
+				}
+			}
+			else_if = {
+				limit = {
+					NOT = { monthly_income = 25 }
+				}
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 2					
+				}
+			}
+			else = {
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 3
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = new_court_flavour_events.17.option
+		
+		if = {
+			limit = {
+				from = {
+					has_country_flag = advisor_events_adm
+				}
+			}
+			
+			custom_tooltip = new_court_flavour_events_add_traitor_tooltip_adm
+		}
+		else_if = {
+			limit = {
+				from = {
+					has_country_flag = advisor_events_dip
+				}
+			}
+			custom_tooltip = new_court_flavour_events_add_traitor_tooltip_dip
+		}
+		else = {
+			custom_tooltip = new_court_flavour_events_add_traitor_tooltip_mil
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = { monthly_income = 15 }
+				}
+				generate_traitor_advisor_effect = {
+					skill_level = 1
+				}
+			}
+			else_if = {
+				limit = {
+					NOT = { monthly_income = 25 }
+				}
+				generate_traitor_advisor_effect = {
+					skill_level = 2
+				}
+			}
+			else = {
+				generate_traitor_advisor_effect = {
+					skill_level = 3
+				}
+			}
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			clear_saved_name = advisor_traitor
+			set_variable = {
+				which = event_advisor_skill_level
+				value = 0					
+			}
+			from = {
+				trigger_switch = {
+					on_trigger = has_country_flag
+					advisor_events_adm = { clr_country_flag = advisor_events_adm }
+					advisor_events_dip = { clr_country_flag = advisor_events_dip }
+					advisor_events_mil = { clr_country_flag = advisor_events_mil }
+				}
+				trigger_switch = {
+					on_trigger = has_country_flag
+					advisor_events_adm = { clr_country_flag = new_court_flavour_events_2adm }
+					advisor_events_dip = { clr_country_flag = new_court_flavour_events_2dip }
+					advisor_events_mil = { clr_country_flag = new_court_flavour_events_2mil }
+				}
+			}
+		}
+	}
+}
+
+#Rejection
+country_event = {
+	id = new_court_flavour_events.18
+	title = new_court_flavour_events.18.name
+	desc = new_court_flavour_events.18.desc
+
+	picture = ACCUSATION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		from = {
+			exists = yes
+		}
+	}
+
+	option = {
+		name = new_court_flavour_events.18.option
+	}
+
+	after = {
+		hidden_effect = {
+			clear_saved_name = advisor_traitor
+			from = {
+				trigger_switch = {
+					on_trigger = has_country_flag
+					advisor_events_adm = { clr_country_flag = advisor_events_adm }
+					advisor_events_dip = { clr_country_flag = advisor_events_dip }
+					advisor_events_mil = { clr_country_flag = advisor_events_mil }
+				}
+				trigger_switch = {
+					on_trigger = has_country_flag
+					advisor_events_adm = { clr_country_flag = new_court_flavour_events_2adm }
+					advisor_events_dip = { clr_country_flag = new_court_flavour_events_2dip }
+					advisor_events_mil = { clr_country_flag = new_court_flavour_events_2mil }
+				}
+			}
+		}
+	}
+}
+
+
+####Corrupt Advisor
+country_event = {
+	id = new_court_flavour_events.20
+	title = new_court_flavour_events.20.name
+	desc = new_court_flavour_events.20.desc
+	picture = CORRUPTION_eventPicture
+
+	goto = corrupt_advisor_province
+	
+	mean_time_to_happen = {
+		years = 60
+		modifier = {
+			factor = 0.75
+			treasury = 1000
+		}
+		modifier = {
+			factor = 0.5
+			corruption = 5
+		}
+		modifier = {
+			factor = 0.75
+			corruption = 10
+		}
+		modifier = {
+			factor = 1.5
+			NOT = {
+				num_of_cities = 12
+			}
+		}
+		modifier = {
+			factor = 0.8
+			num_of_cities = 30
+		}
+	}
+
+	trigger = {
+		NOT = {
+			has_country_modifier = has_recent_advisor_corruption_timer
+			has_country_flag = advisor_events_adm
+			has_country_flag = advisor_events_dip
+			has_country_flag = advisor_events_mil
+		}
+		is_at_war = no
+		NOT = { is_in_large_debt = yes }
+		treasury = 150
+		num_of_cities = 6
+		employed_advisor = {
+			category = ADM
+		}
+		employed_advisor = {
+			category = DIP
+		}
+		employed_advisor = {
+			category = MIL
+		}
+		OR = {
+			any_owned_province = {
+				is_capital = no
+				NOT = {
+					any_province_in_state = {
+						is_capital = yes
+					}
+				}
+				root = {
+					employed_advisor = {
+						category = ADM
+						culture = prev
+						religion = prev
+					}
+				}
+			}
+			any_owned_province = {
+				is_capital = no
+				NOT = {
+					any_province_in_state = {
+						is_capital = yes
+					}
+				}
+				root = {
+					employed_advisor = {
+						category = DIP
+						culture = prev
+						religion = prev
+					}
+				}
+			}
+			any_owned_province = {
+				is_capital = no
+				NOT = {
+					any_province_in_state = {
+						is_capital = yes
+					}
+				}
+				root = {
+					employed_advisor = {
+						category = MIL
+						culture = prev
+						religion = prev
+					}
+				}
+			}
+		}
+	}
+
+	immediate = {
+		#Selects a province with the same characteristics of the advisor as their origin.
+		hidden_effect = {
+			random_list = {
+				1 = {
+					trigger = {
+						any_owned_province = {
+							is_capital = no
+							NOT = {
+								any_province_in_state = {
+									is_capital = yes
+								}
+							}
+							root = {
+								employed_advisor = {
+									category = ADM
+									culture = prev
+									religion = prev
+								}
+							}
+						}
+					}
+					random_owned_province = {
+						limit = {
+							is_capital = no
+							NOT = {
+								any_province_in_state = {
+									is_capital = yes
+								}
+							}
+							root = {
+								employed_advisor = {
+									category = ADM
+									culture = prev
+									religion = prev
+								}
+							}
+						}
+						save_event_target_as = corrupt_advisor_province
+					}
+					set_country_flag = advisor_events_adm
+					add_country_modifier = {
+						name = has_recent_advisor_corruption_timer
+						duration = 18250
+						hidden = yes
+					}
+				}
+				1 = {
+					trigger = {
+						any_owned_province = {
+							is_capital = no
+							NOT = {
+								any_province_in_state = {
+									is_capital = yes
+								}
+							}
+							root = {
+								employed_advisor = {
+									category = DIP
+									culture = prev
+									religion = prev
+								}
+							}
+						}
+					}
+					random_owned_province = {
+						limit = {
+							is_capital = no
+							NOT = {
+								any_province_in_state = {
+									is_capital = yes
+								}
+							}
+							root = {
+								employed_advisor = {
+									category = DIP
+									culture = prev
+									religion = prev
+								}
+							}
+						}
+						save_event_target_as = corrupt_advisor_province
+					}
+					set_country_flag = advisor_events_dip
+					add_country_modifier = {
+						name = has_recent_advisor_corruption_timer
+						duration = 18250
+						hidden = yes
+					}
+				}
+				1 = {
+					trigger = {
+						any_owned_province = {
+							is_capital = no
+							NOT = {
+								any_province_in_state = {
+									is_capital = yes
+								}
+							}
+							root = {
+								employed_advisor = {
+									category = MIL
+									culture = prev
+									religion = prev
+								}
+							}
+						}
+					}
+					random_owned_province = {
+						limit = {
+							is_capital = no
+							NOT = {
+								any_province_in_state = {
+									is_capital = yes
+								}
+							}
+							root = {
+								employed_advisor = {
+									category = MIL
+									culture = prev
+									religion = prev
+								}
+							}
+						}
+						save_event_target_as = corrupt_advisor_province
+					}
+					set_country_flag = advisor_events_mil
+					add_country_modifier = {
+						name = has_recent_advisor_corruption_timer
+						duration = 18250
+						hidden = yes
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = new_court_flavour_events.20.A
+		
+		goto = corrupt_advisor_province
+		
+		event_target:corrupt_advisor_province = {
+			if = {
+				limit = {
+					root = {
+						num_of_cities = 30
+					}
+				}
+				area = {
+					limit = {
+						owned_by = root
+					}
+					add_province_modifier = {
+						name = new_court_flavour_events_subsidies
+						duration = 7300
+					}
+				}
+			}
+			else = {
+				add_province_modifier = {
+					name = new_court_flavour_events_subsidies
+					duration = 7300
+				}
+			}
+		}
+		
+		add_corruption = 2
+		
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				event_target:corrupt_advisor_province = {
+					add_base_tax = 2
+				}
+				if = {
+					limit = {
+						has_estate = estate_brahmins
+						OR = {
+							NOT = { has_estate = estate_church }
+							employed_advisor = {
+								category = ADM
+								religion = hinduism
+							}
+						}
+					}
+					add_estate_influence_modifier = {
+						estate = estate_brahmins
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_dhimmi
+						employed_advisor = {
+							category = ADM
+							religion = heathen
+						}
+					}
+					add_estate_influence_modifier = {
+						estate = estate_dhimmi
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_church
+					}
+					add_estate_influence_modifier = {
+						estate = estate_church
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_nomadic_tribes
+					}
+					add_estate_influence_modifier = {
+						estate = estate_nomadic_tribes
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+			}
+			advisor_events_dip = {
+				event_target:corrupt_advisor_province = {
+					add_base_production = 2
+				}
+				if = {
+					limit = {
+						has_estate = estate_vaisyas
+					}
+					add_estate_influence_modifier = {
+						estate = estate_vaisyas
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_jains
+					}
+					add_estate_influence_modifier = {
+						estate = estate_jains
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_burghers
+					}
+					add_estate_influence_modifier = {
+						estate = estate_burghers
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_nomadic_tribes
+					}
+					add_estate_influence_modifier = {
+						estate = estate_nomadic_tribes
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+			}
+			advisor_events_mil = {
+				event_target:corrupt_advisor_province = {
+					add_base_manpower = 2
+				}
+				if = {
+					limit = {
+						has_estate = estate_rajput
+						OR = {
+							NOT = { has_estate = estate_nobles }
+							employed_advisor = {
+								category = MIL
+								religion = hinduism
+							}
+						}
+					}
+					add_estate_influence_modifier = {
+						estate = estate_rajput
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_maratha
+						OR = {
+							NOT = { has_estate = estate_nobles }
+							employed_advisor = {
+								category = MIL
+								religion = hinduism
+							}
+						}
+					}
+					add_estate_influence_modifier = {
+						estate = estate_maratha
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_nobles
+					}
+					add_estate_influence_modifier = {
+						estate = estate_nobles
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_nomadic_tribes
+					}
+					add_estate_influence_modifier = {
+						estate = estate_nomadic_tribes
+						influence = 10
+						duration = 3650
+						desc = EST_VAL_CORRUPT_CONNECTIONS
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = new_court_flavour_events.20.B
+		
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				if = {
+					limit = {
+						has_estate = estate_brahmins
+						OR = {
+							NOT = { has_estate = estate_church }
+							employed_advisor = {
+								category = ADM
+								religion = hinduism
+							}
+						}
+					}
+					add_estate_loyalty = {
+						estate = estate_brahmins
+						loyalty = -15
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_dhimmi
+						employed_advisor = {
+							category = ADM
+							religion = heathen
+						}
+					}
+					add_estate_loyalty = {
+						estate = estate_dhimmi
+						loyalty = -15
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_church
+					}
+					add_estate_loyalty = {
+						estate = estate_church
+						loyalty = -15
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_nomadic_tribes
+					}
+					add_estate_loyalty = {
+						estate = estate_nomadic_tribes
+						loyalty = -15
+					}
+				}
+			}
+			advisor_events_dip = {
+				if = {
+					limit = {
+						has_estate = estate_vaisyas
+					}
+					add_estate_loyalty = {
+						estate = estate_vaisyas
+						loyalty = -15
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_jains
+					}
+					add_estate_loyalty = {
+						estate = estate_jains
+						loyalty = -15
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_burghers
+					}
+					add_estate_loyalty = {
+						estate = estate_burghers
+						loyalty = -15
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_nomadic_tribes
+					}
+					add_estate_loyalty = {
+						estate = estate_nomadic_tribes
+						loyalty = -15
+					}
+				}
+			}
+			advisor_events_mil = {
+				if = {
+					limit = {
+						has_estate = estate_rajput
+						OR = {
+							NOT = { has_estate = estate_nobles }
+							employed_advisor = {
+								category = MIL
+								religion = hinduism
+							}
+						}
+					}
+					add_estate_loyalty = {
+						estate = estate_rajput
+						loyalty = -15
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_maratha
+						OR = {
+							NOT = { has_estate = estate_nobles }
+							employed_advisor = {
+								category = MIL
+								religion = hinduism
+							}
+						}
+					}
+					add_estate_loyalty = {
+						estate = estate_maratha
+						loyalty = -15
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_nobles
+					}
+					add_estate_loyalty = {
+						estate = estate_nobles
+						loyalty = -15
+					}
+				}
+				else_if = {
+					limit = {
+						has_estate = estate_nomadic_tribes
+					}
+					add_estate_loyalty = {
+						estate = estate_nomadic_tribes
+						loyalty = -15
+					}
+				}
+			}
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				remove_advisor_by_category = ADM
+			}
+			advisor_events_dip = {
+				remove_advisor_by_category = DIP
+			}
+			advisor_events_mil = {
+				remove_advisor_by_category = MIL
+			}
+		}
+		ai_chance = {
+			factor = 2.5
+		}
+	}
+	
+	
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+		}
+	}
+}
+
+
+#Religious Advisor protests at war
+#Triggered via three-yearly pulse. Would be better if there was an on_war_declared on_action
+country_event = {
+	id = new_court_flavour_events.21
+	title = new_court_flavour_events.21.name
+	desc = new_court_flavour_events.21.desc
+	picture = RELIGIOUS_CONVERSION_eventPicture
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = {
+			has_country_flag = advisor_events_adm
+			has_country_flag = advisor_events_dip
+			has_country_flag = advisor_events_mil
+		}
+		is_at_war = yes
+
+		any_country = {
+			OR = {
+				is_in_war = {
+					attacker_leader = root
+					defender_leader = this
+					casus_belli = cb_religious_conformance
+				}
+				is_in_war = {
+					attacker_leader = root
+					defender_leader = this
+					casus_belli = cb_religious_league
+				}
+				is_in_war = {
+					attacker_leader = root
+					defender_leader = this
+					casus_belli = cb_heretic
+				}
+			}
+			NOT = {
+				is_in_war = {
+					attacker_leader = root
+					defender_leader = this
+					duration = 360
+				}
+			}
+			#just in case on the religious leagues
+			NOT = {
+				religion = root
+			}
+			
+			root = {
+				employed_advisor = {
+					religion = prev
+				}
+			}
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					OR = {
+						is_in_war = {
+							attacker_leader = root
+							defender_leader = this
+							casus_belli = cb_religious_conformance
+						}
+						is_in_war = {
+							attacker_leader = root
+							defender_leader = this
+							casus_belli = cb_religious_league
+						}
+						is_in_war = {
+							attacker_leader = root
+							defender_leader = this
+							casus_belli = cb_heretic
+						}
+					}
+					NOT = {
+						is_in_war = {
+							attacker_leader = root
+							defender_leader = this
+							duration = 365
+						}
+					}
+					#just in case on the religious leagues
+					NOT = {
+						religion = root
+					}
+					
+					root = {
+						employed_advisor = {
+							religion = prev
+						}
+					}
+				}
+				save_event_target_as = religious_enemy_country
+
+				root = {
+					if = {
+						limit = {
+							employed_advisor = {
+								category = ADM
+								religion = prev
+							}
+						}
+						set_country_flag = advisor_events_adm
+					}
+					else_if = {
+						limit = {
+							employed_advisor = {
+								category = DIP
+								religion = prev
+							}
+						}
+						set_country_flag = advisor_events_dip
+					}
+					else = {
+						set_country_flag = advisor_events_mil
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = UNFORTUNATE
+
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				remove_advisor_by_category_no_action = ADM
+			}
+			advisor_events_dip = {
+				remove_advisor_by_category_no_action = DIP
+			}
+			advisor_events_mil = {
+				remove_advisor_by_category_no_action = MIL
+			}
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+		}
+	}
+}
+
+
+#Foreign Wisdom
+country_event = {
+	id = new_court_flavour_events.22
+	title = new_court_flavour_events.22.name
+	desc = new_court_flavour_events.22.desc
+	
+	picture = ADVISOR_eventPicture
+
+	trigger = {
+		NOT = { 
+			has_country_modifier = recent_advisor_culture_benefits_timer
+			has_country_flag = advisor_events_adm
+			has_country_flag = advisor_events_dip
+			has_country_flag = advisor_events_mil
+		}
+	
+	
+		OR = {
+			AND = {
+				employed_advisor = {
+					category = ADM
+				}
+				NOT = { primary_culture = new_variable:adm_advisor_culture }
+				NOT = { accepted_culture = new_variable:adm_advisor_culture }
+				NOT = { culture_group = new_variable:adm_advisor_culture }
+			}
+			AND = {
+				employed_advisor = {
+					category = DIP
+				}
+				NOT = { primary_culture = new_variable:dip_advisor_culture }
+				NOT = { accepted_culture = new_variable:dip_advisor_culture }
+				NOT = { culture_group = new_variable:dip_advisor_culture }
+			}
+			AND = {
+				employed_advisor = {
+					category = MIL
+				}
+				NOT = { primary_culture = new_variable:mil_advisor_culture }
+				NOT = { accepted_culture = new_variable:mil_advisor_culture }
+				NOT = { culture_group = new_variable:mil_advisor_culture }
+			}
+		}
+	}
+
+	#somewhat rare
+	mean_time_to_happen = {
+		years = 50
+	}
+
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = recent_advisor_culture_benefits_timer
+				duration = 18250
+				hidden = yes
+			}
+
+			if = {
+				limit = {
+					employed_advisor = {
+						category = ADM
+					}
+				}	
+				export_to_variable = {
+					variable_name = adm_advisor_culture_var
+					value = adm_advisor_culture
+				}
+			}
+			if = {
+				limit = {
+					employed_advisor = {
+						category = DIP
+					}
+				}	
+				export_to_variable = {
+					variable_name = dip_advisor_culture_var
+					value = dip_advisor_culture
+				}
+			}
+			if = {
+				limit = {
+					employed_advisor = {
+						category = MIL
+					}
+				}	
+				export_to_variable = {
+					variable_name = mil_advisor_culture_var
+					value = mil_advisor_culture
+				}
+			}
+
+			if = {
+				limit = {
+					employed_advisor = {
+						category = ADM
+					}
+					NOT = { primary_culture = variable:adm_advisor_culture_var }
+					NOT = { accepted_culture = variable:adm_advisor_culture_var }
+					NOT = { culture_group = variable:adm_advisor_culture_var }
+				}
+				set_country_flag = advisor_events_adm
+				export_to_variable = {
+					variable_name = advisor_culture
+					value = adm_advisor_culture
+				}
+			}
+			else_if = {
+				limit = {
+					employed_advisor = {
+						category = DIP
+					}
+					NOT = { primary_culture = variable:dip_advisor_culture_var }
+					NOT = { accepted_culture = variable:dip_advisor_culture_var }
+					NOT = { culture_group = variable:dip_advisor_culture_var }
+				}
+				set_country_flag = advisor_events_dip
+				export_to_variable = {
+					variable_name = advisor_culture
+					value = dip_advisor_culture
+				}
+			}
+			else_if = {
+				limit = {
+					employed_advisor = {
+						category = MIL
+					}
+					NOT = { primary_culture = variable:mil_advisor_culture_var }
+					NOT = { accepted_culture = variable:mil_advisor_culture_var }
+					NOT = { culture_group = variable:mil_advisor_culture_var }
+				}
+				set_country_flag = advisor_events_mil
+				export_to_variable = {
+					variable_name = advisor_culture
+					value = mil_advisor_culture
+				}
+			}
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+		
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				add_adm_power = 50
+			}
+			advisor_events_dip = {
+				add_dip_power = 50
+			}
+			advisor_events_mil = {
+				add_mil_power = 50
+			}
+		}
+	}
+	
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+			set_variable = {
+				which = advisor_culture
+				value = -1
+			}
+			set_variable = {
+				which = adm_advisor_culture_var
+				value = -1
+			}
+			set_variable = {
+				which = dip_advisor_culture_var
+				value = -1
+			}
+			set_variable = {
+				which = mil_advisor_culture_var
+				value = -1
+			}
+		}
+	}
+}
+
+#Blood is Thicker than Water
+country_event = {
+	id = new_court_flavour_events.25
+	title = new_court_flavour_events.25.name
+	desc = new_court_flavour_events.25.desc
+
+	is_triggered_only = yes
+	
+	picture = ACCUSATION_eventPicture
+
+	trigger = {
+		NOT = {
+			has_country_flag = advisor_events_adm
+			has_country_flag = advisor_events_dip
+			has_country_flag = advisor_events_mil
+		}
+	
+		is_at_war = yes
+
+		NOT = {
+			is_in_war = {
+				duration = 365
+			}
+		}
+
+		any_country = {
+			war_with = root
+			is_free_or_tributary_trigger = yes
+			NOT = {
+				primary_culture = root
+			}
+			
+			root = {
+				employed_advisor = {
+					culture = prev
+					religion = prev
+				}
+				NOT = {
+					ruler_culture = prev
+				}
+			}
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					war_with = root
+					NOT = {
+						primary_culture = root
+					}
+					
+					root = {
+						employed_advisor = {
+							culture = prev
+							religion = prev
+						}
+						NOT = {
+							ruler_culture = prev
+						}
+					}
+				}
+				save_event_target_as = advisor_enemy_country
+
+				root = { #set flags to make sure correct advisor is used in locs.
+					if = {
+						limit = {
+							employed_advisor = {
+								category = ADM
+								culture = prev
+								religion = prev
+							}
+						}
+						export_to_variable = {
+							variable_name = advisor_culture
+							value = adm_advisor_culture
+						}
+						set_country_flag = advisor_events_adm
+					}
+					else_if = {
+						limit = {
+							employed_advisor = {
+								category = DIP
+								culture = prev
+								religion = prev
+							}
+						}
+						export_to_variable = {
+							variable_name = advisor_culture
+							value = dip_advisor_culture
+						}
+						set_country_flag = advisor_events_dip
+					}
+					else_if = {
+						limit = {
+							employed_advisor = {
+								category = MIL
+								culture = prev
+								religion = prev
+							}
+						}
+						export_to_variable = {
+							variable_name = advisor_culture
+							value = mil_advisor_culture
+						}
+						set_country_flag = advisor_events_mil
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = new_court_flavour_events.25.A
+
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				remove_advisor_by_category = ADM
+			}
+			advisor_events_dip = {
+				remove_advisor_by_category = DIP
+			}
+			advisor_events_mil = {
+				remove_advisor_by_category = MIL
+			}
+		}
+		
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+			set_variable = {
+				which = advisor_culture
+				value = -1
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+
+			modifier = {
+				factor = 0.5
+				OR = {
+					AND = {
+						has_country_flag = advisor_events_adm
+						has_adm_advisor_3 = yes
+					}
+					AND = {
+						has_country_flag = advisor_events_dip
+						has_dip_advisor_3 = yes
+					}
+					AND = {
+						has_country_flag = advisor_events_mil
+						has_mil_advisor_3 = yes
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = new_court_flavour_events.25.B
+
+		reduce_estate_nobles_loyalty_effect = yes
+
+		random_list = {
+			1 = {
+				custom_tooltip = tooltip_in_30_days
+				custom_tooltip = new_court_flavour_events.10.A.tt2
+				tooltip = {
+					event_target:advisor_enemy_country = {
+						root = { remove_fow = 6 }
+					}
+					add_prestige = -15
+				}
+				hidden_effect = {
+					event_target:advisor_enemy_country = {
+						country_event = { id = new_court_flavour_events.27 days = 30 }
+					}
+				}
+			}
+			2 = {
+				custom_tooltip = tooltip_in_30_days
+				custom_tooltip = new_court_flavour_events.10.A.tt1
+				tooltip = {
+					event_target:advisor_enemy_country = {
+						remove_fow = 6
+					}
+				}
+				hidden_effect = {
+					country_event = { id = new_court_flavour_events.26 days = 30 }
+				}
+			}
+		}
+	}
+}
+
+#success
+country_event = {
+	id = new_court_flavour_events.26
+	title = new_court_flavour_events.26.name
+	desc = new_court_flavour_events.26.desc
+
+	is_triggered_only = yes
+	
+	picture = SPY_eventPicture
+
+	trigger = {	
+		is_at_war = yes
+
+		event_target:advisor_enemy_country = {
+			exists = yes
+			war_with = root
+			NOT = {
+				primary_culture = root
+			}
+		}
+		
+		employed_advisor = {
+			culture = event_target:advisor_enemy_country
+			religion = event_target:advisor_enemy_country
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+		
+		event_target:advisor_enemy_country = {
+			remove_fow = 6
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+			set_variable = {
+				which = advisor_culture
+				value = -1
+			}
+		}
+	}
+}
+
+#other side: approached by traitor
+#exile_advisor_to would be nice in this case too
+country_event = {
+	id = new_court_flavour_events.27
+	title = new_court_flavour_events.27.name
+	desc = new_court_flavour_events.27.desc
+
+	is_triggered_only = yes
+	
+	picture = SPY_eventPicture
+
+	trigger = {	
+		is_at_war = yes
+
+		from = {
+			exists = yes
+			employed_advisor = {
+				culture = root
+				religion = root
+			}
+		}
+
+		war_with = from
+		NOT = {
+			primary_culture = from
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = advisor_traitor
+				type = advisor
+				scope = ROOT
+			}
+			if = {
+				limit = {
+					NOT = { monthly_income = 15 }
+				}
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 1					
+				}
+			}
+			else_if = {
+				limit = {
+					NOT = { monthly_income = 25 }
+				}
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 2					
+				}
+			}
+			else = {
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 3
+				}
+			}
+		}
+	}
+
+	option = {
+		name = new_court_flavour_events.27.option
+		
+		from = {
+			remove_fow = 6
+		}
+
+		if = {
+			limit = {
+				from = {
+					has_country_flag = advisor_events_adm
+				}
+			}
+			custom_tooltip = new_court_flavour_events_add_traitor_tooltip_adm
+		}
+		else_if = {
+			limit = {
+				from = {
+					has_country_flag = advisor_events_dip
+				}
+			}
+			custom_tooltip = new_court_flavour_events_add_traitor_tooltip_dip
+		}
+		else = {
+			custom_tooltip = new_court_flavour_events_add_traitor_tooltip_mil
+		}
+		
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = { monthly_income = 15 }
+				}
+				generate_traitor_advisor_effect = {
+					skill_level = 1
+				}
+			}
+			else_if = {
+				limit = {
+					NOT = { monthly_income = 25 }
+				}
+				generate_traitor_advisor_effect = {
+					skill_level = 2
+				}
+			}
+			else = {
+				generate_traitor_advisor_effect = {
+					skill_level = 3
+				}
+			}
+		}
+
+		hidden_effect = {
+			from = {
+				country_event = { id = new_court_flavour_events.28 }
+			}
+		}
+	}
+	after = {
+		hidden_effect = {
+			clear_saved_name = advisor_traitor
+			set_variable = {
+				which = event_advisor_skill_level
+				value = 0					
+			}
+		}
+	}
+}
+
+country_event = {
+	id = new_court_flavour_events.28
+	title = new_court_flavour_events.28.name
+	desc = new_court_flavour_events.28.desc
+
+	is_triggered_only = yes
+	
+	picture = SPY_eventPicture
+
+	option = {
+		name = UNFORTUNATE
+
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = { remove_advisor_by_category_no_action = ADM }
+			advisor_events_dip = { remove_advisor_by_category_no_action = DIP }
+			advisor_events_mil = { remove_advisor_by_category_no_action = MIL }
+		}
+
+		tooltip = {
+			event_target:advisor_enemy_country = {
+				root = { remove_fow = 6 }
+			}
+		}
+		add_prestige = -15
+	}
+
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+			set_variable = {
+				which = advisor_culture
+				value = -1
+			}
+		}
+	}
+}
+
+
+
+
+
+
+#Advisor wants bad relations
+country_event = {
+	id = new_court_flavour_events.30
+	title = new_court_flavour_events.30.name
+	desc = new_court_flavour_events.30.desc
+	
+	picture = ADVISOR_eventPicture
+
+	trigger = {
+		is_colonial_nation = no
+		
+		NOT = { 
+			has_country_modifier = recent_liaising_advisor_timer
+			has_country_flag = advisor_events_adm
+			has_country_flag = advisor_events_dip
+			has_country_flag = advisor_events_mil
+		}
+	
+		any_known_country = {
+			is_colonial_nation = no
+			is_subject = no
+
+			NOT = {
+				OR = {
+					has_country_modifier = recent_liaising_advisor_timer
+					war_with = root
+					primary_culture = root
+
+					alliance_with = root
+					
+					root = {
+						OR = {
+							ruler_culture = prev
+							is_rival = prev
+							overlord_of = prev
+						}
+					}
+					is_rival = root
+					overlord_of = root
+				}
+			}
+			root = {
+				employed_advisor = {
+					culture = prev
+				}
+				NOT = { has_opinion = { who = prev value = 100 } }
+				has_opinion = { who = prev value = -15 }
+			}
+		}
+	}
+
+	#reasonably rare
+	mean_time_to_happen = {
+		years = 100
+	}
+
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = recent_liaising_advisor_timer
+				duration = 18250
+				hidden = yes
+			}
+			random_known_country = {
+				limit = {
+					is_colonial_nation = no
+					is_subject = no
+					NOT = {
+						OR = {
+							has_country_modifier = recent_liaising_advisor_timer
+							war_with = root
+							primary_culture = root
+		
+							alliance_with = root
+							
+							root = {
+								OR = {
+									ruler_culture = prev
+									is_rival = prev
+									overlord_of = prev
+								}
+							}
+							is_rival = root
+							overlord_of = root
+						}
+					}
+					root = {
+						employed_advisor = {
+							culture = prev
+						}
+						NOT = { has_opinion = { who = prev value = 100 } }
+						has_opinion = { who = prev value = -15 }
+					}
+				}
+
+				save_event_target_as = advisor_antiliaisons_target_country
+				
+				root = { #set flags to make sure correct advisor is used in locs.
+					if = {
+						limit = {
+							employed_advisor = {
+								category = ADM
+								culture = prev
+							}
+						}
+						set_country_flag = advisor_events_adm
+					}
+					else_if = {
+						limit = {
+							employed_advisor = {
+								category = DIP
+								culture = prev
+							}
+						}
+						set_country_flag = advisor_events_dip
+					}
+					else_if = {
+						limit = {
+							employed_advisor = {
+								category = MIL
+								culture = prev
+							}
+						}
+						set_country_flag = advisor_events_mil
+					}
+				}
+			}
+		}
+	}
+
+	option = { #Yes
+		name = new_court_flavour_events.30.A
+
+		add_opinion = {
+			who = event_target:advisor_antiliaisons_target_country
+			modifier = advisor_antiliaisons
+		}
+		reverse_add_opinion = {
+			who = event_target:advisor_antiliaisons_target_country
+			modifier = advisor_spurious_accusations
+		}
+
+		add_estate_nobles_loyalty_effect = yes
+
+		hidden_effect = {
+			event_target:advisor_antiliaisons_target_country = {
+				add_country_modifier = {
+					name = recent_liaising_advisor_timer
+					duration = 18250
+					hidden = yes
+				}
+				country_event = { id = new_court_flavour_events.31 days = 1 }
+			}
+		}
+
+		ai_chance = {
+			factor = 1.5
+			modifier = { #always nice for player to get events :)
+				factor = 1.5
+				event_target:advisor_antiliaisons_target_country = {
+					ai = no
+				}
+			}
+
+			modifier = {
+				factor = 0.75
+				has_opinion = { who = event_target:advisor_antiliaisons_target_country value = 50 }
+			}
+			
+			modifier = {
+				factor = 0.67
+				NOT = {
+					army_strength = {
+						who = event_target:advisor_antiliaisons_target_country
+						value = 0.75
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					army_strength = {
+						who = event_target:advisor_antiliaisons_target_country
+						value = 0.5
+					}
+				}
+			}
+		}
+	}
+	option = { #No
+		name = new_court_flavour_events.30.B
+
+		add_prestige = -10
+		
+		hidden_effect = {
+			random_list = {
+				1 = {
+					country_event = { id = new_court_flavour_events.32 days = 135 random = 90 }
+				}
+				3 = {
+					trigger_switch = {
+						on_trigger = has_country_flag
+						advisor_events_adm = { clr_country_flag = advisor_events_adm }
+						advisor_events_dip = { clr_country_flag = advisor_events_dip }
+						advisor_events_mil = { clr_country_flag = advisor_events_mil }
+					}
+				}
+			}
+		}
+	}
+}
+
+
+country_event = {
+	id = new_court_flavour_events.31
+	title = new_court_flavour_events.31.name
+	desc = new_court_flavour_events.31.desc
+	
+	picture = ACCUSATION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = new_court_flavour_events.31.option
+
+		tooltip = {
+			reverse_add_opinion = {
+				who = from
+				modifier = advisor_antiliaisons
+			}
+			add_opinion = {
+				who = from
+				modifier = advisor_spurious_accusations
+			}
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			from = {
+				trigger_switch = {
+					on_trigger = has_country_flag
+					advisor_events_adm = { clr_country_flag = advisor_events_adm }
+					advisor_events_dip = { clr_country_flag = advisor_events_dip }
+					advisor_events_mil = { clr_country_flag = advisor_events_mil }
+				}
+			}
+		}
+	}
+}
+
+
+country_event = {
+	id = new_court_flavour_events.32
+	title = new_court_flavour_events.32.name
+	desc = new_court_flavour_events.32.desc
+	
+	picture = ADVISOR_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = new_court_flavour_events.32.A
+
+		add_opinion = {
+			who = event_target:advisor_antiliaisons_target_country
+			modifier = advisor_antiliaisons
+		}
+		reverse_add_opinion = {
+			who = event_target:advisor_antiliaisons_target_country
+			modifier = advisor_spurious_accusations
+		}
+		
+		hidden_effect = {
+			event_target:advisor_antiliaisons_target_country = {
+				add_country_modifier = {
+					name = recent_liaising_advisor_timer
+					duration = 18250
+					hidden = yes
+				}
+				country_event = { id = new_court_flavour_events.31 }
+			}
+		}
+
+		ai_chance = {
+			factor = 2
+			modifier = { #always nice for player to get events :)
+				factor = 1.5
+				event_target:advisor_antiliaisons_target_country = {
+					ai = no
+				}
+			}
+
+			modifier = {
+				factor = 0.75
+				has_opinion = { who = event_target:advisor_antiliaisons_target_country value = 50 }
+			}
+			
+			modifier = {
+				factor = 0.67
+				NOT = {
+					army_strength = {
+						who = event_target:advisor_antiliaisons_target_country
+						value = 0.75
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					army_strength = {
+						who = event_target:advisor_antiliaisons_target_country
+						value = 0.5
+					}
+				}
+			}
+		}
+	}
+	option = { #No
+		name = new_court_flavour_events.32.B
+
+		add_stability = -1
+		reduce_estate_nobles_loyalty_effect = yes
+
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+		}
+	}
+}
+
+
+
+#Exiled Advisor
+country_event = {
+	id = new_court_flavour_events.35
+	title = new_court_flavour_events.35.name
+	desc = new_court_flavour_events.35.desc
+	
+	picture = ADVISOR_eventPicture
+
+	trigger = {
+		NOT = { 
+			has_country_modifier = recent_exiled_advisor_timer
+		}
+		any_rival_country = {
+			NOT = { 
+				has_country_modifier = recent_exiled_advisor_timer
+				war_with = root
+				is_subject_of = root
+				root = {
+					is_subject_of = prev
+				}
+				has_opinion_modifier = {
+					who = root
+					modifier = opinion_took_in_exiles
+				}
+			}
+			religion_group = root
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 900 #75 years
+		modifier = {
+			factor = 1.5
+			NOT = { current_age = age_of_reformation }
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_rival_country = {
+				limit = {
+					NOT = { 
+						has_country_modifier = recent_exiled_advisor_timer
+						war_with = root
+						is_subject_of = root
+						root = {
+							is_subject_of = prev
+						}
+						has_opinion_modifier = {
+							who = root
+							modifier = opinion_took_in_exiles
+						}
+					}
+					religion_group = root
+				}
+				save_event_target_as = exile_country
+			}
+			set_saved_name = {
+				key = fleeing_advisor
+				type = advisor
+				scope = event_target:exile_country
+			}
+			add_country_modifier = {
+				name = recent_exiled_advisor_timer
+				duration = 5475
+				hidden = yes
+			}
+			random_list = {
+				1 = { set_country_flag = court_flavour_philosopher }
+				1 = { set_country_flag = court_flavour_natural_scientist }
+				1 = { set_country_flag = court_flavour_artist }
+				1 = { set_country_flag = court_flavour_treasurer }
+				1 = {
+					set_country_flag = court_flavour_theologian
+					trigger = {
+						event_target:exile_country = {
+							religion = root
+						}
+					}
+				}
+				1 = { set_country_flag = court_flavour_master_of_mint }
+				1 = {
+					set_country_flag = court_flavour_inquisitor
+					trigger = {
+						event_target:exile_country = {
+							religion = root
+						}
+					}
+				}
+				1 = { set_country_flag = court_flavour_statesman }
+				1 = {
+					set_country_flag = court_flavour_naval_reformer
+					trigger = {
+						navy_size = 1
+						event_target:exile_country = {
+							navy_size = 1
+						}
+					}
+				}
+				1 = { set_country_flag = court_flavour_trader }
+				1 = { set_country_flag = court_flavour_spymaster }
+				1 = { set_country_flag = court_flavour_diplomat }
+				1 = { set_country_flag = court_flavour_army_reformer }
+				1 = { set_country_flag = court_flavour_army_organiser }
+				1 = { set_country_flag = court_flavour_commandant }
+				1 = { set_country_flag = court_flavour_quartermaster }
+				1 = { set_country_flag = court_flavour_recruitmaster }
+				1 = { set_country_flag = court_flavour_fortification_expert }
+				1 = { set_country_flag = court_flavour_grand_captain }
+				1 = {
+					set_country_flag = court_flavour_colonial_governor
+					trigger = {
+						num_of_colonists = 1
+						is_colonial_nation = no
+						event_target:exile_country = {
+							num_of_colonists = 1
+							is_colonial_nation = no
+						}
+					}
+				}
+				1 = {
+					set_country_flag = court_flavour_navigator
+					trigger = {
+						num_of_colonists = 1
+						event_target:exile_country = {
+							num_of_colonists = 1
+						}
+					}
+				}
+			}
+			if = {
+				limit = {
+					NOT = { monthly_income = 15 }
+				}
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 1					
+				}
+			}
+			else_if = {
+				limit = {
+					NOT = { monthly_income = 25 }
+				}
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 2					
+				}
+			}
+			else = {
+				set_variable = {
+					which = event_advisor_skill_level
+					value = 3
+				}
+			}
+		}
+	}
+
+	option = { #take him in
+		name = new_court_flavour_events.35.A
+
+		add_prestige = 10
+
+		trigger_switch = {
+			on_trigger = has_country_flag
+			court_flavour_philosopher = {
+				generate_exile_advisor_effect = {
+					advisor_type = philosopher
+				}
+			}
+			court_flavour_natural_scientist = {
+				generate_exile_advisor_effect = {
+					advisor_type = natural_scientist
+				}
+			}
+			court_flavour_artist = {
+				generate_exile_advisor_effect = {
+					advisor_type = artist
+				}
+			}
+			court_flavour_treasurer = {
+				generate_exile_advisor_effect = {
+					advisor_type = treasurer
+				}
+			}
+			court_flavour_theologian = {
+				generate_exile_advisor_effect = {
+					advisor_type = theologian
+				}
+			}
+			court_flavour_master_of_mint = {
+				generate_exile_advisor_effect = {
+					advisor_type = master_of_mint
+				}
+			}
+			court_flavour_inquisitor = {
+				generate_exile_advisor_effect = {
+					advisor_type = inquisitor
+				}
+			}
+			court_flavour_statesman = {
+				generate_exile_advisor_effect = {
+					advisor_type = statesman
+				}
+			}
+			court_flavour_naval_reformer = {
+				generate_exile_advisor_effect = {
+					advisor_type = naval_reformer
+				}
+			}
+			court_flavour_trader = {
+				generate_exile_advisor_effect = {
+					advisor_type = trader
+				}
+			}
+			court_flavour_spymaster = {
+				generate_exile_advisor_effect = {
+					advisor_type = spymaster
+				}
+			}
+			court_flavour_diplomat = {
+				generate_exile_advisor_effect = {
+					advisor_type = diplomat
+				}
+			}
+			court_flavour_army_reformer = {
+				generate_exile_advisor_effect = {
+					advisor_type = army_reformer
+				}
+			}
+			court_flavour_army_organiser = {
+				generate_exile_advisor_effect = {
+					advisor_type = army_organiser
+				}
+			}
+			court_flavour_commandant = {
+				generate_exile_advisor_effect = {
+					advisor_type = commandant
+				}
+			}
+			court_flavour_quartermaster = {
+				generate_exile_advisor_effect = {
+					advisor_type = quartermaster
+				}
+			}
+			court_flavour_recruitmaster = {
+				generate_exile_advisor_effect = {
+					advisor_type = recruitmaster
+				}
+			}
+			court_flavour_fortification_expert = {
+				generate_exile_advisor_effect = {
+					advisor_type = fortification_expert
+				}
+			}
+			court_flavour_grand_captain = {
+				generate_exile_advisor_effect = {
+					advisor_type = grand_captain
+				}
+			}
+			court_flavour_colonial_governor = {
+				generate_exile_advisor_effect = {
+					advisor_type = colonial_governor
+				}
+			}
+			court_flavour_navigator = {
+				generate_exile_advisor_effect = {
+					advisor_type = navigator
+				}
+			}
+		}
+
+		reverse_add_opinion = {
+			who = event_target:exile_country
+			modifier = opinion_took_in_exiles			
+		}
+
+		hidden_effect = {
+			random_list = {
+				2 = {
+					hidden_effect = {
+						clear_saved_name = fleeing_advisor
+					}
+				}
+				1 = {
+					country_event = { id = new_court_flavour_events.36 days = 50 }
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 2
+		}
+	}
+	
+	option = { #turn him away
+		name = new_court_flavour_events.35.B
+
+		reverse_add_opinion = {
+			who = event_target:exile_country
+			modifier = opinion_turned_away_exiles			
+		}
+		hidden_effect = {
+			clear_saved_name = fleeing_advisor
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			clr_country_flag = court_flavour_philosopher
+			clr_country_flag = court_flavour_natural_scientist
+			clr_country_flag = court_flavour_artist
+			clr_country_flag = court_flavour_treasurer
+			clr_country_flag = court_flavour_theologian
+			clr_country_flag = court_flavour_master_of_mint
+			clr_country_flag = court_flavour_inquisitor
+			clr_country_flag = court_flavour_statesman
+			clr_country_flag = court_flavour_naval_reformer
+			clr_country_flag = court_flavour_trader
+			clr_country_flag = court_flavour_spymaster
+			clr_country_flag = court_flavour_diplomat
+			clr_country_flag = court_flavour_army_reformer
+			clr_country_flag = court_flavour_army_organiser
+			clr_country_flag = court_flavour_commandant
+			clr_country_flag = court_flavour_quartermaster
+			clr_country_flag = court_flavour_recruitmaster
+			clr_country_flag = court_flavour_fortification_expert
+			clr_country_flag = court_flavour_grand_captain
+			clr_country_flag = court_flavour_colonial_governor
+			clr_country_flag = court_flavour_navigator
+			set_variable = {
+				which = event_advisor_skill_level
+				value = 0
+			}
+		}
+	}
+}
+
+#he invites his friends
+country_event = {
+	id = new_court_flavour_events.36
+	title = new_court_flavour_events.36.name
+	desc = new_court_flavour_events.36.desc
+	
+	picture = ADVISOR_eventPicture
+
+	trigger = {
+		event_target:exile_country = {
+			exists = yes
+			is_rival = root
+		}
+	}
+
+	is_triggered_only = yes
+
+	option = { #take them in
+		name = new_court_flavour_events.36.A
+
+		add_adm_power = 20
+		add_dip_power = 20
+		add_mil_power = 20
+
+		reverse_add_opinion = {
+			who = event_target:exile_country
+			modifier = opinion_took_in_exiles			
+		}
+
+		event_target:exile_country = { country_event = { id = new_court_flavour_events.37 } }
+
+		ai_chance = {
+			factor = 2
+		}
+	}
+	
+	option = { #turn them away
+		name = new_court_flavour_events.36.B
+
+		add_prestige = -10
+	}
+	
+	after = {
+		hidden_effect = {
+			clear_saved_name = fleeing_advisor
+		}
+	}
+}
+
+country_event = {
+	id = new_court_flavour_events.37
+	title = new_court_flavour_events.37.name
+	desc = new_court_flavour_events.37.desc
+	
+	picture = ADVISOR_eventPicture
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = recent_exiled_advisor_timer
+				duration = 3650
+				hidden = yes
+			}
+		}
+	}
+
+	option = {
+		name = new_court_flavour_events.37.option
+
+		reverse_add_opinion = {
+			who = from
+			modifier = opinion_hosting_exiles			
+		}
+	}
+}
+
+
+#Pope can object to heretic in other country
+country_event = {
+	id = new_court_flavour_events.39
+	title = new_court_flavour_events.39.name
+	desc = new_court_flavour_events.39.desc
+	
+	picture = POPE_PREACHING_eventPicture
+
+	trigger = {
+		tag = PAP
+		
+		NOT = { 
+			has_country_modifier = recent_papal_advisor_demand_timer
+		}
+		any_known_country = {
+			religion = catholic
+			employed_advisor = {
+				religion = heretic
+			}
+			is_excommunicated = no
+			NOT = { overlord_of = root }
+	
+			is_colonial_nation = no
+			is_subject = no
+			
+			NOT = { 
+				has_country_modifier = recent_papal_advisor_demand_timer
+				has_country_flag = advisor_events_adm
+				has_country_flag = advisor_events_dip
+				has_country_flag = advisor_events_mil
+			}
+	
+			NOT = { is_papal_controller = yes }
+			has_regency = no
+		}
+	}
+
+	mean_time_to_happen = { days = 5475 }
+
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = recent_papal_advisor_demand_timer
+				hidden = yes
+				duration = 3650
+			}
+			
+			random_known_country = {
+				limit = {
+					religion = catholic
+					employed_advisor = {
+						religion = heretic
+					}
+					is_excommunicated = no
+			
+					is_colonial_nation = no
+					is_subject = no
+					NOT = { overlord_of = root }
+					
+					NOT = { 
+						has_country_modifier = recent_papal_advisor_demand_timer
+						has_country_flag = advisor_events_adm
+						has_country_flag = advisor_events_dip
+						has_country_flag = advisor_events_mil
+					}
+					NOT = { is_papal_controller = yes }
+					has_regency = no
+				}
+				save_event_target_as = heathen_advisor_country
+				if = {
+					limit = {
+						employed_advisor = {
+							category = ADM
+							religion = heretic
+						}
+					}
+					export_to_variable = {
+						variable_name = advisor_religion
+						value = adm_advisor_religion
+					}
+					set_country_flag = advisor_events_adm
+				}
+				else_if = {
+					limit = {
+						employed_advisor = {
+							category = DIP
+							religion = heretic
+						}
+					}
+					export_to_variable = {
+						variable_name = advisor_religion
+						value = dip_advisor_religion
+					}
+					set_country_flag = advisor_events_dip
+				}
+				else = {
+					set_country_flag = advisor_events_mil
+					export_to_variable = {
+						variable_name = advisor_religion
+						value = mil_advisor_religion
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = new_court_flavour_events.39.A
+		add_devotion = 5
+		event_target:heathen_advisor_country = {
+			country_event = { id = new_court_flavour_events.40 days = 5 }
+			add_opinion = {
+				who = root
+				modifier = opinion_interfering_pope
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = 10
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				event_target:heathen_advisor_country = {
+					OR = {
+						alliance_with = root
+						reverse_has_opinion = {
+							who = root
+							value = 100
+						}
+					}
+				}
+			}
+			modifier = {
+				factor = 2
+				event_target:heathen_advisor_country = {
+					NOT = {
+						reverse_has_opinion = {
+							who = root
+							value = -50
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = new_court_flavour_events.39.B
+		add_devotion = -10
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -10
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				NOT = { devotion = 50 }
+			}
+			modifier = {
+				factor = 0
+				NOT = { devotion = 30 }
+			}
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			set_variable = {
+				which = advisor_religion
+				value = -1
+			}
+		}
+	}
+}
+
+#Pope objects to heretic advisor
+country_event = {
+	id = new_court_flavour_events.40
+	title = new_court_flavour_events.40.name
+	desc = new_court_flavour_events.40.desc
+	
+	picture = POPE_PREACHING_eventPicture
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = recent_papal_advisor_demand_timer
+				hidden = yes
+				duration = 9125
+			}
+		}
+	}
+
+	option = { #agree to demands
+		name = new_court_flavour_events.40.A
+
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				remove_advisor_by_category = ADM
+			}
+			advisor_events_dip = {
+				remove_advisor_by_category = DIP
+			}
+			advisor_events_mil = {
+				remove_advisor_by_category = MIL
+			}
+		}
+
+		add_country_modifier = {
+			name = handed_over_heretic
+			duration = 5475
+		}
+
+		PAP = {
+			add_opinion = {
+				who = root
+				modifier = opinion_bowed_to_papal_demand_advisor
+			}
+			hidden_effect = { country_event = { id = new_court_flavour_events.41 } }
+		}
+		add_estate_influence_modifier = {
+			estate = estate_church
+			desc = EST_VAL_ACCEPTED_POPE_DEMANDS
+			influence = 10
+			duration = 5475
+		}
+
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 2
+				has_opinion = {
+					who = PAP
+					value = 50
+				}
+			}
+			modifier = {
+				factor = 2
+				has_opinion = {
+					who = PAP
+					value = 100
+				}
+			}
+			modifier = {
+				factor = 0.5
+				NOT = {
+					has_opinion = {
+						who = PAP
+						value = -50
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				num_of_owned_provinces_with = {
+					value = 5
+					religion_group = root
+					NOT = { religion = root }
+				}
+			}
+		}
+	}
+
+	option = { #reject demands
+		name = new_court_flavour_events.40.B
+		
+		PAP = {
+			add_opinion = {
+				who = root
+				modifier = opinion_rejected_papal_demand_advisor
+			}
+			hidden_effect = { country_event = { id = new_court_flavour_events.42 } }
+		}
+
+		add_papal_influence = -20
+		reduce_estate_church_loyalty_effect = yes
+	}
+}
+
+#They Complied
+country_event = {
+	id = new_court_flavour_events.41
+	title = new_court_flavour_events.41.name
+	desc = new_court_flavour_events.41.desc
+	
+	picture = POPE_PREACHING_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = new_court_flavour_events.41.A
+
+		tooltip = {
+			reverse_add_opinion = {
+				who = from
+				modifier = opinion_bowed_to_papal_demand_advisor
+			}
+		}
+	}
+	after = {
+		from = {
+			hidden_effect = {
+				trigger_switch = {
+					on_trigger = has_country_flag
+					advisor_events_adm = { clr_country_flag = advisor_events_adm }
+					advisor_events_dip = { clr_country_flag = advisor_events_dip }
+					advisor_events_mil = { clr_country_flag = advisor_events_mil }
+				}
+			}
+		}
+	}
+}
+
+#They Refused
+country_event = {
+	id = new_court_flavour_events.42
+	title = new_court_flavour_events.42.name
+	desc = new_court_flavour_events.42.desc
+	
+	picture = POPE_PREACHING_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = new_court_flavour_events.42.A
+
+		tooltip = {
+			reverse_add_opinion = {
+				who = from
+				modifier = opinion_rejected_papal_demand_advisor
+			}
+		}
+	}
+	after = {
+		from = {
+			hidden_effect = {
+				trigger_switch = {
+					on_trigger = has_country_flag
+					advisor_events_adm = { clr_country_flag = advisor_events_adm }
+					advisor_events_dip = { clr_country_flag = advisor_events_dip }
+					advisor_events_mil = { clr_country_flag = advisor_events_mil }
+				}
+			}
+		}
+	}
+}

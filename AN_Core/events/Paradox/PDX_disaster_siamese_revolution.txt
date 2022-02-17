@@ -1,0 +1,824 @@
+namespace = siamese_rev
+
+# start event
+country_event = {
+	id = siamese_rev.1
+	title = siamese_rev.1.t
+	desc = siamese_rev.1.d
+	picture = PORTUGUESE_MERCHANTS_eventPicture
+
+	is_triggered_only = yes
+	major = yes
+	fire_only_once = yes
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = siam_revolution_start_flag
+			random_known_country = {
+				limit = {
+					OR = {
+						alliance_with = ROOT
+						has_opinion = {
+							who = ROOT
+							value = 50
+						}
+					}
+					NOT = { religion = ROOT }
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+				}
+				save_event_target_as = siam_european_country
+			}
+		}
+	}
+	
+	option = {
+		name = siamese_rev.1.a
+		add_stability = -2
+	}
+}
+
+# ending event
+country_event = {
+	id = siamese_rev.2
+	title = siamese_rev.2.t
+	desc = {
+		trigger = {
+			has_country_flag = phetracha_coup
+		}
+		desc = siamese_rev.2.d
+	}
+	desc = {
+		trigger = {
+			has_country_flag = phetracha_arrested
+		}
+		desc = siamese_rev.2.d2
+	}
+	picture = COURT_eventPicture	
+
+	is_triggered_only = yes
+	major = yes
+	fire_only_once = yes
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = had_siamese_revolution
+		}
+	}
+	
+	option = {
+		name = siamese_rev.2.a
+		add_stability_or_adm_power = yes
+		if = {
+			limit = {
+				has_country_flag = phetracha_coup
+			}
+			every_known_country = {
+				limit = {
+					total_development = 200
+					NOT = { war_with = ROOT }
+					NOT = { is_rival = ROOT }
+					technology_group = chinese
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_siam_antiimperialist
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				has_country_flag = phetracha_arrested
+			}
+			every_known_country = {
+				limit = {
+					technology_group = western
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_open_siam
+				}
+			}
+		}
+	}
+}
+
+# Random events
+
+# Foreign Missionaries Attacked
+country_event = {
+	id = siamese_rev.3
+	title = siamese_rev.3.t
+	desc = siamese_rev.3.d
+	picture = RELIGIOUS_TURMOIL_eventPicture
+	goto = siam_foreign_missionary_province
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = {
+			religion_group = christian
+		}
+		any_known_country = {
+			religion_group = christian
+			NOT = { war_with = ROOT }
+			capital_scope = {
+				continent = europe
+			}
+			technology_group = western # this is primarily to exclude Russia
+		}
+		any_owned_province = {
+			has_port = yes
+			is_city = yes
+			superregion = east_indies_superregion
+			religion = ROOT
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_church
+				modifier = EST_VAL_SIA_RESTRICTED_FOREIGN_MISSIONARIES
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					NOT = { war_with = ROOT }
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+				}
+				save_event_target_as = siam_foreign_missionary_country
+			}
+			random_owned_province = {
+				limit = {
+					has_port = yes
+					is_city = yes
+					superregion = east_indies_superregion
+					religion = ROOT
+				}
+				save_event_target_as = siam_foreign_missionary_province
+			}
+		}
+	}
+	
+	option = {
+		name = siamese_rev.3.a
+		event_target:siam_foreign_missionary_country = {
+			add_dip_power = 50
+		}
+		event_target:siam_foreign_missionary_province = {
+			change_religion = event_target:siam_foreign_missionary_country
+		}
+		event_target:siam_foreign_missionary_country = {
+			add_opinion = {
+				who = ROOT
+				modifier = siam_allowed_misionaries
+			}
+		}
+		change_variable = {
+			which = siam_openness
+			value = 1
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	
+	option = {
+		name = siamese_rev.3.b
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_influence_modifier = {
+				estate = estate_church
+				desc = EST_VAL_SIA_RESTRICTED_FOREIGN_MISSIONARIES
+				influence = 10
+				duration = 1825
+			}
+		}
+		event_target:siam_foreign_missionary_country = {
+			add_opinion = {
+				who = ROOT
+				modifier = siam_denied_misionaries
+			}
+		}
+		change_variable = {
+			which = siam_reactionism
+			value = 1
+		}
+		ai_chance = {
+			factor = 75
+		}
+	}
+}
+
+# Reactionary nobles caught plotting
+country_event = {
+	id = siamese_rev.4
+	title = siamese_rev.4.t
+	desc = siamese_rev.4.d
+	picture = SPY_eventPicture	
+	goto = sia_noble_plot_province
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		any_owned_province = {
+			controlled_by = ROOT
+			superregion = east_indies_superregion
+		}
+		NOT = {
+			has_estate_loyalty_modifier = {
+				estate = estate_nobles
+				modifier = EST_VAL_SIA_PROVOKED_NOBLES
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_nobles
+				modifier = EST_VAL_SIA_SUPPORTED_NOBLE_PLOTS
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					controlled_by = ROOT
+					is_state = yes
+					superregion = east_indies_superregion
+				}
+				save_event_target_as = sia_noble_plot_province
+			}
+		}
+	}
+	
+	option = {
+		name = siamese_rev.4.a
+		event_target:sia_noble_plot_province = {
+			spawn_rebels = {
+				type = noble_rebels
+				size = 1
+			}
+		}
+		if = {
+			limit = {
+				has_estate = estate_nobles
+			}
+			add_estate_loyalty_modifier = {
+				estate = estate_nobles
+				desc = EST_VAL_SIA_PROVOKED_NOBLES
+				loyalty = -10
+				duration = 1825
+			}
+		}
+		change_variable = {
+			which = siam_openness
+			value = 1
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	option = {
+		name = siamese_rev.4.b
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_influence_modifier = {
+				estate = estate_nobles
+				desc = EST_VAL_SIA_SUPPORTED_NOBLE_PLOTS
+				influence = 10
+				duration = 1825
+			}
+		}
+		change_variable = {
+			which = siam_reactionism
+			value = 2
+		}
+		ai_chance = {
+			factor = 75
+		}
+	}
+}
+
+# Suspicious European military activity
+country_event = {
+	id = siamese_rev.5
+	title = siamese_rev.5.t
+	desc = siamese_rev.5.d
+	picture = MILITARY_CAMP_eventPicture	
+
+	is_triggered_only = yes
+	
+	trigger = {
+		any_known_country = {
+			capital_scope = {
+				continent = europe
+			}
+			technology_group = western # this is primarily to exclude Russia
+			NOT = {
+				has_opinion_modifier = {
+					who = ROOT
+					modifier = opinion_sia_aggressive_acts
+				}
+			}
+			NOT = {
+				has_casus_belli = {
+					type = cb_annex
+					target = ROOT
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+					NOT = {
+						has_opinion_modifier = {
+							who = ROOT
+							modifier = opinion_sia_aggressive_acts
+						}
+					}
+					NOT = {
+						has_casus_belli = {
+							type = cb_vassalize_mission
+							target = ROOT
+						}
+					}
+				}
+				save_event_target_as = sia_european_aggressor_country
+			}
+		}
+	}
+	
+	option = {
+		name = siamese_rev.5.a
+		change_variable = {
+			which = siam_openness
+			value = 1
+		}
+		random_list = {
+			50 = {}
+			50 = {
+				event_target:sia_european_aggressor_country = {
+					hidden_effect = {
+						country_event = {
+							id = siamese_rev.10
+							days = 1
+						}
+					}
+					add_casus_belli = {
+						target = ROOT
+						type = cb_vassalize_mission
+						months = 60
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	
+	option = {
+		name = siamese_rev.5.b
+		add_mil_power = -50
+		event_target:sia_european_aggressor_country = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sia_aggressive_acts
+			}
+		}
+		change_variable = {
+			which = siam_reactionism
+			value = 1
+		}
+		ai_chance = {
+			factor = 75
+		}
+	}
+}
+
+# Embassy to discuss trade relations
+country_event = {
+	id = siamese_rev.6
+	title = siamese_rev.6.t
+	desc = siamese_rev.6.d
+	picture = MERCHANTS_TALKING_eventPicture	
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		any_known_country = {
+			has_opinion = {
+				who = ROOT
+				value = 25
+			}
+			NOT = { war_with = ROOT }
+			capital_scope = {
+				continent = europe
+			}
+			technology_group = western # this is primarily to exclude Russia
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					has_opinion = {
+						who = ROOT
+						value = 25
+					}
+					NOT = { war_with = ROOT }
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+				}
+				save_event_target_as = sia_european_embassy_country
+			}
+		}
+	}
+	
+	option = {
+		name = siamese_rev.6.a
+		add_mercantilism = -1
+		event_target:sia_european_embassy_country = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sia_embassy_good
+			}
+		}
+		change_variable = {
+			which = siam_openness
+			value = 1
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	
+	option = {
+		name = siamese_rev.6.b
+		add_mercantilism = 1
+		event_target:sia_european_embassy_country = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_sia_embassy_bad
+			}
+		}
+		change_variable = {
+			which = siam_reactionism
+			value = 1
+		}
+		ai_chance = {
+			factor = 75
+		}
+	}
+}
+
+# Pre-Ending Events
+
+# Phetracha's Palace Coup
+country_event = {
+	id = siamese_rev.7
+	title = siamese_rev.7.t
+	desc = siamese_rev.7.d
+	picture = REVOLUTION_eventPicture	
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		check_variable = {
+			which = siam_reactionism
+			value = 10
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = phetracha_coup
+		}
+	}
+	
+	option = {
+		name = siamese_rev.7.a
+		define_ruler = {
+			name = "Phetracha"
+			dynasty = "Ban Phlu Luang"
+			adm = 4
+			dip = 1
+			mil = 4
+		}
+		add_country_modifier = {
+			name = siamese_revolution
+			duration = -1
+		}
+		every_known_country = {
+			limit = {
+				technology_group = western
+				any_owned_province = {
+					superregion = east_indies_superregion
+				}
+			}
+			reverse_add_opinion = {
+				who = ROOT
+				modifier = opinion_siam_isolationism
+			}
+		}
+	}
+}
+
+# Phetracha's Arrest
+country_event = {
+	id = siamese_rev.8
+	title = siamese_rev.8.t
+	desc = siamese_rev.8.d
+	picture = ASSASSINATION_eventPicture	
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		check_variable = {
+			which = siam_openness
+			value = 10
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = phetracha_arrested
+		}
+	}
+	
+	option = {
+		name = siamese_rev.8.a
+		if = {
+			limit = {
+				is_institution_enabled = renaissance
+				any_known_country = {
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+					has_institution = renaissance
+				}						
+				capital_scope = {
+					NOT = { renaissance = 100 }
+				}
+			}
+			capital_scope = {
+				add_institution_embracement = {
+					which = renaissance
+					value = 50
+				}
+			}
+		}
+		if = {
+			limit = {
+				is_institution_enabled = new_world_i
+				any_known_country = {
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+					has_institution = renaissance
+				}
+				capital_scope = {
+					NOT = { new_world_i = 100 }
+				}
+			}
+			capital_scope = {
+				add_institution_embracement = {
+					which = new_world_i
+					value = 50
+				}
+			}
+		}
+		if = {
+			limit = {
+				is_institution_enabled = printing_press
+				any_known_country = {
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+					has_institution = renaissance
+				}
+				capital_scope = {
+					NOT = { printing_press = 100 }
+				}
+			}
+			capital_scope = {
+				add_institution_embracement = {
+					which = printing_press
+					value = 50
+				}
+			}
+		}
+		if = {
+			limit = {
+				is_institution_enabled = global_trade
+				any_known_country = {
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+					has_institution = renaissance
+				}
+				capital_scope = {
+					NOT = { global_trade = 100 }
+				}
+			}
+			capital_scope = {
+				add_institution_embracement = {
+					which = global_trade
+					value = 50
+				}
+			}
+		}
+		if = {
+			limit = {
+				is_institution_enabled = manufactories
+				any_known_country = {
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+					has_institution = renaissance
+				}
+				capital_scope = {
+					NOT = { manufactories = 100 }
+				}
+			}
+			capital_scope = {
+				add_institution_embracement = {
+					which = manufactories
+					value = 50
+				}
+			}
+		}
+		if = {
+			limit = {
+				is_institution_enabled = enlightenment
+				any_known_country = {
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+					has_institution = renaissance
+				}
+				capital_scope = {
+					NOT = { enlightenment = 100 }
+				}
+			}
+			capital_scope = {
+				add_institution_embracement = {
+					which = enlightenment
+					value = 50
+				}
+			}
+		}
+		add_country_modifier = {
+			name = siamese_age_of_openness
+			duration = -1
+		}
+	}
+}
+
+# Pre-disaster event
+# [Root.Monarch.GetName]'s Foreign Policy
+country_event = {
+	id = siamese_rev.9
+	title = siamese_rev.9.t
+	desc = siamese_rev.9.d
+	picture = PORTUGUESE_MERCHANTS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		OR = {
+			tag = AYU
+			tag = SIA
+		}
+		any_known_country = {
+			capital_scope = {
+				continent = europe
+			}
+			technology_group = western # this is primarily to exclude Russia
+			any_owned_province = {
+				superregion = east_indies_superregion
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					capital_scope = {
+						continent = europe
+					}
+					technology_group = western # this is primarily to exclude Russia
+					any_owned_province = {
+						superregion = east_indies_superregion
+					}
+				}
+				save_event_target_as = narai_foreign_policy_country
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 36
+	}
+	
+	option = {
+		name = siam_rev.9.a
+		add_dip_power = 150
+		custom_tooltip = siam_rev_can_start_tt
+		set_variable = {
+			which = siam_reactionism
+			value = 0
+		}
+		set_variable = {
+			which = siam_openness
+			value = 0
+		}
+		hidden_effect = {
+			set_country_flag = can_have_phaulkon_flag
+			set_country_flag = narai_foreign_policy_flag
+			country_event = {
+				id = flavor_ayu.9
+				days = 365
+			}
+		}
+	}
+}
+
+country_event = {
+	id = siamese_rev.10
+	title = siamese_rev.10.t
+	desc = siamese_rev.10.d
+	picture = PORTUGUESE_MERCHANTS_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = siam_rev.10.a
+		add_casus_belli = {
+			target = FROM
+			type = cb_vassalize_mission
+			months = 60
+		}
+	}
+}

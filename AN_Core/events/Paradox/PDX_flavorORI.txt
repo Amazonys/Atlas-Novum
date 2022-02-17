@@ -1,0 +1,547 @@
+########################################
+# Events for Orissa
+#
+# written by Henrik Lohmander
+########################################
+
+namespace = flavor_ori
+normal_or_historical_nations = yes
+
+
+# The Gajapatis and the Cult of Jagganath
+country_event = {
+	id = flavor_ori.1
+	title = flavor_ori.1.t
+	desc = flavor_ori.1.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	fire_only_once = yes
+
+	trigger = {
+		OR = {
+			has_country_flag = ori_jagannath_mission_flag
+			AND = {
+				NOT = {
+					has_mission = ori_jagannath_mission
+				}
+				dynasty = "Gajapati"
+				owns = 552 #Puri
+				NOT = { is_year = 1560 }
+				tag = ORI
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 348
+	}
+	
+	
+	option = { 
+		name = flavor_ori.1.a 
+		trigger = {
+			NOT = {
+				has_country_flag = ori_jagannath_mission_flag
+			}
+		}
+		ai_chance = { factor = 90 }
+		add_years_of_income = -0.1	#Temple donations
+		add_country_modifier = {
+			name = ori_jagannath_cult
+			duration = -1
+		}
+	}
+	option = {
+		name = flavor_ori.1.b 
+		trigger = {
+			NOT = {
+				has_country_flag = ori_jagannath_mission_flag
+			}
+		}
+		ai_chance = { factor = 10 }
+		add_stability_or_adm_power = yes #From keeping the status quo and supporting other deities.
+	}
+	option = {
+		name = flavor_ori.1.a
+		trigger = {
+			has_country_flag = ori_jagannath_mission_flag
+		}
+		add_country_modifier = {
+			name = ori_jagannath_cult_dh
+			duration = -1
+		}
+	}
+	
+}
+	
+# Abolishment of the Salt Tax
+country_event = {
+	id = flavor_ori.2
+	title = flavor_ori.2.t
+	desc = flavor_ori.2.d
+	picture = FARMING_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = ORI
+		has_ruler = "Kapilendra"
+		not = { is_year = 1466 }
+	}
+
+	mean_time_to_happen = {
+		months = 66
+	}
+	
+	
+	option = { 
+		name = flavor_ori.2.a
+		ai_chance = { factor = 95 }
+		add_years_of_income = -0.1
+		add_country_modifier = {
+			name = ori_no_salt_tax
+			duration = 3650
+		}
+	}
+	option = {
+		name = flavor_ori.2.b	
+		ai_chance = { factor = 5 }
+		add_years_of_income = 0.1
+		add_country_modifier = {
+			name = ori_popular_unrest
+			duration = 3650
+		}
+	}
+	
+}
+
+# Death of Kapilendra
+country_event = {
+	id = flavor_ori.3
+	title = flavor_ori.3.t
+	desc = flavor_ori.3.d
+	picture = KING_SICK_IN_BED_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = ORI
+		is_year = 1460
+		NOT = { is_year = 1470 }
+		has_ruler = "Kapilendra"
+		num_of_cities = 9 #There has to be a kingdom to fight over.
+		owns = 543 #Must control atleast the northern coast of Andhra
+		owns = 2084 #Must control atleast the northern coast of Andhra
+	}
+
+	mean_time_to_happen = {
+		months = 30
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					culture = telegu
+				}
+				set_province_flag = ori_center_of_hamviras_revolt
+			}
+			every_owned_province = {
+				limit = {
+					is_capital = no
+					culture = telegu
+					NOT = { has_province_flag = ori_center_of_hamviras_revolt }
+				}
+				set_province_flag = ori_hamviras_revolt
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = yes
+				}
+				set_province_flag = ori_center_of_puroshottama_revolt
+			}
+			every_owned_province = {
+				limit = {
+					is_capital = no
+					culture = oriya
+					NOT = { has_province_flag = ori_center_of_puroshottama_revolt }
+				}
+				set_province_flag = ori_puroshottama_revolt
+			}
+		}
+	}
+	
+	option = {
+		name = flavor_ori.3.a	#Purushottama
+		ai_chance = { factor = 95 }
+		hidden_effect = {
+			kill_heir = { allow_new_heir = no }
+			every_neighbor_country = {
+				limit = {
+					NOT = { tag = BAH }
+				}
+			country_event = { id = flavor_ori.4 }
+			}
+			if = {
+				limit = {
+					OR = {
+						2028 = { owned_by = BAH }
+						542 = { owned_by = BAH }
+						2037 = { owned_by = BAH }
+					}
+				}
+				BAH = { country_event = { id = flavor_ori.5 } }
+			}
+			if = {
+				limit = {
+					NOT = {
+						2028 = { owned_by = BAH }
+						542 = { owned_by = BAH }
+						2037 = { owned_by = BAH }
+					}
+				}
+				BAH = { country_event = { id = flavor_ori.4 } }
+			}
+		}
+		define_ruler = {
+			name = "Purushottama"
+			dynasty = "Gajapati"
+			change_mil = 5
+		}
+		if = {
+			limit = {
+				has_states_general_mechanic = yes
+			}
+			change_statists_vs_orangists = 1
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = ori_center_of_hamviras_revolt
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 2
+				culture = oriya
+				religion = hinduism
+				leader = "Hamvira"
+				leader_dynasty = "Gajapati"
+			}
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = ori_hamviras_revolt
+			}
+			add_province_modifier = {
+				name = "ori_support_for_pretender"
+				duration = 1095
+			}
+		}
+		custom_tooltip = flavor_ori.3.a.tt
+	}
+	option = {
+		name = flavor_ori.3.b	#Hamvira
+		ai_chance = { factor = 5 }
+		hidden_effect = {
+			kill_heir = {}
+			every_neighbor_country = {
+				country_event = { id = flavor_ori.4 }
+			}
+		}
+		define_ruler = {
+			name = "Hamvira"
+			dynasty = "Gajapati"
+		}
+		if = {
+			limit = {
+				has_states_general_mechanic = yes
+			}
+			change_statists_vs_orangists = 1
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = ori_center_of_puroshottama_revolt
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 3
+				culture = oriya
+				religion = hinduism
+				leader = "Puroshottama"
+				leader_dynasty = "Gajapati"
+			}
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = ori_puroshottama_revolt
+			}
+			add_province_modifier = {
+				name = "ori_support_for_pretender"
+				duration = 1095
+			}
+		}
+		custom_tooltip = flavor_ori.3.a.tt
+	}
+}
+
+# Death of Kapilendra - Info for neighbors
+country_event = {
+	id = flavor_ori.4
+	title = flavor_ori.4.t
+	desc = flavor_ori.4.d
+	picture = KING_SICK_IN_BED_eventPicture
+	is_triggered_only = yes
+
+	
+	
+	option = { 
+		name = flavor_ori.4.a	#Ok
+		
+	}
+	
+}
+
+# Hamviras Offer
+country_event = {
+	id = flavor_ori.5
+	title = flavor_ori.5.t
+	desc = flavor_ori.5.d
+	picture = CIVIL_WAR_eventPicture
+
+	is_triggered_only = yes
+
+	
+	option = { 
+		name = flavor_ori.5.a	#Send troops and Money
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.25
+				is_at_war = yes
+			}
+		}
+		add_years_of_income = -0.15
+		ORI = { country_event = { id = flavor_ori.6 } }
+	}
+	option = {
+		name = flavor_ori.5.b	#Avoid involvement
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.25
+				is_at_war = no
+			}
+		}
+		ORI = {
+			add_opinion = {
+				who = BAH
+				modifier = opinion_grateful
+			}
+		}
+	}
+}
+
+# The Bahmanis back Hamvira
+country_event = {
+	id = flavor_ori.6
+	title = flavor_ori.6.t
+	desc = flavor_ori.6.d
+	picture = LAND_MILITARY_eventPicture
+	fire_only_once = yes
+
+	is_triggered_only = yes
+	
+	
+	option = { 
+		name = flavor_ori.6.a	#Ok
+		random_owned_province = {
+			limit = {
+				has_province_flag = ori_center_of_hamviras_revolt
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 3
+				culture = oriya
+				religion = hinduism
+			}
+		}
+		every_owned_province = {
+			limit = {
+				OR = {
+					province_id = 543
+					province_id = 2037
+					province_id = 2084
+				}
+			}
+			add_claim = BAH
+		}
+		set_country_flag = ori_hamviras_offer_happened
+	}
+}
+
+# Hamvira Victorious
+country_event = {
+	id = flavor_ori.7
+	title = flavor_ori.7.t
+	desc = flavor_ori.7.d
+	picture = LAND_MILITARY_eventPicture
+	fire_only_once = yes
+	is_triggered_only = yes
+
+	trigger = {
+		tag = ORI
+		has_country_flag = ori_hamviras_offer_happened
+		NOT = { had_country_flag = { flag = ori_hamviras_offer_happened days = 7300 } } #Offer expired
+		has_ruler = "Hamvira"
+		dynasty = "Gajapati"
+		OR = {
+			owns = 543
+			owns = 2037
+			owns = 2084
+		}
+	}
+	
+	option = {
+		name = flavor_ori.7.a	#This isn't good.
+		tooltip = {
+			every_owned_province = {
+				limit = {
+					OR = {
+						province_id = 543
+						province_id = 2037
+						province_id = 2084
+					}
+				}
+				cede_province = BAH
+			}
+		}
+		BAH = { country_event = { id = flavor_ori.8 } }
+	}
+	
+}
+
+# Hamvira pays his debts
+country_event = {
+	id = flavor_ori.8
+	title = flavor_ori.8.t
+	desc = flavor_ori.8.d
+	picture = CITY_VIEW_eventPicture
+	fire_only_once = yes
+
+	is_triggered_only = yes
+	
+	option = {
+		name = flavor_ori.8.a	#Great!
+		ORI = {
+			every_owned_province = {
+				limit = {
+					OR = {
+						province_id = 543
+						province_id = 2037
+						province_id = 2084
+					}
+				}
+				cede_province = BAH
+			}
+		}
+	}
+	
+}
+
+# Removes Jagannath modifier if Gajaptis no longer rules Orissa
+country_event = {
+	id = flavor_ori.9
+	title = flavor_ori.9.t
+	desc = flavor_ori.9.d
+	picture = RELIGION_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = ORI
+		NOT = { dynasty = "Gajapati" }
+		has_country_modifier = ori_jagannath_cult
+		NOT = {
+			has_country_flag = ori_jagannath_mission_flag
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	
+	option = { 
+		name = flavor_ori.9.a	#This isn't good.
+		remove_country_modifier = ori_jagannath_cult
+	}
+	
+}
+
+#Birth of Oriya Literature
+country_event = {
+	id = flavor_ori.10
+	title = flavor_ori.10.t
+	desc = flavor_ori.10.d
+	picture = RELIGION_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = ORI
+		NOT = { is_year = 1467 }
+	}
+
+	mean_time_to_happen = {
+		months = 69
+	}
+	
+	
+	option = { 
+		name = flavor_ori.10.a	#Ok.
+		add_adm_power = 25
+		add_prestige = 15
+		add_meritocracy_effect = yes
+		define_advisor = {
+			type = theologian
+			name = "Sarala Das"
+			culture = oriya
+			religion = hinduism
+			discount = yes
+			skill = 2
+		}
+	}
+	
+}
+
+#Mahapurusha Achyutananda
+country_event = {
+	id = flavor_ori.11
+	title = flavor_ori.11.t
+	desc = flavor_ori.11.d
+	picture = RELIGION_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		tag = ORI
+		owns = 552
+		is_year = 1475
+		NOT = { is_year = 1540 }
+	}
+
+	mean_time_to_happen = {
+		months = 195
+	}
+	
+	option = { 
+		name = flavor_ori.11.a	#Ok.
+		add_prestige = 15
+		add_adm_power = 25
+		add_meritocracy_effect = yes
+		define_advisor = {
+			type = theologian
+			name = "Achyutananda Das"
+			culture = oriya
+			religion = hinduism
+			discount = yes
+			skill = 3
+		}
+	}
+	
+}

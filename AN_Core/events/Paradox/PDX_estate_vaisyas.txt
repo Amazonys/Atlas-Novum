@@ -1,0 +1,1124 @@
+###########################################################
+# Events for the Vaisyas Estate
+#
+# written by Daniel Tolman
+###########################################################
+
+namespace = vaisyas_estate_events
+
+province_event = {
+	id = vaisyas_estate_events.1
+	title = vaisyas_estate_events.1.t
+	desc = vaisyas_estate_events.1.d
+	picture = 9_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = vaisyas_estate_events.1.a #Yes
+	}
+}
+
+# Social Banditry
+# Low loyalty
+country_event = {
+	id = vaisyas_estate_events.2
+	title = vaisyas_estate_events.2.t
+	desc = vaisyas_estate_events.2.d
+	picture = 9_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_vaisyas
+		NOT = {
+			estate_loyalty = {
+				estate = estate_vaisyas
+				loyalty = 30
+			}
+		}
+		NOT = {
+			any_owned_province = {
+				has_province_modifier = addressing_social_banditry
+			}
+		}
+		NOT = {
+			any_owned_province = {
+				has_province_modifier = social_banditry_modiifer
+			}
+		}
+		any_owned_province = {
+			OR = {
+				owner = { government = republic }
+				development = 7
+				province_trade_power = 5
+			}
+			is_capital = no
+			is_city = yes
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			while = {
+				limit = {
+					NOT = { 
+						development_in_provinces = {
+							has_province_flag = social_banditry
+							value = estate
+							estate = estate_vaisyas
+						}
+					}
+					any_owned_province = {
+						OR = {
+							owner = { government = republic }
+							development = 7
+							province_trade_power = 5
+						}
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = social_banditry }
+					}
+					check_reducing_estate_revolt_size_more_trigger = {
+						FLAG = social_banditry
+					}
+				}
+				random_owned_province = {
+					limit = {
+						OR = {
+							owner = { government = republic }
+							development = 7
+							province_trade_power = 5
+						}
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = social_banditry }
+					}
+					set_province_flag = social_banditry
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 2.0
+			NOT = {
+				estate_loyalty = {
+					estate = estate_vaisyas
+					loyalty = 15
+				}
+			}
+		}
+	}
+	
+	option = { # kill them
+		name = vaisyas_estate_events.2.a
+		ai_chance = {
+			factor = 0
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = social_banditry
+			}
+			spawn_rebels = {
+				type = particularist_rebels
+				size = 1
+			}
+			add_province_modifier = {
+				name = social_banditry_modiifer # reduced trade power
+				duration = 5475
+			}
+			clr_province_flag = social_banditry
+		}
+	}
+	
+	option = { # address social causes of the problem
+		name = vaisyas_estate_events.2.b
+		ai_chance = {
+			factor = 1
+		}
+		add_estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = 15
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = social_banditry
+			}
+			add_province_modifier = {
+				name = addressing_social_banditry # autonomy uptick, less tax and production
+				duration = 5475
+			}
+			clr_province_flag = social_banditry
+		}
+	}
+}
+
+# Vaisyas Thriving
+# High influence high loyalty
+country_event = {
+	id = vaisyas_estate_events.3
+	title = vaisyas_estate_events.3.t
+	desc = vaisyas_estate_events.3.d
+	picture = 8_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_vaisyas
+		estate_territory = { 
+			estate = estate_vaisyas
+			territory = 1
+		}
+		estate_influence = {
+			estate = estate_vaisyas
+			influence = 60
+		}
+		estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = 60
+		}
+		any_owned_province = {
+			OR = {
+				owner = { government = republic }
+				development = 7
+				province_trade_power = 5
+			}
+			is_city = yes
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					OR = {
+						owner = { government = republic }
+						development = 7
+						province_trade_power = 5
+					}
+					is_city = yes
+				}
+				save_event_target_as = thriving_vaisyas_province
+			}
+		}
+	}
+	
+	option = {
+		name = vaisyas_estate_events.3.a
+		event_target:thriving_vaisyas_province = {
+			add_base_production = 1
+		}
+	}
+}
+
+# Developments in Textile Production
+# local goods produced and development cost in provinces with textile manufactories or cotton plantations
+country_event = {
+	id = vaisyas_estate_events.4
+	title = vaisyas_estate_events.4.t
+	desc = vaisyas_estate_events.4.d
+	picture = 8_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_vaisyas
+		estate_territory = { 
+			estate = estate_vaisyas
+			territory = 1
+		}
+		any_owned_province = {
+			OR = {
+				owner = { government = republic }
+				development = 7
+				province_trade_power = 5
+			}
+			OR = {
+				AND = {
+					has_building = plantations
+					trade_goods = cotton
+				}
+				has_building = textile
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_vaisyas
+				modifier = EST_VAL_TEXTILE_VAISYAS
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = vaisyas_estate_events.4.a
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = EST_VAL_TEXTILE_VAISYAS
+			influence = 15
+			duration = 7300
+		}
+		every_owned_province = {
+			limit = {
+				OR = {
+					owner = { government = republic }
+					development = 7
+					province_trade_power = 5
+				}
+				OR = {
+					has_building = textile
+					AND = {
+						trade_goods = cotton
+						has_building = plantations
+					}
+				}
+			}
+			add_province_modifier = {
+				name = vaisya_manufactories
+				duration = 7300
+			}
+		}
+	}
+}
+
+# Advancement of the Vaisyas
+country_event = {
+	id = vaisyas_estate_events.5
+	title = vaisyas_estate_events.5.t
+	desc = vaisyas_estate_events.5.d
+	picture = 7_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_vaisyas
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_vaisyas
+				modifier = EST_VAL_VAISYAS_ADVANCE
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_vaisyas
+				modifier = EST_VAL_VAISYAS_DECLINE
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = vaisyas_estate_events.5.a #Ok
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = EST_VAL_VAISYAS_ADVANCE
+			influence = 10
+			duration = 5475
+		}
+	}
+}
+
+# Decline of the Vaisyas
+country_event = {
+	id = vaisyas_estate_events.6
+	title = vaisyas_estate_events.6.t
+	desc = vaisyas_estate_events.6.d
+	picture = 8_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_vaisyas
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_vaisyas
+				modifier = EST_VAL_VAISYAS_ADVANCE
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_vaisyas
+				modifier = EST_VAL_VAISYAS_DECLINE
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = vaisyas_estate_events.6.a #Ok
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = EST_VAL_VAISYAS_DECLINE
+			influence = -10
+			duration = 5475
+		}
+	}
+}
+
+# caste, wealth, and status, social mobility
+# vaisyas vs brahmins
+country_event = {
+	id = vaisyas_estate_events.7
+	title = vaisyas_estate_events.7.t
+	desc = vaisyas_estate_events.7.d
+	picture = 8_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_vaisyas
+		has_estate = estate_brahmins
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_vaisyas
+				modifier = EST_VAL_VAISHYA_MOBILITY
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_vaisyas
+				modifier = EST_VAL_CASTE_DISCRIMINATION
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor  = 2
+			NOT = {
+				religion = hinduism
+			}
+		}
+	}
+	
+	option = {
+		name = vaisyas_estate_events.7.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.2
+				estate_influence = {
+					estate = estate_vaisyas
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 1.3
+				NOT = {
+					estate_loyalty = {
+						estate = estate_vaisyas
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_brahmins
+					influence = 80
+				}
+			}
+			modifier = {
+				factor = 0.8
+				NOT = {
+					estate_loyalty = {
+						estate = estate_brahmins
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_dip_power = 50
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = EST_VAL_VAISHYA_MOBILITY
+			influence = 15
+			duration = 7300
+		}
+		add_estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_brahmins
+			desc = EST_VAL_VAISHYA_MOBILITY_BRAHMINS
+			influence = -15
+			duration = 7300
+		}
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = -15
+		}
+	}
+	option = {
+		name = vaisyas_estate_events.7.b
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.2
+				estate_influence = {
+					estate = estate_brahmins
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 1.3
+				NOT = {
+					estate_loyalty = {
+						estate = estate_brahmins
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_vaisyas
+					influence = 80
+				}
+			}
+			modifier = {
+				factor = 0.8
+				NOT = {
+					estate_loyalty = {
+						estate = estate_vaisyas
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = EST_VAL_CASTE_DISCRIMINATION
+			influence = -15
+			duration = 7300
+		}
+		add_estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_brahmins
+			desc = EST_VAL_CASTE_DISCRIMINATION_BRAHMINS
+			influence = 15
+			duration = 7300
+		}
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 15
+		}
+		add_country_modifier = {
+			name = vaisya_caste_system_enforced
+			duration = 7300
+		}
+	}
+}
+
+# Promote Vaisya guilds
+# Reward for giving valuable trade goods to the estate, the more the better
+country_event = {
+	id = vaisyas_estate_events.8
+	title = vaisyas_estate_events.8.t
+	desc = vaisyas_estate_events.8.d
+	picture = 8_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		# spices gems silk production/trade value
+		has_estate = estate_vaisyas
+		estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = 40
+		}
+		estate_territory = {
+			estate = estate_vaisyas
+			territory = 5
+		}
+		estate_influence = {
+			estate = estate_vaisyas
+			influence = 40
+		}
+		num_of_owned_provinces_with = {
+			value = 5
+			OR = {
+				owner = { government = republic }
+				development = 7
+				province_trade_power = 5
+			}
+			OR = {
+				trade_goods = silk
+				trade_goods = spices
+				trade_goods = gems
+			}
+		}
+		NOT = {
+			any_owned_province = {
+				OR = {
+					has_province_modifier = vaisya_gem_production
+					has_province_modifier = vaisya_spices_trade
+					has_province_modifier = vaisya_silk_goods
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		trigger = {
+			any_owned_province = {
+				OR = {
+					owner = { government = republic }
+					development = 7
+					province_trade_power = 5
+				}
+				trade_goods = gems
+			}
+		}
+		name = vaisyas_estate_events.8.a
+		add_years_of_income = -0.25
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = VAISYA_GUILDS_PROMOTED
+			influence = 10
+			duration = 7300
+		}
+		every_owned_province = {
+			limit = {
+				OR = {
+					owner = { government = republic }
+					development = 7
+					province_trade_power = 5
+				}
+				trade_goods = gems
+			}
+			add_province_modifier = {
+				name = vaisya_gem_production # local production efficiency
+				duration = 7300
+			}
+		}
+	}
+	
+	option = {
+		trigger = {
+			any_owned_province = {
+				OR = {
+					owner = { government = republic }
+					development = 7
+					province_trade_power = 5
+				}
+				trade_goods = spices
+			}
+		}
+		name = vaisyas_estate_events.8.b
+		add_years_of_income = -0.25
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = VAISYA_GUILDS_PROMOTED
+			influence = 10
+			duration = 7300
+		}
+		every_owned_province = {
+			limit = {
+				OR = {
+					owner = { government = republic }
+					development = 7
+					province_trade_power = 5
+				}
+				trade_goods = spices
+			}
+			add_province_modifier = {
+				name = vaisya_spices_trade # province trade value
+				duration = 7300
+			}
+		}
+	}
+	option = {
+		trigger = {
+			any_owned_province = {
+				OR = {
+					owner = { government = republic }
+					development = 7
+					province_trade_power = 5
+				}
+				trade_goods = silk
+			}
+		}
+		name = vaisyas_estate_events.8.c
+		add_years_of_income = -0.25
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = VAISYA_GUILDS_PROMOTED
+			influence = 10
+			duration = 7300
+		}
+		every_owned_province = {
+			limit = {
+				OR = {
+					owner = { government = republic }
+					development = 7
+					province_trade_power = 5
+				}
+				trade_goods = silk
+			}
+			add_province_modifier = { # local goods produced
+				name = vaisya_silk_goods
+				duration = 7300
+			}
+		}
+	}
+}
+
+# Guilds demand privileges
+# mercantilism for influence
+country_event = {
+	id = vaisyas_estate_events.9
+	title = vaisyas_estate_events.9.t
+	desc = vaisyas_estate_events.9.d
+	picture = 7_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_vaisyas
+		estate_territory = { 
+			estate = estate_vaisyas
+			territory = 1
+		}
+		estate_influence = {
+			estate = estate_vaisyas
+			influence = 70
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				modifier = EST_VAL_VAISYA_GUILD_PRIVILEGES
+				estate = estate_vaisyas
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				modifier = EST_VAL_VAISYA_NO_PRIVILEGES
+				estate = estate_vaisyas
+			}
+		}
+		any_owned_province = {
+			OR = {
+				owner = { government = republic }
+				development = 7
+				province_trade_power = 5
+			}
+			is_capital = no
+			is_city = yes
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			while = {
+				limit = {
+					NOT = { 
+						development_in_provinces = {
+							has_province_flag = vaisyas_demand_influence
+							value = estate
+							estate = estate_vaisyas
+						}
+					}
+					any_owned_province = {
+						OR = {
+							owner = { government = republic }
+							development = 7
+							province_trade_power = 5
+						}
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = vaisyas_demand_influence }
+					}
+				}
+				random_owned_province = {
+					limit = {
+						OR = {
+							owner = { government = republic }
+							development = 7
+							province_trade_power = 5
+						}
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = vaisyas_demand_influence }
+					}
+					set_province_flag = vaisyas_demand_influence
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	option = {
+		name = vaisyas_estate_events.9.a
+		ai_chance = {
+			factor = 0
+		}
+		add_mercantilism = 1
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = 	EST_VAL_VAISYA_GUILD_PRIVILEGES
+			influence = 15
+			duration = 5475
+		}
+		every_owned_province = {
+			limit = {
+				OR = {
+					owner = { government = republic }
+					development = 7
+					province_trade_power = 5
+				}
+				is_capital = no
+			}
+			add_local_autonomy = 25
+			clr_province_flag = vaisyas_demand_influence
+		}		
+	}
+	option = {
+		name = vaisyas_estate_events.9.b
+		ai_chance = {
+			factor = 1
+		}
+		add_estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = -20
+		}
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = 	EST_VAL_VAISYA_NO_PRIVILEGES
+			influence = -15
+			duration = 5475
+		}
+	}
+}
+
+# Economic stagnation of inland drylands
+# South India only
+# Invest in frontier settlement by building canals and water tanks
+# Or let it stagnate for economic penalties, vulnerable to drought
+country_event = {
+	id = vaisyas_estate_events.10
+	title = vaisyas_estate_events.10.t
+	desc = vaisyas_estate_events.10.d
+	picture = 20_Monsoon_eventPicture
+	goto = drylands_province
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_vaisyas
+		any_owned_province = {
+			has_port = no
+			OR = {
+				has_terrain = drylands
+				has_terrain = hills
+				has_terrain = highlands
+			}
+			OR = {
+				region = deccan_region
+				region = coromandel_region
+			}
+			is_capital = no
+			base_tax = 2
+			is_city = yes
+		}
+		any_owned_province = {
+			has_port = yes
+			OR = {
+				region = deccan_region
+				region = coromandel_region
+			}
+			OR = {
+				owner = { government = republic }
+				development = 7
+				province_trade_power = 5
+			}
+			is_city = yes
+		}
+		NOT = {
+			any_owned_province = {
+				OR = {
+					has_province_modifier = drylands_frontier_development
+					has_province_modifier = drylands_stagnation
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_port = no
+					OR = {
+						has_terrain = drylands
+						has_terrain = hills
+						has_terrain = highlands
+					}
+					OR = {
+						region = deccan_region
+						region = coromandel_region
+					}
+					is_capital = no
+					base_tax = 2
+					is_city = yes
+				}
+				save_event_target_as = drylands_province
+			}
+		}
+	}
+	
+	option = {
+		name = vaisyas_estate_events.10.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0
+				NOT = { years_of_income = 0.6 }
+			}
+		}
+		add_years_of_income = -0.5
+		event_target:drylands_province = {
+			add_base_tax = 1
+			add_province_modifier = {
+				name = drylands_frontier_development
+				duration = 5475
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = -10
+		}
+	}
+	
+	option = {
+		name = vaisyas_estate_events.10.b
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_vaisyas
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_vaisyas
+			loyalty = 10
+		}
+		random_owned_province = {
+			limit = {
+				has_port = yes
+				OR = {
+					owner = { government = republic }
+					development = 7
+					province_trade_power = 5
+				}
+				OR = {
+					region = deccan_region
+					region = coromandel_region
+				}
+				is_city = yes
+			}
+			add_base_tax = 1
+		}
+		event_target:drylands_province = {
+			add_base_tax = -1
+			add_province_modifier = {
+				name = drylands_stagnation
+				duration = 5475
+			}
+		}
+	}
+}
+
+# Martial or mercantile culture?
+# Vaisyas vs marathas/rajputs
+country_event = {
+	id = vaisyas_estate_events.11
+	title = vaisyas_estate_events.11.t
+	desc = vaisyas_estate_events.11.d
+	picture = 9_Vaisya_Estate_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_vaisyas
+		OR = {
+			has_estate = estate_maratha
+			has_estate = estate_rajput
+		}
+		estate_influence = {
+			estate = estate_vaisyas
+			influence = 40
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_vaisyas
+				modifier = VAISYA_MERCANTILE_SOCIETY
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_vaisyas
+				modifier = VAISYA_MARTIAL_SOCIETY
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = vaisyas_estate_events.11.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.2
+				estate_influence = {
+					estate = estate_vaisyas
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 1.5
+				has_estate = estate_maratha
+				estate_influence = {
+					estate = estate_maratha
+					influence = 80
+				}
+			}
+			modifier = {
+				factor = 1.5
+				has_estate = estate_rajput
+				estate_influence = {
+					estate = estate_rajput
+					influence = 80
+				}
+			}
+		}
+		add_army_tradition = -15
+		add_mercantilism = 1
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = VAISYA_MERCANTILE_SOCIETY
+			influence = 15
+			duration = 7300
+		}
+		if = {
+			limit = {
+				has_estate = estate_maratha
+			}
+			add_estate_influence_modifier = {
+				estate = estate_maratha
+				desc = VAISYA_MERCANTILE_SOCIETY
+				influence = -15
+				duration = 7300
+			}
+		}
+		if = {
+			limit = {
+				has_estate = estate_rajput
+			}
+			add_estate_influence_modifier = {
+				estate = estate_rajput
+				desc = VAISYA_MERCANTILE_SOCIETY
+				influence = -15
+				duration = 7300
+			}
+		}
+	}
+	
+	option = {
+		name = vaisyas_estate_events.11.b
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_vaisyas
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 0.2
+				has_estate = estate_maratha
+				estate_influence = {
+					estate = estate_maratha
+					influence = 80
+				}
+			}
+			modifier = {
+				factor = 0.2
+				has_estate = estate_rajput
+				estate_influence = {
+					estate = estate_rajput
+					influence = 80
+				}
+			}
+		}
+		add_army_tradition = 15
+		add_mercantilism = -1
+		add_estate_influence_modifier = {
+			estate = estate_vaisyas
+			desc = VAISYA_MARTIAL_SOCIETY
+			influence = -15
+			duration = 7300
+		}
+		if = {
+			limit = {
+				has_estate = estate_maratha
+			}
+			add_estate_influence_modifier = {
+				estate = estate_maratha
+				desc = VAISYA_MARTIAL_SOCIETY
+				influence = 15
+				duration = 7300
+			}
+		}
+		if = {
+			limit = {
+				has_estate = estate_rajput
+			}
+			add_estate_influence_modifier = {
+				estate = estate_rajput
+				desc = VAISYA_MARTIAL_SOCIETY
+				influence = 15
+				duration = 7300
+			}
+		}
+	}
+}

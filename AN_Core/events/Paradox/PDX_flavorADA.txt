@@ -1,0 +1,348 @@
+#########################################
+# Events for the Adal
+#
+# written by Ogulcan Yildirim
+#########################################
+
+namespace = flavor_ada
+normal_or_historical_nations = yes
+
+#Event switch for Turkish alliance
+country_event = {
+	id = flavor_ada.1
+	title = none
+	desc = none
+	picture = none
+	hidden = yes
+
+	is_triggered_only = yes
+
+	option = {
+		if = {
+			limit = {
+				exists = TUR
+			}
+			TUR = { country_event = { id = flavor_ada.2 } }
+		}
+		else = {
+			select_biggest_country_of_region = {
+				region = anatolia_region
+			}
+			if = {
+				limit = {
+					event_target:selected_biggest_country_of_region = {
+						primary_culture = turkish
+						religion = sunni
+					}
+				}
+				event_target:selected_biggest_country_of_region = {
+					country_event = { id = flavor_ada.2 }
+				}
+			}
+			else = {
+				country_event = { id = flavor_ada.5 }
+			}
+		}
+	}
+}
+
+#Adal regiment arrives in Turkish royal court
+country_event = {
+	id = flavor_ada.2
+	title = flavor_ada.2.t
+	desc = flavor_ada.2.d
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+
+	option = {	#Of course we shall help the Adal
+		name = flavor_ada.2.a
+		custom_tooltip = flavor_ada.2.a.tt
+		add_historical_friend = FROM
+		FROM = {
+			tooltip = {
+				add_historical_friend = ROOT
+			}
+			country_event = {
+				id = flavor_ada.3
+			}
+		}
+		add_mil_power = -50
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				NOT = { tag = TUR }
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					FROM = {
+						NOT = { religion_group = ROOT }
+					}
+					FROM = {
+						is_rival = ROOT
+					}
+					is_rival = FROM
+				}
+			}
+		}
+	}
+
+	option = {	#Nah, I don't feel like it
+		name = flavor_ada.2.b
+		FROM = {
+			country_event = {
+				id = flavor_ada.4
+			}
+		}
+		add_mil_power = 50
+		add_prestige = -10
+
+		ai_chance = {
+			factor = 0.5
+			modifier = {
+				factor = 0
+				tag = TUR
+			}
+		}
+	}
+}
+
+#Adal receives the support of a Turkish Empire
+country_event = {
+	id = flavor_ada.3
+	title = flavor_ada.3.t
+	desc = flavor_ada.3.d
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+
+	option = {	#Noice
+		name = flavor_ada.3.a
+		custom_tooltip = flavor_ada.3.a.tt
+		custom_tooltip = ada_discover_anatolia
+		hidden_effect = {
+			anatolia_region = {
+				discover_country = ROOT
+			}
+			set_country_flag = ada_has_turkish_help
+		}
+		add_historical_friend = FROM
+		FROM = {
+			add_historical_friend = ROOT
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#Adal receives nothing
+country_event = {
+	id = flavor_ada.4
+	title = flavor_ada.4.t
+	desc = flavor_ada.4.d
+	picture = ACCUSATION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {	#Oof
+		name = flavor_ada.4.a
+		custom_tooltip = ada_discover_anatolia
+		hidden_effect = {
+			anatolia_region = {
+				discover_country = ROOT
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#No Turks, only despair
+country_event = {
+	id = flavor_ada.5
+	title = flavor_ada.5.t
+	desc = flavor_ada.5.d
+	picture = OVEREXTENSION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {	#Well, then let's talk with the Mamluks instead
+		name = flavor_ada.5.a
+		trigger = {
+			exists = MAM
+		}
+		custom_tooltip = ada_discover_anatolia
+		hidden_effect = {
+			anatolia_region = {
+				discover_country = ROOT
+			}
+		}
+		MAM = {
+			country_event = {
+				id = flavor_ada.6
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = {	#We are on our own then...
+		name = flavor_ada.5.b
+		trigger = {
+			NOT = { exists = MAM }
+		}
+		custom_tooltip = ada_discover_anatolia
+		hidden_effect = {
+			anatolia_region = {
+				discover_country = ROOT
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#Adal asks Mamluks for help
+country_event = {
+	id = flavor_ada.6
+	title = flavor_ada.2.t
+	desc = flavor_ada.2.d
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+
+	option = {	#Of course we shall help the Adal
+		name = flavor_ada.2.a
+		custom_tooltip = flavor_ada.6.a.tt
+		FROM = {
+			country_event = {
+				id = flavor_ada.7
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = {	#Nah, I don't feel like it
+		name = flavor_ada.2.b
+		FROM = {
+			country_event = {
+				id = flavor_ada.8
+			}
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#Adal receives the support of the Mamluks
+country_event = {
+	id = flavor_ada.7
+	title = flavor_ada.7.t
+	desc = flavor_ada.7.d
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+
+	option = {	#Noice
+		name = flavor_ada.7.a
+		custom_tooltip = flavor_ada.7.a.tt
+		hidden_effect = {
+			set_country_flag = ada_mamluk_mercs
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#Adal receives nothing... again
+country_event = {
+	id = flavor_ada.8
+	title = flavor_ada.8.t
+	desc = flavor_ada.8.d
+	picture = ACCUSATION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {	#CURSES
+		name = flavor_ada.8.a
+		add_dip_power = 25
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+	
+#War Enthusiasm against Ethiopia
+country_event = {
+	id = flavor_ada.100
+	title = none
+	desc = none
+	picture = none
+	hidden = yes
+
+	trigger = {
+		has_country_modifier = ada_preperation_for_war
+		NOT = { has_country_modifier = ada_war_against_ethiopia }
+		war_with = ETH
+		ETH = { total_own_and_non_tributary_subject_development = ROOT }	#Should Ethiopia ever get too weak than the crusade buff will vanish
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		add_country_modifier = {
+			name = ada_war_against_ethiopia
+			duration = -1
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Remove the buff afterwards
+country_event = {
+	id = flavor_ada.101
+	title = none
+	desc = none
+	picture = none
+	hidden = yes
+
+	trigger = {
+		OR = {
+			NOT = { has_country_modifier = ada_preperation_for_war }
+			NOT = { exists = ETH }
+			NOT = { war_with = ETH }
+			ETH = { NOT = { total_own_and_non_tributary_subject_development = ROOT } }
+		}
+		has_country_modifier = ada_war_against_ethiopia
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		remove_country_modifier = ada_war_against_ethiopia
+		ai_chance = { factor = 1 }
+	}
+}

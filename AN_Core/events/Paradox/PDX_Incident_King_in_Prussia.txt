@@ -1,0 +1,223 @@
+#### The King in Prussia ###
+### By Daniel Tolman ###
+
+namespace = king_in_prussia
+
+country_event = {
+	id = king_in_prussia.1
+	title = king_in_prussia.1.t
+	desc = king_in_prussia.1.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = PRU
+		government = monarchy
+		NOT = { government_rank = 2 }
+		is_subject = no
+		total_development = 200
+		has_regency = no
+		is_female = no
+		NOT = { active_imperial_incident = any }
+		is_elector = yes
+	}
+	
+	mean_time_to_happen = {
+		months = 6
+	}
+	
+	option = {
+		name = king_in_prussia.1.a
+		if = {
+			limit = {
+				is_part_of_hre = yes
+				is_emperor = no
+				has_dlc = "Emperor"
+			}
+			set_imperial_incident = incident_king_in_prussia
+		}
+		else = {
+			set_government_rank = 2
+			add_prestige = 20
+			add_legitimacy = 20
+		}
+	}
+}
+
+# Mock imperial incident
+country_event = {
+	id = king_in_prussia.2
+	title = king_in_prussia.2.t
+	desc = king_in_prussia.2.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	major = yes
+	
+	option = { # elevate prussia to an hre kingdom
+		name = king_in_prussia.2.a
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 1000
+				alliance_with = PRU
+			}
+		}
+		add_imperial_influence = -10
+		custom_tooltip = king_in_prussia_elevated_tt
+		reverse_add_opinion = {
+			who = PRU
+			modifier = elevated_prussia
+		}
+		tooltip = {
+			PRU = {
+				set_government_rank = 2
+				add_prestige = 25
+				add_legitimacy = 25
+				reverse_add_opinion = {
+					who = emperor
+					modifier = elevated_prussia
+				}
+			}
+		}
+		hidden_effect = {
+			PRU = {
+				set_country_flag = king_in_prussia_elevated
+				country_event = { id = king_in_prussia.3 days = 3 }
+			}
+		}
+	}
+	option = { # compromise
+		name = king_in_prussia.2.b
+		ai_chance = {
+			factor = 2
+		}
+		custom_tooltip = king_in_prussia_compromise_tt
+		reverse_add_opinion = {
+			who = PRU
+			modifier = opinion_king_in_prussia
+		}
+		hidden_effect = {
+			PRU = {
+				set_country_flag = king_in_prussia_compromise
+				country_event = { id = king_in_prussia.3 days = 3 }
+			}
+		}
+	}
+	option = { # reject
+		name = king_in_prussia.2.c
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 1000
+				is_rival = PRU
+			}
+		}
+		custom_tooltip = king_in_prussia_rejection_tt
+		reverse_add_opinion = {
+			who = PRU
+			modifier = opinion_prussia_not_recognized
+		}
+		hidden_effect = {
+			PRU = {
+				set_country_flag = king_in_prussia_rejection
+				country_event = { id = king_in_prussia.3 days = 3 }
+			}
+		}
+	}
+}
+
+# Follow-up for Prussia
+country_event = {
+	id = king_in_prussia.3
+	title = king_in_prussia.3.t
+	desc = {
+		trigger = {
+			has_country_flag = king_in_prussia_elevated
+		}
+		desc = king_in_prussia.3.d
+	}
+	desc = {
+		trigger = {
+			has_country_flag = king_in_prussia_compromise
+		}
+		desc = king_in_prussia.3.d2
+	}
+	desc = {
+		trigger = {
+			has_country_flag = king_in_prussia_rejection
+		}
+		desc = king_in_prussia.3.d3
+	}
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	major = yes
+	
+	option = {
+		trigger = {
+			has_country_flag = king_in_prussia_elevated
+		}
+		name = king_in_prussia.3.a
+		set_government_rank = 2
+		add_prestige = 25
+		add_legitimacy = 25
+		reverse_add_opinion = {
+			who = emperor
+			modifier = elevated_prussia
+		}
+	}
+	option = {
+		trigger = {
+			has_country_flag = king_in_prussia_compromise
+		}
+		name = king_in_prussia.3.b
+		set_government_rank = 2
+		add_prestige = 10
+		add_legitimacy = 10
+		reverse_add_opinion = {
+			who = emperor
+			modifier = opinion_king_in_prussia
+		}
+	}
+	option = {
+		trigger = {
+			has_country_flag = king_in_prussia_rejection
+		}
+		ai_chance = { 
+			factor = 1
+			modifier = {
+				factor = 100
+				total_development = 500
+			}
+		}
+		name = king_in_prussia.3.c
+		set_government_rank = 2
+		set_in_empire = no
+		reverse_add_opinion = {
+			who = emperor
+			modifier = opinion_prussia_not_recognized
+		}
+	}
+	option = {
+		trigger = {
+			has_country_flag = king_in_prussia_rejection
+		}
+		ai_chance = { 
+			factor = 100 
+			modifier = {
+				factor = 0
+				total_development = 500
+			}
+		}
+		name = king_in_prussia.3.optd
+		add_prestige = -10
+		add_legitimacy = -10
+		add_casus_belli = {
+			target = emperor
+			type = cb_insult
+			months = 24
+		}
+	}
+}

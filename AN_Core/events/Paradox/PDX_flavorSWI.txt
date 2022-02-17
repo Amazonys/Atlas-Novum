@@ -1,0 +1,1090 @@
+########################################
+# Event for Switzerland
+#
+# written by Katya Magnusson
+########################################
+
+namespace = flavor_swi
+
+#Paracelsus
+country_event = {
+	id = flavor_swi.1
+	title = flavor_swi.1.t
+	desc = flavor_swi.1.d
+	picture = ADVISOR_eventPicture
+	fire_only_once = yes
+	trigger = {
+		OR = {
+			capital_scope = {
+				region = south_german_region
+			}
+			tag = VEN
+			tag = SWI
+		}
+		is_year = 1515
+		NOT = { is_year = 1541 }
+	}
+	mean_time_to_happen = {
+		months = 78
+		modifier = {
+			factor = 0.95
+			tag = SWI
+		}
+		modifier = {
+			factor = 0.9
+			tag = HAB
+		}
+		modifier = {
+			factor = 0.8
+			owns = 1869 #Zürich
+		}
+		modifier = {
+			factor = 0.8
+			owns = 134 #Vienna
+		}
+       modifier = {
+           factor = 0.8
+           tag = VEN
+		}
+	}
+	option = {
+		name = "flavor_swi.1.a"
+		define_advisor = {
+		type = natural_scientist
+			name = "Paracelsus"
+			culture = swiss
+			discount = yes
+			skill = 2
+		}
+	}
+}
+
+
+##########################################################
+# Dynamic Events for the Swiss (written by James Beaumont)
+##########################################################
+
+#Genevan independence events
+country_event = {
+	id = flavor_swi.2
+	title = flavor_swi.2.t
+	desc = flavor_swi.2.d
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		tag = GNV
+		government = republic
+		is_subject_of = SAV
+		is_at_war = no
+	}
+	
+	fire_only_once = yes
+	
+	mean_time_to_happen = {
+		months = 36
+	}
+	
+	
+	option = {
+		name = flavor_swi.2.a
+		ai_chance = { 
+			factor = 100
+		}
+		hidden_effect = {
+			SAV = {
+				country_event = {
+					id = flavor_swi.201
+					days = 10
+				}
+			}
+		}
+		custom_tooltip = genevan_province_tt
+	}
+	
+	option = {
+		name = flavor_swi.2.b
+		ai_chance = { 
+			factor = 0
+		}
+	}
+}
+
+
+# Geneva asks for Swiss provinces (Savoy)
+country_event = {
+	id = flavor_swi.201
+	title = flavor_swi.201.t
+	desc = flavor_swi.201.d
+	picture = REVOLUTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = flavor_swi.201.a
+		ai_chance = { 
+			factor = 50
+		}
+		every_owned_province = {
+			limit = {
+				culture = swiss
+			}
+			add_core = GNV
+			cede_province = GNV
+		}
+		create_march = GNV
+	}
+	
+	option = {
+		name = flavor_swi.201.b
+		ai_chance = { 
+			factor = 10
+			modifier = {
+				factor = 5
+				GNV = {
+					was_player = no
+				}
+			}
+		}
+		hidden_effect = {
+			GNV = {
+				country_event = {
+					id = flavor_swi.202
+					days = 2
+				}
+			}
+		}
+		tooltip = {
+			GNV = {
+				kill_ruler = yes
+				add_country_modifier = {
+					name = geneva_liberty_desire
+					duration = -1
+				}
+				add_opinion = {
+					who = SAV
+					modifier = geneva_liberty_opinion
+				}
+			}
+		}
+	}
+}
+
+# Geneva is denied
+country_event = {
+	id = flavor_swi.202
+	title = flavor_swi.202.t
+	desc = flavor_swi.202.d
+	picture = REVOLUTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = flavor_swi.202.a
+		ai_chance = { 
+			factor = 100
+		}
+		GNV = {
+			kill_ruler = yes
+			add_country_modifier = {
+				name = geneva_liberty_desire
+				duration = -1
+			}
+			add_opinion = {
+				who = SAV
+				modifier = geneva_liberty_opinion
+			}
+		}
+	}
+}
+
+#Geneva asks to join Switzerland
+country_event = {
+	id = flavor_swi.203
+	title = flavor_swi.203.t
+	desc = "flavor_swi.203.d"
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		tag = GNV
+		government = republic
+		is_subject_of = SAV
+		OR = {
+			has_country_modifier = geneva_liberty_desire
+			is_march = yes
+		}
+		has_opinion = {
+			who = SWI
+			value = 150
+		}
+	}
+	
+	fire_only_once = yes
+	
+	mean_time_to_happen = {
+		months = 12
+		modifier = {
+			factor = 0.5
+			is_supporting_independence_of = SWI
+		}
+	}
+	
+	
+	option = { #geneva approaches Switzerland
+		name = flavor_swi.203.a
+		ai_chance = { 
+			factor = 100
+		}
+		trigger = {
+			tag = GNV
+		}
+		hidden_effect = {
+			SWI = {
+				country_event = {
+					id = flavor_swi.204
+				}
+			}
+		}
+		tooltip = {
+			SWI = {
+				vassalize = GNV
+			}
+		}
+		reverse_add_casus_belli = {
+			target = SAV
+			type = cb_vassalize_mission
+			months = 120
+		}
+	}
+	
+	option = { #don't upset Savoy
+		name = flavor_swi.203.c
+	}
+}
+
+#Swiss Response
+country_event = {
+	id = flavor_swi.204
+	title = flavor_swi.203.t
+	desc = "flavor_swi.204.d"
+	picture = REVOLUTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	fire_only_once = yes
+	
+	
+	option = { #Switzerland accepts?
+		name = flavor_swi.204.a
+		ai_chance = {
+			factor = 100
+		}
+		reverse_add_casus_belli = {
+			target = SAV
+			type = cb_insult
+			months = 60
+		}
+		vassalize = GNV
+	}
+	
+	option = { #don't upset Savoy
+		name = flavor_swi.203.c
+	}
+}
+
+# Independent Geneva (written by Hubert Leung)
+country_event = {
+	id = flavor_swi.3
+	title = flavor_swi.3.t
+	desc = flavor_swi.3.d
+	picture = REVOLUTION_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = GNV
+		NOT = { is_subject_of = SAV }
+	}
+	
+	option = {
+		name = flavor_swi.3.a
+		add_prestige = 20
+		add_republican_tradition = 10
+		remove_country_modifier = geneva_liberty_desire
+		remove_opinion = {
+			who = SAV
+			modifier = geneva_liberty_opinion
+		}
+	}
+}
+
+########################################
+# Swiss Flavor Events                  #
+########################################
+
+# Three Leagues Join Switzerland Event
+country_event = {
+	id = flavor_swi.4
+	title = "flavor_swi.EVTNAME4"
+	desc = "flavor_swi.EVTDESC4"
+	picture = HRE_eventPicture
+
+
+	fire_only_once = yes
+	
+
+	trigger = {
+		tag = SWI
+		TTL = {
+			is_part_of_hre = yes
+			any_owned_province = { culture = swiss }
+			was_player = no
+			is_subject = no
+			is_neighbor_of = ROOT
+			has_opinion = {
+				who = ROOT
+				value = 100
+			}
+		}
+		is_part_of_hre = yes
+		primary_culture = swiss
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					culture = swiss
+				}
+				set_province_flag = is_swiss_target
+			}
+			
+			random_owned_province = {
+				limit = {
+					culture = swiss
+					NOT = {
+						has_province_flag = is_swiss_target
+					}
+				}
+				set_province_flag = is_swiss_target
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+
+	option = {	# Expand the confederation
+		name = "flavor_swi.EVTOPTA4"
+		ai_chance = { factor = 100 }
+		if = {
+			limit = { 
+				tag = SWI
+				mission_completed = emp_swi_start
+			}
+			inherit = TTL
+		}
+		else = {
+			vassalize = TTL
+		}
+	}
+	option = {		# Focus on the Cantons
+		name = "flavor_swi.EVTOPTB4"
+		ai_chance = { factor = 0 }
+		every_owned_province = {
+			limit = {
+				has_province_flag = is_swiss_target
+			}
+			add_base_tax = 1
+			add_base_production = 1
+			add_base_manpower = 1
+			clr_province_flag = is_swiss_target
+		}
+	}
+}
+
+# John Calvin arrives in Geneva
+country_event = {
+	id = flavor_swi.5
+	title = "flavor_swi.EVTNAME5"
+	desc = "flavor_swi.EVTDESC5"
+	picture = PROTESTANT_PRINTED_eventPicture
+
+
+	fire_only_once = yes
+	
+
+	trigger = {
+		is_religion_enabled = reformed
+		OR = {
+			religion = protestant
+			religion = catholic
+			religion = reformed
+		}
+		any_province = {
+			culture = swiss
+			OR = {
+				religion = protestant
+				religion = reformed
+			}
+		}
+		owns_or_non_sovereign_subject_of = 4720
+		current_age = age_of_reformation
+	}
+	
+	immediate = {
+		hidden_effect = {
+			
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+
+	option = {	# Allow Calvin to stay
+		name = "flavor_swi.EVTOPTA5"
+		ai_chance = { 
+			factor = 50
+			modifier = {
+				factor = 2
+				tag = GNV
+			}
+		}
+		4720 = {
+			set_province_flag = john_calvin_is_here
+			if = {
+				limit = {
+					NOT = { religion = reformed }
+				}
+				change_religion = reformed
+			}
+			if = {
+				limit = {
+				NOT = {
+					calc_true_if = {
+						all_province = {
+							religion = reformed
+							is_reformation_center = yes
+							}
+					amount = 3
+						}
+					}
+				}
+				add_reform_center = reformed
+			}
+			add_permanent_province_modifier = {
+					name = "religious_zeal_at_conv"
+					duration = 9000
+				}
+		}
+	}
+	
+	option = {		# Expel Calvin
+		name = "flavor_swi.EVTOPTB5"
+		ai_chance = { factor = 50 }
+		trigger = {
+			NOT = {
+				religion = reformed
+			}
+		}
+		4720 = {
+			if = {
+				limit = {
+					NOT = { religion = reformed }
+				}
+				change_religion = reformed
+			}
+			add_permanent_province_modifier = {
+					name = "religious_zeal_at_conv"
+					duration = 9000
+				}
+			add_province_modifier = {
+				name = heresy
+				duration = 1825
+			}
+			set_province_flag = calvin_is_expelled
+		}
+		if = {
+			limit = {
+				religion = protestant
+			}
+			add_church_power = 25
+		}
+		if = {
+			limit = {
+				religion = catholic
+			}
+			add_papal_influence = 25
+		}
+	}
+}
+
+#John Calvin returns to Geneva
+country_event = {
+	id = flavor_swi.6
+	title = "flavor_swi.EVTNAME6"
+	desc = "flavor_swi.EVTDESC6"
+	picture = PROTESTANT_GREAT_REFORMER_eventPicture
+
+
+	fire_only_once = yes
+	
+
+	trigger = {
+		is_religion_enabled = reformed
+		OR = {
+			religion = protestant
+			religion = catholic
+			religion = reformed
+		}
+		owns_or_non_sovereign_subject_of = 4720
+		4720 = {
+			religion = reformed
+			has_province_flag = calvin_is_expelled
+		}
+		current_age = age_of_reformation
+	}
+	
+	mean_time_to_happen = {
+		months = 48
+	}
+
+	option = {	# Allow Calvin to stay
+		name = "flavor_swi.EVTOPTA6"
+		ai_chance = { 
+			factor = 50
+			modifier = {
+				factor = 2
+				tag = GNV
+			}
+		}
+		4720 = {
+			set_province_flag = john_calvin_is_here
+			if = {
+				limit = {
+					NOT = { religion = reformed }
+				}
+				change_religion = reformed
+				if = {
+					limit = {
+						NOT = {
+							calc_true_if = {
+								all_province = {
+									religion = reformed
+									is_reformation_center = yes
+								}
+							amount = 3
+							}
+						}
+					}
+					add_reform_center = reformed
+				}
+				add_permanent_province_modifier = {
+					name = "religious_zeal_at_conv"
+					duration = 9000
+				}
+			}
+		}
+	}
+	
+	option = {		# Expel Calvin again
+		name = "flavor_swi.EVTOPTB6"
+		ai_chance = { factor = 10 }
+		trigger = {
+			NOT = {
+				religion = reformed
+			}
+		}
+		add_prestige = 10
+		if = {
+			limit = {
+				religion = protestant
+			}
+			add_church_power = 40
+		}
+		if = {
+			limit = {
+				religion = catholic
+			}
+			add_papal_influence = 40
+		}
+		4720 = {
+			spawn_rebels = {
+				size = 1.5
+				type = religious_rebels
+			}
+			if = {
+				limit = {
+					religion = reformed
+				}
+				change_religion = ROOT
+				add_permanent_province_modifier = {
+					name = "religious_zeal_at_conv"
+					duration = 9000
+				}
+			}
+		}
+	}
+}
+
+#John Calvin becomes Spiritual Leader of Geneva
+country_event = {
+	id = flavor_swi.7
+	title = "flavor_swi.EVTNAME7"
+	desc = "flavor_swi.EVTDESC7"
+	picture = PROTESTANT_GREAT_REFORMER_eventPicture
+
+
+	fire_only_once = yes
+	
+	trigger = {
+		is_religion_enabled = reformed
+		if = {
+			limit = {
+				exists = GNV
+			}
+			if = {
+				limit = {
+					GNV = {
+						OR = {
+							ai = no
+							was_player = yes
+							is_subject = no
+						}
+					}
+				}
+				tag = GNV	#This event ALWAYS happens for Geneva first if it is player controlled or free
+			}
+			else = {
+				#Just any of your subjects needs to be Geneva
+				any_subject_country = {
+					tag = GNV
+				}
+				tag = SWI
+			}
+		}
+		else = {
+			tag = SWI
+			owns = 4720
+		}
+		OR = {
+			religion = protestant
+			religion = catholic
+			religion = reformed
+		}
+		4720 = {
+			religion = reformed
+			has_province_flag = john_calvin_is_here
+		}
+		current_age = age_of_reformation
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					GNV = { exists = no }
+				}
+				every_owned_province = {
+					limit = {
+						is_core = GNV
+						NOT = {
+							province_id = 4720
+						}
+					}
+					remove_core = GNV
+				}
+				4720 = {
+					add_core = GNV
+				}
+			}
+		}
+	}
+
+	option = {	# Invite Calvin to be our Spiritual Leader instead
+		name = "flavor_swi.EVTOPTA7"
+		ai_chance = { 
+			factor = 50
+		}
+		trigger = {
+			NOT = {
+				tag = GNV
+				tag = PAP
+			}
+		}
+		if = {
+			limit = {
+				NOT = { religion = reformed }
+			}
+			change_religion = reformed
+		}
+		add_fervor = 25
+		add_country_modifier = { 
+			name = john_calvin_modifier
+			duration = 3650
+		}
+	}
+	
+	option = {		# Let him do his thing
+		name = "flavor_swi.EVTOPTB7"
+		ai_chance = { factor = 50 }
+		trigger = {
+			OR = {
+				tag = GNV
+				GNV = { is_subject_of = ROOT }
+				GNV = { exists = no }
+			}
+		}
+		add_fervor = 10
+		if = {
+			limit = {
+				GNV = { exists = no }
+			}
+			create_vassal = GNV
+		}
+		GNV = {
+			change_government = theocracy
+			add_government_reform = united_cantons_reform
+			#set_legacy_government = theocratic_government
+			change_religion = reformed
+			define_ruler = {
+				name = "John"
+				dynasty = "Calvin"
+				culture = normand
+				religion = reformed
+				adm = 4
+				dip = 3
+				mil = 4
+				age = 31
+				claim = 95
+			}
+		}
+	}
+	
+	option = {		# Kick him out for real this time
+		name = "flavor_swi.EVTOPTC7"
+		ai_chance = { factor = 50 }
+		add_prestige = 10
+		if = {
+			limit = {
+				religion = protestant
+			}
+			add_church_power = 40
+		}
+		if = {
+			limit = {
+				religion = catholic
+			}
+			add_papal_influence = 40
+		}
+		4720 = {
+			if = {
+				limit = {
+					owned_by = ROOT
+					NOT = {
+						religion = ROOT
+					}
+				}
+				spawn_rebels = {
+					size = 1.5
+					type = religious_rebels
+				}
+				change_religion = ROOT
+				add_permanent_province_modifier = {
+					name = "religious_zeal_at_conv"
+					duration = 9000
+				}
+			}
+			clr_province_flag = john_calvin_is_here
+		}
+	}
+}
+
+#Spiritual Leader supercedes secular leader
+country_event = {
+	id = flavor_swi.8
+	title = "flavor_swi.EVTNAME8"
+	desc = "flavor_swi.EVTDESC8"
+	picture = PROTESTANT_GREAT_REFORMER_eventPicture
+
+
+	fire_only_once = yes
+	
+
+	trigger = {
+		has_country_modifier = john_calvin_modifier
+		is_subject = no
+		current_age = age_of_reformation
+	}
+	
+	mean_time_to_happen = {
+		months = 30
+	}
+
+	option = {	# Calvin becomes leader
+		name = "flavor_swi.EVTOPTA8"
+		ai_chance = { 
+			factor = 50
+		}
+		trigger = {
+			primary_culture = swiss
+		}
+		if = {
+			limit = {
+				NOT = {
+					religion = reformed
+				}
+			}
+			change_religion = reformed
+		}
+		change_government_to_theocracy = yes
+		add_government_reform = united_cantons_reform
+		#set_legacy_government = theocratic_government
+		define_ruler = {
+			name = "John"
+			dynasty = "Calvin"
+			culture = normand
+			religion = reformed
+			adm = 4
+			dip = 3
+			mil = 4
+			age = 36
+			claim = 95
+		}
+	}
+	
+	option = {		# Kick him out for real for real this time
+		name = "flavor_swi.EVTOPTB8"
+		ai_chance = { factor = 50 }
+		add_stability = -1
+		remove_country_modifier = john_calvin_modifier
+	}
+}
+
+#Hundred Years War mercenaries
+country_event = {
+	id = flavor_swi.9
+	title = "flavor_swi.EVTNAME9"
+	desc = "flavor_swi.EVTDESC9"
+	picture = LAND_MILITARY_eventPicture
+
+
+	fire_only_once = yes
+	
+
+	trigger = {
+		tag = SWI
+		NOT = {
+			is_year = 1500
+		}
+		ENG = {
+			war_with = FRA
+		}
+		OR = {	#Switzerland is renting condottiere to the winning side
+			AND = {
+				is_renting_condottieri_to = ENG
+				ENG = {
+					war_score = 10
+				}
+			}
+			AND = {
+				is_renting_condottieri_to = FRA
+				FRA = {
+					war_score = 10
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 6
+	}
+
+	option = {
+		name = "flavor_swi.EVTOPTA9"
+		ai_chance = { 
+			factor = 100
+		}
+		add_army_professionalism = 0.05	
+		add_army_tradition = 10
+	}
+}
+
+#Mercenary Monopoly
+country_event = {
+	id = flavor_swi.10
+	title = "flavor_swi.EVTNAME10"
+	desc = "flavor_swi.EVTDESC10"
+	picture = LAND_MILITARY_eventPicture
+
+
+	fire_only_once = yes
+	
+
+	trigger = {
+		tag = SWI
+		primary_culture = swiss
+		NOT = {
+			any_known_country = {
+				primary_culture = swabian
+				is_part_of_hre = yes
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+
+	option = {
+		name = "flavor_swi.EVTOPTA10"
+		ai_chance = { 
+			factor = 100
+		}
+		add_prestige = 20
+		add_army_professionalism = 0.15
+		add_army_tradition = 20
+		add_country_modifier = {
+			name = mercenary_monopoly_modifier
+			duration = -1
+		}
+	}
+}
+
+#Helvetic Republic
+country_event = {
+	id = flavor_swi.11
+	title = "flavor_swi.EVTNAME11"
+	desc = "flavor_swi.EVTDESC11"
+	picture = REVOLUTION_eventPicture
+
+
+	fire_only_once = yes
+	
+
+	trigger = {
+		is_revolution_target = yes
+		war_score_against = {
+			who = SWI
+			value = 75
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+
+	option = {
+		name = "flavor_swi.EVTOPTA11"
+		ai_chance = { 
+			factor = 100
+		}
+		trigger = {
+			NOT = {
+				tag = SWI
+			}
+		}
+		white_peace = SWI
+		custom_tooltip = become_helvetic_tt
+		hidden_effect = {
+			SWI = {
+				set_country_flag = at_war_with_rev_flag
+				country_event = { id = flavor_swi.1101 }
+			}
+		}
+	}
+
+	option = {
+		name = "flavor_swi.EVTOPTB11"
+		ai_chance = { 
+			factor = 0
+		}
+	}
+}
+
+#Helvetic Republic (Switzerland)
+country_event = {
+	id = flavor_swi.1101
+	title = "flavor_swi.EVTNAME11"
+	desc = "flavor_swi.EVTDESC1101"
+	picture = REVOLUTION_eventPicture
+
+
+	fire_only_once = yes
+	
+
+	trigger = {
+		tag = SWI
+		OR = {
+			has_country_flag = at_war_with_rev_flag
+			AND = {
+				NOT = { num_of_provinces_in_states = 15 }
+				num_of_owned_provinces_with = {
+					continent = europe
+					has_revolution_in_province = yes
+					value = 10
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+	
+	option = {
+		name = "flavor_swi.EVTOPTA1101"
+		ai_chance = { 
+			factor = 100
+		}
+		SWI = {
+			change_government_to_republic = yes
+			add_government_reform = military_dictatorship_reform
+			#set_legacy_government = republican_dictatorship
+		}
+		random_known_country = { 
+			limit = {
+				is_revolution_target = yes
+			}
+			create_subject = {
+				subject_type = client_march
+				subject = SWI
+			}
+		}
+	}
+
+	option = {
+		name = "flavor_swi.EVTOPTB1101"
+		ai_chance = { 
+			factor = 0
+		}
+		trigger = {
+			NOT = {
+				has_country_flag = at_war_with_rev_flag
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_revolution_in_province = yes
+			}
+			spawn_rebels = {
+				size = 1.5
+				type = revolutionary_rebels
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_revolution_in_province = yes
+			}
+			spawn_rebels = {
+				size = 1
+				type = revolutionary_rebels
+			}
+		}
+	}
+}

@@ -1,0 +1,260 @@
+########################################
+# Major Flavor Events                  #
+########################################
+
+namespace = flavor_orl
+normal_or_historical_nations = yes
+
+# Retrial of Joan of Arc finds her innocent
+country_event = {
+	id = flavor_orl.4
+	title = flavor_orl.4.t
+	desc = flavor_orl.4.d
+	picture = POPE_PREACHING_eventPicture
+
+	is_triggered_only = yes
+	major = yes
+
+	option = {
+		name = flavor_orl.4.o.a
+		add_prestige = 10
+		add_legitimacy = 10
+		if = {
+			limit = {
+				exists = ORL
+			}
+			ORL = { set_country_flag = had_maid_of_orleans }
+		}
+		set_global_flag = maid_of_orleans
+	}
+}
+
+# Protestants destroy the statue of Joan
+country_event = {
+	id = flavor_orl.6
+	title = flavor_orl.6.t
+	desc = flavor_orl.6.d
+	picture = RELIGIOUS_TURMOIL_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		has_global_flag = maid_of_orleans
+		owns = 184 # Orleans
+		culture_group = french
+		religion_group = christian
+		current_age = age_of_reformation
+		is_religion_enabled = protestant
+	}
+
+	mean_time_to_happen = {
+		months = 360
+
+		modifier = {
+			factor = 0.75
+			OR = { 
+				religion = hussite
+				religion = protestant
+				religion = reformed
+				religion = anglican
+			}
+		}
+
+		modifier = {
+			factor = 0.75
+			184 = {
+				OR = {
+					religion = hussite
+					religion = protestant
+					religion = reformed
+					religion = anglican
+				}
+			}
+		}
+	}
+
+	# Rebuild the statue (Catholic)
+	option = {
+		name = flavor_orl.6.o.a
+
+		trigger = { religion = catholic }
+
+		add_years_of_income = -0.05
+		add_country_modifier = {
+			name = "rebuilt_joan_of_arc_statue_catholic"
+			duration = 3650
+		}
+	}
+	# Rebuild the statue (Heretic)
+	option = {
+		name = flavor_orl.6.o.b
+
+		trigger = { NOT = { religion = catholic } }
+
+		add_years_of_income = -0.05
+		add_country_modifier = {
+			name = "rebuilt_joan_of_arc_statue_protestant"
+			duration = 3650
+		}
+	}
+	# Drop the matter
+	option = {
+		name = flavor_orl.6.o.c
+		if = {
+			limit = {
+				religion = catholic
+			}
+			add_country_modifier = {
+				name = "destroyed_joan_of_arc_statue_catholic"
+				duration = 3650
+			}
+		}
+		else = {
+			add_country_modifier = {
+				name = "destroyed_joan_of_arc_statue_protestant"
+				duration = 3650
+			}
+		}
+		clr_global_flag = maid_of_orleans
+	}
+}
+
+# Catholic league approves of us joining
+country_event = {
+	id = flavor_orl.8
+	title = flavor_orl.8.t
+	desc = flavor_orl.8.d
+	picture = DIPLOMACY_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		has_global_flag = maid_of_orleans
+		has_dlc = "Art of War"
+		owns = 184 # Orleans
+		culture_group = french
+		religion_group = christian
+		hre_leagues_enabled = yes
+		hre_religion_locked = no
+		hre_religion_treaty = no
+		in_league = catholic
+	}
+
+	mean_time_to_happen = {
+		months = 1
+	}
+
+	option = {
+		name = flavor_orl.8.o.a
+
+		add_country_modifier = {
+			name = "joan_of_arc_catholic_league_symbol"
+			duration = 1825
+		}
+	}
+}
+
+# Beatification of Joan
+country_event = {
+	id = flavor_orl.10
+	title = flavor_orl.10.t
+	desc = flavor_orl.10.d
+	picture = POPE_PREACHING_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		has_global_flag = maid_of_orleans
+		OR = {
+			current_age = age_of_absolutism
+			current_age = age_of_revolutions
+		}
+		owns = 184 # Orleans
+		culture_group = french
+		religion = catholic
+		exists = PAP
+		184 = { has_cardinal = yes }
+	}
+
+	# Late game bonus for FRA, early Absolutism with extra fun for ORL runs
+	mean_time_to_happen = {
+		years = 100
+
+		modifier = {
+			factor = 0.75
+			is_papal_controller = yes
+		}
+		modifier = {
+			factor = 0.1
+			has_country_flag = had_maid_of_orleans
+		}
+	}
+
+	# Saint Joan, pray for us
+	option = {
+		name = flavor_orl.10.o.a
+		add_country_modifier = {
+			name = "joan_of_arc_beatified"
+			duration = -1
+		}
+		if = {
+			limit = {
+				has_country_flag = had_maid_of_orleans
+			}
+			hidden_effect = {
+				country_event = { id = flavor_orl.11 days = 30 }
+			}
+		}
+	}
+}
+
+# The Militant Order of Saint Joan
+country_event = {
+	id = flavor_orl.11
+	title = flavor_orl.11.t
+	desc = flavor_orl.11.d
+	picture = BATTLE_eventPicture
+
+	is_triggered_only = yes
+
+	# Accept their service
+	option = {
+		name = flavor_orl.11.o.a
+		custom_tooltip = flavor_orl.11.o.a.t
+		set_country_flag = militant_order_of_saint_joan
+	}
+
+	# Have them take over
+	option = {
+		name = flavor_orl.11.o.b
+
+		add_country_modifier = {
+			name = "sisters_takeover"
+			duration = -1
+		}
+		if = {
+			limit = {
+				NOT = { government = theocracy }
+			}
+			change_government = theocracy
+		}
+
+		if = {
+			limit = {
+				is_female = no
+			}
+			define_ruler = {
+				name = "Jeanne"
+				change_mil = 3
+				female = yes
+			}
+		}
+		if = {
+			limit = {
+				has_heir = yes
+			}
+			remove_heir = {}
+		}
+		add_government_reform = holy_state_reform
+	}
+}

@@ -1,0 +1,283 @@
+######################################
+## Flavour Events of Savoy-Piedmont ##
+## by Pierre du Plessis             ##
+######################################
+
+namespace = new_flavour_sav
+normal_or_historical_nations = yes
+
+#The City of Turin
+country_event = {
+	id = new_flavour_sav.1
+	title = new_flavour_sav.1.name
+	desc = new_flavour_sav.1.desc
+	picture = CITY_VIEW_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = new_flavour_sav.1.A
+
+		if = {
+			limit = {
+				NOT = {
+					capital_scope = {
+						province_id = 103
+					}
+				}
+			}
+			set_capital = 103
+		}
+		103 = {
+			add_base_tax = 2
+			add_base_production = 1
+			add_base_manpower = 1
+		}
+
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 5
+				num_of_owned_provinces_with = {
+					value = 10
+					culture_group = latin
+				}
+			}
+		}
+	}
+	option = {
+		name = new_flavour_sav.1.B
+
+		capital_scope = {
+			add_base_tax = 1
+			add_base_production = 1
+		}
+
+		if = {
+			limit = {
+				capital_scope = {
+					culture = occitain
+				}
+			}
+			change_primary_culture = occitain
+			add_accepted_culture = piedmontese
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					num_of_owned_provinces_with = {
+						value = 4
+						culture = occitain
+					}
+				}
+			}
+			modifier = {
+				factor = 10
+				num_of_owned_provinces_with = {
+					value = 10
+					culture_group = french
+				}
+			}
+			modifier = {
+				factor = 10
+				NOT = {
+					num_of_owned_provinces_with = {
+						value = 2
+						culture_group = latin
+					}
+				}
+			}
+		}
+	}
+}
+
+
+#The Order of Saints Maurice and Lazarus
+country_event = {
+	id = new_flavour_sav.2
+	title = new_flavour_sav.2.name
+	desc = {
+		desc = new_flavour_sav.2.desc1
+		trigger = {
+			religion = catholic
+			exists = PAP
+		}
+	}
+	desc = {
+		desc = new_flavour_sav.2.desc2
+		trigger = {
+			OR = {
+				NOT = { religion = catholic }
+				NOT = { exists = PAP }
+			}
+		}
+	}
+	picture = JESUIT_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = new_flavour_sav.2.A
+		if = {
+			limit = {
+				OR = {
+					religion = catholic
+					AND = {
+						religion = protestant
+						has_dlc = "Common Sense"
+					}
+					AND = {
+						religion = reformed
+						has_dlc = "Wealth of Nations"
+					}
+				}
+			}
+			add_country_modifier = {
+				name = sav_holy_order_of_maurice_and_lazarus
+				duration = -1
+			}
+		}
+		else = {
+			add_country_modifier = {
+				name = sav_holy_order_of_maurice_and_lazarus_fallback
+				duration = -1
+			}
+		}
+	}
+}
+
+
+#Claim to the Kingdom of Cyprus
+country_event = {
+	id = new_flavour_sav.3
+	title = new_flavour_sav.3.name
+	desc = {
+		desc = new_flavour_sav.3.desc.firstruler
+		trigger = {
+			has_ruler = "Ludovico I"
+		}
+	}
+	desc = {
+		desc = new_flavour_sav.3.desc.notfirstruler
+		trigger = {
+			NOT = { has_ruler = "Ludovico I" }
+		}
+	}
+	picture = RELIGIOUS_WARS_eventPicture
+
+	mean_time_to_happen = {
+		months = 12
+	}
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = SAV
+		NOT = { is_year = 1530 }
+		dynasty = "di Savoia"
+		religion_group = christian
+		NOT = { exists = CYP }
+		321 = {
+			owner = {
+				religion_group = muslim
+			}
+		}
+		if = {
+			limit = {
+				has_ruler = "Ludovico I"
+			}
+			OR = {
+				is_origin_of_consort = CYP
+				has_heir = 	"Amedeo"
+			}
+			has_heir = yes
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			321 = {
+				owner = {
+					save_event_target_as = infidels_of_cyprus
+				}
+			}
+		}
+	}
+
+	option = {
+		name = new_flavour_sav.3.A
+		add_permanent_claim = 321
+	}
+}
+
+#Antipope Felix V
+country_event = {
+	id = new_flavour_sav.5
+	title = new_flavour_sav.5.name
+	desc = new_flavour_sav.5.desc
+	picture = RELIGION_eventPicture
+
+	mean_time_to_happen = {
+		months = 12
+	}
+
+	trigger = {
+		tag = SAV
+		has_ruler = "Ludovico I"
+		exists = PAP
+		PAP = {
+			has_ruler = "Eugenius IV"
+		}
+		is_papal_controller = no
+	}
+
+	fire_only_once = yes
+
+	option = {
+		name = new_flavour_sav.5.A
+		add_ruler_modifier = {
+			name = sav_supports_antipopes_justice
+			duration = -1
+		}
+		reverse_add_opinion = {
+			who = PAP
+			modifier = opinion_supporting_antipope
+		}
+		if = {
+			limit = {
+				NOT = { PAP = { ai = no } }
+				is_excommunicated = no
+			}
+			PAP = { excommunicate = root }
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				alliance_with = PAP
+			}
+			modifier = {
+				factor = 10
+				is_excommunicated = yes
+			}
+		}
+	}
+	option = {
+		name = new_flavour_sav.5.B
+		add_legitimacy = -20
+		reverse_add_opinion = {
+			who = PAP
+			modifier = opinion_supporting_pope
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				is_rival = PAP
+			}
+		}
+	}
+}

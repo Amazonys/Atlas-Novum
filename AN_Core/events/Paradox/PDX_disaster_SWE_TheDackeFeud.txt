@@ -1,0 +1,279 @@
+namespace = the_dacke_feud
+
+
+country_event = {
+	id = the_dacke_feud.1
+	title = the_dacke_feud.1.t
+	desc = the_dacke_feud.1.d
+	picture = ANGRY_MOB_eventPicture
+
+	major = yes
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		add_stability = -3
+		hidden_effect = {
+			set_country_flag = had_the_dacke_feud
+			if = {
+				limit = {
+					owns = 3				# Småland
+				}
+				3 = {
+					set_province_flag = dacke_feud
+				}
+				
+				random_owned_province = {
+					limit = {
+						is_capital = no
+						is_core = SWE
+						NOT = { province_id = 3}
+					}
+					set_province_flag = dacke_feud
+				}
+			}
+			if = {
+				limit = {
+					NOT = { owns = 3 }		# Småland
+				}
+				random_owned_province = {
+					limit = {
+						OR = {
+							area = norrland_area
+							area = svealand_area
+							area = ostra_svealand_area
+							area = vastra_gotaland_area
+							area = gotaland_area
+							area = skaneland_area
+						}
+						is_capital = no
+						is_core = SWE
+					}
+					set_province_flag = dacke_feud
+				}
+			}
+		}
+	}
+	
+	option = {		# Crush the Rebellion
+		name = the_dacke_feud.1.a
+		every_owned_province = {
+			limit = {
+				has_province_flag = dacke_feud
+			}
+			spawn_rebels = {
+				type = particularist_rebels
+				size = 2
+				unrest = 10
+				win = yes
+				leader = "Nils"
+				leader_dynasty = "Dacke"
+			}
+		}
+	}
+}
+
+# Province Rise in Support of Dacke
+country_event = {
+	id = the_dacke_feud.2
+	title = the_dacke_feud.2.t
+	desc = the_dacke_feud.2.d
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		any_owned_province = {
+			OR = {
+				area = norrland_area
+				area = svealand_area
+				area = ostra_svealand_area
+				area = gotaland_area
+				area = vastra_gotaland_area
+				area = skaneland_area
+			}
+			controlled_by = SWE
+			has_siege = no
+			NOT = { local_autonomy = 50 }
+			NOT = { has_province_flag = dacke_prov }
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_core_province = {
+				limit = {
+					controlled_by = SWE
+					has_siege = no
+					NOT = { local_autonomy = 50 }
+					NOT = { has_province_flag = dacke_prov }
+					OR = {
+						area = norrland_area
+						area = svealand_area
+						area = ostra_svealand_area
+						area = gotaland_area
+						area = vastra_gotaland_area
+						area = skaneland_area
+					}
+				}
+				set_province_flag = dacke_prov
+			}
+		}
+	}
+	
+	option = {		# We will crush them as well!
+		name = the_dacke_feud.2.a
+		ai_chance = { factor = 70 }
+
+		every_core_province = {
+			limit = {
+				has_province_flag = dacke_prov
+			}
+		
+			spawn_rebels = {
+				type = particularist_rebels
+				size = 2
+			}
+		}
+	}
+	option = {		# Negotiate with them
+		name = the_dacke_feud.2.b
+		ai_chance = { factor = 20 }
+
+		every_core_province = {
+			limit = {
+				has_province_flag = dacke_prov
+			}
+			
+			add_local_autonomy = 10
+		}
+		add_dip_power = -25
+
+	}
+	option = {		# Give in to their demands
+		name = the_dacke_feud.2.c
+		ai_chance = { factor = 10 }
+
+		every_core_province = {
+			limit = {
+				has_province_flag = dacke_prov
+			}
+			add_local_autonomy = 50
+		}
+	}
+}
+
+# The Revolt in Province
+country_event = {
+	id = the_dacke_feud.3
+	title = the_dacke_feud.3.t
+	desc = the_dacke_feud.3.d
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		any_owned_province = {
+			OR = {
+				area = norrland_area
+				area = svealand_area
+				area = ostra_svealand_area
+				area = gotaland_area
+				area = vastra_gotaland_area
+				area = skaneland_area
+			}
+			controlled_by = SWE
+			has_siege = no
+			NOT = { local_autonomy = 50 }
+			NOT = { has_province_modifier = dacke_feud_trade_embargo }
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_core_province = {
+				limit = {
+					controlled_by = SWE
+					has_siege = no
+					NOT = { local_autonomy = 50 }
+					NOT = { has_province_modifier = dacke_feud_trade_embargo }
+					OR = {
+						area = norrland_area
+						area = svealand_area
+						area = ostra_svealand_area
+						area = gotaland_area
+						area = vastra_gotaland_area
+						area = skaneland_area
+					}
+				}
+				set_province_flag = dacke_feud_trade_embargo_flag
+			}
+		}
+	}
+	
+	option = {		# Enforce an embargo
+		name = the_dacke_feud.3.a
+		ai_chance = { factor = 75 }
+		every_core_province = {
+			limit = {
+				has_province_flag = dacke_feud_trade_embargo_flag
+			}
+			add_province_modifier = {
+				name = dacke_feud_trade_embargo
+				duration = -1
+				desc = "END_OF_DACKE_FEUD_DIS"
+			}
+		}
+	}
+	option = {		# It will only hurt us later
+		name = the_dacke_feud.3.b
+		ai_chance = { factor = 25 }
+		every_core_province = {
+			limit = {
+				has_province_flag = dacke_feud_trade_embargo_flag
+			}
+			spawn_rebels = {
+				type = particularist_rebels
+				size = 1
+			}
+		}
+	}
+}
+
+
+# The Dacke Feud Ends
+country_event = {
+	id = the_dacke_feud.100
+	title = the_dacke_feud.100.t
+	desc = the_dacke_feud.100.d
+	picture = ANGRY_MOB_eventPicture
+	
+	major = yes
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			every_owned_province = {
+				clr_province_flag = dacke_prov
+				clr_province_flag = dacke_feud_trade_embargo_flag
+				remove_province_modifier = dacke_feud_trade_embargo
+			}
+		}
+	}
+
+	option = {
+		name = "the_dacke_feud.100.a"
+		add_stability_or_adm_power = yes
+	}
+}

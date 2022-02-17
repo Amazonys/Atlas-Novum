@@ -1,0 +1,1019 @@
+########################################
+# English Civil War
+########################################
+
+namespace = english_civil_war
+
+# The English Civil War
+country_event = {
+	id = english_civil_war.1
+	title = "flavor_eng.EVTNAME9225"
+	desc = "flavor_eng.EVTDESC9225"
+	picture = CIVIL_WAR_eventPicture
+
+	major = yes
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = english_civil_war_start_event
+
+		
+		random_owned_province = {
+			limit = {
+				region = british_isles_region
+				NOT = { area = munster_area }
+				NOT = { area = connacht_area }
+				NOT = { area = leinster_area }
+				NOT = { area = ulster_area }
+				OR = {
+					AND = {
+						NOT = { units_in_province = 1 }
+						is_capital = no
+					}
+					AND = {
+						NOT = {
+							root = {
+								any_owned_province = {
+									region = british_isles_region
+									NOT = { area = munster_area }
+									NOT = { area = connacht_area }
+									NOT = { area = leinster_area }
+									NOT = { area = ulster_area }
+									NOT = { units_in_province = 1 }
+									is_capital = no
+								}
+							}
+						}
+					}
+				}
+			}
+			set_province_flag = ENG_cw_spawn_rebels_here
+		}
+		if = {
+			limit = {
+				num_of_cities = 30
+			}
+			random_owned_province = {
+				limit = {
+					NOT = { has_province_flag = ENG_cw_spawn_rebels_here }
+					region = british_isles_region
+					NOT = { area = munster_area }
+					NOT = { area = connacht_area }
+					NOT = { area = leinster_area }
+					NOT = { area = ulster_area }
+					OR = {
+						AND = {
+							NOT = { units_in_province = 1 }
+							is_capital = no
+						}
+						AND = {
+							NOT = {
+								root = {
+									any_owned_province = {
+										region = british_isles_region
+										NOT = { area = munster_area }
+										NOT = { area = connacht_area }
+										NOT = { area = leinster_area }
+										NOT = { area = ulster_area }
+										NOT = { units_in_province = 1 }
+										is_capital = no
+									}
+								}
+							}
+						}
+					}
+				}
+				set_province_flag = ENG_cw_spawn_more_rebels_here
+			}
+		}
+	}
+	
+	option = {			# Parliamentarians
+		name = "flavor_eng.EVTOPTA9225"
+		ai_chance = { factor = 50 }
+		set_country_flag = supports_parliamentarians
+		add_yearly_manpower = -2.5
+		remove_country_modifier = eng_court_star_chamber
+		if = {
+			limit = { has_heir = yes }
+			hidden_effect = {
+				exile_heir_as = english_civil_war_heir
+				set_country_flag = civil_war_has_exiled_heir
+			}
+		}
+		
+		random_owned_province = {
+			limit = {
+				has_province_flag = ENG_cw_spawn_rebels_here
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				use_monarch_as_leader = yes
+				size = 3
+			}
+			clr_province_flag = ENG_cw_spawn_rebels_here
+		}
+		if = {
+			limit = {
+				any_owned_province = {
+					has_province_flag = ENG_cw_spawn_more_rebels_here
+				}
+			}
+			random_owned_province = {
+				limit = {
+					has_province_flag = ENG_cw_spawn_more_rebels_here
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+				clr_province_flag = ENG_cw_spawn_more_rebels_here
+			}
+		}
+		
+		
+		change_government_to_republic = yes
+		add_government_reform = protectorate_parliament_reform
+		define_ruler = {
+			name = "Oliver Cromwell"
+			ADM = 4
+			DIP = 4
+			MIL = 5
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = strict } }
+		}
+		set_ruler_flag = cromwell_flag
+	}
+	option = {			# Royalists
+		name = "flavor_eng.EVTOPTB9225"
+		ai_chance = { factor = 50 }
+		set_country_flag = supports_royalists
+		add_yearly_manpower = -2.5
+		random_owned_province = {
+			limit = {
+				has_province_flag = ENG_cw_spawn_rebels_here
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 3
+				leader = "Oliver"
+				leader_dynasty = "Cromwell"
+			}
+			clr_province_flag = ENG_cw_spawn_rebels_here
+		}
+		if = {
+			limit = {
+				any_owned_province = {
+					has_province_flag = ENG_cw_spawn_more_rebels_here
+				}
+			}
+			random_owned_province = {
+				limit = {
+					has_province_flag = ENG_cw_spawn_more_rebels_here
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+				clr_province_flag = ENG_cw_spawn_more_rebels_here
+			}
+		}
+	}
+	after = {
+		clr_country_flag = english_civil_war_start_event
+	}
+}
+
+# Self-denying Ordinance and New Model Army
+country_event = {
+	id = english_civil_war.2
+	title = "flavor_eng.EVTNAME9226"
+	desc = "flavor_eng.EVTDESC9226"
+	picture = MILITARY_CAMP_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_country_flag = supports_parliamentarians
+		NOT = { has_country_flag = ENG_had_event_9226 }
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = ENG_had_event_9226
+	}
+	
+	option = {			# Pass the Ordinance and reform the army
+		name = "flavor_eng.EVTOPTA9226"
+		ai_chance = { factor = 90 }
+		add_country_modifier = {
+			name = new_model_army
+			duration = 3650
+		}
+		define_general = {
+			name = "Sir Thomas Fairfax"
+			shock = 4
+			fire = 4
+			manuever = 3
+		}
+	}
+	option = {			# It is not needed
+		name = "flavor_eng.EVTOPTB9226"
+		ai_chance = { factor = 10 }
+		add_stability_or_adm_power = yes
+		add_yearly_manpower = 0.5
+	}
+}
+
+# New Model Army
+country_event = {
+	id = english_civil_war.3
+	title = "flavor_eng.EVTNAME9227"
+	desc = "flavor_eng.EVTDESC9227"
+	picture = MILITARY_CAMP_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_country_flag = ENG_had_event_9227 }
+		has_country_flag = supports_royalists
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = ENG_had_event_9227
+	}
+	
+	option = {			# Pass the Ordinance and reform the army
+		name = "flavor_eng.EVTOPTA9227"
+		ai_chance = { factor = 90 }
+		add_country_modifier = {
+			name = new_model_army
+			duration = 7300
+		}
+	}
+	option = {			# It is not needed
+		name = "flavor_eng.EVTOPTB9227"
+		ai_chance = { factor = 10 }
+		add_stability_or_adm_power = yes
+		add_yearly_manpower = 0.5
+	}
+}
+
+# Treaty with the Scots
+country_event = {
+	id = english_civil_war.4
+	title = "flavor_eng.EVTNAME9228"
+	desc = "flavor_eng.EVTDESC9228"
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_country_flag = ENG_had_event_9228 }
+		has_country_flag = supports_parliamentarians
+		religion = catholic
+		NOT = { exists = SCO }
+		any_owned_province = {
+			OR = {
+				area = highlands_area
+				area = lowlands_area
+			}
+			religion = catholic
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = ENG_had_event_9228
+	}
+	
+	option = {			# Give in to their demands
+		name = "flavor_eng.EVTOPTA9228"
+		ai_chance = { factor = 50 }
+		if = {
+			limit = {
+				any_owned_province = {
+					OR = {
+						area = highlands_area
+						area = lowlands_area
+					}
+					religion = catholic
+				}
+			}
+			lowlands_area = {
+				limit = {
+					owned_by = root
+					religion = catholic
+				}
+				change_religion = reformed
+				add_permanent_province_modifier = {
+					name = "religious_zeal_at_conv"
+					duration = 9000
+				}
+			}
+			highlands_area = {
+				limit = {
+					owned_by = root
+					religion = catholic
+				}
+				change_religion = reformed
+				add_permanent_province_modifier = {
+					name = "religious_zeal_at_conv"
+					duration = 9000
+				}
+			}
+		}
+	}
+	option = {			# Who are they to demand anything!
+		name = "flavor_eng.EVTOPTB9228"
+		ai_chance = { factor = 50 }
+		if = {
+			limit = {
+				any_owned_province = {
+					area = highlands_area
+				}
+			}
+			random_owned_province = {
+				limit = {
+					area = highlands_area
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+			}
+		}
+		if = {
+			limit = {
+				any_owned_province = {
+					area = lowlands_area
+				}
+			}
+			random_owned_province = {
+				limit = {
+					area = lowlands_area
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+			}
+		}
+	}
+}
+
+# Treaty with the Scots
+country_event = {
+	id = english_civil_war.5
+	title = "flavor_eng.EVTNAME9229"
+	desc = "flavor_eng.EVTDESC9229"
+	picture = ANGRY_MOB_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_country_flag = ENG_had_event_9229 }
+		has_country_flag = supports_royalists
+		religion = catholic
+		NOT = { exists = SCO }
+		any_owned_province = {
+			OR = {
+				area = highlands_area
+				area = lowlands_area
+			}
+			religion = catholic
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = ENG_had_event_9229
+	}
+	
+	option = {			# Give in to their demands
+		name = "flavor_eng.EVTOPTA9229"
+		ai_chance = { factor = 50 }
+		if = {
+			limit = {
+				any_owned_province = {
+					OR = {
+						area = highlands_area
+						area = lowlands_area
+					}
+					religion = catholic
+				}
+			}
+			lowlands_area = {
+				limit = {
+					owned_by = root
+					religion = catholic
+				}
+				change_religion = reformed
+				add_permanent_province_modifier = {
+					name = "religious_zeal_at_conv"
+					duration = 9000
+				}
+			}
+			highlands_area = {
+				limit = {
+					owned_by = root
+					religion = catholic
+				}
+				change_religion = reformed
+				add_permanent_province_modifier = {
+					name = "religious_zeal_at_conv"
+					duration = 9000
+				}
+			}
+		}
+	}
+
+	option = {			# Who are they to demand anything!
+		name = "flavor_eng.EVTOPTB9229"
+		ai_chance = { factor = 50 }
+		if = {
+			limit = {
+				any_owned_province = {
+					area = highlands_area
+				}
+			}
+			random_owned_province = {
+				limit = {
+					area = highlands_area
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+			}
+		}
+		if = {
+			limit = {
+				any_owned_province = {
+					area = lowlands_area
+				}
+			}
+			random_owned_province = {
+				limit = {
+					area = lowlands_area
+				}
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 2
+				}
+			}
+		}
+	}
+}
+
+# The Rebellion in Wales
+country_event = {
+	id = english_civil_war.6
+	title = "flavor_eng.EVTNAME9230"
+	desc = "flavor_eng.EVTDESC9230"
+	picture = ANGRY_MOB_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_country_flag = ENG_had_event_9230 }
+		has_country_flag = supports_parliamentarians
+		any_owned_province = {
+			area = wales_area
+			unrest = 1
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = ENG_had_event_9230
+	}
+	
+	option = {			# Pay them
+		name = "flavor_eng.EVTOPTA9230"
+		ai_chance = { factor = 50 }
+		add_years_of_income = -0.25
+	}
+	option = {			# Let them revolt
+		name = "flavor_eng.EVTOPTB9230"
+		ai_chance = { factor = 50 }
+		random_owned_province = {
+			limit = {
+				area = wales_area
+				unrest = 1
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 2
+			}
+		}
+	}
+}
+
+# The Rebellion in Wales
+country_event = {
+	id = english_civil_war.7
+	title = "flavor_eng.EVTNAME9231"
+	desc = "flavor_eng.EVTDESC9231"
+	picture = ANGRY_MOB_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_country_flag = ENG_had_event_9231 }
+		has_country_flag = supports_royalists
+		any_owned_province = {
+			area = wales_area
+			unrest = 1
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = ENG_had_event_9231
+	}
+	
+	option = {			# Pay them
+		name = "flavor_eng.EVTOPTA9231"
+		ai_chance = { factor = 50 }
+		add_years_of_income = -0.25
+	}
+	option = {			# Let them revolt
+		name = "flavor_eng.EVTOPTB9231"
+		ai_chance = { factor = 50 }
+		random_owned_province = {
+			limit = {
+				area = wales_area
+				unrest = 1
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 2
+			}
+		}
+	}
+}
+
+# The Rebellion in Ireland
+country_event = {
+	id = english_civil_war.8
+	title = "flavor_eng.EVTNAME9232"
+	desc = "flavor_eng.EVTDESC9232"
+	picture = ANGRY_MOB_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_country_flag = ENG_had_event_9232 }
+		has_country_flag = supports_parliamentarians
+		num_of_owned_provinces_with = {
+			value = 2
+			OR = {
+				area = munster_area
+				area = connacht_area
+				area = leinster_area
+				area = ulster_area
+			}
+			unrest = 1
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = ENG_had_event_9232
+		random_owned_province = {
+			limit = {
+				OR = {
+					area = munster_area
+					area = connacht_area
+					area = leinster_area
+					area = ulster_area
+				}
+				unrest = 1
+			}
+			set_province_flag = irish_rebellion
+		}
+		random_owned_province = {
+			limit = {
+				OR = {
+					area = munster_area
+					area = connacht_area
+					area = leinster_area
+					area = ulster_area
+				}
+				NOT = { has_province_flag = irish_rebellion }
+				unrest = 1
+			}
+			set_province_flag = irish_rebellion
+		}
+	}
+	
+	option = {			# Pay them
+		name = "flavor_eng.EVTOPTA9232"
+		ai_chance = { factor = 50 }
+		add_years_of_income = -0.25
+	}
+	option = {			# Let them revolt
+		name = "flavor_eng.EVTOPTB9232"
+		ai_chance = { factor = 50 }
+		every_owned_province = {
+			limit = {
+				has_province_flag = irish_rebellion
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 1
+			}
+			clr_province_flag = irish_rebellion
+		}
+	}
+}
+
+# The Rebellion in Ireland
+country_event = {
+	id = english_civil_war.9
+	title = "flavor_eng.EVTNAME9233"
+	desc = "flavor_eng.EVTDESC9233"
+	picture = ANGRY_MOB_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_country_flag = ENG_had_event_9233 }
+		has_country_flag = supports_royalists
+		num_of_owned_provinces_with = {
+			value = 2
+			OR = {
+				area = munster_area
+				area = connacht_area
+				area = leinster_area
+				area = ulster_area
+			}
+			unrest = 1
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		set_country_flag = ENG_had_event_9233
+		random_owned_province = {
+			limit = {
+				OR = {
+					area = munster_area
+					area = connacht_area
+					area = leinster_area
+					area = ulster_area
+				}
+				unrest = 1
+			}
+			set_province_flag = irish_rebellion
+		}
+		random_owned_province = {
+			limit = {
+				OR = {
+					area = munster_area
+					area = connacht_area
+					area = leinster_area
+					area = ulster_area
+				}
+				NOT = { has_province_flag = irish_rebellion }
+				unrest = 1
+			}
+			set_province_flag = irish_rebellion
+		}
+	}
+	
+	option = {			# Pay them
+		name = "flavor_eng.EVTOPTA9233"
+		ai_chance = { factor = 50 }
+		add_years_of_income = -0.25
+	}
+	option = {			# Let them revolt
+		name = "flavor_eng.EVTOPTB9233"
+		ai_chance = { factor = 50 }
+		every_owned_province = {
+			limit = {
+				has_province_flag = irish_rebellion
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 1
+			}
+			clr_province_flag = irish_rebellion
+		}
+	}
+}
+
+# Pride's Purge
+country_event = {
+	id = english_civil_war.10
+	title = "flavor_eng.EVTNAME9234"
+	desc = "flavor_eng.EVTDESC9234"
+	picture = BATTLE_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_country_flag = ENG_had_event_9234 }
+		has_country_modifier = new_model_army
+		any_owned_province = {
+			region = british_isles_region
+			NOT = { area = munster_area }
+			NOT = { area = connacht_area }
+			NOT = { area = leinster_area }
+			NOT = { area = ulster_area }
+			is_capital = no
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = ENG_had_event_9234
+	}
+	
+	option = {			# Execute those not loyal
+		name = "flavor_eng.EVTOPTA9234"
+		ai_chance = { factor = 75 }
+		random_owned_province = {
+			limit = {
+				region = british_isles_region
+				NOT = { area = munster_area }
+				NOT = { area = connacht_area }
+				NOT = { area = leinster_area }
+				NOT = { area = ulster_area }
+				is_capital = no
+			}
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 2
+			}
+		}
+	}
+	option = {			# Pardon them
+		name = "flavor_eng.EVTOPTB9234"
+		ai_chance = { factor = 25 }
+		add_legitimacy = -25
+		add_republican_tradition = -20
+		add_stability = -1
+	}
+}
+
+# End of the English Civil War
+country_event = {
+	id = english_civil_war.100
+	title = "flavor_eng.EVTNAME9235"
+	desc = "flavor_eng.EVTDESC9235"
+	picture = CIVIL_WAR_eventPicture
+
+	major = yes
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = eng_civil_war_happened
+	}
+		
+	option = {			# Order has finally been restored
+		name = "flavor_eng.EVTOPTA9235"
+		trigger = {
+			OR = { has_country_flag = supports_royalists }
+			NOT = { has_country_modifier = just_lost_to_rebels }
+		}
+		if = {
+			limit = { NOT = { government = monarchy } }
+			change_government_to_monarchy = yes
+			add_government_reform = autocracy_reform
+			#set_legacy_government = despotic_monarchy
+		}
+		if = {
+			limit = { has_reform = english_monarchy }
+			add_government_reform = autocracy_reform
+			#set_legacy_government = despotic_monarchy
+		}			
+		clr_country_flag = supports_royalists
+		add_prestige = 50
+		add_absolutism = 10
+		if = {
+			limit = {
+				NOT = {
+					stability = 2
+				}
+			}
+			add_stability = 2
+		}
+		else = { add_legitimacy = 20 }
+	}
+	
+	option = {			# Order has finally been restored
+		name = "flavor_eng.EVTOPTB9235"
+		trigger = {
+			has_country_flag = supports_parliamentarians
+			NOT = { has_country_modifier = just_lost_to_rebels }
+		}
+		clr_country_flag = supports_parliamentarians
+		add_prestige = 50
+		if = {
+			limit = {
+				NOT = {
+					stability = 2
+				}
+			}
+			add_stability = 2
+		}
+		else = { add_republican_tradition = 20 }
+		if = {
+			limit = {
+				NOT = { has_ruler_flag = cromwell_flag }
+			}
+			country_event = { id = english_civil_war.11 }
+		}
+		if = {
+			limit = {
+				has_ruler_flag = cromwell_flag
+			}
+			set_country_flag = english_civil_war_won_by_parliamentarians
+		}
+	}
+
+	option = { #Lost to Royalists
+		name = flavor_eng.lost_to_royalists
+		trigger = {
+			has_country_flag = supports_parliamentarians
+			has_country_modifier = just_lost_to_rebels
+		}
+		if = {
+			limit = { NOT = { government = monarchy } }
+			change_government_to_monarchy = yes
+			add_government_reform = autocracy_reform
+			#set_legacy_government = despotic_monarchy
+		}
+		if = {
+			limit = { has_reform = english_monarchy }
+			add_government_reform = autocracy_reform
+			#set_legacy_government = despotic_monarchy
+		}
+		clr_country_flag = supports_parliamentarians
+	}
+
+	option = { #Lost to Parliamentarians
+		name = flavor_eng.lost_to_parliament
+		trigger = {
+			has_country_flag = supports_royalists
+			has_country_modifier = just_lost_to_rebels
+		}
+		if = {
+			limit = { dynasty = "Cromwell" }
+			set_country_flag = english_civil_war_won_by_parliamentarians
+			change_government_to_republic = yes
+			add_government_reform = protectorate_parliament_reform
+			set_country_flag = english_civil_war_won_by_parliamentarians
+		}
+		else = {
+			country_event = { id = english_civil_war.11 }
+		}
+		clr_country_flag = supports_royalists
+	}
+}
+
+# Parliamentarian Victory
+country_event = {
+	id = english_civil_war.11
+	title = "english_civil_war.11.t"
+	desc = {
+		trigger = { has_country_flag = civil_war_has_exiled_heir }
+		desc = english_civil_war.11.d.heir
+	}
+	desc = {
+		trigger = { NOT = { has_country_flag = civil_war_has_exiled_heir } }
+		desc = english_civil_war.11.d
+	}
+	picture = BATTLE_eventPicture
+
+	is_triggered_only = yes
+	
+	fire_only_once = yes
+	
+	option = {			# A Republic
+		name = "english_civil_war.11.a"
+		ai_chance = { factor = 25 }
+		if = {
+			limit = { NOT = { government = republic } }
+			change_government_to_republic = yes
+		}
+		change_government_reform_progress = 100
+		#set_legacy_government = constitutional_republic
+	}
+	option = {			# A Monarchy
+		name = "english_civil_war.11.b"
+		ai_chance = { factor = 75 }
+		if = {
+			limit = { NOT = { government = monarchy } }
+			change_government_to_monarchy = yes
+			if = {
+				limit = {
+					has_country_flag = civil_war_has_exiled_heir
+				}
+				set_heir = english_civil_war_heir
+				kill_ruler = yes
+			}
+		}
+		add_government_reform = english_monarchy
+		#set_legacy_government = constitutional_monarchy
+	}
+}
+
+#Parliamentarian Victory - Death of Cromwell
+country_event = {
+	id = english_civil_war.12
+	title = "english_civil_war.12.t"
+	desc = {
+		trigger = { has_country_flag = civil_war_has_exiled_heir }
+		desc = english_civil_war.12.d.heir
+	}
+	desc = {
+		trigger = { NOT = { has_country_flag = civil_war_has_exiled_heir } }
+		desc = english_civil_war.12.d
+	}
+	picture = BATTLE_eventPicture
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_country_flag = english_civil_war_won_by_parliamentarians
+		NOT = { has_ruler_flag = cromwell_flag }
+		NOT = { has_reform = parliamentary_reform }
+	}
+	
+	option = {			# A Republic
+		name = "english_civil_war.11.a"
+		ai_chance = { factor = 25 }
+		if = {
+			limit = { NOT = { government = republic } }
+			change_government_to_republic = yes
+		}
+		change_government_reform_progress = 100
+		#set_legacy_government = constitutional_republic
+	}
+	option = {			# A Monarchy
+		name = "english_civil_war.11.b"
+		ai_chance = { factor = 75 }
+		if = {
+			limit = { NOT = { government = monarchy } }
+			change_government_to_monarchy = yes
+			if = {
+				limit = {
+					has_country_flag = civil_war_has_exiled_heir
+				}
+				set_heir = english_civil_war_heir
+				kill_ruler = yes
+			}
+		}
+		add_government_reform = english_monarchy
+		#set_legacy_government = constitutional_monarchy
+	}
+}

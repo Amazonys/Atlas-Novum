@@ -1,0 +1,199 @@
+namespace = dutch_revolt
+
+# on disaster end event
+country_event = {
+	id = dutch_revolt.1
+	title = "dutch_revolt.1.t"
+	desc = {
+		trigger = {
+			NOT = { exists = NED }
+		}
+		desc = "dutch_revolt.1.d" # everything went pretty well
+	}
+	desc = {
+		trigger = {
+			exists = NED
+		}
+		desc = "dutch_revolt.1.d2" # oh no the dutch are revolting
+	}
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = had_dutch_revolt
+			every_owned_province = {
+				limit = {
+					has_province_modifier = dutch_revolt_modifier
+				}
+				remove_province_modifier = dutch_revolt_modifier
+			}
+		}
+	}
+	
+	option = {
+		name = dutch_revolt.1.a
+		trigger = {
+			exists = NED
+		}
+	}
+	option = {
+		name = dutch_revolt.1.b
+		trigger = {
+			NOT = { exists = NED }
+		}
+		low_countries_region = {
+			limit = {
+				owned_by = ROOT
+			}
+			add_local_autonomy = -25
+		}
+	}
+}
+
+# mock incident
+country_event = {
+	id = dutch_revolt.2
+	title = "dutch_revolt.2.t"
+	desc = "dutch_revolt.2.d"
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	major = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					has_country_flag = dutch_revolt_target
+				}
+				save_event_target_as = dutch_revolt_country
+			}
+		}
+	}
+	
+	option = { # emperor backs netherlands
+		name = dutch_revolt.2.a
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 1000
+				event_target:dutch_revolt_country = {
+					is_rival = ROOT
+				}
+			}
+			modifier = {
+				factor = 1000
+				alliance_with = NED
+			}
+		}
+		if = {
+			limit = {
+				NOT = { alliance_with = NED }
+			}
+			create_alliance = NED
+		}
+		if = {
+			limit = {
+				NED = {
+					war_with = event_target:dutch_revolt_country
+				}
+			}
+			join_all_offensive_wars_of = NED
+		}
+		NED = {
+			add_opinion = {
+				who = ROOT
+				modifier = emperor_helped_dutch
+			}
+		}
+	}
+	option = { # do not intervene
+		name = dutch_revolt.2.b
+		ai_chance = { factor = 75 }
+		add_prestige = -10
+		set_global_flag = emperor_did_not_support_dutch	
+		custom_tooltip = dutch_will_leave_later		
+	}
+	
+	option = { # suppress the dutch revolt
+		name = dutch_revolt.2.c
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 1000
+				has_opinion = {
+					who = event_target:dutch_revolt_country
+					value = 100
+				}
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					alliance_with = event_target:dutch_revolt_country
+				}
+			}
+			create_alliance = event_target:dutch_revolt_country
+		}
+		if = {
+			limit = {
+				NED = {
+					war_with = event_target:dutch_revolt_country
+				}
+			}
+			join_all_defensive_wars_of = event_target:dutch_revolt_country
+		}
+		set_global_flag = emperor_did_not_support_dutch		
+		NED = {
+			add_opinion = {
+				who = ROOT
+				modifier = emperor_sided_against_dutch
+			}
+		}
+		custom_tooltip = dutch_will_leave_later
+	}
+}
+
+# The Netherlands leaves the Empire
+country_event = {
+	id = dutch_revolt.3
+	title = "dutch_revolt.3.t"
+	desc = "dutch_revolt.3.d"
+	picture = HRE_eventPicture
+	
+	fire_only_once = yes
+	major = yes
+	
+	trigger = {
+		tag = NED
+		has_global_flag = emperor_did_not_support_dutch
+		is_part_of_hre = yes
+		is_at_war = no
+		num_of_cities = 7
+	}
+	
+	mean_time_to_happen = {
+		months = 6
+	}
+	
+	option = { # leave the empire
+		ai_chance = { factor = 100 }
+		name = dutch_revolt.3.a
+		set_in_empire = no
+		add_prestige = 20
+		set_country_flag = permanently_left_hre_flag
+		emperor = {
+			add_opinion = {
+				who = ROOT
+				modifier = hre_country_left
+			}
+		}
+	}
+	option = {
+		name = dutch_revolt.3.b
+		ai_chance = { factor = 0 }
+	}
+}

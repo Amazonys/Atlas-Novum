@@ -1,0 +1,335 @@
+# Hussite Events by Daniel Tolman
+
+namespace = hussite
+
+# Pacifism (at war)		
+country_event = {
+	id = hussite.1
+	title = hussite.1.t
+	desc = hussite.1.d
+	picture = HUSSITE_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		religion = hussite
+		if = {
+			limit = {
+				has_dlc = "Emperor"
+			}
+			has_church_aspect = pacifism_aspect
+		}
+		is_in_war = {
+			attacker_leader = ROOT
+		}
+		NOT = {
+			has_country_modifier = conscripting_pacifists
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					is_in_war = {
+						attacker_leader = ROOT
+						defender_leader = THIS
+					}
+				}
+			}
+			save_event_target_as = pacifist_target
+		}
+	}
+	
+	option = { # let them follow their beliefs
+		name = "hussite.1.a"
+		add_church_power = 10
+		add_war_exhaustion = -1 
+		add_yearly_manpower = -1
+	}
+	option = { # all who are called must serve
+		name = "hussite.1.b"
+		add_church_power = -20
+		add_war_exhaustion = 2
+		add_country_modifier = {
+			name = "conscripting_pacifists"
+			duration = 1825
+		}
+	}
+}
+
+# Pacifism (at peace)
+country_event = {
+	id = hussite.2
+	title = hussite.2.t
+	desc = hussite.2.d
+	picture = ADULT_BAPTISME_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		religion = hussite
+		if = {
+			limit = {
+				has_dlc = "Emperor"
+			}
+			has_church_aspect = pacifism_aspect
+		}
+		is_at_war = no
+		NOT = {
+			war_exhaustion = 1
+		}
+		NOT = { had_recent_war = 5 }
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = pacifist_theologian
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	option = {
+		name = "hussite.2.a"
+		add_stability_or_adm_power = yes
+		add_church_power = 20
+	}
+}
+
+# Vows of Poverty
+country_event = {
+	id = hussite.3
+	title = hussite.3.t
+	desc = hussite.3.d
+	picture = ADULT_BAPTISME_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		religion = hussite
+		has_estate = estate_church
+	}
+	
+	trigger = {
+		religion = hussite
+		if = {
+			limit = {
+				has_dlc = "Emperor"
+			}
+			has_church_aspect = clerical_poverty_aspect
+		}
+		has_estate = estate_church
+	}
+	
+	# encourage vows of poverty
+	option = {
+		name = "hussite.3.a"
+		add_church_power = -25
+		change_estate_land_share = {
+			estate = estate_church
+			share = -5.0
+		}
+	}
+	
+	# powerful church is a good thing
+	option = {
+		name = "hussite.3.b"
+		add_church_power = 15
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = 10
+		}
+	}
+}
+
+# noble punished for sins
+country_event = {
+	id = hussite.4
+	title = hussite.4.t
+	desc = hussite.4.d #GetRandom_Sin
+	picture = ADULT_BAPTISME_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		religion = hussite
+		if = {
+			limit = {
+				has_dlc = "Emperor"
+			}
+			has_church_aspect = punishment_of_sins_aspect
+		}
+		has_estate = estate_nobles
+		has_estate = estate_church
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_nobles
+				modifier = EST_VAL_PUNISHMENT_FOR_SINS
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = sinful_noble
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	option = { # none are above the laws of God
+		name = "hussite.4.a"
+		add_church_power = 20
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = -10
+		}
+		add_estate_influence_modifier = {
+			estate = estate_nobles
+			desc = EST_VAL_PUNISHMENT_FOR_SINS
+			influence = -10
+			duration = 3650
+		}
+	}
+	
+	option = { # symbolic punishments only
+		name = "hussite.4.b"
+		add_church_power = -20
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = 10
+		}
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -10
+		}
+	}
+	
+	after = {
+		clear_saved_name =  sinful_noble
+	}
+}
+
+# defenestration
+country_event = {
+	id = hussite.5
+	title = hussite.5.t
+	desc = hussite.5.d # defenestration has become a popular form of public execution
+	picture = HUSSITE_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		religion = hussite
+		if = {
+			limit = {
+				has_dlc = "Emperor"
+			}
+			has_church_aspect = regular_defenestrations_aspect
+		}
+		NOT = {
+			has_country_modifier = entertaining_defenestrations
+		}
+	}
+	
+	option = { # people enjoy the spectacle
+		name = "hussite.5.a"
+		add_country_modifier = { # unrest reduction
+			name = entertaining_defenestrations
+			duration = 3650
+		}
+	}
+}
+	
+# Utraquists vs radicals
+country_event = {
+	id = hussite.6
+	title = hussite.6.t
+	desc = hussite.6.d
+	picture = ADULT_BAPTISME_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		religion = hussite
+		if = {
+			limit = {
+				has_dlc = "Emperor"
+			}
+			OR = {
+				has_church_aspect = taborite_resurgence_aspect
+				has_church_aspect = freedom_to_preach_aspect
+			}
+		}
+		NOT = { has_country_modifier = taborite_radicals }
+		NOT = { has_country_modifier = utraquist_moderates }
+	}
+	
+	option = { # embrace the radicals
+		name = "hussite.6.a"
+		add_church_power = -15
+		# missionary cost
+		add_country_modifier = {
+			name = taborite_radicals
+			duration = 3650
+		}
+	}
+	option = { # support the utraquists
+		name = "hussite.6.b"
+		add_church_power = 15
+		# stability cost
+		add_country_modifier = {
+			name = utraquist_moderates
+			duration = 3650
+		}
+	}
+}
+
+# War Wagons
+country_event = {
+	id = hussite.7
+	title = hussite.7.t
+	desc = hussite.7.d
+	picture = HUSSITE_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		religion = hussite
+		if = {
+			limit = {
+				has_dlc = "Emperor"
+			}
+			has_church_aspect = orphan_hetmans_aspect
+		}
+		NOT = { is_year = 1550 }
+		NOT = {
+			has_country_modifier = war_wagons
+		}
+		NOT = {
+			has_country_modifier = less_war_wagons
+		}
+	}
+	
+	option = {
+		name = "hussite.7.a"
+		# receive and deal less shock damage
+		add_country_modifier = {
+			name = "war_wagons"
+			duration = 3650
+		}
+	}
+	option = {
+		name = "hussite.7.b"
+		# receive and deal more shock damage
+		add_country_modifier = {
+			name = "less_war_wagons"
+			duration = 3650
+		}
+	}
+}

@@ -1,0 +1,3886 @@
+##########################################################################
+# Events for Culture and Religion for Rulers, Heirs, Consorts and Advisors
+#
+# written by Henrik Lohmander
+##########################################################################
+
+namespace = culture_religion_events
+
+# [Root.Heir.GetName] and the [Root.given_teacher_culture.GetCultureName] people
+country_event = {
+	id = culture_religion_events.1
+	title = "culture_religion_events.1.t"
+	desc = "culture_religion_events.1.d"
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = INVENTION_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = HEIR_AND_FOREIGN_ADVISOR_eventPicture
+	}
+	
+	trigger = {
+		has_heir = yes
+		has_regency = no
+		has_consort_regency = no
+		NOT = { has_reform = elective_monarchy }
+		heir_age = 13
+		NOT = { heir_age = 25 }
+		employed_advisor = {
+			category = ADM
+		}
+		any_owned_province = {
+			owner = {
+				employed_advisor = {
+					category = ADM
+					culture = PREV
+				}
+			}
+		}
+		NOT = {
+			employed_advisor = {
+				category = ADM
+				culture = root
+			}
+		}
+		variable_arithmetic_trigger = {
+			export_to_variable = {
+				variable_name = cultural_heir_culture
+				value = heir_culture
+			}
+			export_to_variable = {
+				variable_name = teacher_culture
+				value = adm_advisor_culture
+			}
+			export_to_variable = {
+				variable_name = parent_culture
+				value = ruler_culture
+			}
+			NOT = {
+				variable_arithmetic_trigger = {
+					is_variable_equal = {
+						which = cultural_heir_culture
+						which = teacher_culture
+					}
+				}
+			}
+			is_variable_equal = {
+				which = cultural_heir_culture
+				which = parent_culture
+			}
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			export_to_variable = {
+				variable_name = given_teacher_culture
+				value = adm_advisor_culture
+			}
+			set_saved_name = {
+				key = capital_noble
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 800
+		modifier = {
+			factor = 0.8
+			heir_has_personality_ancestor = { key = well_connected }
+		}
+		modifier = {
+			factor = 0.8
+			heir_has_personality_ancestor = { key = free_thinker }
+		}
+		modifier = {
+			factor = 0.8
+			heir_has_personality_ancestor = { key = tolerant }
+		}
+		modifier = {
+			factor = 0.8
+			heir_has_personality = babbling_buffoon_personality
+		}
+		modifier = {
+			factor = 0.8
+			heir_has_personality = naive_personality
+		}
+		modifier = {
+			factor = 0.8
+			heir_has_personality = loose_lips_personality
+		}
+		modifier = {
+			factor = 1.2
+			heir_has_personality = careful_personality
+		}
+		modifier = {
+			factor = 1.2
+			heir_has_personality_ancestor = { key = zealot }
+		}
+		modifier = {
+			factor = 1.2
+			heir_has_personality = malevolent_personality
+		}
+	}
+
+	option = {
+		name = "culture_religion_events.1.a" #
+		remove_advisor_by_category = ADM
+		add_adm_power = -50
+		define_advisor = {
+			name = capital_noble
+			type = statesman
+			skill = 2
+			discount = yes
+		}
+	}
+	option = {
+		name = "culture_religion_events.1.b" #
+		set_heir_culture = variable:given_teacher_culture
+		add_heir_claim = -25
+		custom_tooltip = culture_religion_events.1.b.tt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					culture = variable:FROM:given_teacher_culture
+				}
+				add_province_modifier = {
+					name = "heir_is_our_heir"
+					duration = 3650
+				}
+			}
+		}
+	}
+	
+	after = {
+		clear_saved_name = capital_noble
+		hidden_effect = {
+			set_variable = {
+				which = given_teacher_culture
+				value = -1
+			}
+		}
+	}
+}
+
+
+# Triggers within a few years of succession.
+country_event = {
+	id = culture_religion_events.2
+	title = "culture_religion_events.2.t"
+	picture = {
+		trigger = {
+			has_regency = yes
+		}
+		picture = DEBATE_REPUBLICAN_eventPicture
+	}
+	picture = {
+		trigger = {
+			has_regency = no
+			NOT = { has_dlc = "Cradle of Civilization" }
+		}
+		picture = ACCUSATION_eventPicture
+	}
+	picture = {
+		trigger = {
+			has_regency = no
+			has_dlc = "Cradle of Civilization"
+		}
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	desc = {
+		desc = "culture_religion_events.2.da" #Different Culture - But we have subjects of it
+		trigger = {
+			has_regency = no
+			NOT = { has_reform = mamluk_government }
+			NOT = { ruler_culture = ROOT }
+			ruler_religion = ROOT
+			any_owned_province = {
+				culture = variable:From:new_ruler_culture
+			}
+		}
+	}
+	desc = {
+		desc = "culture_religion_events.2.db" #Different Culture - And we have no subjects of it
+		trigger = {
+			has_regency = no
+			NOT = { has_reform = mamluk_government }
+			NOT = { ruler_culture = ROOT }
+			ruler_religion = ROOT
+			NOT = {
+				any_owned_province = {
+					culture = variable:From:new_ruler_culture
+				}
+			}
+		}
+	}
+	desc = {
+		desc = "culture_religion_events.2.dc" #Different Heathen Religion
+		trigger = {
+			has_regency = no
+			NOT = { has_reform = mamluk_government }
+			ruler_culture = ROOT
+			NOT = { ruler_religion = ROOT }
+			NOT = { religion_group = variable:new_ruler_religion }
+		}
+	}
+	desc = {
+		desc = "culture_religion_events.2.dda" #Different Heretic Religion
+		trigger = {
+			has_regency = no
+			NOT = { has_reform = mamluk_government }
+			ruler_culture = ROOT
+			NOT = { ruler_religion = ROOT }
+			religion_group = variable:new_ruler_religion
+		}
+	}
+	
+	desc = {
+		desc = "culture_religion_events.2.de" #Different Culture and Different Religion
+		trigger = {
+			has_regency = no
+			NOT = { has_reform = mamluk_government }
+			NOT = { ruler_culture = ROOT }
+			NOT = { ruler_religion = ROOT }
+		}
+	}
+	
+	desc = {
+		desc = "culture_religion_events.2.df" #What's this then? Well the event triggers with a delay from the day of succession.It is possible for someone to usurp the throne before this event happens or for other triggers to no longer be true.
+		trigger = {
+			OR = {
+				has_regency = yes #It is also possible to enter a regency
+				has_reform = mamluk_government #It is even possible to suddenly get the Mamluk Government form.
+				AND = {
+					ruler_culture = ROOT
+					ruler_religion = ROOT
+				}
+			}
+		}
+	}
+	
+	is_triggered_only = yes #Triggers in on_action for new ruler.
+	
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = had_culture_religion_reaction_event_flag
+			random_list = {
+				15 = { set_country_flag = strong_effect } #Harsh Reception
+				35 = { set_country_flag = medium_effect } #Average Reception
+				50 = { set_country_flag = small_effect }  #Mild Reception
+			}
+			export_to_variable = {
+				variable_name = new_ruler_culture
+				value = ruler_culture
+			}
+			export_to_variable = {
+				variable_name = new_ruler_religion
+				value = ruler_religion
+			}
+			set_saved_name = { #Not actually used as a preacher in all event versions
+				key = rebel_preacher
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+
+	option = {
+		name = "culture_religion_events.2.a" #Different Culture
+		trigger = {
+			has_regency = no
+			NOT = { has_reform = mamluk_government }
+			NOT = { ruler_culture = ROOT }
+			ruler_religion = ROOT
+		}
+		if = {
+			limit = {
+				calc_true_if = {
+					all_known_country = {
+						primary_culture = variable:From:new_ruler_culture
+					}
+					amount = 8
+				}
+			}
+			custom_tooltip  = culture_opinion_tooltip
+			hidden_effect = {
+				every_known_country = {
+					limit = {
+						primary_culture = variable:From:new_ruler_culture
+					}
+					add_opinion = {
+						modifier = opinion_ruler_of_our_culture
+						who = ROOT
+					}
+				}
+			}
+		}
+		else = {
+			every_known_country = {
+				limit = {
+					primary_culture = variable:From:new_ruler_culture
+				}
+				add_opinion = {
+					modifier = opinion_ruler_of_our_culture
+					who = ROOT
+				}
+			}
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			medium_effect = {
+				custom_tooltip = culture_religion_events.2.a.ttm1
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							has_owner_culture = yes
+						}
+						add_province_modifier = {
+							name = "foreigner_on_throne"
+							duration = 1825
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							culture = variable:FROM:new_ruler_culture
+						}
+					}
+					custom_tooltip = culture_religion_events.2.a.ttm2
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								culture = variable:FROM:new_ruler_culture
+							}
+							add_province_modifier = {
+								name = "support_for_ruler"
+								duration = 1825
+							}
+						}
+					}
+				}
+				else_if = {
+					limit = { monthly_income = 30 }
+					define_advisor = {
+						type = recruitmaster
+						skill = 3
+						discount = yes
+						culture = variable:new_ruler_culture
+					}
+				}
+				else = {
+					define_advisor = {
+						type = recruitmaster
+						skill = 2
+						discount = yes
+						culture = variable:new_ruler_culture
+					}
+				}
+				clr_country_flag = medium_effect
+			}
+			small_effect = {
+				custom_tooltip = culture_religion_events.2.a.tts1
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							has_owner_culture = yes
+						}
+						add_province_modifier = {
+							name = "foreigner_on_throne"
+							duration = 1095
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							culture = variable:FROM:new_ruler_culture
+						}
+					}
+					custom_tooltip = culture_religion_events.2.a.tts2
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								culture = variable:FROM:new_ruler_culture
+							}
+							add_province_modifier = {
+								name = "support_for_ruler"
+								duration = 1095
+							}
+						}
+					}
+				}
+				else_if = {
+					limit = { monthly_income = 30 }
+					define_advisor = {
+						type = recruitmaster
+						skill = 2
+						discount = yes
+						culture = variable:new_ruler_culture
+					}
+				}
+				else = {
+					define_advisor = {
+						type = recruitmaster
+						skill = 1
+						discount = yes
+						culture = variable:new_ruler_culture
+					}
+				}
+				clr_country_flag = small_effect
+			}
+			strong_effect = {
+				custom_tooltip = culture_religion_events.2.a.ttl1
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							has_owner_culture = yes
+						}
+						add_province_modifier = {
+							name = "foreigner_on_throne"
+							duration = 2555
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							culture = variable:FROM:new_ruler_culture
+						}
+					}
+					custom_tooltip = culture_religion_events.2.a.ttl2
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								culture = variable:FROM:new_ruler_culture
+							}
+							add_province_modifier = {
+								name = "support_for_ruler"
+								duration = 2555
+							}
+						}
+					}
+				}
+				else_if = {
+					limit = { monthly_income = 30 }
+					define_advisor = {
+						type = grand_captain
+						skill = 3
+						discount = yes
+						culture = variable:new_ruler_culture
+					}
+				}
+				else = {
+					define_advisor = {
+						type = grand_captain
+						skill = 2
+						discount = yes
+						culture = variable:new_ruler_culture
+					}
+				}
+				clr_country_flag = strong_effect
+			}
+		}
+	}
+	option = {
+		name = "culture_religion_events.2.b" #Different Heathen Religion - This is harder to get.
+		trigger = {
+			has_regency = no
+			NOT = { has_reform = mamluk_government }
+			ruler_culture = ROOT
+			NOT = { ruler_religion = ROOT }
+			NOT = { religion_group = variable:new_ruler_religion }
+		}
+		if = {
+			limit = {
+				calc_true_if = {
+					all_known_country = {
+						religion = variable:From:new_ruler_religion
+					}
+					amount = 8
+				}
+			}
+			custom_tooltip  = religion_opinion_tooltip
+			hidden_effect = {
+				every_known_country = {
+					limit = {
+						religion = variable:From:new_ruler_religion
+					}
+					add_opinion = {
+						modifier = opinion_ruler_of_our_religion
+						who = ROOT
+					}
+				}
+			}
+		}
+		else = {
+			every_known_country = {
+				limit = {
+					religion = variable:From:new_ruler_religion
+				}
+				add_opinion = {
+					modifier = opinion_ruler_of_our_religion
+					who = ROOT
+				}
+			}
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			medium_effect = {
+				if = {
+					limit = { monthly_income = 30 }
+					define_advisor = {
+						type = theologian
+						skill = 3
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				else = {
+					define_advisor = {
+						type = theologian
+						skill = 2
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				custom_tooltip = culture_religion_events.2.b.ttm1
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							has_owner_religion = yes
+						}
+						add_province_modifier = {
+							name = "heathen_on_throne"
+							duration = 2555
+						}
+					}
+				}
+				random_owned_province = {
+					limit = {
+						has_owner_religion = yes
+					}
+					spawn_rebels = {
+						type = religious_rebels
+						size = 1
+						leader = rebel_preacher
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							religion = variable:FROM:new_ruler_religion
+						}
+					}
+					custom_tooltip = culture_religion_events.2.b.ttm2
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								religion = variable:FROM:new_ruler_religion
+							}
+							add_province_modifier = {
+								name = "support_for_heathen_ruler"
+								duration = 2555
+							}
+						}
+					}
+				}
+				clr_country_flag = medium_effect
+			}
+			small_effect = {
+				if = {
+					limit = { monthly_income = 30 }
+					define_advisor = {
+						type = theologian
+						skill = 3
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				else = {
+					define_advisor = {
+						type = theologian
+						skill = 2
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				random_owned_province = {
+					limit = {
+						has_owner_religion = yes
+					}
+					spawn_rebels = {
+						type = religious_rebels
+						size = 1
+						leader = rebel_preacher
+					}
+				}
+				custom_tooltip = culture_religion_events.2.b.tts1
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							has_owner_religion = yes
+						}
+						add_province_modifier = {
+							name = "heathen_on_throne"
+							duration = 1825
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							religion = variable:FROM:new_ruler_religion
+						}
+					}
+					custom_tooltip = culture_religion_events.2.b.tts2
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								religion = variable:FROM:new_ruler_religion
+							}
+							add_province_modifier = {
+								name = "support_for_heathen_ruler"
+								duration = 1825
+							}
+						}
+					}
+				}
+				clr_country_flag = small_effect
+			}
+			strong_effect = {
+				if = {
+					limit = { monthly_income = 30 }
+					define_advisor = {
+						type = theologian
+						skill = 2
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				else = {
+					define_advisor = {
+						type = theologian
+						skill = 1
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				random_owned_province = {
+					limit = {
+						has_owner_religion = yes
+					}
+					spawn_rebels = {
+						type = religious_rebels
+						size = 2
+						leader = rebel_preacher
+					}
+				}
+				custom_tooltip = culture_religion_events.2.b.ttl1
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							has_owner_religion = yes
+						}
+						add_province_modifier = {
+							name = "heathen_on_throne"
+							duration = 3650
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							religion = variable:FROM:new_ruler_religion
+						}
+					}
+					custom_tooltip = culture_religion_events.2.b.ttl2
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								religion = variable:FROM:new_ruler_religion
+							}
+							add_province_modifier = {
+								name = "support_for_heathen_ruler"
+								duration = 3650
+							}
+						}
+					}
+				}
+				clr_country_flag = strong_effect
+			}
+		}
+	}
+	option = {
+		name = "culture_religion_events.2.c" #Different Heretic Religion - This is harder to get (but not as hard as heathen).
+		trigger = {
+			has_regency = no
+			NOT = { has_reform = mamluk_government }
+			ruler_culture = ROOT
+			NOT = { ruler_religion = ROOT }
+			religion_group = variable:new_ruler_religion
+		}
+		if = {
+			limit = {
+				calc_true_if = {
+					all_known_country = {
+						religion = variable:From:new_ruler_religion
+					}
+					amount = 8
+				}
+			}
+			custom_tooltip  = religion_opinion_tooltip
+			hidden_effect = {
+				every_known_country = {
+					limit = {
+						religion = variable:From:new_ruler_religion
+					}
+					add_opinion = {
+						modifier = opinion_ruler_of_our_religion
+						who = ROOT
+					}
+				}
+			}
+		}
+		else = {
+			every_known_country = {
+				limit = {
+					religion = variable:From:new_ruler_religion
+				}
+				add_opinion = {
+					modifier = opinion_ruler_of_our_religion
+					who = ROOT
+				}
+			}
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			medium_effect = {
+				if = {
+					limit = { monthly_income = 30 }
+					define_advisor = {
+						type = theologian
+						skill = 3
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				else = {
+					define_advisor = {
+						type = theologian
+						skill = 2
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				custom_tooltip = culture_religion_events.2.c.ttm1
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							has_owner_religion = yes
+						}
+						add_province_modifier = {
+							name = "heretic_on_throne"
+							duration = 2555
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							religion = variable:FROM:new_ruler_religion
+						}
+					}
+					custom_tooltip = culture_religion_events.2.c.ttm2
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								religion = variable:FROM:new_ruler_religion
+							}
+							add_province_modifier = {
+								name = "support_for_heretic_ruler"
+								duration = 2555
+							}
+						}
+					}
+				}
+				clr_country_flag = medium_effect
+			}
+			small_effect = {
+				if = {
+					limit = { monthly_income = 30 }
+					define_advisor = {
+						type = theologian
+						skill = 3
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				else = {
+					define_advisor = {
+						type = theologian
+						skill = 2
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				custom_tooltip = culture_religion_events.2.c.tts1
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							has_owner_religion = yes
+						}
+						add_province_modifier = {
+							name = "heretic_on_throne"
+							duration = 1825
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							religion = variable:FROM:new_ruler_religion
+						}
+					}
+					every_owned_province = {
+						limit = {
+							religion = variable:FROM:new_ruler_religion
+						}
+						custom_tooltip = culture_religion_events.2.c.tts2
+						hidden_effect = {
+							add_province_modifier = {
+								name = "support_for_heretic_ruler"
+								duration = 1825
+							}
+						}
+					}
+				}
+				clr_country_flag = small_effect
+			}
+			strong_effect = {
+				if = {
+					limit = { monthly_income = 30 }
+					define_advisor = {
+						type = theologian
+						skill = 2
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				else = {
+					define_advisor = {
+						type = theologian
+						skill = 1
+						discount = yes
+						religion = variable:new_ruler_religion
+					}
+				}
+				random_owned_province = {
+					limit = {
+						has_owner_religion = yes
+					}
+					spawn_rebels = {
+						type = religious_rebels
+						size = 1
+						leader = rebel_preacher
+					}
+				}
+				custom_tooltip = culture_religion_events.2.c.ttl1
+				hidden_effect = {
+					every_owned_province = {
+						limit = {
+							has_owner_religion = yes
+						}
+						add_province_modifier = {
+							name = "heretic_on_throne"
+							duration = 4380
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							religion = variable:FROM:new_ruler_religion
+						}
+					}
+					custom_tooltip = culture_religion_events.2.c.ttl2
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								religion = variable:FROM:new_ruler_religion
+							}
+							add_province_modifier = {
+								name = "support_for_heretic_ruler"
+								duration = 4380
+							}
+						}
+					}
+				}
+				clr_country_flag = strong_effect
+			}
+		}
+	}
+	option = {
+		name = "culture_religion_events.2.dd" #Different Culture and Different Religion
+		trigger = {
+			has_regency = no
+			NOT = { has_reform = mamluk_government }
+			NOT = { ruler_culture = ROOT }
+			NOT = { ruler_religion = ROOT }
+		}
+		if = {
+			limit = {
+				calc_true_if = {
+					all_known_country = {
+						OR = {
+							religion = variable:From:new_ruler_religion
+							primary_culture = variable:From:new_ruler_culture
+						}
+					}
+					amount = 8
+				}
+			}
+			custom_tooltip  = culture_and_religion_opinion_tooltip
+			hidden_effect = {
+				every_known_country = {
+					limit = {
+						religion = variable:From:new_ruler_religion
+					}
+					add_opinion = {
+						modifier = opinion_ruler_of_our_religion
+						who = ROOT
+					}
+				}
+				every_known_country = {
+					limit = {
+						primary_culture = variable:From:new_ruler_culture
+					}
+					add_opinion = {
+						modifier = opinion_ruler_of_our_culture
+						who = ROOT
+					}
+				}
+			}
+		}
+		else = {
+			every_known_country = {
+					limit = {
+						religion = variable:From:new_ruler_religion
+					}
+					add_opinion = {
+						modifier = opinion_ruler_of_our_religion
+						who = ROOT
+					}
+				}
+			every_known_country = {
+				limit = {
+					primary_culture = variable:From:new_ruler_culture
+				}
+				add_opinion = {
+					modifier = opinion_ruler_of_our_culture
+					who = ROOT
+				}
+			}
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			medium_effect = {
+				custom_tooltip = culture_religion_events.2.dd.ttm
+				if = {
+					limit = {
+						any_owned_province = {
+							has_owner_religion = yes
+							has_owner_culture = yes
+						}
+					}
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								has_owner_religion = yes
+								has_owner_culture = yes
+							}
+							add_province_modifier = {
+								name = "alien_ruler"
+								duration = 2555
+							}
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							OR = {
+								AND = {
+									has_owner_religion = yes
+									has_owner_culture = no
+								}
+								AND = {
+									has_owner_religion = no
+									has_owner_culture = yes
+								}
+							}
+						}
+					}
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								OR = {
+									AND = {
+										has_owner_religion = yes
+										has_owner_culture = no
+									}
+									AND = {
+										has_owner_religion = no
+										has_owner_culture = yes
+									}
+								}
+							}
+							add_province_modifier = {
+								name = "alien_ruler"
+								duration = 1825
+							}
+						}
+					}
+				}
+				clr_country_flag = medium_effect
+			}
+			small_effect = {
+				custom_tooltip = culture_religion_events.2.dd.tts
+				if = {
+					limit = {
+						any_owned_province = {
+							has_owner_religion = yes
+							has_owner_culture = yes
+						}
+					}
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								has_owner_religion = yes
+								has_owner_culture = yes
+							}
+							add_province_modifier = {
+								name = "alien_ruler"
+								duration = 1825
+							}
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							OR = {
+								AND = {
+									has_owner_religion = yes
+									has_owner_culture = no
+								}
+								AND = {
+									has_owner_religion = no
+									has_owner_culture = yes
+								}
+							}
+						}
+					}
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								OR = {
+									AND = {
+										has_owner_religion = yes
+										has_owner_culture = no
+									}
+									AND = {
+										has_owner_religion = no
+										has_owner_culture = yes
+									}
+								}
+							}
+							add_province_modifier = {
+								name = "alien_ruler"
+								duration = 913
+							}
+						}
+					}
+				}
+				clr_country_flag = small_effect
+			}
+			strong_effect = {
+				custom_tooltip = culture_religion_events.2.dd.ttl
+				if = {
+					limit = {
+						any_owned_province = {
+							has_owner_religion = yes
+							has_owner_culture = yes
+						}
+					}
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								has_owner_religion = yes
+								has_owner_culture = yes
+							}
+							add_province_modifier = {
+								name = "alien_ruler"
+								duration = 3650
+							}
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							OR = {
+								AND = {
+									has_owner_religion = yes
+									has_owner_culture = no
+								}
+								AND = {
+									has_owner_religion = no
+									has_owner_culture = yes
+								}
+							}
+						}
+					}
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								OR = {
+									AND = {
+										has_owner_religion = yes
+										has_owner_culture = no
+									}
+									AND = {
+										has_owner_religion = no
+										has_owner_culture = yes
+									}
+								}
+							}
+							add_province_modifier = {
+								name = "alien_ruler"
+								duration = 1825
+							}
+						}
+					}
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							is_state = yes
+							OR = {
+								has_owner_culture = yes
+								has_owner_religion = yes
+							}
+						}
+					}
+					random_owned_province = {
+						limit = {
+							owner = { government = monarchy }
+							NOT = { owner ={ has_reform = ottoman_government } }
+							is_state = yes
+							OR = {
+								has_owner_culture = yes
+								has_owner_religion = yes
+							}
+						}
+						spawn_rebels = {
+							type = pretender_rebels
+							size = 2
+							leader = rebel_preacher
+						}
+					}
+				}
+				clr_country_flag = strong_effect
+			}
+		}
+	}
+	option = {
+		name = "culture_religion_events.2.e"
+		trigger = {
+			OR = {
+				has_regency = yes #It is also possible to enter a regency
+				has_reform = mamluk_government #It is even possible to suddenly get the Mamluk Government form.
+				AND = {
+					ruler_culture = ROOT
+					ruler_religion = ROOT
+				}
+			}
+		}
+		add_stability_or_adm_power = yes
+		
+	}
+	
+	after = {
+		hidden_effect = {
+			set_variable = {
+				which = new_ruler_religion
+				value = -1
+			}
+			set_variable = {
+				which = new_ruler_culture
+				value = -1
+			}
+			clear_saved_name = rebel_preacher
+		}
+	}
+}
+
+# The Faith of [Root.Monarch.GetName]
+country_event = {
+	id = culture_religion_events.3
+	title = culture_religion_events.3.t
+	desc = culture_religion_events.3.d
+	picture = RELIGIOUS_CONVERSION_eventPicture
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { ruler_religion = ROOT }
+		NOT = { has_ruler_modifier = increased_tolerance_of_heretics }
+		NOT = { has_ruler_modifier = supressing_personal_faith }
+		religion_group = new_variable:ruler_religion
+		any_owned_province = {
+			has_owner_religion = yes
+			is_capital = no
+			is_reformation_center = no
+			NOT = { is_religious_center_province = yes }
+			NOT = { has_province_modifier = religious_center }
+			NOT = { has_province_modifier = religious_zeal_at_conv }
+			NOT = { has_province_modifier = supressed_religious_minority }
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			export_to_variable = { #Primarily for localization
+				variable_name = new_ruler_religion
+				value = ruler_religion
+			}
+			random_owned_province = {
+				limit = {
+					has_owner_religion = yes
+					is_capital = no
+					is_reformation_center = no
+					NOT = { is_religious_center_province = yes }
+					NOT = { has_province_modifier = religious_center }
+					NOT = { has_province_modifier = religious_zeal_at_conv }
+					NOT = { has_province_modifier = supressed_religious_minority }
+				}
+				save_event_target_as = conversion_province
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.3.a #Wonderful!
+		ai_chance = {
+			factor = 10
+		}
+		add_ruler_modifier = {
+			name = "increased_tolerance_of_heretics"
+		}
+		event_target:conversion_province = {
+			change_religion = variable:From:new_ruler_religion
+			add_province_modifier = {
+				name = "religious_zeal_at_conv"
+				duration = 7300
+			}
+		}
+	}
+	option = {
+		name = culture_religion_events.3.b #We must attempt to stem the subversive powers of the [Root.Monarch.GetTitle].
+		ai_chance = {
+			factor = 90
+		}
+		add_ruler_modifier = {
+			name = "supressing_personal_faith"
+		}
+		event_target:conversion_province = {
+			add_province_modifier = {
+				name = "supressed_religious_minority"
+				duration = 7300
+			}
+		}
+	}
+	after = {
+		set_variable = {
+			which = new_ruler_religion
+			value = -1
+		}
+	}
+}
+
+#A bad influence
+country_event = {
+	id = culture_religion_events.4
+	title = culture_religion_events.4.t
+	desc = culture_religion_events.4.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { ruler_religion = ROOT }
+		religion_group = new_variable:ruler_religion
+		num_of_cities = 3
+		any_owned_province = {
+			religion = new_variable:FROM:ruler_religion
+			NOT = { tolerance_to_this = 0 }
+		}
+		any_owned_province = {
+			is_state = yes
+			is_capital = no
+			is_in_capital_area = yes
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 1.5
+			has_ruler_modifier = increased_tolerance_of_heretics
+		}
+		modifier = {
+			factor = 1.25
+			any_owned_province = {
+				religion = new_variable:FROM:ruler_religion
+				NOT = { tolerance_to_this = -2 }
+			}
+		}
+		modifier = {
+			factor = 2
+			piety = 0.5
+		}
+		modifier = {
+			factor = 1.5
+			piety = 0.01
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = { 
+				key = noblezealot
+				type = advisor
+				scope = ROOT
+			}
+			random_owned_province = {
+				limit = {
+					is_state = yes
+					is_capital = no
+					is_in_capital_area = yes
+				}
+				save_event_target_as = rebel_province
+			}
+			random_owned_province = {
+				limit = {
+					is_state = yes
+					is_capital = no
+					OR = {
+						has_owner_culture = yes
+						has_owner_religion = yes
+					}
+					is_in_capital_area = yes
+				}
+				save_event_target_as = rebel_province
+			}
+			random_owned_province = {
+				limit = {
+					is_state = yes
+					is_capital = no
+					has_owner_religion = yes
+					is_in_capital_area = yes
+				}
+				save_event_target_as = rebel_province
+			}
+			random_owned_province = {
+				limit = {
+					is_state = yes
+					is_capital = no
+					has_owner_culture = yes
+					has_owner_religion = yes
+					is_in_capital_area = yes
+				}
+				save_event_target_as = rebel_province
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.4.a #Traitors Must Die
+		add_piety = -0.25
+		add_church_power = -15
+		add_fervor = -15
+		add_patriarch_authority = -0.15
+		add_karma = -15
+		add_authority = -10
+		add_legitimacy = -10
+		add_papal_influence = -10
+		event_target:rebel_province = {
+			if = {
+				limit = { religion = ROOT }
+				spawn_rebels = {
+					size = 1
+					leader = noblezealot
+					type = religious_rebels
+				}
+			}
+			else = {
+				spawn_rebels = {
+					size = 1
+					leader = noblezealot
+					type = pretender_rebels
+					religion = ROOT
+				}
+			}
+		}
+	}
+	after = {
+		clear_saved_name = noblezealot
+	}
+}
+
+#A heathen Monarch
+country_event = {
+	id = culture_religion_events.5
+	title = culture_religion_events.5.t
+	desc = culture_religion_events.5.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { ruler_religion = ROOT }
+		NOT = { religion_group = new_variable:ruler_religion }
+		num_of_cities = 3
+		any_owned_province = {
+			religion = new_variable:FROM:ruler_religion
+			NOT = { tolerance_to_this = 0 }
+		}
+		NOT = {
+			any_owned_province = { has_province_modifier = heathen_ruler_religious_tensions }
+		}
+		any_owned_province = {
+			is_state = yes
+			is_capital = no
+			is_in_capital_area = yes
+			OR = {
+				religion = new_variable:FROM:ruler_religion
+				has_owner_religion = yes
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 2
+			piety = 0.5
+		}
+		modifier = {
+			factor = 1.5
+			piety = 0.01
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = { 
+				key = antimonarchistpriest
+				type = advisor
+				scope = ROOT
+			}
+			export_to_variable = { #Primarily for localization
+				variable_name = heathen_ruler
+				value = ruler_religion
+			}
+			random_owned_province = {
+				limit = {
+					is_state = yes
+					is_capital = no
+					is_in_capital_area = yes
+					OR = {
+						religion = new_variable:FROM:ruler_religion
+						has_owner_religion = yes
+					}
+					NOT = { has_province_modifier = heathen_ruler_religious_tensions }
+				}
+				save_event_target_as = rebelprovince
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.5.a #Extensive use of force sounds fitting.
+		event_target:rebelprovince = {
+			if = {
+				limit = { religion = ROOT }
+				spawn_rebels = {
+					type = religious_rebels
+					religion = ROOT
+					size = 1
+					leader = antimonarchistpriest
+				}
+			}
+			else = {
+				spawn_rebels = {
+					type = pretender_rebels
+					religion = ROOT
+					size = 1
+					leader = antimonarchistpriest
+				}
+			}
+			area = {
+				limit = { owned_by = ROOT }
+				add_province_modifier = {
+					name = "heathen_ruler_religious_tensions"
+					duration = 3650
+				}
+			}
+		}
+	}
+	option = {
+		name = culture_religion_events.5.b #Let us not escalate the situation.
+		add_dip_power = -25
+		event_target:rebelprovince = {
+			area = {
+				limit = { owned_by = ROOT }
+				add_province_modifier = {
+					name = "heathen_ruler_religious_tensions"
+					duration = 1825
+				}
+			}
+		}
+	}
+	after = {
+		clear_saved_name = antimonarchistpriest
+		set_variable = {
+			which = heathen_ruler
+			value = -1
+		}
+	}
+}
+
+#The [new_monarch_religion.GetReligionGroup] court of [Root.Monarch.GetName]
+country_event = {
+	id = culture_religion_events.6
+	title = culture_religion_events.6.t
+	desc = culture_religion_events.6.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = GOOD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { ruler_religion = ROOT }
+		has_regency = no
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			save_event_target_as = advisor_origin #Fallback
+			random_country = { #Better origin
+				limit = {
+					religion = new_variable:FROM:ruler_religion
+				}
+				save_event_target_as = advisor_origin
+			}
+			set_saved_name = { 
+				key = advisor_attracted_by_ruler
+				type = advisor
+				scope = event_target:advisor_origin
+			}
+			export_to_variable = { #Primarily for localization
+				variable_name = new_monarch_religion
+				value = ruler_religion
+			}
+			random_list = {
+				33 = { set_country_flag = philosopher_flag }
+				33 = { set_country_flag = master_of_mint_flag }
+				33 = { set_country_flag = recruitmaster_flag }
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.6.a #Come one come all.
+		trigger_switch = {
+			on_trigger = has_country_flag
+			philosopher_flag = {
+				if = {
+					limit = {
+						NOT = { monthly_income = 30 }
+					}
+					define_advisor = {
+						type = philosopher
+						name = advisor_attracted_by_ruler
+						religion = new_variable:ruler_religion
+						skill = 2
+						discount = yes
+					}
+				}
+				else = {
+					define_advisor = {
+						type = philosopher
+						name = advisor_attracted_by_ruler
+						religion = new_variable:ruler_religion
+						skill = 3
+						discount = yes
+					}
+				}
+			}
+			master_of_mint_flag = {
+				if = {
+					limit = {
+						NOT = { monthly_income = 30 }
+					}
+					define_advisor = {
+						type = master_of_mint
+						name = advisor_attracted_by_ruler
+						religion = new_variable:ruler_religion
+						skill = 2
+						discount = yes
+					}
+				}
+				else = {
+					define_advisor = {
+						type = master_of_mint
+						name = advisor_attracted_by_ruler
+						religion = new_variable:ruler_religion
+						skill = 3
+						discount = yes
+					}
+				}
+			}
+			recruitmaster_flag = {
+				if = {
+					limit = {
+						NOT = { monthly_income = 30 }
+					}
+					define_advisor = {
+						type = recruitmaster
+						name = advisor_attracted_by_ruler
+						religion = new_variable:ruler_religion
+						skill = 2
+						discount = yes
+					}
+				}
+				else = {
+					define_advisor = {
+						type = recruitmaster
+						name = advisor_attracted_by_ruler
+						religion = new_variable:ruler_religion
+						skill = 3
+						discount = yes
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = culture_religion_events.6.b #
+		trigger = {
+			any_owned_province = {
+				religion = new_variable:From:ruler_religion
+				is_state = yes
+				is_capital = no
+			}
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			philosopher_flag = {
+				random_owned_province = {
+					limit = {
+						religion = new_variable:From:ruler_religion
+						is_state = yes
+						is_capital = no
+					}
+					add_base_tax = 1
+				}
+			}
+			master_of_mint_flag = {
+				random_owned_province = {
+					limit = {
+						religion = new_variable:From:ruler_religion
+						is_state = yes
+						is_capital = no
+					}
+					add_base_production = 1
+				}
+			}
+			recruitmaster_flag = {
+				random_owned_province = {
+					limit = {
+						religion = new_variable:From:ruler_religion
+						is_state = yes
+						is_capital = no
+					}
+					add_base_manpower = 1
+				}
+			}
+		}
+	}
+	after = {
+		clear_saved_name = advisor_attracted_by_ruler
+		trigger_switch = {
+			on_trigger = has_country_flag
+			philosopher_flag = {
+				clr_country_flag = philosopher_flag
+			}
+			master_of_mint_flag = {
+				clr_country_flag = master_of_mint_flag
+			}
+			recruitmaster_flag = {
+				clr_country_flag = recruitmaster_flag
+			}
+		}
+		set_variable = {
+			which = new_monarch_religion
+			value = -1
+		}
+	}
+}
+
+#The Competition for the [Root.Monarch.GetTitle]'s Favors
+country_event = {
+	id = culture_religion_events.7
+	title = culture_religion_events.7.t
+	desc = {
+		trigger = {
+			employed_advisor = {
+				category = ADM
+				culture = ROOT
+			}
+		}
+		desc = culture_religion_events.7.da
+	}
+	desc = {
+		trigger = {
+			employed_advisor = {
+				category = DIP
+				culture = ROOT
+			}
+			NOT = {
+				employed_advisor = {
+					category = ADM
+					culture = ROOT
+				}
+			}
+		}
+		desc = culture_religion_events.7.db
+	}
+	desc = {
+		trigger = {
+			employed_advisor = {
+				category = MIL
+				culture = ROOT
+			}
+			NOT = {
+				employed_advisor = {
+					category = ADM
+					culture = ROOT
+				}
+			}
+			NOT = {
+				employed_advisor = {
+					category = DIP
+					culture = ROOT
+				}
+			}
+		}
+		desc = culture_religion_events.7.dc
+	}
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { ruler_culture = ROOT }
+		NOT = { has_reform = mamluk_government }
+		accepted_culture = new_variable:ruler_culture
+		has_regency = no
+		employed_advisor = {
+			culture = ROOT
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			export_to_variable = { #Primarily for localization
+				variable_name = new_monarch_culture
+				value = ruler_culture
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.7.a #We must try to remedy this situation.
+		add_adm_power = -35
+		add_legitimacy = 5
+	}
+	option = {
+		name = culture_religion_events.7.b #There is nothing we can do.
+		add_legitimacy = -10
+		if = {
+			limit = {
+				employed_advisor = {
+					culture = ROOT
+					category = ADM
+				}
+			}
+			remove_advisor_by_category = ADM
+		}
+		else_if = {
+			limit = {
+				employed_advisor = {
+					culture = ROOT
+					category = DIP
+				}
+			}
+			remove_advisor_by_category = DIP
+		}
+		else = {
+			remove_advisor_by_category = MIL
+		}
+	}
+	after = {
+		set_variable = {
+			which = new_monarch_culture
+			value = -1
+		}
+	}
+}
+
+#Favoritism in [Root.Capital.GetCapitalName]
+country_event = {
+	id = culture_religion_events.8
+	title = culture_religion_events.8.t
+	desc = culture_religion_events.8.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { has_reform = mamluk_government }
+		NOT = { ruler_culture = ROOT }
+		NOT = { accepted_culture = new_variable:ruler_culture }
+		has_regency = no
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			export_to_variable = { #Primarily for localization
+				variable_name = new_monarch_culture
+				value = ruler_culture
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.8.a #
+		reduce_legitimacy_small_effect = yes
+		if = {
+			limit = {
+				has_dlc = "Mandate of Heaven"
+				is_emperor_of_china = yes
+			}
+			add_meritocracy = -10
+		}
+	}
+	option = {
+		name = culture_religion_events.8.b #
+		add_dip_power = -15
+	}
+	after = {
+		set_variable = {
+			which = new_monarch_culture
+			value = -1
+		}
+	}
+}
+
+#Friends Abroad
+country_event = {
+	id = culture_religion_events.9
+	title = culture_religion_events.9.t
+	desc = culture_religion_events.9.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = GOOD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { has_reform = mamluk_government }
+		NOT = { ruler_culture = ROOT }
+		NOT = { accepted_culture = new_variable:ruler_culture }
+		has_regency = no
+		any_known_country = {
+			primary_culture = new_variable:FROM:ruler_culture
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			export_to_variable = { #Primarily for localization
+				variable_name = new_monarch_culture
+				value = ruler_culture
+			}
+			random_known_country = {
+				limit = {
+					primary_culture = new_variable:FROM:ruler_culture
+					tech_difference = 6
+				}
+				save_event_target_as = advanced_country
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.9.a #
+		every_known_country = {
+			limit = {
+				primary_culture = new_variable:FROM:ruler_culture
+			}
+			add_opinion = {
+				modifier = opinion_ruler_of_our_culture
+				who = ROOT
+			}
+		}
+	}
+	option = {
+		name = culture_religion_events.9.b #
+		trigger = {
+			has_saved_event_target = advanced_country
+			NOT = { has_ruler_modifier = learning_from_cultural_brethren }
+		}
+		add_ruler_modifier = {
+			name = "learning_from_cultural_brethren"
+			duration = 3650
+		}
+	}
+	after = {
+		set_variable = {
+			which = new_monarch_culture
+			value = -1
+		}
+	}
+}
+
+#Intrigues in [Root.Capital.GetCapitalName]
+country_event = {
+	id = culture_religion_events.10
+	title = culture_religion_events.10.t
+	desc = {
+		trigger = {
+			employed_advisor = {
+				category = ADM
+			}
+			NOT = { primary_culture = new_variable:adm_advisor_culture }
+		}
+		desc = culture_religion_events.10.da
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				AND = {
+					employed_advisor = {
+						category = ADM
+					}
+					NOT = { primary_culture = new_variable:adm_advisor_culture }
+				}
+			}
+			employed_advisor = {
+				category = DIP
+			}
+			NOT = { primary_culture = new_variable:dip_advisor_culture }
+		}
+		desc = culture_religion_events.10.db
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				AND = {
+					employed_advisor = {
+						category = ADM
+					}
+					NOT = { primary_culture = new_variable:adm_advisor_culture }
+				}
+			}
+			NOT = {
+				AND = {
+					employed_advisor = {
+						category = DIP
+					}
+					NOT = { primary_culture = new_variable:dip_advisor_culture }
+				}
+			}
+			employed_advisor = {
+				category = MIL
+			}
+			NOT = { primary_culture = new_variable:mil_advisor_culture }
+		}
+		desc = culture_religion_events.10.dc
+	}
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				employed_advisor = {
+					category = ADM
+				}
+				NOT = {
+					employed_advisor = {
+						category = ADM
+						culture = ROOT
+					}
+				}
+			}
+			AND = {
+				employed_advisor = {
+					category = DIP
+				}
+				NOT = {
+					employed_advisor = {
+						category = DIP
+						culture = ROOT
+					}
+				}
+			}
+			AND = {
+				employed_advisor = {
+					category = MIL
+				}
+				NOT ={
+					employed_advisor = {
+						category = MIL
+						culture = ROOT
+					}
+				}
+			}
+		}
+		has_regency = no
+		legitimacy_equivalent = 10
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					employed_advisor = {
+						category = ADM
+					}
+					NOT = {
+						employed_advisor = {
+							category = ADM
+							culture = ROOT
+						}
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_culture
+					value = adm_advisor_culture
+				}
+			}
+			else_if = {
+				limit = {
+					employed_advisor = {
+						category = DIP
+					}
+					NOT = {
+						employed_advisor = {
+							category = DIP
+							culture = ROOT
+						}
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_culture
+					value = dip_advisor_culture
+				}
+			}
+			else = {
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_culture
+					value = mil_advisor_culture
+				}
+			}
+			set_saved_name = {
+				key = prominent_noble
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.10.a #
+		if = {
+			limit = {
+				employed_advisor = {
+					category = ADM
+				}
+				NOT = {
+					employed_advisor = {
+						category = ADM
+						culture = ROOT
+					}
+				}
+			}
+			remove_advisor_by_category = ADM
+			add_adm_power = -50
+			define_advisor = {
+				type = treasurer
+				name = prominent_noble
+				culture = ROOT
+				skill = 2
+			}
+		}
+		else_if = {
+			limit = {
+				employed_advisor = {
+					category = DIP
+				}
+				NOT = {
+					employed_advisor = {
+						category = DIP
+						culture = ROOT
+					}
+				}
+			}
+			remove_advisor_by_category = DIP
+			add_dip_power = -50
+			define_advisor = {
+				type = naval_reformer
+				name = prominent_noble
+				culture = ROOT
+				skill = 2
+			}
+		}
+		else = {
+			remove_advisor_by_category = MIL
+			add_mil_power = -50
+			define_advisor = {
+				type = quartermaster
+				name = prominent_noble
+				culture = ROOT
+				skill = 2
+			}
+		}
+	}
+	option = {
+		name = culture_religion_events.10.b #
+		reduce_legitimacy_medium_effect = yes
+		if = {
+			limit = {
+				has_dlc = "Mandate of Heaven"
+				has_reform = celestial_empire
+			}
+			add_prestige = -10
+		}
+	}
+	after = {
+		clear_saved_name = prominent_noble
+		set_variable = {
+			which = other_advisor_culture
+			value = -1
+		}
+	}
+}
+
+
+# Rising support among the [Root.other_advisor_culture.GetCultureName] Population
+country_event = {
+	id = culture_religion_events.11
+	title = culture_religion_events.11.t
+	desc = {
+		trigger = {
+			employed_advisor = {
+				category = ADM
+			}
+			NOT = { primary_culture = new_variable:adm_advisor_culture }
+			any_owned_province = {
+				culture = new_variable:From:adm_advisor_culture
+			}
+		}
+		desc = culture_religion_events.11.da
+	}
+	desc = {
+		trigger = {
+			OR = {
+				NOT = {
+					employed_advisor = {
+						category = ADM
+					}
+				}
+				primary_culture = new_variable:adm_advisor_culture
+			}
+			employed_advisor = {
+				category = DIP
+			}
+			NOT = { primary_culture = new_variable:dip_advisor_culture }
+			any_owned_province = {
+				culture = new_variable:From:dip_advisor_culture
+			}
+		}
+		desc = culture_religion_events.11.db
+	}
+	desc = {
+		trigger = {
+			OR = {
+				NOT = {
+					employed_advisor = {
+						category = ADM
+					}
+				}
+				primary_culture = new_variable:adm_advisor_culture
+			}
+			OR = {
+				NOT = {
+					employed_advisor = {
+						category = DIP
+					}
+				}
+				primary_culture = new_variable:dip_advisor_culture
+			}
+			employed_advisor = {
+				category = MIL
+			}
+			NOT = { primary_culture = new_variable:mil_advisor_culture }
+			any_owned_province = {
+				culture = new_variable:From:mil_advisor_culture
+			}
+		}
+		desc = culture_religion_events.11.dc
+	}
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = GOOD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		OR = { #Somewhere we have an advisor that will match.
+			AND = {
+				employed_advisor = {
+					category = ADM
+				}
+				NOT = {
+					employed_advisor = {
+						category = ADM
+						culture = ROOT
+					}
+				}
+			}
+			AND = {
+				employed_advisor = {
+					category = DIP
+				}
+				NOT = {
+					employed_advisor = {
+						category = DIP
+						culture = ROOT
+					}
+				}
+			}
+			AND ={
+				employed_advisor = {
+					category = MIL
+				}
+				NOT = {
+					employed_advisor = {
+						category = MIL
+						culture = ROOT
+					}
+				}
+			}
+		}
+		if = { #ADM advisor is the one we want
+			limit = {
+				employed_advisor = { #We have an ADM Advisor
+					category = ADM
+				}
+				NOT = {
+					employed_advisor = { #His culture is not ours
+						category = ADM
+						culture = ROOT
+					}
+				}
+			}
+			any_owned_province = { #This is his home
+				culture = new_variable:From:adm_advisor_culture
+				NOT = { has_province_modifier = support_for_advisor } #event hasn't hit here before
+			}
+		}
+		if = { #DIP advisor is the one we want
+			limit = {
+				OR = {
+					NOT = {
+						employed_advisor = {
+							category = ADM
+						}
+					}
+					employed_advisor = {
+						category = ADM
+						culture = ROOT
+					}
+				}
+				employed_advisor = { #We do have a DIP advisor
+					category = DIP
+				}
+				NOT = {
+					employed_advisor = { #His culture is not ours
+						category = DIP
+						culture = ROOT
+					}
+				}
+			}
+			any_owned_province = { #This is his home
+				culture = new_variable:From:dip_advisor_culture
+				NOT = { has_province_modifier = support_for_advisor } #Event hasn't hit here before
+			}
+		}
+		if = { #MIL advisor is the one we want
+			limit = {
+				OR = { #No matching adm advisor
+					NOT = {
+						employed_advisor = {
+							category = ADM
+						}
+					}
+					employed_advisor = {
+						category = ADM
+						culture = ROOT
+					}
+				}
+				OR = { #No matching dip advisor
+					NOT = {
+						employed_advisor = {
+							category = DIP
+						}
+					}
+					employed_advisor = {
+						category = DIP
+						culture = ROOT
+					}
+				}
+				employed_advisor = { #We do have a Mil advisor
+					category = MIL
+				}
+				NOT = { 
+					employed_advisor = { #His culture is not ours
+						category = MIL
+						culture = ROOT
+					}
+				}
+			}
+			any_owned_province = { #This is his home
+				culture = new_variable:From:mil_advisor_culture
+				NOT = { has_province_modifier = support_for_advisor } #Event hasn't hit here before
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					employed_advisor = {
+						category = ADM
+					}
+					NOT = {
+						employed_advisor = {
+							category = ADM
+							culture = ROOT
+						}
+					}
+					any_owned_province = {
+						culture = new_variable:From:adm_advisor_culture
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_culture
+					value = adm_advisor_culture
+				}
+			}
+			else_if = {
+				limit = {
+					employed_advisor = {
+						category = DIP
+					}
+					NOT = {
+						employed_advisor = {
+							category = DIP
+							culture = ROOT
+						}
+					}
+					any_owned_province = {
+						culture = new_variable:From:dip_advisor_culture
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_culture
+					value = dip_advisor_culture
+				}
+			}
+			else = {
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_culture
+					value = mil_advisor_culture
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.11.a #
+		if = {
+			limit = {
+				calc_true_if = {
+					all_owned_province = {
+						culture = variable:From:other_advisor_culture
+						NOT = { has_province_modifier = support_for_advisor }
+					}
+					amount = 6
+				}
+			}
+			custom_tooltip = culture_religion_events.11.a.tt
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						culture = variable:From:other_advisor_culture
+						NOT = { has_province_modifier = support_for_advisor }
+					}
+					add_province_modifier = {
+						name = support_for_advisor
+						duration = 3650
+					}
+				}
+			}
+		}
+		else = {
+			every_owned_province = {
+				limit = {
+					culture = variable:From:other_advisor_culture
+					NOT = { has_province_modifier = support_for_advisor }
+				}
+				add_province_modifier = {
+					name = support_for_advisor
+					duration = 3650
+				}
+			}
+		}
+	}
+	after = {
+		set_variable = {
+			which = other_advisor_culture
+			value = -1
+		}
+	}
+}
+
+#The [Root.other_advisor_religion.GetReligionName] Minister.
+country_event = {
+	id = culture_religion_events.12
+	title = culture_religion_events.12.t
+	desc = {
+		trigger = {
+			employed_advisor = {
+				category = ADM
+				religion = heretic
+			}
+		}
+		desc = culture_religion_events.12.da
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				employed_advisor = {
+					category = ADM
+					religion = heretic
+				}
+			}
+			employed_advisor = {
+				category = DIP
+				religion = heretic
+			}
+		}
+		desc = culture_religion_events.12.db
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				employed_advisor = {
+					category = ADM
+					religion = heretic
+				}
+			}
+			NOT = {
+				employed_advisor = {
+					category = DIP
+					religion = heretic
+				}
+			}
+			employed_advisor = {
+				category = MIL
+				religion = heretic
+			}
+		}
+		desc = culture_religion_events.12.dc
+	}
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = GOOD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		employed_advisor = {
+			religion = heretic
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					employed_advisor = {
+						category = ADM
+						religion = heretic
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_religion
+					value = adm_advisor_religion
+				}
+				set_country_flag = adm_advisor_heretic
+			}
+			else_if = {
+				limit = {
+					NOT = {
+						employed_advisor = {
+							category = ADM
+							religion = heretic
+						}
+					}
+					employed_advisor = {
+						category = DIP
+						religion = heretic
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_religion
+					value = dip_advisor_religion
+				}
+				set_country_flag = dip_advisor_heretic
+			}
+			else = {
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_religion
+					value = mil_advisor_religion
+				}
+				set_country_flag = mil_advisor_heretic
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.12.a #One day you might all rise to be like [Root.AdmAdvisor.GetName].
+		trigger = { has_country_flag = adm_advisor_heretic }
+		add_stability_or_adm_power = yes
+	}
+	option = {
+		name = culture_religion_events.12.b #One day you might all rise to be like [Root.DipAdvisor.GetName].
+		trigger = { has_country_flag = dip_advisor_heretic }
+		add_stability_or_adm_power = yes
+	}
+	option = {
+		name = culture_religion_events.12.c #One day you might all rise to be like [Root.MilAdvisor.GetName].
+		trigger = { has_country_flag = mil_advisor_heretic }
+		add_stability_or_adm_power = yes
+	}
+	after = {
+		set_variable = {
+			which = other_advisor_religion
+			value = -1
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			adm_advisor_heretic = { clr_country_flag = adm_advisor_heretic }
+			dip_advisor_heretic = { clr_country_flag = dip_advisor_heretic }
+			mil_advisor_heretic = { clr_country_flag = mil_advisor_heretic }
+		}
+	}
+}
+
+#Heathens in High Places
+country_event = {
+	id = culture_religion_events.13
+	title = culture_religion_events.13.t
+	desc = {
+		trigger = {
+			employed_advisor = {
+				category = ADM
+				religion = heathen
+			}
+		}
+		desc = culture_religion_events.13.da
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				employed_advisor = {
+					category = ADM
+					religion = heathen
+				}
+			}
+			employed_advisor = {
+				category = DIP
+				religion = heathen
+			}
+		}
+		desc = culture_religion_events.13.db
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				employed_advisor = {
+					category = ADM
+					religion = heathen
+				}
+			}
+			NOT = {
+				employed_advisor = {
+					category = DIP
+					religion = heathen
+				}
+			}
+			employed_advisor = {
+				category = MIL
+				religion = heathen
+			}
+		}
+		desc = culture_religion_events.13.dc
+	}
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		employed_advisor = {
+			religion = heathen
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					employed_advisor = {
+						category = ADM
+						religion = heathen
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_religion
+					value = adm_advisor_religion
+				}
+				set_country_flag = adm_advisor_heathen
+			}
+			else_if = {
+				limit = {
+					NOT = {
+						employed_advisor = {
+							category = ADM
+							religion = heathen
+						}
+					}
+					employed_advisor = {
+						category = DIP
+						religion = heathen
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_religion
+					value = dip_advisor_religion
+				}
+				set_country_flag = dip_advisor_heathen
+			}
+			else = {
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_religion
+					value = mil_advisor_religion
+				}
+				set_country_flag = mil_advisor_heathen
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.13.a #It is time we let [Root.AdmAdvisor.GetName] go.
+		trigger = { has_country_flag = adm_advisor_heathen }
+		remove_advisor_by_category = ADM
+		add_adm_power = -25
+	}
+	option = {
+		name = culture_religion_events.13.b #It is time we let [Root.DipAdvisor.GetName] go.
+		trigger = { has_country_flag = dip_advisor_heathen }
+		remove_advisor_by_category = DIP
+		add_dip_power = -25
+	}
+	option = {
+		name = culture_religion_events.13.c #It is time we let [Root.MilAdvisor.GetName] go.
+		trigger = { has_country_flag = mil_advisor_heathen }
+		remove_advisor_by_category = MIL
+		add_mil_power = -25
+	}
+	option = {
+		name = culture_religion_events.13.e #We do not bow to the demands of petty dilettantes.
+		if = {
+			limit = {
+				calc_true_if = {
+					all_known_country = {
+						religion_group = ROOT
+					}
+					amount = 12
+				}
+			}
+			custom_tooltip = culture_religion_events.13.e.tt
+			hidden_effect = {
+				every_known_country = {
+					limit = {
+						religion_group = ROOT
+					}
+					add_opinion = {
+						who = ROOT
+						modifier = entertaining_heathens
+					}
+				}
+			}
+		}
+		else = {
+			every_known_country = {
+				limit = {
+					religion_group = ROOT
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = entertaining_heathens
+				}
+			}
+		}
+	}
+	after = {
+		set_variable = {
+			which = other_advisor_religion
+			value = -1
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			adm_advisor_heathen = { clr_country_flag = adm_advisor_heathen }
+			dip_advisor_heathen = { clr_country_flag = dip_advisor_heathen }
+			mil_advisor_heathen = { clr_country_flag = mil_advisor_heathen }
+		}
+	}
+}
+
+#Influence in the Cabinet
+country_event = {
+	id = culture_religion_events.14
+	title = culture_religion_events.14.t
+	desc = {
+		trigger = {
+			employed_advisor = {
+				category = ADM
+				religion = heretic
+			}
+		}
+		desc = culture_religion_events.14.da
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				employed_advisor = {
+					category = ADM
+					religion = heretic
+				}
+			}
+			employed_advisor = {
+				category = DIP
+				religion = heretic
+			}
+		}
+		desc = culture_religion_events.14.db
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				employed_advisor = {
+					category = ADM
+					religion = heretic
+				}
+			}
+			NOT = {
+				employed_advisor = {
+					category = DIP
+					religion = heretic
+				}
+			}
+			employed_advisor = {
+				category = MIL
+				religion = heretic
+			}
+		}
+		desc = culture_religion_events.14.dc
+	}
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		employed_advisor = {
+			religion = heretic
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					employed_advisor = {
+						category = ADM
+						religion = heretic
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_religion
+					value = adm_advisor_religion
+				}
+				set_country_flag = adm_advisor_heretic
+			}
+			else_if = {
+				limit = {
+					NOT = {
+						employed_advisor = {
+							category = ADM
+							religion = heretic
+						}
+					}
+					employed_advisor = {
+						category = DIP
+						religion = heretic
+					}
+				}
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_religion
+					value = dip_advisor_religion
+				}
+				set_country_flag = dip_advisor_heretic
+			}
+			else = {
+				export_to_variable = { #Primarily for localization
+					variable_name = other_advisor_religion
+					value = mil_advisor_religion
+				}
+				set_country_flag = mil_advisor_heretic
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.14.a #It is time we let [Root.AdmAdvisor.GetName] go.
+		trigger = { has_country_flag = adm_advisor_heretic }
+		remove_advisor_by_category = ADM
+		add_adm_power = -25
+		add_estate_church_loyalty_effect = yes
+	}
+	option = {
+		name = culture_religion_events.14.b #It is time we let [Root.DipAdvisor.GetName] go.
+		trigger = { has_country_flag = dip_advisor_heretic }
+		remove_advisor_by_category = DIP
+		add_dip_power = -25
+		add_estate_church_loyalty_effect = yes
+	}
+	option = {
+		name = culture_religion_events.14.c #It is time we let [Root.MilAdvisor.GetName] go.
+		trigger = { has_country_flag = mil_advisor_heretic }
+		remove_advisor_by_category = MIL
+		add_mil_power = -25
+		add_estate_church_loyalty_effect = yes
+	}
+	option = {
+		name = culture_religion_events.14.e #Preposterous.
+		reduce_estate_church_loyalty_effect = yes
+		add_legitimacy = -5
+		add_prestige = -5
+	}
+	after = {
+		set_variable = {
+			which = other_advisor_religion
+			value = -1
+		}
+		trigger_switch = {
+			on_trigger = has_country_flag
+			adm_advisor_heretic = { clr_country_flag = adm_advisor_heretic }
+			dip_advisor_heretic = { clr_country_flag = dip_advisor_heretic }
+			mil_advisor_heretic = { clr_country_flag = mil_advisor_heretic }
+		}
+	}
+}
+
+
+# [Root.foreign_leader.GetName] and the [foreign_culture_province.Culture.GetName] People
+country_event = {
+	id = culture_religion_events.15
+	title = culture_religion_events.15.t
+	desc = culture_religion_events.15.d
+	goto = foreign_culture_province
+	
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = GOOD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		stability = 1
+		any_owned_province = {
+			has_owner_culture = no
+			has_owner_accepted_culture = no
+			NOT = { has_province_modifier = influential_power_holder }
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_owner_culture = no
+					has_owner_accepted_culture = no
+					NOT = { has_province_modifier = influential_power_holder }
+				}
+				save_event_target_as = foreign_culture_province
+				random_core_country = {
+					limit = { NOT = { tag = ROOT } }
+					save_event_target_as = foreign_tag
+				}
+			}
+			if = {
+				limit = {
+					has_saved_event_target = foreign_tag
+				}
+				set_saved_name = {
+					key = foreign_leader
+					type = advisor
+					scope = event_target:foreign_tag
+				}
+			}
+			else = {
+				set_saved_name = {
+					key = foreign_leader
+					type = advisor
+					scope = ROOT
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.15.a #[Root.foreign_leader.GetName] will be a welcome addition to the Cabinet.
+		add_prestige = -10
+		if = {
+			limit = { NOT = { monthly_income = 30 } }
+			define_advisor = {
+				name = foreign_leader
+				skill = 2
+				type = statesman
+				discount = yes
+				culture = event_target:foreign_culture_province
+				religion = event_target:foreign_culture_province
+			}
+		}
+		else = {
+			define_advisor = {
+				name = foreign_leader
+				skill = 3
+				type = statesman
+				discount = yes
+				culture = event_target:foreign_culture_province
+				religion = event_target:foreign_culture_province
+			}
+		}
+	}
+	option = {
+		name = culture_religion_events.15.b #He serves us better as a local leader of our [foreign_culture_province.Culture.GetName] subjects.
+		event_target:foreign_culture_province = {
+			area = {
+				limit = {
+					NOT = { has_province_modifier = influential_power_holder }
+					owned_by = ROOT
+				}
+				add_province_modifier = {
+					name = "influential_power_holder"
+					duration = 3650
+				}
+			}
+		}
+	}
+	after = {
+		clear_saved_name = foreign_leader
+	}
+}
+
+#A Rising Star?
+country_event = {
+	id = culture_religion_events.16
+	title = culture_religion_events.16.t
+	desc = culture_religion_events.16.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = GOOD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = HEIR_AND_FOREIGN_ADVISOR_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		stability = 1
+		any_owned_province = {
+			NOT = { religion_group = ROOT }
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = rising_star_advisor
+				type = advisor
+				scope = ROOT
+			}
+			random_owned_province = {
+				limit = { NOT = { religion_group = ROOT } }
+				save_event_target_as = wrong_religion_province
+			}
+			random_list = {
+				25 = { set_country_flag = trader_flag }
+				25 = { set_country_flag = spymaster_flag }
+				25 = { set_country_flag = recruitmaster_flag }
+				25 = { set_country_flag = treasurer_flag }
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.16.a #Let us make an exception for the good of the country.
+		add_prestige = -5
+		trigger_switch = {
+			on_trigger = has_country_flag
+			trader_flag = {
+				if = {
+					limit = { NOT = { monthly_income = 30 } }
+					define_advisor = {
+						name = rising_star_advisor
+						skill = 2
+						type = trader
+						discount = yes
+						religion = event_target:wrong_religion_province
+					}
+				}
+				else = {
+					define_advisor = {
+						name = rising_star_advisor
+						skill = 3
+						type = trader
+						discount = yes
+						religion = event_target:wrong_religion_province
+					}
+				}
+			}
+			spymaster_flag = {
+				if = {
+					limit = { NOT = { monthly_income = 30 } }
+					define_advisor = {
+						name = rising_star_advisor
+						skill = 2
+						type = spymaster
+						discount = yes
+						religion = event_target:wrong_religion_province
+					}
+				}
+				else = {
+					define_advisor = {
+						name = rising_star_advisor
+						skill = 3
+						type = spymaster
+						discount = yes
+						religion = event_target:wrong_religion_province
+					}
+				}
+			}
+			recruitmaster_flag = {
+				if = {
+					limit = { NOT = { monthly_income = 30 } }
+					define_advisor = {
+						name = rising_star_advisor
+						skill = 2
+						type = recruitmaster
+						discount = yes
+						religion = event_target:wrong_religion_province
+					}
+				}
+				else = {
+					define_advisor = {
+						name = rising_star_advisor
+						skill = 3
+						type = recruitmaster
+						discount = yes
+						religion = event_target:wrong_religion_province
+					}
+				}
+			}
+			treasurer_flag = {
+				if = {
+					limit = { NOT = { monthly_income = 30 } }
+					define_advisor = {
+						name = rising_star_advisor
+						skill = 2
+						type = treasurer
+						discount = yes
+						religion = event_target:wrong_religion_province
+					}
+				}
+				else = {
+					define_advisor = {
+						name = rising_star_advisor
+						skill = 3
+						type = treasurer
+						discount = yes
+						religion = event_target:wrong_religion_province
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = culture_religion_events.16.b #A remarkable individual, but we all have our place in life.
+		add_prestige = 10
+	}
+	after = {
+		clear_saved_name = rising_star_advisor
+		trigger_switch = {
+			on_trigger = has_country_flag
+			trader_flag = {
+				clr_country_flag = trader_flag
+			}
+			spymaster_flag = {
+				clr_country_flag = spymaster_flag
+			}
+			recruitmaster_flag = {
+				clr_country_flag = recruitmaster_flag
+			}
+			treasurer_flag = {
+				clr_country_flag = treasurer_flag
+			}
+		}
+	}
+}
+
+# Rising Tensions among the [wrong_culture_province.Culture.GetName]
+country_event = {
+	id = culture_religion_events.17
+	title = culture_religion_events.17.t
+	desc = culture_religion_events.17.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { stability = 0 }
+		any_owned_province = {
+			has_owner_culture = no
+			NOT = { culture_group = ROOT }
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_owner_culture = no
+					NOT = { culture_group = ROOT }
+				}
+				save_event_target_as = wrong_culture_province
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.17.a #We have ministers who can communicate with these Barbarians
+		trigger = {
+			employed_advisor = {
+				culture = event_target:wrong_culture_province
+			}
+		}
+		if = {
+			limit = {
+				employed_advisor = {
+					category = ADM
+					culture = event_target:wrong_culture_province
+				}
+			}
+			add_adm_power = -10
+		}
+		else_if = {
+			limit = {
+				employed_advisor = {
+					category = DIP
+				}
+			}
+			add_dip_power = -10
+		}
+		else = {
+			add_mil_power = -10
+		}
+	}
+	option = {
+		name = culture_religion_events.17.b #[Root.Monarch.GetName] [Root.Monarch.GetHerselfHimself] might be able to sway them.
+		trigger = {
+			ruler_culture = event_target:wrong_culture_province
+		}
+		add_prestige = -5
+	}
+	option = {
+		name = culture_religion_events.17.c #[Root.Heir.GetName] has always had a way with these people.
+		trigger = {
+			heir_culture = event_target:wrong_culture_province
+			NOT = { ruler_culture = event_target:wrong_culture_province }
+		}
+		add_prestige = -5
+	}
+	option = {
+		name = culture_religion_events.17.e #Perhaps [Root.Consort.GetName] can convince them of our good will?
+		trigger = {
+			consort_culture = event_target:wrong_culture_province
+			NOT = { heir_culture = event_target:wrong_culture_province }
+			NOT = { ruler_culture = event_target:wrong_culture_province }
+		}
+		add_prestige = -5
+	}
+	option = {
+		name = culture_religion_events.17.f #Best send in soldiers before this escalates.
+		event_target:wrong_culture_province = {
+			spawn_rebels = {
+				type = nationalist_rebels
+				size = 2
+			}
+		}
+	}
+	option = {
+		name = culture_religion_events.17.g #Perhaps some tax exemptions could ease their burden.
+		add_years_of_income = -0.15
+	}
+}
+
+# [Root.potential_heir_religion.GetReligionName] [Root.Heir.GetTitle]?
+country_event = {
+	id = culture_religion_events.18
+	title = culture_religion_events.18.t
+	desc = culture_religion_events.18.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		government = monarchy
+		has_heir = yes
+		heir_age = 15
+		NOT = { heir_religion = ROOT }
+		religion_group = new_variable:heir_religion
+		NOT = { has_heir_flag = legitimacy_questioned }
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = leading_religious_person
+				type = advisor
+				scope = ROOT
+			}
+			export_to_variable = {
+				variable_name = potential_heir_religion
+				value = heir_religion
+			}
+			set_heir_flag = legitimacy_questioned
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.18.a #
+		set_heir_religion = ROOT
+		if = {
+			limit = { heir_dip = 2 }
+			change_heir_dip = -1
+		}
+		else_if = {
+			limit = { heir_mil = 2 }
+			change_heir_mil = -1
+		}
+		else_if = {
+			limit = { heir_adm = 2 }
+			change_heir_adm = -1
+		}
+		else = {
+			add_dip_power = -50
+		}
+	}
+	option = {
+		name = culture_religion_events.18.b #
+		add_heir_claim = -15
+	}
+	after = {
+		clear_saved_name = leading_religious_person
+		set_variable = {
+			which = potential_heir_religion
+			value = -1
+		}
+	}
+}
+
+# [Root.potential_heir_religion.GetReligionName] [Root.Heir.GetTitle]?
+country_event = {
+	id = culture_religion_events.19
+	title = culture_religion_events.19.t
+	desc = culture_religion_events.19.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		government = monarchy
+		has_heir = yes
+		heir_age = 15
+		NOT = { heir_religion = ROOT }
+		NOT = { religion_group = new_variable:heir_religion }
+		NOT = { has_heir_flag = legitimacy_questioned }
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			export_to_variable = {
+				variable_name = potential_heir_religion
+				value = heir_religion
+			}
+			set_heir_flag = legitimacy_questioned
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.19.a #What harm could come of this?
+		add_heir_claim = -25
+	}
+	option = {
+		name = culture_religion_events.19.b #This is something [Root.Heir.SheHe] will have to keep to [Root.Heir.HerselfHimself].
+		set_heir_religion = ROOT
+		if = {
+			limit = { heir_dip = 2 }
+			change_heir_dip = -1
+		}
+		else_if = {
+			limit = { heir_mil = 2 }
+			change_heir_mil = -1
+		}
+		else_if = {
+			limit = { heir_adm = 2 }
+			change_heir_adm = -1
+		}
+		else = {
+			add_dip_power = -50
+		}
+	}
+	after = {
+		set_variable = {
+			which = potential_heir_religion
+			value = -1
+		}
+	}
+}
+
+# The Succession of [Root.Monarch.GetName]
+country_event = {
+	id = culture_religion_events.20
+	title = culture_religion_events.20.t
+	desc = culture_religion_events.20.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		government = monarchy
+		has_regency = no
+		has_heir = no
+		NOT = { has_reform = ottoman_government }
+		NOT = { has_reform = mamluk_government }
+		NOT = { has_reform = states_general_reform }
+		is_lesser_in_union = no
+		has_government_attribute = heir
+		any_owned_province = {
+			has_owner_culture = no
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_owner_culture = no
+				}
+				save_event_target_as = family_holdings
+			}
+			if = {
+				limit = {
+					any_country = {
+						primary_culture = event_target:family_holdings
+					}
+				}
+				random_country = {
+					limit = {
+						primary_culture = event_target:family_holdings
+					}
+					save_event_target_as = good_name_list
+				}
+				set_saved_name = {
+					key = young_heir
+					type = advisor
+					scope = event_target:good_name_list
+				}
+			}
+			else = {
+				set_saved_name = {
+					key = young_heir
+					type = advisor
+					scope = ROOT
+				}
+			}
+			set_heir_flag = legitimacy_questioned
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.20.a #A capital idea!
+		define_heir = {
+			age = 20
+			name = young_heir
+			dynasty = ROOT
+			culture = event_target:family_holdings
+			claim = 75
+		}
+	}
+	option = {
+		name = culture_religion_events.20.b #We will never see a [family_holdings.Culture.GetName] noble on our throne.
+		add_legitimacy = 5
+	}
+	after = {
+		clear_saved_name = young_heir
+	}
+}
+
+# A Question of Faith
+country_event = {
+	id = culture_religion_events.21
+	title = culture_religion_events.21.t
+	desc = culture_religion_events.21.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { has_ruler_flag = faith_question }
+		government = monarchy
+		NOT = { ruler_religion = ROOT }
+		legitimacy = 90
+		stability = 2
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_ruler_flag = faith_question
+			export_to_variable = {
+				variable_name = new_monarch_religion
+				value = ruler_religion
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.21.a #[Root.Capital.GetCapitalName] shall be a [Root.new_monarch_religion.GetReligionName] city.
+		ai_chance = {
+			factor = 5
+			modifier = {
+				factor = 5
+				dominant_religion = new_variable:ruler_religion
+			}
+		}
+		change_religion = new_variable:ruler_religion
+		add_stability = -4
+		add_legitimacy = -30
+	}
+	option = {
+		name = culture_religion_events.21.b #We could never take such a risk.
+		ai_chance = {
+			factor = 95
+		}
+		add_prestige = 10
+	}
+	after = {
+		set_variable = {
+			which = new_monarch_religion
+			value = -1
+		}
+	}
+}
+
+# A Question of Culture
+country_event = {
+	id = culture_religion_events.22
+	title = culture_religion_events.22.t
+	desc = culture_religion_events.22.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = BAD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { has_ruler_flag = culture_question }
+		government = monarchy
+		NOT = { ruler_culture = ROOT }
+		heir_culture = new_variable:ruler_culture
+		legitimacy = 90
+		stability = 2
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_ruler_flag = culture_question
+			export_to_variable = {
+				variable_name = new_monarch_culture
+				value = ruler_culture
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.22.a #
+		ai_chance = {
+			factor = 5
+			modifier = {
+				factor = 5
+				dominant_culture = new_variable:ruler_culture
+			}
+		}
+		if = {
+			limit = {
+				NOT = { accepted_culture = new_variable:ruler_culture }
+				NOT = { culture_group = new_variable:ruler_culture }
+			}
+			add_stability = -3
+			add_legitimacy = -30
+		}
+		else = {
+			add_stability = -2
+			add_legitimacy = -15
+		}
+		change_primary_culture = new_variable:ruler_culture
+	}
+	option = {
+		name = culture_religion_events.22.b #
+		ai_chance = {
+			factor = 95
+		}
+		add_prestige = 10
+	}
+	after = {
+		set_variable = {
+			which = new_monarch_culture
+			value = -1
+		}
+	}
+}
+
+
+# [Culture] immigration
+country_event = {
+	id = culture_religion_events.23
+	title = culture_religion_events.23.t
+	desc = culture_religion_events.23.d
+	picture = {
+		trigger = { NOT = { has_dlc = "Cradle of Civilization" } }
+		picture = GOOD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = { has_dlc = "Cradle of Civilization" }
+		picture = KING_OF_FOREIGN_CUSTOMS_eventPicture
+	}
+	
+	is_triggered_only = yes
+
+	trigger = {
+		government = monarchy
+		NOT = { ruler_culture = ROOT }
+		heir_culture = new_variable:ruler_culture
+		legitimacy = 90
+		stability = 2
+		any_known_country = {
+			primary_culture = new_variable:From:ruler_culture
+			marriage_with = ROOT
+		}
+		any_owned_province = {
+			has_owner_culture = yes
+			is_state = yes
+			is_capital = no
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			export_to_variable = {
+				variable_name = new_monarch_culture
+				value = ruler_culture
+			}
+			random_owned_province = {
+				limit = {
+					has_owner_culture = yes
+					is_state = yes
+					is_capital = no
+				}
+				save_event_target_as = cultural_migration_province
+			}
+		}
+	}
+	
+	option = {
+		name = culture_religion_events.23.a #
+		ai_chance = {
+			factor = 5
+		}
+		event_target:cultural_migration_province = {
+			change_culture = new_variable:From:ruler_culture
+			add_base_production = 1
+		}
+	}
+	option = {
+		name = culture_religion_events.23.b #
+		ai_chance = {
+			factor = 95
+		}
+		add_prestige = 10
+	}
+	after = {
+		set_variable = {
+			which = new_monarch_culture
+			value = -1
+		}
+	}
+}
+

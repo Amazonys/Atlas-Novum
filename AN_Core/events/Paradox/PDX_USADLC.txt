@@ -1,0 +1,3293 @@
+########################################
+# USA DLC Events
+#
+# written by Sara Wendel-Örtqvist
+########################################
+
+namespace = usa_dlc
+normal_or_historical_nations = yes
+
+# Congress of the Confederation
+country_event = {
+	id = usa_dlc.1
+	title = "usa_dlc.EVTNAME1"
+	desc = "usa_dlc.EVTDESC1"
+	picture = CONGRESS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1781
+	}
+	
+	mean_time_to_happen = { 
+		months = 100 
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA1"
+		country_event = {
+			id = usa_dlc.2 # Import Duties
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB1"
+		trigger = {
+			any_owned_province = {
+				OR = {
+					region = great_lakes_region
+					region = canada_region
+				}
+			}
+		}
+		country_event = {
+			id = usa_dlc.3 # Northwest Ordinance
+		}
+	}
+}
+ 
+# 5% duty on imports
+country_event = {
+	id = usa_dlc.2
+	title = "usa_dlc.EVTNAME2"
+	desc = "usa_dlc.EVTDESC2"
+	picture = TEA_PARTY_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = import_duty_flag
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA2"
+		add_inflation = -2
+		add_years_of_income = -0.2
+		if = {
+			limit = {
+				NOT = {
+					has_country_flag = northwest_ordinance_flag
+				}
+				any_owned_province = {
+					OR = {
+						region = great_lakes_region
+						region = canada_region
+					}
+				}
+			}
+			country_event = {
+				id = usa_dlc.3
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB2"
+		add_inflation = 2
+		add_years_of_income = 1
+		if = {
+			limit = {
+				NOT = {
+					has_country_flag = northwest_ordinance_flag
+				}
+				any_owned_province = {
+					OR = {
+						region = great_lakes_region
+						region = canada_region
+					}
+				}
+			}
+			country_event = {
+				id = usa_dlc.3
+			}
+		}
+	}
+}
+
+# Northwest Ordinance - Prohibit slavery there? 
+country_event = {
+	id = usa_dlc.3
+	title = "usa_dlc.EVTNAME3"
+	desc = "usa_dlc.EVTDESC3"
+	picture = CONGRESS_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = northwest_ordinance_flag
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA3" # Prohibit slavery!
+		every_owned_province = {
+			limit = {
+				OR = {
+					region = canada_region
+					region = great_lakes_region
+				}
+			}
+			add_province_modifier = {
+				name = northwest_ordinance_slavery_prohibited
+				duration = -1
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_country_flag = import_duty_flag
+				}
+			}
+			country_event = {
+				id = usa_dlc.2
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB3" # Let them decide for themselves
+		every_owned_province = {
+			limit = {
+				OR = {
+					region = canada_region
+					region = great_lakes_region
+				}
+			}
+			add_province_modifier = {
+				name = add_unrest_5_modifier
+				duration = 1825
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_country_flag = import_duty_flag
+				}
+			}
+			country_event = {
+				id = usa_dlc.2
+			}
+		}
+	}
+}
+
+# Articles of Confederation
+country_event = {
+	id = usa_dlc.4
+	title = "usa_dlc.EVTNAME4"
+	desc = "usa_dlc.EVTDESC4"
+	picture = CONSTITUTION_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		is_year = 1781
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		has_country_flag = import_duty_flag
+	}
+	
+	mean_time_to_happen = { 
+		months = 12 
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA4" # Ratify the Articles
+		add_country_modifier = {
+			name = articles_of_confederation
+			duration = -1
+		}
+	}
+}
+
+# Formal declaration of American Independence
+country_event = {
+	id = usa_dlc.5
+	title = "usa_dlc.EVTNAME5"
+	desc = "usa_dlc.EVTDESC5"
+	picture = DECLARATION_INDEPENDENCE_eventPicture
+	
+	major = yes
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			AND = {
+				tag = USA
+				culture_group = british
+			}
+			AND = {
+				is_former_colonial_nation = yes
+				capital_scope = {
+					colonial_region = colonial_eastern_america
+					is_core = ROOT
+				}
+				culture_group = british
+				NOT = { exists = USA }
+			}
+		}
+		exists = GBR
+		truce_with = GBR
+		NOT = { has_country_flag = usa_declaration_independence_flag }
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	immediate = {
+		hidden_effect = {
+			set_country_flag = usa_declaration_independence_flag
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA5"
+		add_adm_power = 50
+		add_dip_power = 50
+		random_known_country = {
+			limit = {
+				capital_scope = {
+					continent = europe
+				}
+				religion_group = christian
+				NOT = {
+					war_with = ROOT
+				}
+				has_opinion = {
+					who = ROOT
+					value = 20
+				}
+			}
+			country_event = {
+				id = usa_dlc.6
+			}
+		}
+	}
+}
+
+# American Independence
+country_event = {
+	id = usa_dlc.6
+	title = "usa_dlc.EVTNAME6"
+	desc = "usa_dlc.EVTDESC6"
+	picture = DECLARATION_INDEPENDENCE_eventPicture
+	
+	is_triggered_only = yes
+
+	option = {
+		name = "usa_dlc.EVTOPTA6" # Yay!
+		ai_chance = {
+			factor = 75
+		}
+		random_country = {
+			limit = {
+				has_country_flag = usa_declaration_independence_flag
+			}
+			set_country_flag = yay_independence_flag
+			country_event = {
+				id = usa_dlc.7
+			}
+			tooltip = {
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_yay_independence
+					years = 100
+				}
+			}					
+		}
+		GBR = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_displeased
+				years = 100
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB6" # Nay!
+		ai_chance = {
+			factor = 25
+		}
+		random_country = {
+			limit = {
+				has_country_flag = usa_declaration_independence_flag
+			}
+			set_country_flag = nay_independence_flag
+			country_event = {
+				id = usa_dlc.7
+			}
+			tooltip = {
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_nay_independence
+					years = 100
+				}
+			}
+		}
+		GBR = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_pleased
+				years = 100
+			}
+		}
+	}
+}
+
+# American Independence?
+country_event = {
+	id = usa_dlc.7
+	title = "usa_dlc.EVTNAME6"
+	desc = "usa_dlc.EVTDESC7"
+	picture = DECLARATION_INDEPENDENCE_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "usa_dlc.EVTOPTA7" # Yay!
+		trigger = {
+			has_country_flag = yay_independence_flag
+		}
+		clr_country_flag = yay_independence_flag
+		set_country_flag = independence_acknowledged_flag
+		add_opinion = {
+			who = FROM
+			modifier = opinion_yay_independence
+			years = 100
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB7" # Nay! - We don't need their approval!
+		trigger = {
+			has_country_flag = nay_independence_flag
+		}
+		clr_country_flag = nay_independence_flag
+		add_opinion = {
+			who = FROM
+			modifier = opinion_nay_independence
+			years = 100
+		}
+	}
+}
+
+# Constitutional Convention
+country_event = {
+	id = usa_dlc.10
+	title = "usa_dlc.EVTNAME10"
+	desc = "usa_dlc.EVTDESC10"
+	picture = CONSTITUTION_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		is_free_or_tributary_trigger = yes
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		NOT = { has_reform = celestial_empire }
+		is_year = 1787
+		has_country_modifier = articles_of_confederation
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA10"
+		add_prestige = 5
+		country_event = {
+			id = usa_dlc.11
+		}
+	}
+}
+
+# Government Forms
+country_event = {
+	id = usa_dlc.11
+	title = "usa_dlc.EVTNAME11"
+	desc = "usa_dlc.EVTDESC11"
+	picture = CONSTITUTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		is_revolutionary = no
+	}
+	
+	immediate = {
+		hidden_effect = {
+			country_event = {
+				id = usa_dlc.12
+				days = 365
+			}
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA11"
+		change_government = republic
+		add_government_reform = american_republic
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB11"
+		change_government = republic
+		add_government_reform = federal_republic
+	}
+	option = {
+		name = "usa_dlc.EVTOPTC11"
+		change_government = monarchy
+		add_government_reform = parliamentary_reform
+	}
+}
+
+# Abolition of the slave trade
+country_event = {
+	id = usa_dlc.12
+	title = "usa_dlc.EVTNAME12"
+	desc = "usa_dlc.EVTDESC12"
+	picture = CONSTITUTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			country_event = {
+				id = usa_dlc.13
+				days = 365
+			}
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA12"
+		add_country_modifier = {
+			name = abolish_slavery
+			duration = -1
+		}		
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB12"
+		every_owned_province = {
+			limit = {
+				NOT = {
+					has_province_modifier = northwest_ordinance_slavery_prohibited
+				}
+			}
+			add_province_modifier = {
+				name = usa_slavery
+				duration = -1
+			}
+		}
+	}
+}
+
+# What offenses should be impeachable?
+country_event = {
+	id = usa_dlc.13
+	title = "usa_dlc.EVTNAME13"
+	desc = "usa_dlc.EVTDESC13"
+	picture = CONSTITUTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			country_event = {
+				id = usa_dlc.14
+				days = 365
+			}
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA13"
+		add_country_modifier = {
+			name = harsh_laws_usa
+			duration = -1
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB13"
+		add_country_modifier = {
+			name = medium_laws_usa
+			duration = -1
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTC13"
+		add_country_modifier = {
+			name = mild_laws_usa
+			duration = -1
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTD13"
+		add_country_modifier = {
+			name = easy_laws_usa
+			duration = -1
+		}
+	}
+}
+
+# United States Constitution
+country_event = {
+	id = usa_dlc.14
+	title = "usa_dlc.EVTNAME14"
+	desc = "usa_dlc.EVTDESC14"
+	picture = CONSTITUTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "usa_dlc.EVTOPTA14"
+		add_adm_power = 100
+		add_dip_power = 100
+		add_mil_power = 100
+	}
+}
+
+# GBR supplies weapons to Indians?
+country_event = {
+	id = usa_dlc.20
+	title = "usa_dlc.EVTNAME20"
+	desc = "usa_dlc.EVTDESC20"
+	picture = INDIAN_WARS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		tag = GBR
+		NOT = {
+			war_with = USA
+		}
+		NOT = {
+			alliance_with = USA
+		}
+		NOT = {
+			junior_union_with = USA
+		}
+		NOT = {
+			senior_union_with = USA
+		}
+		any_known_country = { 
+			capital_scope = {
+				continent = north_america 
+			}
+			OR = {
+				culture_group = eskaleut
+				culture_group = central_algonquian
+				culture_group = eastern_algonquian
+				culture_group = iroquoian
+				culture_group = siouan
+				culture_group = muskogean
+				culture_group = sonoran
+			}
+			war_with = USA 
+			NOT = {
+				has_country_modifier = gbr_weapons
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 200
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA20" #Supply them!
+		random_known_country = {
+			limit = {
+				capital_scope = {
+					continent = north_america
+				}
+				OR = {
+					culture_group = eskaleut
+					culture_group = central_algonquian
+					culture_group = eastern_algonquian
+					culture_group = iroquoian
+					culture_group = siouan
+					culture_group = muskogean
+					culture_group = sonoran
+				}
+				war_with = USA
+			}
+			country_event = {
+				id = usa_dlc.21
+			}
+			tooltip = {
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_supplied_weapons
+					years = 20
+				}
+				add_country_modifier = {
+					name = gbr_weapons
+					duration = 3650
+				}
+			}
+		}
+		tooltip = {
+			USA = {
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_supplied_indians
+					years = 50
+				}
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB20"
+		add_prestige = 10
+	}
+}
+
+# Indians supplied with weapons from GBR
+country_event = {
+	id = usa_dlc.21
+	title = "usa_dlc.EVTNAME21"
+	desc = "usa_dlc.EVTDESC21"
+	picture = INDIAN_WARS_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "usa_dlc.EVTOPTA21"
+		USA = {
+			country_event = {
+				id = usa_dlc.22
+			}
+		}
+		GBR = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_supplied_weapons
+				years = 20
+			}
+		}
+		add_country_modifier = {
+			name = gbr_weapons
+			duration = 3650
+		}
+	}
+}
+
+# USA learns about GBR supplying Indians with weapons
+country_event = {
+	id = usa_dlc.22
+	title = "usa_dlc.EVTNAME22"
+	desc = "usa_dlc.EVTDESC22"
+	picture = INDIAN_WARS_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "usa_dlc.EVTOPTA22"
+		add_opinion = {
+			who = GBR
+			modifier = opinion_supplied_indians
+			years = 50
+		}
+	}
+}
+
+# Benjamin Franklin
+country_event = {
+	id = usa_dlc.25
+	title = "usa_dlc.EVTNAME25"
+	desc = "usa_dlc.EVTDESC25"
+	picture = ECONOMY_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1770
+		NOT = { is_year = 1790 }
+		is_advisor_employed = 71
+	}
+	
+	mean_time_to_happen = {
+		months = 200
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA25"
+		add_dip_power = 200
+	}
+}
+
+# Fur Trade
+country_event = {
+	id = usa_dlc.26
+	title = "usa_dlc.EVTNAME26"
+	desc = "usa_dlc.EVTDESC26"
+	picture = FUR_TRADE_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		any_owned_province = { trade_goods = fur }
+		NOT = { 
+			any_owned_province = { 
+				trade_goods = fur 
+				has_province_modifier = north_american_fur_trade 
+			} 
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 200
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA26"
+		add_years_of_income = -0.2
+		every_owned_province = { 
+			limit = { trade_goods = fur }
+			add_province_modifier = { 
+				name = north_american_fur_trade 
+				duration = 3650
+			} 
+		} 
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB26"
+		add_prestige = -5
+	}
+}
+
+# Cultural assimilation of Native Americans
+country_event = {
+	id = usa_dlc.27
+	title = "usa_dlc.EVTNAME27"
+	desc = "usa_dlc.EVTDESC27"
+	picture = NATIVE_AMERICANS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1790
+		NOT = { has_country_modifier = cultural_assimilation }
+	}
+	
+	mean_time_to_happen = {
+		months = 200
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA27"
+		add_country_modifier = { 
+			name = cultural_assimilation 
+			duration = -1
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB27"
+		add_dip_power = -10
+	}
+}
+
+# American Academy of Arts and Sciences
+country_event = {
+	id = usa_dlc.28
+	title = "usa_dlc.EVTNAME28"
+	desc = "usa_dlc.EVTDESC28"
+	picture = LIBERUM_VETO_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1780
+		NOT = { has_country_modifier = american_academy_of_arts_and_sciences }
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA28"
+		add_years_of_income = -0.25
+		add_country_modifier = { 
+			name = american_academy_of_arts_and_sciences
+			duration = 7300
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB28"
+		add_prestige = -5
+	}
+}
+
+# Union Fire Company
+country_event = {
+	id = usa_dlc.29
+	title = "usa_dlc.EVTNAME29"
+	desc = "usa_dlc.EVTDESC29"
+	picture = LIBERUM_VETO_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1791
+		owns = 956 # Lenape
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA29"
+		add_years_of_income = -0.1
+		956 = {
+			add_base_manpower = 5
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB29"
+		add_years_of_income = -0.2
+		956 = {
+			add_base_manpower = 7
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTC29"
+		add_years_of_income = -0.4
+		956 = {
+			add_base_manpower = 10
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTD29"
+		add_prestige = -5		
+	}
+}
+
+# Treaty of Amity and Commerce
+country_event = {
+	id = usa_dlc.30
+	title = "usa_dlc.EVTNAME30"
+	desc = "usa_dlc.EVTDESC30"
+	picture = DIPLOMACY_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		exists = PRU
+		is_year = 1780
+		PRU = { 
+			ai = yes
+			has_opinion = { 
+				who = ROOT 
+				value = 50 
+			}
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA30"
+		add_mercantilism = 7
+		PRU = {
+			add_mercantilism = 7
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_treaty_of_amity_and_commerce
+				years = 25
+			}
+		}
+		GBR = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_disgruntled
+				years = 25
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB30"
+		PRU = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_disappointed
+				years = 20
+			}
+		}
+		GBR = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_pleased
+				years = 20
+			}
+		}		
+	}
+}
+
+# Dunlap Broadside
+country_event = {
+	id = usa_dlc.31
+	title = "usa_dlc.EVTNAME31"
+	desc = "usa_dlc.EVTDESC31"
+	picture = REFORM_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		has_country_flag = usa_declaration_independence_flag
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA31"
+		add_country_modifier = { 
+			name = dunlap_broadside 
+			duration = 7300
+		} 
+	}
+}
+
+# Nonintercourse Act
+country_event = {
+	id = usa_dlc.32
+	title = "usa_dlc.EVTNAME32"
+	desc = "usa_dlc.EVTDESC32"
+	picture = NATIVE_AMERICANS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1790
+		NOT = { has_country_modifier = indian_trade_and_intercourse_act }
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA32"
+		add_country_modifier = { 
+			name = indian_trade_and_intercourse_act 
+			duration = 18250 
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB32"
+		add_country_modifier = { 
+			name = indian_trade 
+			duration = 18250 
+		}
+	}
+}
+
+# Whiskey Rebellion
+country_event = {
+	id = usa_dlc.33
+	title = "usa_dlc.EVTNAME33"
+	desc = "usa_dlc.EVTDESC33"
+	picture = ANGRY_MOB_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1794
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = { is_core = owner }
+				set_province_flag = whiskey_rebellion_flag1
+			}
+			random_owned_province = {
+				limit = { 
+					NOT = {
+						has_province_flag = whiskey_rebellion_flag1
+					}
+				}
+				set_province_flag = whiskey_rebellion_flag2
+			}
+			random_owned_province = {
+				limit = { 
+					NOT = {
+						has_province_flag = whiskey_rebellion_flag1
+					}
+					NOT = {
+						has_province_flag = whiskey_rebellion_flag2
+					}
+				}
+				set_province_flag = whiskey_rebellion_flag3
+			}
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA33"
+		random_owned_province = {
+			limit = {
+				has_province_flag = whiskey_rebellion_flag1
+			}
+			clr_province_flag = whiskey_rebellion_flag1
+			add_base_tax = 1
+			spawn_rebels = {
+				type = anti_tax_rebels
+				size = 2
+			}
+		}
+		random_owned_province = {
+			limit = { 
+				has_province_flag = whiskey_rebellion_flag2
+			}
+			clr_province_flag = whiskey_rebellion_flag2
+			spawn_rebels = {
+				type = anti_tax_rebels
+				size = 2
+			}
+		}
+		random_owned_province = {
+			limit = { 
+				has_province_flag = whiskey_rebellion_flag3
+			}
+			clr_province_flag = whiskey_rebellion_flag3
+			spawn_rebels = {
+				type = anti_tax_rebels
+				size = 2
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB33"
+		random_owned_province = {
+			limit = {
+				has_province_flag = whiskey_rebellion_flag1
+			}
+			clr_province_flag = whiskey_rebellion_flag1
+			add_province_modifier = {
+				name = add_unrest_5_modifier
+				duration = 1825
+			}
+		}
+		random_owned_province = {
+			limit = { 
+				has_province_flag = whiskey_rebellion_flag2
+			}
+			clr_province_flag = whiskey_rebellion_flag2
+			add_province_modifier = {
+				name = add_unrest_5_modifier
+				duration = 1825
+			}
+		}
+		random_owned_province = {
+			limit = { 
+				has_province_flag = whiskey_rebellion_flag3
+			}
+			add_province_modifier = {
+				name = add_unrest_5_modifier
+				duration = 1825
+			}
+		}
+	}
+}
+
+# Boston Post Road
+country_event = {
+	id = usa_dlc.34
+	title = "usa_dlc.EVTNAME34"
+	desc = "usa_dlc.EVTDESC34"
+	picture = REFORM_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		owns = 965 # Manhattan
+		owns = 966 # Berkshires
+		owns = 967 # Rhode Island
+		owns = 968 # Massachusetts
+  		owns = 2560 # New Haven
+		owns = 2010 # Connecticut
+		owns = 2561 # Plymouth
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA34"
+		add_adm_power = 20
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB34"
+		add_mil_power = 20
+		add_army_tradition = 10
+	}
+	option = {
+		name = "usa_dlc.EVTOPTC34"
+		add_dip_power = 40
+	}
+}
+
+# American Philosophical Society
+country_event = {
+	id = usa_dlc.35
+	title = "usa_dlc.EVTNAME35"
+	desc = "usa_dlc.EVTDESC35"
+	picture = LIBERUM_VETO_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		tag = USA
+		NOT = {
+			war_with = GBR
+		}
+		owns = 962 # Unami/Philadelphia
+		NOT = { has_country_modifier = american_philosophical_society }
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA35"
+		add_country_modifier = { 
+			name = american_philosophical_society
+			duration = 7300
+		}
+		add_years_of_income = -0.25
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB35"
+		add_adm_power = -20
+		add_prestige = 10
+	}
+	option = {
+		name = "usa_dlc.EVTOPTC35"
+	}
+}
+
+# Evacuation Day
+country_event = {
+	id = usa_dlc.36
+	title = "usa_dlc.EVTNAME36"
+	desc = "usa_dlc.EVTDESC36"
+	picture = BATTLE_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		tag = USA
+		is_year = 1783
+		is_month = 10 # November
+		truce_with = GBR
+		GBR = { 
+			NOT = { 
+				any_owned_province = { 
+					is_core = USA 
+				} 
+			} 
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA36"
+		add_prestige = 20
+		set_country_flag = evacuation_day
+	}
+}
+
+# Massachusetts Humane Society
+country_event = {
+	id = usa_dlc.37
+	title = "usa_dlc.EVTNAME37"
+	desc = "usa_dlc.EVTDESC37"
+	picture = ELECTION_REPUBLICAN_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		owns = 968 # Massachusetts
+		is_year = 1786
+		NOT = { 
+			has_country_modifier = massachusetts_humane_society 
+		} 
+	}
+	
+	mean_time_to_happen = { 
+		months = 200 
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA37"
+		add_country_modifier = { 
+			name = massachusetts_humane_society 
+			duration = 7300 
+		}
+		add_adm_power = -20
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB37"
+		add_adm_power = 10
+	}
+}
+
+# Committee of Safety
+country_event = {
+	id = usa_dlc.38
+	title = "usa_dlc.EVTNAME38"
+	desc = "usa_dlc.EVTDESC38"
+	picture = CONSTITUTION_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		has_country_flag = usa_declaration_independence_flag
+		NOT = { 
+			has_country_modifier = committee_of_safety 
+		} 
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA38"
+		add_country_modifier = { 
+			name = committee_of_safety 
+			duration = 3650 
+		}
+		add_years_of_income = -0.1
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB38"
+		add_prestige = 10
+	}
+}
+
+# Liberty pole
+country_event = {
+	id = usa_dlc.39
+	title = "usa_dlc.EVTNAME39"
+	desc = "usa_dlc.EVTDESC39"
+	picture = REFORM_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		tag = USA
+		truce_with = GBR
+		has_country_flag = evacuation_day
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA39"
+		add_prestige = 10
+	}
+}
+
+# Great Fire of New York
+country_event = {
+	id = usa_dlc.40
+	title = "usa_dlc.EVTNAME40"
+	desc = "usa_dlc.EVTDESC40"
+	picture = GREAT_FIRE_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1776
+		NOT = { is_year = 1800 }
+		war_with = GBR
+		965 = { # Manhattan
+			OR = {
+				owned_by = ROOT
+				controlled_by = GBR
+			}
+			OR = {
+				owned_by = GBR
+				controlled_by = ROOT
+			}
+		}
+	}
+	
+	mean_time_to_happen = { 
+		months = 200 
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA40"
+		add_adm_power = -50
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB40"
+		965 = {
+			add_province_modifier = {
+				name = great_fire
+				duration = 1825
+			}
+		}
+	}
+}
+
+# Lewis and Clark Expedition
+country_event = {
+	id = usa_dlc.41
+	title = "usa_dlc.EVTNAME41"
+	desc = "usa_dlc.EVTDESC41"
+	picture = EXPLORERS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1800 
+		OR = {
+			great_plains_region = {
+				NOT = { has_discovered = ROOT }
+			}
+			cascadia_region = {
+				NOT = { has_discovered = ROOT }
+			}
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA41"
+		add_years_of_income = -0.3
+		if = {
+			limit = {
+				great_plains_region = {
+					NOT = { has_discovered = ROOT }
+				}
+			}
+			great_plains_region = {
+				discover_country = ROOT
+			}
+		}
+		if = {
+			limit = {
+				cascadia_region = {
+					NOT = { has_discovered = ROOT }
+				}
+			}
+			cascadia_region = {
+				discover_country = ROOT
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB41"
+		add_prestige = 5
+	}
+}
+
+# First Bank of the United States
+country_event = {
+	id = usa_dlc.42
+	title = "usa_dlc.EVTNAME42"
+	desc = "usa_dlc.EVTDESC42"
+	picture = ECONOMY_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		tag = USA
+		is_year = 1790
+		NOT = { war_with = GBR }
+		NOT = { 
+			has_country_modifier = first_bank_usa 
+		} 
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA42"
+		add_country_modifier = { 
+		name = first_bank_usa 
+			duration = -1 
+		} 
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB42"
+		add_adm_power = 50
+	}
+}
+
+# Women in the American Revolution
+country_event = {
+	id = usa_dlc.43
+	title = "usa_dlc.EVTNAME43"
+	desc = "usa_dlc.EVTDESC43"
+	picture = ELECTION_REPUBLICAN_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		tag = USA
+		NOT = { war_with = GBR } 
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA43"
+		add_prestige = 10
+		add_adm_power = 50
+		add_dip_power = 50
+		add_mil_power = 50
+	}
+}
+
+# The Invention of the Cotton Gin
+country_event = {
+	id = usa_dlc.44
+	title = "usa_dlc.EVTNAME44"
+	desc = "usa_dlc.EVTDESC44"
+	picture = COLONIZATION_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1794
+		NOT = {
+			is_year = 1825
+		}
+		any_owned_province = {
+			trade_goods = cotton
+		}
+		NOT = { 
+			any_owned_province = {
+				has_province_modifier = cotton_gin
+			}
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					trade_goods = cotton
+				}
+				set_province_flag = cotton_gin_flag1
+			}
+			random_owned_province = {
+				limit = {
+					trade_goods = cotton
+					NOT = {
+						has_province_flag = cotton_gin_flag1
+					}
+				}
+				set_province_flag = cotton_gin_flag2
+			}
+			random_owned_province = {
+				limit = {
+					trade_goods = cotton
+					NOT = {
+						has_province_flag = cotton_gin_flag1
+					}
+					NOT = {
+						has_province_flag = cotton_gin_flag2
+					}
+				}
+				set_province_flag = cotton_gin_flag3
+			}
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA44"
+		add_years_of_income = -0.25
+		random_owned_province = {
+			limit = {
+				has_province_flag = cotton_gin_flag1
+			}
+			clr_province_flag = cotton_gin_flag1
+			add_province_modifier = { 
+				name = cotton_gin
+				duration = -1
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = cotton_gin_flag2
+			}
+			clr_province_flag = cotton_gin_flag2
+			add_province_modifier = { 
+				name = cotton_gin
+				duration = -1
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = cotton_gin_flag3
+			}
+			clr_province_flag = cotton_gin_flag3
+			add_province_modifier = { 
+				name = cotton_gin
+				duration = -1
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB44"
+		add_adm_power = 25
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_province_flag = cotton_gin_flag1
+				}
+				clr_province_flag = cotton_gin_flag1
+			}
+			random_owned_province = {
+				limit = {
+					has_province_flag = cotton_gin_flag2
+				}
+				clr_province_flag = cotton_gin_flag2
+			}
+			random_owned_province = {
+				limit = {
+					has_province_flag = cotton_gin_flag3
+				}
+				clr_province_flag = cotton_gin_flag3
+			}
+		}
+	}
+}
+
+# United States Mint
+country_event = {
+	id = usa_dlc.45
+	title = "usa_dlc.EVTNAME45"
+	desc = "usa_dlc.EVTDESC45"
+	picture = ECONOMY_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1792
+		NOT = { has_country_modifier = us_mint }
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA45"
+		add_country_modifier = { 
+			name = us_mint 
+			duration = 7300 
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB45"
+		add_adm_power = 20
+		add_dip_power = 20
+	}
+}
+
+# Tecumseh
+country_event = {
+	id = usa_dlc.46
+	title = "usa_dlc.EVTNAME46"
+	desc = "usa_dlc.EVTDESC46"
+	picture = INDIAN_WARS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		always = no
+		has_dlc = "American Dream"
+		tag = USA
+		NOT = {
+			war_with = GBR
+		}
+		any_known_country = { 
+			capital_scope = {
+				continent = north_america
+			}
+			OR = {
+				culture_group = eskaleut
+				culture_group = central_algonquian
+				culture_group = eastern_algonquian
+				culture_group = iroquoian
+				culture_group = siouan
+				culture_group = muskogean
+				culture_group = sonoran
+			}
+			war_with = ROOT 
+			ai = yes
+			is_in_coalition = no
+		} 
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA46"
+		every_known_country = {
+			limit = {
+				NOT = {
+					tag = USA
+				}
+				capital_scope = {
+					continent = north_america
+				}
+				OR = {
+					culture_group = eskaleut
+					culture_group = central_algonquian
+					culture_group = eastern_algonquian
+					culture_group = iroquoian
+					culture_group = siouan
+					culture_group = muskogean
+					culture_group = sonoran
+				}
+				war_with = ROOT 
+				ai = yes
+				is_in_coalition = no
+				NOT = {
+					any_known_country = {
+						capital_scope = {
+							continent = north_america
+						}
+						OR = {
+							culture_group = eskaleut
+							culture_group = central_algonquian
+							culture_group = eastern_algonquian
+							culture_group = iroquoian
+							culture_group = siouan
+							culture_group = muskogean
+							culture_group = sonoran
+						}
+						war_with = PREV 
+						ai = yes
+						is_in_coalition = no
+					}
+				}
+			}
+			form_coalition_against = USA
+		}
+	}
+}
+
+# Shays' Rebellion
+country_event = {
+	id = usa_dlc.47
+	title = "usa_dlc.EVTNAME47"
+	desc = "usa_dlc.EVTDESC47"
+	picture = ANGRY_MOB_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1780
+		NOT = {
+			treasury = 100
+		}
+		num_of_loans = 2
+		has_country_modifier = articles_of_confederation
+	}
+	
+	mean_time_to_happen = { 
+		months = 200 
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = { is_core = owner }
+				set_province_flag = shays_rebellion_flag1
+			}
+			random_owned_province = {
+				limit = { 
+					NOT = {
+						has_province_flag = shays_rebellion_flag1
+					}
+				}
+				set_province_flag = shays_rebellion_flag2
+			}
+			random_owned_province = {
+				limit = { 
+					NOT = {
+						has_province_flag = shays_rebellion_flag1
+					}
+					NOT = {
+						has_province_flag = shays_rebellion_flag2
+					}
+				}
+				set_province_flag = shays_rebellion_flag3
+			}
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA47"
+		random_owned_province = {
+			limit = {
+				has_province_flag = shays_rebellion_flag1
+			}
+			clr_province_flag = shays_rebellion_flag1
+			spawn_rebels = {
+				type = anti_tax_rebels
+				size = 2
+			}
+		}
+		random_owned_province = {
+			limit = { 
+				has_province_flag = shays_rebellion_flag2
+			}
+			clr_province_flag = shays_rebellion_flag2
+			spawn_rebels = {
+				type = anti_tax_rebels
+				size = 2
+			}
+		}
+		random_owned_province = {
+			limit = { 
+				has_province_flag = shays_rebellion_flag3
+			}
+			clr_province_flag = shays_rebellion_flag3
+			spawn_rebels = {
+				type = anti_tax_rebels
+				size = 2
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB47"
+		remove_country_modifier = articles_of_confederation
+		add_country_modifier = { 
+			name = new_articles_of_confederation 
+			duration = -1 
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = shays_rebellion_flag1
+			}
+			clr_province_flag = shays_rebellion_flag1
+			add_province_modifier = {
+				name = add_unrest_5_modifier
+				duration = 1825
+			}
+		}
+		random_owned_province = {
+			limit = { 
+				has_province_flag = shays_rebellion_flag2
+			}
+			clr_province_flag = shays_rebellion_flag2
+			add_province_modifier = {
+				name = add_unrest_5_modifier
+				duration = 1825
+			}
+		}
+		random_owned_province = {
+			limit = { 
+				has_province_flag = shays_rebellion_flag3
+			}
+			clr_province_flag = shays_rebellion_flag3
+			add_province_modifier = {
+				name = add_unrest_5_modifier
+				duration = 1825
+			}
+		}
+	}
+}
+
+# The Netherlands recognise USA as an independent government?
+country_event = {
+	id = usa_dlc.48
+	title = "usa_dlc.EVTNAME48"
+	desc = "usa_dlc.EVTDESC48"
+	picture = DIPLOMACY_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		has_country_flag = usa_declaration_independence_flag
+		NOT = {
+			is_year = 1784
+		}
+		NOT = { war_with = NED }
+		NOT = {
+			has_country_flag = independence_acknowledged_flag
+		}
+	}
+	
+	mean_time_to_happen = { 
+		months = 200 
+	}
+	
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = independence_acknowledged_flag
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA48"
+		NED = {
+			country_event = {
+				id = usa_dlc.49
+			}
+		}
+		add_dip_power = -10
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB48"
+		add_prestige = 10
+	}
+}
+
+# Netherlands: Independent USA?
+country_event = {
+	id = usa_dlc.49
+	title = "usa_dlc.EVTNAME48"
+	desc = "usa_dlc.EVTDESC49"
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "usa_dlc.EVTOPTA49"
+		ai_chance = {
+			factor = 80
+		}
+		random_country = {
+			limit = {
+				has_country_flag = usa_declaration_independence_flag
+			}
+			country_event = {
+				id = usa_dlc.50
+			}
+			reverse_add_opinion = {
+				who = ROOT
+				modifier = opinion_acknowledged_independence
+				years = 20
+			}
+		}
+		GBR = {
+			reverse_add_opinion = {
+				who = ROOT
+				modifier = opinion_disgruntled
+				years = 20
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB49"
+		random_country = {
+			limit = {
+				has_country_flag = usa_declaration_independence_flag
+			}
+			country_event = {
+				id = usa_dlc.51
+			}
+			reverse_add_opinion = {
+				who = ROOT
+				modifier = opinion_disgruntled
+				years = 20
+			}
+		}
+		GBR = {
+			reverse_add_opinion = {
+				who = ROOT
+				modifier = opinion_pleased
+				years = 20
+			}
+		}
+	}
+}
+
+# USA: Netherlands acknowledged independence
+country_event = {
+	id = usa_dlc.50
+	title = "usa_dlc.EVTNAME48"
+	desc = "usa_dlc.EVTDESC50"
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "usa_dlc.EVTOPTA50"
+		tooltip = {
+			reverse_add_opinion = {
+				who = FROM
+				modifier = opinion_acknowledged_independence
+				years = 20
+			}
+		}
+	}
+}
+
+# USA: Netherlands rejected independence
+country_event = {
+	id = usa_dlc.51
+	title = "usa_dlc.EVTNAME48"
+	desc = "usa_dlc.EVTDESC51"
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "usa_dlc.EVTOPTA51"
+		tooltip = {
+			reverse_add_opinion = {
+				who = FROM
+				modifier = opinion_disgruntled
+				years = 20
+			}
+		}
+	}
+}
+
+# New York Manumission Society
+country_event = {
+	id = usa_dlc.52
+	title = "usa_dlc.EVTNAME52"
+	desc = "usa_dlc.EVTDESC52"
+	picture = CONGRESS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1785
+		northeast_america_region = { type = all owned_by = ROOT }
+		num_of_cities = 16
+		any_owned_province = {
+			has_province_modifier = usa_slavery
+		}
+		NOT = { 
+			any_owned_province = {
+				has_province_modifier = protest_manumission_society 
+			}
+		}
+		NOT = { 
+			any_owned_province = {
+				has_province_modifier = manumission_society 
+			}
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					NOT = { region = northeast_america_region }
+				}
+				set_province_flag = manumission_flag1
+			}
+			random_owned_province = {
+				limit = {
+					NOT = { region = northeast_america_region }
+					NOT = {
+						has_province_flag = manumission_flag1
+					}
+				}
+				set_province_flag = manumission_flag2
+			}
+			random_owned_province = {
+				limit = {
+					NOT = { region = northeast_america_region }
+					NOT = {
+						has_province_flag = manumission_flag1
+					}
+					NOT = {
+						has_province_flag = manumission_flag2
+					}
+				}
+				set_province_flag = manumission_flag3
+			}
+			random_owned_province = {
+				limit = {
+					NOT = { region = northeast_america_region }
+					NOT = {
+						has_province_flag = manumission_flag1
+					}
+					NOT = {
+						has_province_flag = manumission_flag2
+					}
+					NOT = {
+						has_province_flag = manumission_flag3
+					}
+				}
+				set_province_flag = manumission_flag4
+			}
+			random_owned_province = {
+				limit = {
+					NOT = { region = northeast_america_region }
+					NOT = {
+						has_province_flag = manumission_flag1
+					}
+					NOT = {
+						has_province_flag = manumission_flag2
+					}
+					NOT = {
+						has_province_flag = manumission_flag3
+					}
+					NOT = {
+						has_province_flag = manumission_flag4
+					}
+				}
+				set_province_flag = manumission_flag5
+			}
+			random_owned_province = {
+				limit = {
+					NOT = { region = northeast_america_region }
+					NOT = {
+						has_province_flag = manumission_flag1
+					}
+					NOT = {
+						has_province_flag = manumission_flag2
+					}
+					NOT = {
+						has_province_flag = manumission_flag3
+					}
+					NOT = {
+						has_province_flag = manumission_flag4
+					}
+					NOT = {
+						has_province_flag = manumission_flag5
+					}
+				}
+				set_province_flag = manumission_flag6
+			}
+			random_owned_province = {
+				limit = {
+					NOT = { region = northeast_america_region }
+					NOT = {
+						has_province_flag = manumission_flag1
+					}
+					NOT = {
+						has_province_flag = manumission_flag2
+					}
+					NOT = {
+						has_province_flag = manumission_flag3
+					}
+					NOT = {
+						has_province_flag = manumission_flag4
+					}
+					NOT = {
+						has_province_flag = manumission_flag5
+					}
+					NOT = {
+						has_province_flag = manumission_flag6
+					}
+				}
+				set_province_flag = manumission_flag7
+			}
+			random_owned_province = {
+				limit = {
+					NOT = { region = northeast_america_region }
+					NOT = {
+						has_province_flag = manumission_flag1
+					}
+					NOT = {
+						has_province_flag = manumission_flag2
+					}
+					NOT = {
+						has_province_flag = manumission_flag3
+					}
+					NOT = {
+						has_province_flag = manumission_flag4
+					}
+					NOT = {
+						has_province_flag = manumission_flag5
+					}
+					NOT = {
+						has_province_flag = manumission_flag6
+					}
+					NOT = {
+						has_province_flag = manumission_flag7
+					}
+				}
+				set_province_flag = manumission_flag8
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTA52"
+		add_dip_power = 100
+		every_owned_province = {
+			limit = {
+				region = northeast_america_region
+			}
+			add_province_modifier = {
+				name = protest_manumission_society
+				duration = 7300
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB52"
+		965 = {
+			add_base_tax = 2
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = manumission_flag1
+			}
+			clr_province_flag = manumission_flag1
+			add_province_modifier = {
+				name = manumission_society
+				duration = 7300
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = manumission_flag2
+			}
+			clr_province_flag = manumission_flag2
+			add_province_modifier = {
+				name = manumission_society
+				duration = 7300
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = manumission_flag3
+			}
+			clr_province_flag = manumission_flag3
+			add_province_modifier = {
+				name = manumission_society
+				duration = 7300
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = manumission_flag4
+			}
+			clr_province_flag = manumission_flag4
+			add_province_modifier = {
+				name = manumission_society
+				duration = 7300
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = manumission_flag5
+			}
+			clr_province_flag = manumission_flag5
+			add_province_modifier = {
+				name = manumission_society
+				duration = 7300
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = manumission_flag6
+			}
+			clr_province_flag = manumission_flag6
+			add_province_modifier = {
+				name = manumission_society
+				duration = 7300
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = manumission_flag7
+			}
+			clr_province_flag = manumission_flag7
+			add_province_modifier = {
+				name = manumission_society
+				duration = 7300
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = manumission_flag8
+			}
+			clr_province_flag = manumission_flag8
+			add_province_modifier = {
+				name = manumission_society
+				duration = 7300
+			}
+		}
+	}
+}
+
+### USA Major Events from EUII ###
+
+# The Creation of the Continental Army
+country_event = {
+	id = usa_dlc.60
+	title = "usa_dlc.EVTNAME60"
+	desc = "usa_dlc.EVTDESC60"
+	picture = MILITARY_CAMP_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		is_at_war = yes
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1773
+		NOT = { is_year = 1820 }
+	}
+	
+	mean_time_to_happen = { months = 200 }
+
+	option = {
+		name = "usa_dlc.EVTOPTA60" # Raise Professional Army
+		create_general = { tradition = 50 }
+		add_mil_power = 100
+		add_army_tradition = 20
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB60" # Raise Provincial Militias
+		add_manpower = 20
+		add_mil_power = 50
+		add_army_tradition = 10
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTC60" # Call for Volunteers
+		add_adm_power = 20
+		add_manpower = 10
+	}
+}
+
+# The Congress' Printing Machine
+country_event = {
+	id = usa_dlc.61
+	title = "usa_dlc.EVTNAME61"
+	desc = "usa_dlc.EVTDESC61"
+	picture = ECONOMY_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_at_war = yes
+		is_year = 1779
+		NOT = { is_year = 1820 }
+	}
+
+	mean_time_to_happen = { months = 200 }
+
+	option = {
+		name = "usa_dlc.EVTOPTA61" # Print more money
+		add_inflation = 2
+		add_treasury = 500
+		add_adm_power = -50
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB61" # Use with constrain
+		add_inflation = 1
+		add_treasury = 100
+		add_adm_power = -25
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTC61" # Stop immediately
+		add_inflation = -1
+		add_treasury = -50
+		add_adm_power = 25
+	}
+
+}
+
+# US.Presidential Election of 1796
+country_event = {
+	id = usa_dlc.62
+	title = "usa_dlc.EVTNAME62"
+	desc = "usa_dlc.EVTDESC62"
+	picture = ELECTION_REPUBLICAN_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1796
+		NOT = { is_year = 1797 }
+		NOT = {
+			has_ruler = "John Adams"
+		}
+		NOT = {
+			has_ruler = "Thomas Jefferson"
+		}
+	}
+
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA62" # John Adams
+		add_opinion = { 
+			who = FRA 
+			modifier = opinion_displeased
+			years = 10
+		}
+		add_opinion = { 
+			who = GBR 
+			modifier = opinion_correct_ruler
+			years = 20
+		}
+		define_ruler = {
+			name = "John Adams"
+			adm = 5	
+			dip = 4
+			mil = 2
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = incorruptible } }
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB62" # Thomas Jefferson
+		add_opinion = { 
+			who = GBR 
+			modifier = opinion_displeased 
+		}
+		add_opinion = { 
+			who = FRA 
+			modifier = opinion_correct_ruler
+		}
+		define_ruler = {
+			name = "Thomas Jefferson"
+			adm = 5
+			dip = 4
+			mil = 3
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = lawgiver } }
+		}
+	}
+}
+
+# Federal Taxes on Property
+country_event = {
+	id = usa_dlc.63
+	title = "usa_dlc.EVTNAME63"
+	desc = "usa_dlc.EVTDESC63"
+	picture = ECONOMY_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1799
+		NOT = { is_year = 1800 }
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_core = owner
+					continent = north_america
+				}
+				set_province_flag = federal_taxes_flag1
+			}
+			random_owned_province = {
+				limit = {
+					is_core = owner
+					continent = north_america
+					NOT = {
+						has_province_flag = federal_taxes_flag1
+					}
+				}
+				set_province_flag = federal_taxes_flag2
+			}
+			random_owned_province = {
+				limit = {
+					is_core = owner
+					continent = north_america
+					NOT = {
+						has_province_flag = federal_taxes_flag1
+					}
+					NOT = {
+						has_province_flag = federal_taxes_flag2
+					}
+				}
+				set_province_flag = federal_taxes_flag3
+			}
+		}
+	}
+	option = {
+		name = "usa_dlc.EVTOPTA63" # Limited Federal Taxation Rights
+		add_adm_power = -20
+		add_dip_power = -20
+		random_owned_province = {
+			limit = {
+				has_province_flag = federal_taxes_flag1
+			}
+			add_base_tax = 1
+			clr_province_flag = federal_taxes_flag1
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = federal_taxes_flag2
+			}
+			clr_province_flag = federal_taxes_flag2
+			add_base_tax = 1
+		}
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_province_flag = federal_taxes_flag3
+				}
+				clr_province_flag = federal_taxes_flag3
+			}
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTB63" # No Federal Taxation Rights
+		add_adm_power = 100
+		add_dip_power = 100
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTC63" # Unlimited Federal Taxation Rights
+		add_adm_power = -40
+		add_dip_power = -40
+		random_owned_province = {
+			limit = {
+				has_province_flag = federal_taxes_flag1
+			}
+			add_base_tax = 1
+			clr_province_flag = federal_taxes_flag1
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = federal_taxes_flag2
+			}
+			clr_province_flag = federal_taxes_flag2
+			add_base_tax = 1
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = federal_taxes_flag3
+			}
+			clr_province_flag = federal_taxes_flag3
+			add_base_tax = 1
+		}
+	}
+}
+
+# US.Presidential Election of 1800
+country_event = {
+	id = usa_dlc.64
+	title = "usa_dlc.EVTNAME64"
+	desc = "usa_dlc.EVTDESC64"
+	picture = ELECTION_REPUBLICAN_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		is_year = 1800
+		NOT = { is_year = 1801 }
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		NOT = {
+			has_ruler = "Thomas Jefferson"
+		}
+		NOT = {
+			has_ruler = "Aaron Burr"
+		}
+		NOT = {
+			has_ruler = "John Adams"
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA64" # Thomas Jefferson
+		add_adm_power = 20
+		define_ruler = {
+			name = "Thomas Jefferson"
+			adm = 5
+			dip = 4
+			mil = 3
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = lawgiver } }
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB64" # Aaron Burr
+		add_dip_power = 40
+		define_ruler = {
+			name = "Aaron Burr"
+			adm = 3
+			dip = 6
+			mil = 3
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = entrepreneur } }
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTC64" # John Adams
+		add_mil_power = 40
+		define_ruler = {
+			name = "John Adams"
+			adm = 5	
+			dip = 4
+			mil = 2
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = incorruptible } }
+		}
+	}
+
+}
+
+# The Louisiana Purchase
+country_event = {
+	id = usa_dlc.65
+	title = "usa_dlc.EVTNAME65"
+	desc = "usa_dlc.EVTDESC65"
+	picture = DIPLOMACY_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		FRA = {
+			ai = yes
+		}
+		colonial_louisiana = {
+			OR = {
+				owned_by = FRA
+				owner = {
+					is_colonial_nation_of = FRA
+				}
+			}
+			any_neighbor_province = {
+				owned_by = root
+			}
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA65" # Accept Offer
+		add_treasury = -1000
+		add_opinion = { 
+			who = FRA
+			modifier = opinion_louisiana
+			years = 50
+		}
+		every_province = {
+			limit = {
+				colonial_region = colonial_louisiana
+				OR = {
+					owned_by = FRA
+					owner = {
+						is_colonial_nation_of = FRA
+					}
+				}
+			}
+			owner = {
+				remove_core = PREV
+			}
+			add_core = ROOT
+			cede_province = ROOT
+		}
+		ai_chance = {
+			factor = 100
+			modifier = {
+				factor = 0
+				OR = {
+					is_bankrupt = yes
+					is_in_large_debt = yes
+					AND = {
+						NOT = { treasury = 500 }
+						NOT = { monthly_income = 10 }
+					}
+					AND = {
+						NOT = { treasury = 250 }
+						NOT = { monthly_income = 20 }
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB65" # Decline Offer
+		add_opinion = { 
+			who = FRA 
+			modifier = opinion_disappointed
+			years = 20
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# US.Presidential Election of 1804
+country_event = {
+	id = usa_dlc.66
+	title = "usa_dlc.EVTNAME66"
+	desc = "usa_dlc.EVTDESC66"
+	picture = ELECTION_REPUBLICAN_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1804
+		NOT = { is_year = 1805 }
+		NOT = {
+			has_ruler = "Thomas Jefferson"
+		}
+		NOT = {
+			has_ruler = "Charles Pinckney"
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA66" # Thomas Jefferson
+		add_mercantilism = 5
+		define_ruler = {
+			name = "Thomas Jefferson"
+			dip = 4
+			adm = 5
+			mil = 3
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = lawgiver } }
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB66" # Charles Pinckney
+		add_mercantilism = -5
+		define_ruler = {
+			name = "Charles Pinckney"
+			dip = 3	
+			adm = 4	
+			mil = 5
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = fierce_negotiator } }
+		}
+	}
+}
+
+# US.Presidential Election of 1808
+country_event = {
+	id = usa_dlc.67
+	title = "usa_dlc.EVTNAME67"
+	desc = "usa_dlc.EVTDESC67"
+	picture = ELECTION_REPUBLICAN_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1808
+		NOT = { is_year = 1809 }
+		NOT = {
+			has_ruler = "James Madison"
+		}
+		NOT = {
+			has_ruler = "Charles Pinckney"
+		}
+		NOT = {
+			has_ruler = "George Clinton"
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+
+	option = {
+		name = "usa_dlc.EVTOPTA67" # James Madison
+		add_mercantilism = 5
+		define_ruler = {
+			name = "James Madison"
+			dip = 5	
+			adm = 5	
+			mil = 3
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = righteous } }
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB67" # Charles Pinckney
+		add_mercantilism = -5
+		define_ruler = {
+			name = "Charles Pinckney"
+			dip = 3	
+			adm = 4	
+			mil = 5
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = fierce_negotiator } }
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTC67" # George Clinton
+		add_mercantilism = -5
+		define_ruler = {
+			name = "George Clinton"
+			dip = 5	
+			adm = 3	
+			mil = 4
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = benevolent } }
+		}
+	}
+}
+
+# Hawks and Doves of 1812
+country_event = {
+	id = usa_dlc.68
+	title = "usa_dlc.EVTNAME68"
+	desc = "usa_dlc.EVTDESC68"
+	picture = DIPLOMACY_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		is_year = 1812
+		NOT = { is_year = 1813 }
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		NOT = {
+			war_with = GBR
+		}
+		NOT = {
+			truce_with = GBR
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+
+	option = {
+		name = "usa_dlc.EVTOPTA68" # Support Warhawks
+		add_casus_belli = {
+			target = GBR
+			type = cb_insult
+			months = 12
+		}
+		add_opinion = { 
+			who = GBR 
+			modifier = opinion_warhawks
+			years = 20
+		}
+		add_adm_power = -10
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB68" # Support Doves
+		add_opinion = { 
+			who = GBR 
+			modifier = opinion_doves
+			years = 20
+		}
+		add_stability = 2
+		add_dip_power = 20
+	}
+}
+
+# US.Presidential Election of 1812
+country_event = {
+	id = usa_dlc.69
+	title = "usa_dlc.EVTNAME69"
+	desc = "usa_dlc.EVTDESC69"
+	picture = ELECTION_REPUBLICAN_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1812
+		NOT = { is_year = 1813 }
+		NOT = {
+			has_ruler = "James Madison"
+		}
+		NOT = {
+			has_ruler = "DeWitt Clinton"
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+
+	option = {
+		name = "usa_dlc.EVTOPTA69" # James Madison
+		add_opinion = { 
+			who = GBR 
+			modifier = opinion_disappointed 
+			years = 20
+		}
+		add_stability_or_adm_power = yes
+		add_mercantilism = 5
+		define_ruler = {
+			name = "James Madison"
+			dip = 5	
+			adm = 5	
+			mil = 3
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = righteous } }
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB69" # DeWitt Clinton
+		add_opinion = { 
+			who = GBR 
+			modifier = opinion_displeased 
+			years = 20
+		}
+		add_stability = -1
+		add_mercantilism = -5
+		define_ruler = {
+			name = "DeWitt Clinton"
+			adm = 4	
+			dip = 6
+			mil = 3
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = architectural_visionary } }
+		}
+	}
+}
+
+# US.Presidential Election of 1816
+country_event = {
+	id = usa_dlc.70
+	title = "usa_dlc.EVTNAME70"
+	desc = "usa_dlc.EVTDESC70"
+	picture = ELECTION_REPUBLICAN_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1816
+		NOT = { is_year = 1817 }
+		NOT = {
+			has_ruler = "James Monroe"
+		}
+		NOT = {
+			has_ruler = "Rufus King"
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA70" # James Monroe
+		add_mercantilism = 5
+		add_stability = 2
+		# monarch = 04065
+		define_ruler = {
+			name = "James Monroe"
+			dip = 5	
+			adm = 6	
+			mil = 3
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = incorruptible } }
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB70" # Rufus King
+		add_mercantilism = -5
+		add_opinion = { 
+			who = GBR 
+			modifier = opinion_pleased
+		}
+		define_ruler = {
+			name = "Rufus King"
+			dip = 5
+			adm = 6
+			mil = 5
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = charismatic_negotiator } }
+		}
+		# monarch = 03999
+	}
+}
+
+# Adam-Onís Treaty
+country_event = {
+	id = usa_dlc.71
+	title = "usa_dlc.EVTNAME71"
+	desc = "usa_dlc.EVTDESC71"
+	picture = CONGRESS_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		tag = USA
+		SPA = {
+			ai = yes
+		}
+		any_province = {
+			colonial_region = colonial_eastern_america
+			OR = {
+				owned_by = SPA
+				owner = {
+					is_colonial_nation_of = SPA
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = { months = 200 }
+	
+	option = {
+		name = "usa_dlc.EVTOPTA71" # Accept Offer
+		reverse_add_opinion = { 
+			who = SPA 
+			modifier = opinion_florida
+			years = 50
+		}
+		every_province = {
+			limit = {
+				colonial_region = colonial_eastern_america
+				OR = {
+					owned_by = SPA
+					owner = {
+						is_colonial_nation_of = SPA
+					}
+				}
+			}
+			owner = {
+				remove_core = PREV
+			}
+			add_core = ROOT
+			cede_province = ROOT
+		}
+	}
+
+	option = {
+		name = "usa_dlc.EVTOPTB71" # Decline Offer
+		reverse_add_opinion = { 
+			who = SPA 
+			modifier = opinion_displeased
+			years = 20
+		}
+	}
+}
+
+# The Economic Dependency on England is broken
+country_event = {
+	id = usa_dlc.72
+	title = "usa_dlc.EVTNAME72"
+	desc = "usa_dlc.EVTDESC72"
+	picture = TEA_PARTY_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "American Dream"
+		OR = {
+			tag = USA
+			has_country_flag = usa_declaration_independence_flag
+		}
+		is_year = 1812
+		NOT = { is_year = 1815 }
+		is_at_war = yes 
+	}
+	
+	mean_time_to_happen = { months = 200 }
+
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_core = owner
+				}
+				set_province_flag = dependency_flag1
+			}
+			random_owned_province = {
+				limit = {
+					is_core = owner
+					NOT = {
+						has_province_flag = dependency_flag1
+					}
+				}
+				set_province_flag = dependency_flag2
+			}
+			random_owned_province = {
+				limit = {
+					is_core = owner
+					NOT = {
+						has_province_flag = dependency_flag1
+					}
+					NOT = {
+						has_province_flag = dependency_flag2
+					}
+				}
+				set_province_flag = dependency_flag3
+			}
+		}
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA72" # At last!
+		random_owned_province = {
+			limit = {
+				is_capital = yes
+			}
+			add_base_tax = 1
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = dependency_flag1
+			}
+			clr_province_flag = dependency_flag1
+			add_base_tax = 1
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = dependency_flag2
+			}
+			clr_province_flag = dependency_flag2
+			add_base_tax = 1
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = dependency_flag3
+			}
+			clr_province_flag = dependency_flag3
+			add_base_tax = 1
+		}
+	}
+}
+
+# More buns for the people!
+country_event = {
+	id = usa_dlc.100
+	title = "usa_dlc.EVTNAME100"
+	desc = "usa_dlc.EVTDESC100"
+	picture = COMET_SIGHTED_eventPicture
+
+	fire_only_once = yes
+	
+	trigger = {
+		prestige = 100
+		OR = {
+			has_dlc = "American Dream"
+			has_dlc = "Star and Crescent"
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 500000
+	}
+	
+	option = {
+		name = "usa_dlc.EVTOPTA100"
+		add_prestige = 5
+	}
+	option = {
+		name = "usa_dlc.EVTOPTB100"
+		add_adm_power = 5
+	}
+	option = {
+		name = "usa_dlc.EVTOPTC100"
+		add_dip_power = 5
+	}
+	option = {
+		name = "usa_dlc.EVTOPTD100"
+		add_mil_power = 5
+	}
+}
+  

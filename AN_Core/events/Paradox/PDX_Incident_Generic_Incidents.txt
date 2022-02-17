@@ -1,0 +1,186 @@
+namespace = incident_generic
+
+### PU Subject joins HRE ###
+
+country_event = {
+	id = incident_generic.1
+	title = incident_pu_subject_joins_empire
+	desc = incident_generic.1.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+
+	trigger = {
+		has_dlc = "Emperor"
+		NOT = { active_imperial_incident = any }
+		is_part_of_hre = yes
+		is_emperor = no
+		NOT = {
+			any_country = {
+				has_country_flag = current_pu_incident_target_flag
+			}
+		}
+		any_subject_country = {
+			years_in_union_under = {
+				who = ROOT
+				years = 20
+			}
+			is_part_of_hre = no
+			NOT = { has_country_flag = pu_hre_rejected_flag }
+			NOT = { has_country_flag = current_pu_incident_target_flag }
+			any_owned_province = {
+				OR = {
+					is_part_of_hre = yes
+					any_neighbor_province = {
+						is_part_of_hre = yes
+					}
+				}
+			}
+			NOT = { num_of_cities = ROOT } # prevents huge countries from joining
+			NOT = { tag = PAP } # this shouldn't happen but let's be super safe
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					years_in_union_under = {
+						who = ROOT
+						years = 20
+					}
+					is_part_of_hre = no
+					NOT = { has_country_flag = pu_hre_rejected_flag }
+					NOT = { has_country_flag = current_pu_incident_target_flag }
+					any_owned_province = {
+						OR = {
+							is_part_of_hre = yes
+							any_neighbor_province = {
+								is_part_of_hre = yes
+							}
+						}
+					}
+					NOT = { num_of_cities = ROOT }
+					NOT = { tag = PAP }
+				}
+				set_country_flag = current_pu_incident_target_flag
+				save_event_target_as = pu_hre_country
+			}
+		}
+	}
+	
+	option = {
+		name = incident_generic.1.a
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0
+				event_target:pu_hre_country = {
+					tag = HUN
+				}
+			}
+		}
+		set_imperial_incident = incident_pu_subject_joins_empire
+		event_target:pu_hre_country = {
+			add_opinion = {
+				who = ROOT
+				modifier = petitioned_for_hre_membership
+			}
+		}
+	}
+	
+	option = {
+		name = incident_generic.1.b
+		ai_chance = {
+			factor = 1
+		}
+		event_target:pu_hre_country = {
+			set_country_flag = pu_hre_rejected_flag
+		}
+		add_prestige = -5
+		custom_tooltip = reject_hre_pu_tt # PU will never have this chance again
+		event_target:pu_hre_country = {
+			clr_country_flag = current_pu_incident_target_flag
+			add_opinion = {
+				who = ROOT
+				modifier = no_petition_for_hre_membership
+			}
+		}
+	}
+}
+
+# Mock incident 
+country_event = {
+	id = incident_generic.2
+	title = incident_generic.2.t
+	desc = incident_generic.2.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	major = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					has_country_flag = current_pu_incident_target_flag
+				}
+				save_event_target_as = current_pu_incident_target
+			}
+		}
+	}
+	
+	option = { # allow junior partner to join
+		name = incident_generic.2.a
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0
+				OR = {
+					is_rival = FROM
+					FROM = { is_rival = ROOT }
+				}
+			}
+		}
+		event_target:current_pu_incident_target = {
+			set_in_empire = yes
+			overlord = {
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_added_pu_subject_hre
+				}
+			}
+		}
+	}
+	
+	option = { # reject application
+		name = incident_generic.2.b
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 1000
+				OR = {
+					is_rival = FROM
+					FROM = { is_rival = ROOT }
+				}
+			}
+		}
+		event_target:current_pu_incident_target = {
+			set_country_flag = pu_hre_rejected_flag
+			overlord = {
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_denied_pu_subject_hre
+				}
+			}
+		}
+	}
+	
+	after = {
+		event_target:current_pu_incident_target = {
+			clr_country_flag = current_pu_incident_target_flag
+		}
+	}
+}

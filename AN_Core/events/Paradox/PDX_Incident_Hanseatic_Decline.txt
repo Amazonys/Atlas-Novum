@@ -1,0 +1,329 @@
+namespace = hansa_incident
+
+# For Lubeck
+country_event = {
+	id = hansa_incident.1
+	title = hansa_incident.1.t
+	picture = GOOD_WITH_MONARCH_eventPicture
+	desc = hansa_incident.1.d
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = HSA
+		has_dlc = "Emperor"
+		is_subject = no
+		emperor = {
+			is_at_war = no
+		}
+		NOT = {
+			45 = {
+				is_strongest_trade_power = ROOT
+			}
+		}
+		45 = {
+			strongest_trade_power = {
+				NOT = {
+					is_in_trade_league_with = ROOT
+				}
+			}
+		}
+		is_part_of_hre = yes
+		NOT = {
+			current_age = age_of_discovery
+		}
+		NOT = { active_imperial_incident = any }
+		has_reform = merchants_reform
+		is_subject = no
+	}
+	
+	mean_time_to_happen = {
+		months = 36
+	}
+	
+	immediate = {
+		hidden_effect = {
+			45 = {
+				strongest_trade_power = {
+					save_global_event_target_as = lubeck_trade_power
+					set_country_flag = lubeck_trade_power_flag
+				}
+			}
+		}
+	}
+	
+	option = { # ask the emperor
+		ai_chance = { factor = 1 }
+		name = hansa_incident.1.a
+		set_imperial_incident = incident_hansa
+	}
+	option = { # consolidate the league
+		name = hansa_incident.1.b
+		ai_chance = { factor = 0 }
+		if = {
+			limit = {
+				has_dlc = "Mare Nostrum"
+			}
+			every_country = {
+				limit = {
+					is_in_trade_league_with = ROOT
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = hanseatic_consolidation
+				}
+			}
+		}
+		else = {
+			add_mercantilism = 2
+		}
+	}
+}
+
+# Dummy incident
+country_event = {
+	id = hansa_incident.2
+	title = hansa_incident.2.t
+	picture = GOOD_WITH_MONARCH_eventPicture
+	desc = hansa_incident.2.d
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+	major = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					has_country_flag = lubeck_trade_power_flag
+				}
+				save_global_event_target_as = lubeck_trade_power
+			}
+		}
+	}
+	
+	option = { # do nothing for them
+		name = hansa_incident.2.a
+		ai_chance = {
+			factor = 20
+			modifier = {
+				factor = 2000
+				is_rival = HSA
+			}
+			modifier = {
+				factor = 100
+				any_country = {
+					is_in_trade_league_with = HSA
+					is_rival = ROOT
+				}
+			}
+		}
+		HSA = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_emperor_wont_help_hansa
+			}
+		}
+		every_country = {
+			limit = {
+				is_in_trade_league_with = HSA
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_emperor_wont_help_hansa
+			}
+		}
+	}
+	
+	option = { # create a league out of the free cities
+		name = hansa_incident.2.b
+		trigger = {
+			any_country = {
+				has_reform = free_city
+				NOT = { is_in_trade_league_with = HSA }
+			}
+			OR = {
+				has_dlc = "Mare Nostrum"
+				has_dlc = "Wealth of Nations"
+			}
+		}
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 50
+				has_opinion = {
+					who = HSA
+					value = 100
+				}
+			}
+			modifier = {
+				factor = 1000
+				alliance_with = HSA
+			}
+		}
+		every_country = {
+			limit = {
+				has_reform = free_city
+				NOT = { is_in_trade_league_with = HSA }
+			}
+			hidden_effect = {
+				country_event = { id = hansa_incident.3 days = 3 }
+			}
+			custom_tooltip = may_join_hansa_tt
+		}
+		HSA = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_emperor_helped_hansa
+			}
+		}
+		every_country = {
+			limit = {
+				is_in_trade_league_with = HSA
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_emperor_helped_hansa
+			}
+		}
+	}
+	
+	option = { # trade sactions against lubeck trade controller
+		name = hansa_incident.2.c
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 1000
+				OR = {
+					war_with = event_target:lubeck_trade_power
+					is_rival = event_target:lubeck_trade_power
+				}
+			}
+		}
+		45 = {
+			add_trade_modifier = {
+				who = event_target:lubeck_trade_power
+				duration = 7200
+				power = -30
+				key = IMPERIAL_EMBARGO
+			}
+		}
+		1876 = {
+			add_trade_modifier = {
+				who = event_target:lubeck_trade_power
+				duration = 7200
+				power = -30
+				key = IMPERIAL_EMBARGO
+			}
+		}
+		4744 = {
+			add_trade_modifier = {
+				who = event_target:lubeck_trade_power
+				duration = 7200
+				power = -30
+				key = IMPERIAL_EMBARGO
+			}
+		}
+		HSA = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_emperor_imperial_embargo
+			}
+		}
+		every_country = {
+			limit = {
+				is_in_trade_league_with = HSA
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_emperor_imperial_embargo
+			}
+		}
+		event_target:lubeck_trade_power = {
+			country_event = { 
+				id = hansa_incident.4
+				days = 1
+			}
+		}
+	}
+
+	after = {
+		clear_global_event_target = lubeck_trade_power
+	}
+}
+
+# For free cities
+country_event = {
+	id = hansa_incident.3
+	title = hansa_incident.3.t
+	picture = GOOD_WITH_MONARCH_eventPicture
+	desc = hansa_incident.3.d
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = hansa_incident.3.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0
+				is_in_trade_league = yes
+			}
+			modifier = {
+				factor = 0
+				45 = {
+					is_strongest_trade_power = ROOT
+				}
+			}
+			modifier = {
+				factor = 0
+				45 = {
+					NOT = { trade_range = ROOT }
+				}
+			}
+		}
+		if = {
+			limit = {
+				has_dlc = "Mare Nostrum"
+			}
+			HSA = {
+				join_trade_league = ROOT
+			}
+		}
+		else_if = {
+			limit = {
+				has_dlc = "Wealth of Nations"
+			}
+			HSA = {
+				transfer_trade_power = ROOT
+			}
+		}
+		emperor = {
+			add_imperial_influence = 5
+		}
+	}
+	
+	option = {
+		name = hansa_incident.3.b
+		ai_chance = {
+			factor = 30
+		}
+		emperor = {
+			add_imperial_influence = -5
+		}
+	}
+}
+
+# Notification of Embargo
+country_event = {
+	id = hansa_incident.4
+	title = hansa_incident.4.t
+	picture = HRE_eventPicture
+	desc = hansa_incident.4.d
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = hansa_incident.4.a
+	}
+}

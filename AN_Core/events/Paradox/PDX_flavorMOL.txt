@@ -1,0 +1,279 @@
+# Flavour events for Moldavia - Roman II's Coup
+# By Daniel Tolman
+
+namespace = flavor_mol
+normal_or_historical_nations = yes
+
+# For Poland. Support for Roman
+country_event = {
+	id = flavor_mol.1
+	title = "flavor_mol.EVTNAME1"
+	desc = "flavor_mol.EVTDESC1"
+	picture = SEJM_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = POL
+		is_subject = no
+		NOT = { is_year = 1448 }
+		MOL = {
+			is_subject = no
+			government = monarchy
+			NOT = { war_with = ROOT }
+			OR = {
+				guaranteed_by = ROOT
+				alliance_with = ROOT
+				marriage_with = ROOT
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 48
+		modifier = {
+			factor = 0.01
+			is_year = 1447
+		}
+	}
+	
+	option = { # support Roman with money
+		name = "flavor_mol.1.a"
+		add_years_of_income = -0.5
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { years_of_income = 1 }
+			}
+		}
+		MOL = {
+			country_event = {
+				id = flavor_mol.2
+				days = 3
+			}
+		}
+	}
+	option = { # support roman with manpower
+		name = "flavor_mol.1.b"
+		add_yearly_manpower = -1
+		MOL = {
+			country_event = {
+				id = flavor_mol.2
+				days = 3
+			}
+		}
+	}
+	option = { # don't support Roman
+		name = "flavor_mol.1.c"
+		ai_chance = {
+			factor = 0
+		}
+		add_prestige = -10
+		add_legitimacy = -10
+	}
+}
+
+# For Moldavia
+country_event = {
+	id = flavor_mol.2
+	title = "flavor_mol.EVTNAME2"
+	desc = "flavor_mol.EVTDESC2"
+	picture = HUSSARS_eventPicture
+	
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	major = yes
+	
+	option = { # Polish March
+		name = "flavor_mol.2.a"
+		ai_chance = {
+			factor = 65
+		}
+		set_global_flag = mol_polish_march
+		define_ruler = {
+			name = "Roman"
+			dynasty = "Musat"
+			age = 20
+			claim = 75
+		}
+		if = {
+			limit = {
+				has_states_general_mechanic = yes
+			}
+			change_statists_vs_orangists = 1
+		}
+		POL = {
+			hidden_effect = {
+				country_event = { id = flavor_mol.3 }
+			}
+			tooltip = {
+				create_march = MOL
+			}
+		}
+		add_opinion = {
+			who = POL
+			modifier = loyal_voidode
+		}
+	}
+	option = { # Hungarian March
+		name = "flavor_mol.2.b"
+		trigger = {
+			HUN = {
+				exists = yes
+				is_subject = no
+				NOT = { war_with = ROOT }
+			}
+		}
+		ai_chance = {
+			factor = 20
+		}
+		set_global_flag = mol_hungarian_march
+		define_ruler = {
+			name = "Petru"
+			dynasty = "Musat"
+			age = 45
+			claim = 100
+		}
+		if = {
+			limit = {
+				has_states_general_mechanic = yes
+			}
+			change_statists_vs_orangists = 1
+		}
+		HUN = {
+			hidden_effect = {
+				country_event = { 
+					id = flavor_mol.4
+					days = 3
+				}
+			}
+			tooltip = {
+				create_march = MOL
+			}
+		}
+		add_opinion = {
+			who = HUN
+			modifier = loyal_voidode
+		}
+		hidden_effect = {
+			POL = {
+				country_event = {
+					id = flavor_mol.3
+					days = 3
+				}
+			}
+		}
+	}
+	option = { # Independence
+		name = "flavor_mol.2.c"
+		ai_chance = {
+			factor = 15
+		}
+		add_opinion = {
+			who = POL
+			modifier = resisted_polish_interference
+		}
+		random_owned_province = {
+			spawn_rebels = {
+				size = 1
+				type = pretender_rebels
+				leader = "Roman"
+				leader_dynasty = "Musat"
+			}
+		}
+		hidden_effect = {
+			POL = {
+				country_event = {
+					id = flavor_mol.3
+					days = 3
+				}
+			}
+		}
+	}
+}
+
+# Poland reacts to Moldavian decision
+country_event = {
+	id = flavor_mol.3
+	title = "flavor_mol.EVTNAME3"
+	desc = {
+		trigger = {
+			has_global_flag = mol_polish_march
+		}
+		desc = "flavor_mol.EVTDESC3"
+	}
+	desc = {
+		trigger = {
+			has_global_flag = mol_hungarian_march
+		}
+		desc = "flavor_mol.EVTDESC3B"
+	}
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = mol_polish_march }
+			NOT = { has_global_flag = mol_hungarian_march }
+		}
+		desc = "flavor_mol.EVTDESC3C"
+	}
+	picture = SEJM_eventPicture
+	
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	option = { 
+		name = flavor_mol.3.a
+		trigger = {
+			has_global_flag = mol_polish_march
+		}
+		create_march = MOL
+		add_opinion = {
+			who = MOL
+			modifier = loyal_voidode
+		}
+	}
+	option = {
+		name = flavor_mol.3.b
+		trigger = {
+			has_global_flag = mol_hungarian_march
+		}
+		add_prestige = -5
+	}
+	option = { 
+		name = flavor_mol.3.c
+		trigger = {
+			NOT = { has_global_flag = mol_polish_march }
+			NOT = { has_global_flag = mol_hungarian_march }
+		}
+		add_prestige = -5
+		add_opinion = {
+			who = MOL
+			modifier = resisted_polish_interference
+		}
+	}
+}
+
+# For Hungary
+country_event = {
+	id = flavor_mol.4
+	title = "flavor_mol.EVTNAME4"
+	desc = "flavor_mol.EVTDESC4"
+	picture = SEJM_eventPicture
+	
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "flavor_mol.4.a"
+		add_prestige = 10
+		create_march = MOL
+		add_opinion = {
+			who = MOL
+			modifier = loyal_voidode
+		}
+	}
+}

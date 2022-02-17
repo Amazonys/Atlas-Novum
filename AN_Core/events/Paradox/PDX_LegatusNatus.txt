@@ -1,0 +1,186 @@
+# Legatus Natus event series
+
+normal_or_historical_nations = yes
+
+# Legatus Natus
+country_event = {
+	id = 763
+	title = "EVTNAME763"
+	desc = "EVTDESC763"
+	picture = POPE_PREACHING_eventPicture
+
+	trigger = {
+		papacy_active = yes
+		tag = MAI
+		exists = yes
+		is_elector = yes
+		has_reform = leading_clergy_reform
+		NOT = { has_country_flag = happened_763 }
+	}
+
+	mean_time_to_happen = { months = 1 }
+
+	immediate = { set_country_flag = happened_763 }
+
+	option = {
+		name = "EVTOPTA763"
+		add_country_modifier = {
+			name = "legatus_natus"
+			duration = -1
+		}
+	}
+}
+
+# Title of Legatus Natus Lost
+country_event = {
+	id = 764
+	title = "EVTNAME764"
+	desc = "EVTDESC764"
+	picture = POPE_PREACHING_eventPicture
+	
+	trigger = {
+		papacy_active = yes
+		has_country_modifier = legatus_natus
+		OR = {
+			AND = {
+				OR = {
+					NOT = { prestige = -10 }
+					NOT = { devotion = 10 }
+				}
+				NOT = { reverse_has_opinion ={ who = PAP value = 100 } }
+			}
+			NOT = { reverse_has_opinion ={ who = PAP value = 0 } }
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 24
+		modifier = {
+			factor = 1.5
+			papal_influence = 20 
+		}
+		modifier = {
+			factor = 2
+			papal_influence = 35
+		}
+		modifier = {
+			factor = 0.5
+			NOT = { reverse_has_opinion ={ who = PAP value = 50 } }
+		}
+		modifier = {
+			factor = 0.5
+			NOT = { reverse_has_opinion ={ who = PAP value = 0 } }
+		}
+	}
+
+	option = {
+		name = "EVTOPTA764"
+		add_prestige = -5
+		remove_country_modifier = legatus_natus
+		set_country_flag = legatus_natus_lost
+		set_global_flag = no_legatus_natus
+	}
+}
+
+# Envoy from the Pope
+country_event = {
+	id = 765
+	title = "EVTNAME765"
+	desc = "EVTDESC765"
+	picture = POPE_PREACHING_eventPicture
+
+	trigger = {
+		papacy_active = yes
+		has_global_flag = no_legatus_natus
+		capital_scope = { is_part_of_hre = yes }
+		is_emperor = no
+		religion = catholic
+		has_reform = leading_clergy_reform
+		#legitimacy = 50
+		prestige = 10
+		reverse_has_opinion = { who = PAP value = 100 }
+		NOT = { has_country_flag = legatus_natus_declined }
+	}
+
+	mean_time_to_happen = {
+		months = 48
+		modifier = {
+			factor = 0.8
+			papal_influence = 20
+		}
+		modifier = {
+			factor = 0.7
+			papal_influence = 35
+		}
+		modifier = {
+			factor = 0.8
+			reverse_has_opinion = { who = PAP value = 150 }
+		}
+		modifier = {
+			factor = 0.7
+			reverse_has_opinion = { who = PAP value = 200 }
+		}
+		modifier = {
+			factor = 0.7
+			is_elector = yes
+		}
+	}
+
+	immediate = { clr_global_flag = no_legatus_natus }
+
+	option = {
+		name = "EVTOPTA765"
+		add_country_modifier = {
+			name = "legatus_natus"
+			duration = -1
+		}
+		every_country = {
+			limit = { has_country_flag = legatus_natus_declined }
+			clr_country_flag = legatus_natus_declined
+		}
+		every_country = {
+			limit = { has_country_flag = legatus_natus_lost }
+			clr_country_flag = legatus_natus_lost
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {
+		name = "EVTOPTB765"
+		reverse_add_opinion = { who = PAP modifier = opinion_declined_legatus_natus }
+		set_country_flag = legatus_natus_declined
+		set_global_flag = no_legatus_natus
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Position as Legatus Natus Revoked
+country_event = {
+	id = 964
+	title = "EVTNAME964"
+	desc = "EVTDESC964"
+	picture = POPE_PREACHING_eventPicture
+	
+	trigger = {
+		has_country_modifier = legatus_natus
+		OR = {
+			capital_scope = { is_part_of_hre = no }
+			NOT = { has_reform = leading_clergy_reform }
+			NOT = { religion = catholic }
+#			NOT = { reverse_has_opinion ={ who = PAP value = 0 } } #covered in 764
+			NOT = { papacy_active = yes }
+			exists = no
+		}
+	}
+	
+	mean_time_to_happen = { months = 1 }
+	
+	option = {
+		name = "EVTOPTA964"
+		remove_country_modifier = legatus_natus
+		set_global_flag = no_legatus_natus
+	}
+}

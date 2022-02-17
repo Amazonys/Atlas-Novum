@@ -1,0 +1,473 @@
+namespace = reformed_events
+
+# Reformed Refugees
+province_event = {
+	id = reformed_events.1
+	title = "reformed_events.EVTNAME1"
+	desc = "reformed_events.EVTDESC1"
+	picture = RELIGIOUS_TURMOIL_eventPicture
+	
+	trigger = {
+		religion = reformed
+		owner = {
+			religion = reformed
+			dominant_religion = reformed
+			capital_scope = {
+				continent = europe
+			}
+		}
+		any_neighbor_province = {
+			NOT = { owned_by = ROOT }
+			religion = reformed
+			NOT = { has_province_flag = reformed_refugees }
+			owner = {
+				NOT = { religion = reformed }
+				NOT = { dominant_religion = reformed }
+				NOT = { is_subject_of = ROOT }
+				NOT = { alliance_with = ROOT }
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 2000
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_neighbor_province = {
+				limit = {
+					NOT = { owned_by = ROOT }
+					religion = reformed
+					NOT = { has_province_flag = reformed_refugees }
+					owner = {
+						NOT = { religion = reformed }
+						NOT = { dominant_religion = reformed }
+						NOT = { is_subject_of = ROOT }
+						NOT = { alliance_with = ROOT }
+					}
+				}
+				set_province_flag = prospective_reformed_refugees
+			}
+		}
+	}
+	
+	option = {
+		name = "reformed_events.EVTOPTA1" # Let them across
+		ai_chance = { factor = 50 }
+		add_base_tax = 1
+		random_neighbor_province = {
+			limit = {
+				has_province_flag = prospective_reformed_refugees
+			}
+			tooltip = {
+				add_province_modifier = {
+					name = religious_persecution
+					duration = 1825
+				}
+				owner = {
+					add_opinion = {
+						who = ROOT
+						modifier = accepted_reformed_refugees
+					}
+				}
+			}
+			hidden_effect = {
+				clr_province_flag = prospective_reformed_refugees
+				set_province_flag = reformed_refugees
+				province_event = { id = reformed_events.2 days = 1 }
+			}
+		}
+	}
+	option = {
+		name = "reformed_events.EVTOPTB1" # We better not
+		ai_chance = { factor = 50 }
+		owner = {
+			add_fervor = -10
+			add_prestige = -10
+		}
+		hidden_effect = {
+			random_neighbor_province = {
+				limit = {
+					has_province_flag = prospective_reformed_refugees
+				}
+				clr_province_flag = prospective_reformed_refugees
+			}
+		}
+	}
+}
+
+# Reformed Followers Flee
+province_event = {
+	id = reformed_events.2
+	title = "reformed_events.EVTNAME2"
+	desc = "reformed_events.EVTDESC2"
+	picture = RELIGIOUS_TURMOIL_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "reformed_events.EVTOPTA2" # How dare they!
+		add_province_modifier = {
+			name = religious_persecution
+			duration = 1825
+		}
+		owner = {
+			add_opinion = {
+				who = FROM
+				modifier = accepted_reformed_refugees
+			}
+		}
+	}
+}
+
+# Sending Ministers Abroad
+country_event = {
+	id = reformed_events.3
+	title = "reformed_events.EVTNAME3"
+	desc = "reformed_events.EVTDESC3"
+	picture = STREET_SPEECH_eventPicture
+	
+	trigger = {
+		religion = reformed
+		dominant_religion = reformed
+		capital_scope = {
+			continent = europe
+		}
+		any_neighbor_country = {
+			NOT = { religion = reformed }
+			NOT = { is_subject_of = ROOT }
+			NOT = { alliance_with = ROOT }
+			any_owned_province = {
+				religion = reformed
+				NOT = { has_province_modifier = foreign_reformed_ministers }
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 2000
+	}
+	
+	immediate = {
+		hidden_effect = {
+			# Try find a country with neighboring province
+			random_neighbor_country = {
+				limit = {
+					NOT = { religion = reformed }
+					NOT = { is_subject_of = ROOT }
+					NOT = { alliance_with = ROOT }
+					any_owned_province = {
+						religion = reformed
+						NOT = { has_province_modifier = foreign_reformed_ministers }
+						any_neighbor_province = {
+							owned_by = ROOT
+						}
+					}
+				}
+				random_owned_province = {
+					limit = {
+						religion = reformed
+						NOT = { has_province_modifier = foreign_reformed_ministers }
+						any_neighbor_province = {
+							owned_by = ROOT
+						}
+					}
+					set_province_flag = prospective_foreign_reformed_ministers
+				}
+				ROOT = {
+					set_country_flag = prospective_country_found
+				}
+			}
+			# Else take any neighboring country
+			if = {
+				limit = {
+					NOT = { has_country_flag = prospective_country_found }
+				}
+				random_neighbor_country = {
+					limit = {
+						NOT = { religion = reformed }
+						NOT = { is_subject_of = ROOT }
+						NOT = { alliance_with = ROOT }
+						any_owned_province = {
+							religion = reformed
+							NOT = { has_province_modifier = foreign_reformed_ministers }
+						}
+					}
+					random_owned_province = {
+						limit = {
+							religion = reformed
+							NOT = { has_province_modifier = foreign_reformed_ministers }
+						}
+						set_province_flag = prospective_foreign_reformed_ministers
+					}
+				}
+			}
+			clr_country_flag = prospective_country_found
+		}
+	}
+	
+	option = {
+		name = "reformed_events.EVTOPTA3" # For the glory of God!
+		ai_chance = { factor = 50 }
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+		random_province = {
+			limit = {
+				has_province_flag = prospective_foreign_reformed_ministers
+			}
+			tooltip = {
+				add_province_modifier = {
+					name = foreign_reformed_ministers
+					duration = 1825
+				}
+				owner = {
+					add_opinion = {
+						who = ROOT
+						modifier = sent_reformed_ministers
+					}
+				}
+			}
+			hidden_effect = {
+				clr_province_flag = prospective_foreign_reformed_ministers
+				province_event = { id = reformed_events.4 days = 1 }
+			}
+		}
+	}
+	option = {
+		name = "reformed_events.EVTOPTB3" # Keep it within our borders
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0
+				has_estate = estate_church
+				NOT = {
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 40
+					}
+				}
+			}
+		}
+		add_fervor = -10
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -10
+			}
+		}
+		hidden_effect = {
+			random_province = {
+				limit = {
+					has_province_flag = prospective_foreign_reformed_ministers
+				}
+				clr_province_flag = prospective_foreign_reformed_ministers
+			}
+		}
+	}
+}
+
+# Foreign Ministers in ROOT
+province_event = {
+	id = reformed_events.4
+	title = "reformed_events.EVTNAME4"
+	desc = "reformed_events.EVTDESC4"
+	picture = STREET_SPEECH_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "reformed_events.EVTOPTA4" # Outrages!
+		add_province_modifier = {
+			name = foreign_reformed_ministers
+			duration = 1825
+		}
+		owner = {
+			add_opinion = {
+				who = FROM
+				modifier = sent_reformed_ministers
+			}
+		}
+	}
+}
+
+# Predestination
+country_event = {
+	id = reformed_events.5
+	title = "reformed_events.EVTNAME5"
+	desc = "reformed_events.EVTDESC5"
+	picture = HARBOUR_eventPicture
+	
+	trigger = {
+		religion = reformed
+		uses_fervor = yes
+		NOT = { has_country_flag = reformed_work_ethic }
+	}
+
+	mean_time_to_happen = {
+		months = 2000
+	}
+	
+	option = {
+		name = "reformed_events.EVTOPTA5" # Encourage these believes
+		ai_chance = { factor = 75 }
+		set_country_flag = reformed_work_ethic
+		add_dip_power = -100
+		add_country_modifier = {
+			name = reformed_work_ethic
+			duration = 9125
+		}
+	}
+	option = {
+		name = "reformed_events.EVTOPTB5" # Leave it be
+		ai_chance = { factor = 25 }
+		set_country_flag = reformed_work_ethic
+		add_fervor = -10
+	}
+}
+
+# Instruments in Church
+country_event = {
+	id = reformed_events.6
+	title = "reformed_events.EVTNAME6"
+	desc = "reformed_events.EVTDESC6"
+	picture = RELIGION_eventPicture
+	
+	trigger = {
+		religion = reformed
+		uses_fervor = yes
+		NOT = { has_country_flag = banned_musical_instruments_in_church }
+	}
+
+	mean_time_to_happen = {
+		months = 2000
+	}
+	
+	option = {
+		name = "reformed_events.EVTOPTA6" # Issue a ban
+		ai_chance = { factor = 75 }
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+		set_country_flag = banned_musical_instruments_in_church 
+		add_country_modifier = {
+			name = banned_musical_instruments_in_church
+			duration = 9125
+		}
+	}
+	option = {
+		name = "reformed_events.EVTOPTB6" # Ignore their opinions
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 0
+				has_estate = estate_church
+				NOT = {
+					estate_loyalty = {
+						estate = estate_church
+						loyalty = 40
+					}
+				}
+			}
+		}
+		set_country_flag = banned_musical_instruments_in_church 
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = -10
+			}
+		}
+		add_fervor = -10
+	}
+}
+
+# Iconoclastic Fury
+province_event = {
+	id = reformed_events.7
+	title = "reformed_events.EVTNAME7"
+	desc = "reformed_events.EVTDESC7"
+	picture = RELIGIOUS_TURMOIL_eventPicture
+	
+	trigger = {
+		owner = {
+			religion = reformed
+			current_age = age_of_reformation
+			capital_scope = {
+				continent = europe
+			}
+		}
+		religion = catholic
+		continent = europe
+		NOT = { has_province_flag = iconoclastic_fury }
+		NOT = { has_province_flag = stopped_iconoclastic_fury }
+	}
+
+	mean_time_to_happen = {
+		months = 2000
+		modifier = {
+			factor = 0.85
+			any_neighbor_province = {
+				owned_by = ROOT
+				has_province_flag = iconoclastic_fury
+			}
+		}
+		modifier = {
+			factor = 1.1
+			any_neighbor_province = {
+				owned_by = ROOT
+				has_province_flag = stopped_iconoclastic_fury
+			}
+		}
+	}
+	
+	option = {
+		name = "reformed_events.EVTOPTA7" # Send troops to stop it!
+		ai_chance = { factor = 50 }
+		set_province_flag = stopped_iconoclastic_fury
+		owner = {
+			add_fervor = -10
+			random_owned_province = {
+				limit = {
+					continent = europe
+					religion = reformed
+				}
+				add_unrest = 1
+			}
+		}
+	}
+	option = {
+		name = "reformed_events.EVTOPTB7" # Encourage it!
+		ai_chance = { factor = 50 }
+		set_province_flag = iconoclastic_fury
+		owner = {
+			add_fervor = 10
+		}
+		spawn_rebels = {
+			type = reformed_rebels
+			size = 2
+		}
+		add_province_modifier = {
+			name = religious_violence
+			duration = 7300
+		}
+	}
+}

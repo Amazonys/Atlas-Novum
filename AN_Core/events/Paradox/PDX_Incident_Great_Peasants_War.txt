@@ -1,0 +1,258 @@
+#### The Great Peasants' War ###
+### By Daniel Tolman ###
+
+namespace = great_peasant_war
+
+# Great Peasants' war
+country_event = {
+	id = great_peasant_war.1
+	title = great_peasant_war.1.t
+	desc = great_peasant_war.1.d
+	picture = ANGRY_MOB_eventPicture
+	
+	major = yes
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "Emperor"
+		current_age = age_of_reformation
+		hre_leagues_enabled = no
+		hre_religion_locked = no
+		hre_religion_treaty = no
+		hre_size = 1
+		is_part_of_hre = yes
+		is_religion_enabled = reformed
+	}
+	
+	mean_time_to_happen = {
+		months = 7300
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_global_flag = great_peasants_war_flag
+			1 = {
+				set_variable = {
+					which = GPW_counting_variable
+					value = 0
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = great_peasant_war.1.a
+		custom_tooltip = gpw_effects_tt
+	}
+}
+
+# Peasant Republic on rebel break event
+country_event = {
+	id = great_peasant_war.2
+	title = great_peasant_war.2.t
+	desc = great_peasant_war.2.d
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # become a peasant republic
+		trigger = {
+			NOT = { total_development = 100 }
+			is_emperor = no
+			is_lesser_in_union = no
+			NOT = { tag = PAP }
+		}
+		name = great_peasant_war.2.a
+		ai_chance = { factor = 100 }
+		# variable change is in effect of the reform
+		set_country_flag = great_peasants_war_peasant_republic # we need this for government potential
+		if = {
+			limit = {
+				NOT = { government = republic }
+			}
+			change_government_to_republic = yes
+		}
+		add_government_reform = peasants_republic
+		if = {
+			limit = {
+				is_elector = yes
+			}
+			elector = no
+		}
+	}
+	option = { # Grant massive concessions, same penalty as usual
+		name = great_peasant_war.2.b
+		ai_chance = { factor = 1 }
+		add_prestige = -50
+	}
+}
+
+# Incident ending the GPW
+country_event = {
+	id = great_peasant_war.3
+	title = incident_great_peasants_war
+	desc = great_peasant_war.3.d
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = { # Crush the peasants
+		name = great_peasant_war.3.a
+		trigger = { # cannot crush highly successful peasants
+			1 = {
+				NOT = {
+					check_variable = {
+						which = GPW_counting_variable
+						value = 15
+					}
+				}
+			}
+		}
+		clr_global_flag = great_peasants_war_flag
+		set_global_flag = condemned_peasant_republics # used in CB
+		custom_tooltip = gpw_cb_tt # see cb_change_government_great_peasants_war in 00_cb_types
+		if = {
+			limit = {
+				1 = {
+					check_variable = {
+						which = GPW_counting_variable
+						value = 10
+					}
+				}
+			}
+			custom_tooltip = gpw_noble_power_weak
+			set_global_flag = gpw_nobles_win_minor
+			# see Great Peasants' War Modifiers in 02_nobility.txt
+		}
+		else = {
+			custom_tooltip = gpw_noble_power_strong
+			set_global_flag = gpw_nobles_win_major
+			# see Great Peasants' War Modifiers in 02_nobility.txt
+		}
+	}
+	
+	option = { # Grant concessions
+		name = great_peasant_war.3.b
+		clr_global_flag = great_peasants_war_flag
+		if = {
+			limit = {
+				1 = {
+					check_variable = {
+						which = GPW_counting_variable
+						value = 10
+					}
+				}
+			}
+			custom_tooltip = gpw_peasant_power_strong
+			set_global_flag = gpw_peasants_win_major # breaking to peasant rebels will continue to fire the peasant republic event, see anti_tax.txt
+			# see Great Peasants' War Modifiers in 02_nobility.txt
+			hidden_effect = {
+				every_country = {
+					limit = {
+						is_part_of_hre = yes
+					}
+					take_estate_land_share_massive = { estate = estate_nobles }
+				}
+			}
+		}
+		else = {
+			custom_tooltip = gpw_peasant_power_weak
+			# see Great Peasants' War Modifiers in 02_nobility.txt
+			set_global_flag = gpw_peasants_win_minor
+			hidden_effect = {
+				every_country = {
+					limit = {
+						is_part_of_hre = yes
+					}
+					take_estate_land_share_large = { estate = estate_nobles }
+				}
+			}
+		}
+		custom_tooltip = gpw_concessions_triggered_modifier_tt	# great_peasants_war_concessions_triggered_modifier is enabled
+	}
+}
+
+# Event to end GPW if incident does not fire for whatever reason
+# Fallback, this is almost never supposed to happen
+country_event = {
+	id = great_peasant_war.4
+	title = great_peasant_war.4.t
+	desc = great_peasant_war.4.d
+	picture = ANGRY_MOB_eventPicture
+	
+	major = yes
+	fire_only_once = yes
+	
+	trigger = {
+		if = {
+			limit = {
+				hre_size = 1
+			}
+			is_emperor = yes
+		}
+		else = {
+			capital_scope = {
+				OR = {
+					region = north_german_region
+					region = south_german_region
+				}
+			}
+		}
+		had_global_flag = {
+			flag = great_peasants_war_flag
+			days = 7300
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 3
+	}
+	
+	immediate = {
+		hidden_effect = {
+			clr_global_flag = great_peasants_war_flag
+		}
+	}
+	
+	option = {
+		name = "great_peasant_war.4.a"
+		custom_tooltip = end_gpw_tt
+	}
+}
+
+# Event for the emperor to start the incident
+country_event = {
+	id = great_peasant_war.5
+	title = none
+	desc = none
+	picture = ANGRY_MOB_eventPicture
+	
+	fire_only_once = yes
+	hidden = yes
+	
+	trigger = {
+		ai = yes
+		NOT = { active_imperial_incident = any }
+		any_country = {
+			is_emperor = yes
+		}
+		had_global_flag = {
+			flag = great_peasants_war_flag
+			days = 5475
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 3
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_imperial_incident = incident_great_peasants_war
+		}
+	}
+	
+	option = {
+	}
+}

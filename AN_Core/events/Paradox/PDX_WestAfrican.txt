@@ -1,0 +1,1408 @@
+########################################
+# Events for West African nations
+#
+# written by Rufus Tronde
+########################################
+
+namespace = west_african
+
+# The Sultanate of [Country]
+country_event = {
+	id = west_african.1
+	title = "west_african.1.t"
+	desc = "west_african.1.d"
+	picture = TUAREG_OTTOMAN_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		government = tribal
+		NOT = { has_reform = steppe_horde }
+		NOT = { has_country_flag = sultanate_request_choice }
+		legitimacy = 90
+		stability = 3
+		OR = {
+			full_idea_group = economic_ideas
+			full_idea_group = innovativeness_ideas
+			full_idea_group = administrative_ideas
+		}
+		religion_group = muslim
+		151 = {
+			owned_by = TUR
+		}
+		TUR = {
+			religion_group = muslim
+			has_ruler_modifier = khalifah
+			NOT = { war_with = ROOT }
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 12
+	}
+
+	immediate = {
+		set_country_flag = sultanate_request_choice
+	}
+
+	# Seek support from Caliph
+	option = {
+		name = "west_african.1.a"
+		TUR = {
+			country_event = { id = west_african.2 days = 30 }
+		}
+	}
+
+	# Don't seek support
+	option = {
+		name = "west_african.1.b"
+		add_prestige = 15
+	}
+}
+
+# A Sultan in [From.GetName]
+country_event = {
+	id = west_african.2
+	title = "west_african.2.t"
+	desc = "west_african.2.d"
+	picture = TUAREG_OTTOMAN_eventPicture
+
+	is_triggered_only = yes
+
+	# Accept
+	option = {
+		name = "west_african.2.a"
+		FROM = {
+			country_event = { id = west_african.3 days = 30 }
+			add_opinion = {
+				who = ROOT
+				modifier = approved_sultanate
+			}
+		}
+		ai_chance = { 
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					has_opinion = { who = ROOT value = 0 }
+				}
+			}
+		}
+	}
+
+	# Decline
+	option = {
+		name = "west_african.2.b"
+		FROM = {
+			country_event = { id = west_african.4 days = 30 }
+			add_opinion = {
+				who = ROOT
+				modifier = did_not_approve_sultanate
+			}
+		}
+	}
+}
+
+# Caliph Approves of Sultanate
+country_event = {
+	id = west_african.3
+	title = "west_african.3.t"
+	desc = "west_african.3.d"
+	picture = TUAREG_OTTOMAN_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = { NOT = { has_reform = celestial_empire } }
+	
+	# 
+	option = {
+		name = "west_african.3.a"
+		if = {
+			limit = { government = tribal }
+			change_government_to_monarchy = yes
+			#set_legacy_government = despotic_monarchy
+		}
+		if = {
+			limit = {
+				religious_unity = 0.75
+				NOT = { religious_unity = 1.0 }
+			}
+			add_stability = -1
+		}
+		if = {
+			limit = {
+				religious_unity = 0.5
+				NOT = { religious_unity = 0.75 }
+			}
+			add_stability = -2
+		}
+		if = {
+			limit = {
+				religious_unity = 0.25
+				NOT = { religious_unity = 0.5 }
+			}
+			add_stability = -3
+		}
+		if = {
+			limit = {
+				religious_unity = 0.1
+				NOT = { religious_unity = 0.25 }
+			}
+			add_stability = -4
+		}
+		if = {
+			limit = {
+				NOT = { religious_unity = 0.1 }
+			}
+			add_stability = -5
+		}
+	}
+}
+
+# Caliph Disapproves of Sultanate
+country_event = {
+	id = west_african.4
+	title = "west_african.4.t"
+	desc = "west_african.4.d"
+	picture = TUAREG_OTTOMAN_eventPicture
+
+	is_triggered_only = yes
+
+	# 
+	option = {
+		name = "west_african.4.a"
+		add_prestige = -15
+	}
+}
+
+
+# People of the Desert
+province_event = {
+	id = west_african.5
+	title = "west_african.5.t"
+	desc = "west_african.5.d"
+	picture = CAMEL_PATROL_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		is_capital = no
+		owner = {
+			capital_scope = { has_climate = arid }
+			culture_group = sahelian
+			primary_culture = ROOT
+			is_tribal = yes
+		}
+		any_neighbor_province = {
+			culture = ROOT
+			owner = {
+				NOT = { accepted_culture = PREV }
+			}
+			has_climate = arid
+			NOT = { owned_by = ROOT }
+			NOT = { has_province_flag = desert_border_patrols }
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 2400
+	}
+
+	# Raid
+	option = {
+		name = "west_african.5.a"
+		owner = { add_treasury = 50 }
+		random_neighbor_province = {
+			limit = {
+				culture = ROOT
+				has_climate = arid
+				NOT = { owned_by = ROOT }
+			}
+			set_province_flag = raided_in_desert
+			owner = {
+				country_event = { id = west_african.6 days = 7 }
+				tooltip = {
+					add_casus_belli = {
+						target = ROOT
+						type = cb_insult
+						months = 12
+					}
+				}
+			}
+		}
+	}
+
+	# Don't raid
+	option = {
+		name = "west_african.5.b"
+		owner = { add_adm_power = 20 }
+	}
+}
+
+# Desert Raiders
+country_event = {
+	id = west_african.6
+	title = "west_african.6.t"
+	desc = "west_african.6.d"
+	picture = CAMEL_PATROL_eventPicture
+
+	is_triggered_only = yes
+
+	# 
+	option = {
+		name = "west_african.6.a"
+		add_treasury = -50
+		add_casus_belli = {
+			target = FROM
+			type = cb_insult
+			months = 24
+		}
+	}
+}
+
+# A Safer Border
+province_event = {
+	id = west_african.7
+	title = "west_african.7.t"
+	desc = "west_african.7.d"
+	picture = CAMEL_PATROL_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		has_province_flag = raided_in_desert
+		is_capital = no
+		any_neighbor_province = {
+			owner = { is_tribal = yes }
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 1200
+	}
+
+	# Send troops to patrol
+	option = {
+		name = "west_african.7.a"
+		owner = {
+			add_manpower = -1
+			add_treasury = -25
+		}
+		set_province_flag = desert_border_patrols
+		clr_province_flag = raided_in_desert
+	}
+
+	# Send ruler to patrol
+	option = {
+		name = "west_african.7.b"
+		trigger = {
+			owner = { has_regency = no }
+		}
+		owner = {
+			add_prestige = 15
+			add_adm_power = -25
+		}
+		set_province_flag = desert_border_patrols
+		clr_province_flag = raided_in_desert
+	}
+
+	# Don't patrol
+	option = {
+		name = "west_african.7.c"
+		add_local_autonomy = 20
+	}
+}
+
+# Wasteland to Some
+country_event = {
+	id = west_african.8
+	title = "west_african.8.t"
+	desc = "west_african.8.d"
+	picture = DESERT_CARAVAN_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		culture_group = sahelian
+		any_active_trade_node = {
+			has_merchant = PREV
+			NOT = {
+				has_trade_modifier = {
+					who = ROOT
+					key = desert_traders
+				}
+			}
+			any_trade_node_member_province = {
+				is_wasteland = yes
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 480
+	}
+
+	# Use caravan routes for trade
+	option = {
+		name = "west_african.8.a"
+		random_active_trade_node = {
+			limit = {
+				has_merchant = PREV
+				NOT = {
+					has_trade_modifier = {
+						who = ROOT
+						key = desert_traders
+					}
+				}
+				any_trade_node_member_province = {
+					is_wasteland = yes
+				}
+			}
+			add_trade_modifier = {
+				who = root
+				duration = 3650
+				power = 20
+				key = desert_traders
+			}
+		}
+	}
+
+	# Use desert as base for raids
+	option = {
+		name = "west_african.8.b"
+		add_treasury = 50
+		random_active_trade_node = {
+			limit = {
+				has_merchant = PREV
+				NOT = {
+					has_trade_modifier = {
+						who = ROOT
+						key = desert_traders
+					}
+				}
+				any_trade_node_member_province = {
+					is_wasteland = yes
+				}
+			}
+			every_trade_node_member_country = {
+				limit = { NOT = { tag = ROOT } }
+				add_opinion = {
+					who = ROOT
+					modifier = raided_in_wastelands
+				}
+			}
+		}
+	}
+}
+
+# Idolatry or Reverence?
+province_event = {
+	id = west_african.9
+	title = "west_african.9.t"
+	desc = "west_african.9.d"
+	picture = CHRISTIAN_ANIMIST_ALTAR_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		has_missionary = yes
+		religion = shamanism
+		owner = { religion_group = christian }
+		owner = { NOT = { has_country_modifier = animist_syncretism } }
+	}
+
+	mean_time_to_happen = {
+		months = 1200
+	}
+
+	# Their fate is pure
+	option = {
+		name = "west_african.9.a"
+		owner = {
+			add_country_modifier = {
+				name = "animist_syncretism"
+				duration = 7300
+			}
+		}
+	}
+
+	# Root out the heathens
+	option = {
+		name = "west_african.9.b"
+		add_province_modifier = {
+			name = "dogmatic_preacher"
+			duration = 3650
+		}
+	}
+}
+
+# God of the Sky
+country_event = {
+	id = west_african.10
+	title = "west_african.10.t"
+	desc = "west_african.10.d"
+	picture = CHRISTIAN_ANIMIST_ALTAR_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		religion = shamanism
+		any_neighbor_country = {
+			religion = catholic
+		}
+		NOT = { has_country_modifier = animist_syncretism }
+	}
+
+	mean_time_to_happen = {
+		months = 1200
+	}
+
+	# Reject syncretism
+	option = {
+		name = "west_african.10.a"
+		random_neighbor_country = {
+			limit = { religion = catholic }
+			add_opinion = {
+				who = ROOT
+				modifier = renounced_our_faith
+			}
+		}
+	}
+
+	# Embrace syncretism
+	option = {
+		name = "west_african.10.b"
+		add_country_modifier = {
+			name = "animist_syncretism"
+			duration = 7300
+		}
+		random_owned_province = {
+			limit = {
+				any_neighbor_province = {
+					owner = { religion = catholic }
+				}
+				religion = shamanism
+				NOT = { is_religious_center_province = yes }
+				NOT = { has_province_modifier = religious_center }
+			}
+			change_religion = catholic
+		}
+	}
+}
+
+# Tradition or Haram?
+province_event = {
+	id = west_african.11
+	title = "west_african.11.t"
+	desc = "west_african.11.d"
+	picture = MUSLIM_ANIMIST_ALTAR_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		has_missionary = yes
+		religion = shamanism
+		owner = { religion_group = muslim }
+		owner = { NOT = { has_country_modifier = animist_syncretism } }
+	}
+
+	mean_time_to_happen = {
+		months = 1200
+	}
+
+	# Respect their practices
+	option = {
+		name = "west_african.11.a"
+		owner = {
+			add_country_modifier = {
+				name = "animist_syncretism"
+				duration = 7300
+			}
+		}
+	}
+
+	# Reject their practices
+	option = {
+		name = "west_african.11.b"
+		add_province_modifier = {
+			name = "dogmatic_preacher"
+			duration = 3650
+		}
+	}
+}
+
+# Many Spirits, One God
+country_event = {
+	id = west_african.12
+	title = "west_african.12.t"
+	desc = "west_african.12.d"
+	picture = MUSLIM_ANIMIST_ALTAR_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		religion = shamanism
+		any_neighbor_country = {
+			religion = sunni
+		}
+		NOT = { has_country_modifier = animist_syncretism }
+	}
+
+	mean_time_to_happen = {
+		months = 800
+	}
+
+	# Embrace syncretism
+	option = {
+		name = "west_african.12.a"
+		random_neighbor_country = {
+			limit = { religion = sunni }
+			add_opinion = {
+				who = ROOT
+				modifier = renounced_our_faith
+			}
+		}
+	}
+
+	# Reject syncretism
+	option = {
+		name = "west_african.12.b"
+		add_country_modifier = {
+			name = "animist_syncretism"
+			duration = 7300
+		}
+		random_owned_province = {
+			limit = {
+				any_neighbor_province = {
+					owner = { religion = sunni }
+				}
+				religion = shamanism
+				NOT = { is_religious_center_province = yes }
+				NOT = { has_province_modifier = religious_center }
+			}
+			change_religion = sunni
+		}
+	}
+}
+
+# No Compromises in Faith
+country_event = {
+	id = west_african.13
+	title = "west_african.13.t"
+	desc = "west_african.13.d"
+	picture = MUSLIM_ANIMIST_DISPUTE_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		religion_group = muslim
+		NOT = { has_country_modifier = animist_syncretism }
+		num_of_religion = {
+			religion = shamanism
+			value = 0.3
+		}
+		any_owned_province = { religion = ROOT }
+		NOT = { has_idea_group = humanist_ideas }
+	}
+
+	mean_time_to_happen = {
+		months = 800
+	}
+
+	# Side with the faithful
+	option = {
+		name = "west_african.13.a"
+		random_owned_province = {
+			limit = { religion = shamanism }
+			spawn_rebels = {
+				type = religious_rebels
+				size = 2
+			}
+		}
+	}
+
+	# Protect the Animists
+	option = {
+		name = "west_african.13.b"
+		random_owned_province = {
+			limit = { religion = ROOT }
+			spawn_rebels = {
+				type = religious_rebels
+				size = 2
+			}
+		}
+	}
+
+	# Allow them to resolve it themselves
+	option = {
+		name = "west_african.13.c"
+		add_stability = -1
+	}
+
+	# Suggest a compromise
+	option = {
+		name = "west_african.13.e"
+		add_dip_power = -25
+		add_country_modifier = {
+			name = "animist_syncretism"
+			duration = 7300
+		}
+	}
+}
+
+# [Religion] Scholars
+country_event = {
+	id = west_african.14
+	title = "west_african.14.t"
+	desc = "west_african.14.d"
+	picture = SONGHAIR_SCHOLAR_WRITING_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		OR = {
+			culture_group = sahelian
+			culture_group = mande
+			culture_group = west_african
+		}
+		religion_group = muslim
+		has_idea_group = religious_ideas
+		advisor = theologian
+	}
+
+	mean_time_to_happen = {
+		months = 480
+	}
+
+	# 
+	option = {
+		name = "west_african.14.a"
+		add_adm_power = 40
+		add_prestige = 15
+	}
+}
+
+# The Flora of [Country]
+country_event = {
+	id = west_african.15
+	title = "west_african.15.t"
+	desc = "west_african.15.d"
+	picture = SONGHAIR_SCHOLAR_WRITING_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		capital_scope = {
+			OR = {
+				region = guinea_region
+				region = niger_region
+				region = south_africa_region
+				region = central_africa_region
+				region = kongo_region
+			}
+		}
+		has_idea_group = innovativeness_ideas
+		any_owned_province = {
+			has_climate = tropical
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 480
+	}
+
+	# 
+	option = {
+		name = "west_african.15.a"
+		add_adm_power = 40
+		add_prestige = 15
+		set_country_flag = tropical_botany
+	}
+}
+
+# The Weapons of our Neighbors
+country_event = {
+	id = west_african.16
+	title = "west_african.16.t"
+	desc = "west_african.16.d"
+	picture = BENIN_TRADING_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		technology_group = sub_saharan
+		NOT = { mil_tech = 12 }
+		any_neighbor_country = {
+			technology_group = western
+			mil_tech = 12
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 480
+	}
+
+	# Buy firearms
+	option = {
+		name = "west_african.16.a"
+		add_mil_power = 75
+		add_country_modifier = {
+			name = "buying_firearms_from_neighbor"
+			duration = 3650
+		}
+	}
+
+	# Don't buy firearms
+	option = {
+		name = "west_african.16.b"
+		add_army_tradition = 5
+	}
+}
+
+# Transatlantic Slave Trade
+country_event = {
+	id = west_african.17
+	title = "west_african.17.t"
+	desc = "west_african.17.d"
+	picture = BENIN_TRADING_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		OR = {
+			culture_group = sahelian
+			culture_group = mande
+			culture_group = west_african
+			culture_group = african
+		}
+		NOT = { has_country_modifier = refused_slave_trade_with_europeans }
+		any_owned_province = {
+			trade_goods = slaves
+			NOT = { has_province_modifier = slave_trade_with_europeans }
+			any_trade_node_member_country = {
+				capital_scope = { continent = europe }
+				NOT = { has_country_modifier = the_abolish_slavery_act }
+			}
+		}
+		any_neighbor_country = {
+			capital_scope = { continent = europe }
+			NOT = { has_country_modifier = the_abolish_slavery_act }
+			any_owned_province = {
+				OR = {
+					continent = south_america
+					continent = north_america
+				}
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 600
+	}
+
+	# Refuse slave trade agreement
+	option = {
+		name = "west_african.17.a"
+		add_country_modifier = {
+			name = "refused_slave_trade_with_europeans"
+			duration = 7300
+		}
+		random_neighbor_country = {
+			limit = {
+				capital_scope = { continent = europe }
+				NOT = { has_country_modifier = the_abolish_slavery_act }
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = impeded_slave_trade
+			}
+		}
+	}
+
+	# Accept slave trade agreement
+	option = {
+		name = "west_african.17.b"
+		add_prestige = -10
+		every_owned_province = {
+			limit = { trade_goods = slaves }
+			add_province_modifier = {
+				name = "slave_trade_with_europeans"
+				duration = 7300
+			}
+		}
+	}
+
+	# Abolish slavery
+	option = {
+		name = "west_african.17.c"
+		trigger = {
+			has_idea_group = innovativeness_ideas
+			dip = 3
+		}
+		add_stability = -1
+		add_country_modifier = {
+			name = "the_abolish_slavery_act"
+			duration = -1
+		}
+		add_country_modifier = {
+			name = innovative_modifier
+			duration = 3650
+		}
+	}
+}
+
+
+# Once Nomads
+province_event = {
+	id = west_african.18
+	title = "west_african.18.t"
+	desc = "west_african.18.d"
+	picture = NOMAD_AFRICANS_TRAVELLING_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		culture_group = sahelian
+		local_autonomy = 10
+		base_tax = 2
+		any_neighbor_province = {
+			owned_by = ROOT
+			culture_group = sahelian
+		}
+		owner = {
+			is_at_war = no
+			has_advisor = yes
+		}
+	}
+
+	is_mtth_scaled_to_size = 1
+
+	mean_time_to_happen = {
+		months = 800
+	}
+
+	# Let them move
+	option = {
+		name = "west_african.18.a"
+		add_base_tax = -1
+		random_neighbor_province = {
+			limit = {
+				owned_by = ROOT
+				culture_group = sahelian
+			}
+			add_base_tax = 1
+			add_local_autonomy = 15
+		}
+	}
+
+	# Keep them where they are
+	option = {
+		name = "west_african.18.b"
+		add_local_autonomy = -5
+		owner = {
+			add_army_tradition = -10
+			add_adm_power = -10
+		}
+	}
+}
+
+# The Ashanti
+country_event = {
+	id = west_african.19
+	title = "west_african.19.t"
+	desc = "west_african.19.d"
+	picture = GOLDEN_STOOL_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		is_year = 1500
+		NOT = { exists = ASH }
+		any_owned_province = {
+			any_empty_neighbor_province = {
+				OR = {
+					province_id = 1138
+					province_id = 2257
+				}
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 240
+	}
+
+	# 
+	option = {
+		name = "west_african.19.a"
+		if = {
+			limit = {
+				1138 = { is_empty = yes }
+			}
+			1138 = {
+				add_core = ASH
+				cede_province = ASH
+			}
+		}
+		if = {
+			limit = {
+				2257 = { is_empty = yes }
+			}
+			2257 = {
+				add_core = ASH
+				cede_province = ASH
+			}
+		}
+		set_country_flag = met_ashanti
+		ASH = {
+			every_neighbor_country = {
+				limit = {
+					NOT = { has_country_flag = met_ashanti }
+				}
+				country_event = { id = west_african.19 days = 1 }
+			}
+			adopt_reform_progress = ROOT
+		}
+	}
+	option = {	#Tag switch to Ashanti
+		name = "west_african.19.b"
+		trigger = {
+			ai = no
+		}
+		if = {
+			limit = {
+				1138 = { is_empty = yes }
+			}
+			1138 = {
+				add_core = ASH
+				cede_province = ASH
+			}
+		}
+		if = {
+			limit = {
+				2257 = { is_empty = yes }
+			}
+			2257 = {
+				add_core = ASH
+				cede_province = ASH
+			}
+		}
+		set_country_flag = met_ashanti
+		ASH = {
+			every_neighbor_country = {
+				limit = {
+					NOT = { has_country_flag = met_ashanti }
+				}
+				country_event = { id = west_african.19 days = 1 }
+			}
+			adopt_reform_progress = ROOT
+		}
+		switch_tag = ASH
+	}
+}
+
+# The Golden Stool
+country_event = {
+	id = west_african.20
+	title = "west_african.20.t"
+	desc = "west_african.20.d"
+	picture = GOLDEN_STOOL_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		has_dlc = "Art of War"
+		any_neighbor_country = {
+			tag = ASH
+		}
+		is_year = 1670
+		capital_scope = { continent = europe }
+		advisor = colonial_governor
+	}
+
+	mean_time_to_happen = {
+		months = 800
+	}
+
+	# Support governor's demand
+	option = {
+		name = "west_african.20.a"
+		custom_tooltip = "west_african.20.a.tt"
+		hidden_effect = {
+			ASH = {
+				country_event = { id = west_african.21 days = 7 }
+			}
+		}
+	}
+
+	# Fire the governor
+	option = {
+		name = "west_african.20.b"
+		remove_advisor = colonial_governor
+	}
+}
+
+
+# War of the Golden Stool
+country_event = {
+	id = west_african.21
+	title = "west_african.21.t"
+	desc = "west_african.21.d"
+	picture = GOLDEN_STOOL_eventPicture
+
+	is_triggered_only = yes
+
+	# Go to war
+	option = {
+		name = "west_african.21.a"
+		ai_chance = { factor = 75 }
+		
+		add_casus_belli = {
+			target = FROM
+			type = cb_insult
+			months = 24
+		}
+	}
+	# Give up the Golden Stool
+	option = {
+		name = "west_african.21.b"
+		ai_chance = { factor = 25 }
+		add_prestige = -10
+	}
+}
+
+
+# Self-rule for the [Culture]
+province_event = {
+	id = west_african.22
+	title = "west_african.22.t"
+	desc = "west_african.22.d"
+	picture = AFRICAN_KING_MEDIATING_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		is_capital = no
+		owner = {
+			is_tribal = yes
+			NOT = { accepted_culture = ROOT }
+			capital_scope = {
+				OR = {
+					region = guinea_region
+					region = niger_region
+					region = south_africa_region
+					region = central_africa_region
+					region = kongo_region
+				}
+			}
+		}
+	}
+
+	is_mtth_scaled_to_size = 1
+
+	mean_time_to_happen = {
+		months = 800
+	}
+
+	# Let tribes rule themselves
+	option = {
+		name = "west_african.22.a"
+		owner = {
+			add_stability_or_adm_power = yes
+			every_owned_province = {
+				limit = { culture = ROOT }
+				add_local_autonomy = 15
+			}
+		}
+	}
+
+	# Retain control
+	option = {
+		name = "west_african.22.b"
+		create_revolt = 3
+	}
+}
+
+# Raids Through the Jungle
+country_event = {
+	id = west_african.23
+	title = "west_african.23.t"
+	desc = "west_african.23.d"
+	picture = MOSSI_CAVALRY_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		capital_scope = { has_climate = tropical }
+		is_at_war = yes
+		num_of_cavalry = 1
+		manpower = 1
+		any_neighbor_country = {
+			war_with = ROOT
+			any_owned_province = {
+				controlled_by = owner
+				has_terrain = jungle
+				fort_level = 1
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 200
+	}
+
+	# Send out a cavalry party to raid
+	option = {
+		name = "west_african.23.a"
+		random_province = {
+			limit = {
+				owner = { war_with = ROOT }
+				owner = { is_neighbor_of = ROOT }
+				controlled_by = owner
+				has_terrain = jungle
+				fort_level = 1
+			}
+			add_province_modifier = {
+				name = "raided_by_cavalry"
+				duration = 730
+			}
+		}
+		add_treasury = 10
+		add_manpower = -1
+	}
+
+	# Let them support the miltiary in other ways
+	option = {
+		name = "west_african.23.b"
+		add_mil_power = 15
+	}
+}
+
+# Into the Unknown
+country_event = {
+	id = west_african.24
+	title = "west_african.24.t"
+	desc = "west_african.24.d"
+	picture = AFRICAN_EXPLORING_JUNGLE_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		capital_scope = { has_climate = tropical }
+		is_tribal = yes
+		NOT = { num_of_colonies = 1 }
+		any_owned_province = {
+			any_empty_neighbor_province = {
+				has_climate = tropical
+			}
+		}
+		manpower = 3
+		monthly_income = 5
+		NOT = { num_of_loans = 5 }
+		OR = {
+			years_of_income = 1
+			is_in_deficit = no
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 1200
+	}
+
+	# Send a party to explore
+	option = {
+		name = "west_african.24.a"
+		add_manpower = -3
+		random_owned_province = {
+			limit = {
+				any_empty_neighbor_province = {
+					has_climate = tropical
+				}
+			}
+			random_empty_neighbor_province = {
+				limit = { has_climate = tropical }
+				create_colony = 300
+				add_province_modifier = {
+					name = "used_to_tropical"
+					duration = -1
+				}
+			}
+		}
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 0
+				OR = {
+					is_in_deficit = yes
+					num_of_loans = 1
+					NOT = { monthly_income = 10 }
+				}
+			}
+		}
+	}
+
+	# Tell them to stay here
+	option = {
+		name = "west_african.24.b"
+		add_prestige = -10
+		add_adm_power = 20
+	}
+}
+
+# New Dyes
+country_event = {
+	id = west_african.25
+	title = "west_african.25.t"
+	desc = "west_african.25.d"
+	picture = AFRICAN_EXPLORING_JUNGLE_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		has_country_flag = tropical_botany
+		any_owned_province = { trade_goods = dyes }
+	}
+
+	mean_time_to_happen = {
+		months = 400
+	}
+
+	# Terrible, terrible pun
+	option = {
+		name = "west_african.25.a"
+		every_owned_province = {
+			limit = { trade_goods = dyes }
+			add_province_modifier = {
+				name = "new_dyeing_methods"
+				duration = 3650
+			}
+		}
+		clr_country_flag = tropical_botany
+	}
+}
+
+# The Spirits Remain
+country_event = {
+	id = west_african.26
+	title = "west_african.26.t"
+	desc = "west_african.26.d"
+	picture = ANIMIST_RELIGIOUS_CEREMONY_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		religion = shamanism
+		is_year = 1650
+		any_owned_province = {
+			NOT = { religion_group = pagan }
+		}
+		any_neighbor_country = {
+			NOT = { religion_group = pagan }
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 960
+	}
+
+	# Have a countrywide animist celebration
+	option = {
+		name = "west_african.26.a"
+		add_prestige = 10
+		add_legitimacy = 10
+		every_neighbor_country = {
+			limit = {
+				NOT = { religion_group = pagan }
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = practiced_animist_rituals
+			}
+		}
+	}
+
+	# Keep worship low-key
+	option = {
+		name = "west_african.26.b"
+		add_prestige = -10
+	}
+}
+
+# Immortal [Ruler]
+country_event = {
+	id = west_african.27
+	title = "west_african.27.t"
+	desc = "west_african.27.d"
+	picture = AFRICAN_ARTWORK_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		has_regency = no
+		OR = {
+			culture_group = sahelian
+			culture_group = mande
+			culture_group = west_african
+		}
+		government = monarchy
+		is_lesser_in_union = no
+		stability = 1
+	}
+
+	mean_time_to_happen = {
+		months = 960
+	}
+
+	# Terracotta
+	option = {
+		name = "west_african.27.a"
+		add_years_of_income = -0.1
+		add_prestige = 5
+		add_legitimacy = 5
+	}
+
+	# Bronze
+	option = {
+		name = "west_african.27.b"
+		add_years_of_income = -0.2
+		add_prestige = 10
+		add_legitimacy = 5
+	}
+
+	# Ivory
+	option = {
+		name = "west_african.27.c"
+		trigger = {
+			any_owned_province = { trade_goods = ivory }
+		}
+		add_years_of_income = -0.3
+		add_prestige = 15
+		add_legitimacy = 10
+	}
+
+	# Gold
+	option = {
+		name = "west_african.27.e"
+		trigger = {
+			any_owned_province = { trade_goods = gold }
+		}
+		add_years_of_income = -0.4
+		add_prestige = 20
+		add_legitimacy = 10
+	}
+
+	# Refuse
+	option = {
+		name = "west_african.27.f"
+		add_prestige = -10
+		add_legitimacy = -10
+	}
+}
+
+# Guns of the [Culture]
+country_event = {
+	id = west_african.28
+	title = "west_african.28.t"
+	desc = "west_african.28.d"
+	picture = ANSHANTI_FIREARMS_eventPicture
+
+	trigger = {
+		has_dlc = "Art of War"
+		is_at_war = yes
+		OR = {
+			culture_group = sahelian
+			culture_group = mande
+			culture_group = west_african
+		}
+		NOT = { mil_tech = 12 }
+	}
+
+	mean_time_to_happen = {
+		months = 400
+	}
+
+	# 
+	option = {
+		name = "west_african.28.a"
+		add_mil_power = 40
+	}
+}
