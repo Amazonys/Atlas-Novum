@@ -480,6 +480,49 @@ on_religion_change_estate_privileges_effect = {
 	}
 }
 
+on_secondary_religion_change_estate_privileges_effect = {
+	#For whatever unholy reason, the trigger owner = { secondary_religion = PREV } for every owned province does not work in this scripted effect
+	#Because of that this event workaround had to be made in order to update the religious cultures
+	country_event = {
+		id = passive_effects_events.10
+	}
+}
+
+on_harmonized_religion_estate_privileges_effect = {
+	if = {
+		limit = {
+			has_estate_privilege = estate_church_one_faith_one_culture
+		}
+		every_owned_province = {
+			limit = {
+				has_province_modifier = estate_church_united_faith_and_culture
+				NOT = { religion = ROOT }
+				owner = { NOT = { has_harmonized_with = PREV } }
+			}
+			remove_province_modifier = estate_church_united_faith_and_culture
+		}
+		every_owned_province = {
+			limit = {				
+				NOT = { has_province_modifier = estate_church_united_faith_and_culture }
+				owner = {
+					OR = {
+						religion = PREV
+						has_harmonized_with = PREV
+					}
+				}
+				OR = {
+					culture_group = ROOT
+					has_owner_accepted_culture = yes
+				}
+			}
+			add_province_modifier = {
+				name = estate_church_united_faith_and_culture
+				duration = -1
+			}
+		}
+	}
+}
+
 on_annexed_estate_privileges_effect = {
 	if = {
 		limit = {
@@ -1803,6 +1846,115 @@ on_bi_yearly_pulse_estate_privileges_effect = {
 			NOT = { has_any_active_estate_agenda = yes }
 		}
 		country_event = { id = estate_privileges_and_agendas_events.3 }
+	}
+}
+
+on_culture_promoted_estate_privileges_effect = {
+	if = {
+		limit = {
+			has_estate_privilege = estate_church_one_faith_one_culture
+		}
+		every_owned_province = {
+			limit = {
+				has_province_modifier = estate_church_false_culture
+				OR = {
+					culture_group = ROOT
+					has_owner_accepted_culture = yes
+				}
+			}
+			remove_province_modifier = estate_church_false_culture
+			if = {
+				limit = {
+					owner = {
+						OR = {
+							religion = PREV
+							has_harmonized_with = PREV
+							secondary_religion = PREV
+						}
+					}
+				}
+				add_province_modifier = {
+					name = estate_church_united_faith_and_culture
+					duration = -1
+				}
+			}
+		}
+	}
+}
+
+on_culture_demoted_estate_privileges_effect = {
+	if = {
+		limit = {
+			has_estate_privilege = estate_church_one_faith_one_culture
+		}
+		every_owned_province = {
+			limit = {
+				OR = {
+					NOT = { has_province_modifier = estate_church_false_culture }
+					has_province_modifier = estate_church_united_faith_and_culture
+				}
+				has_owner_accepted_culture = no
+				NOT = { culture_group = ROOT }
+			}
+			add_province_modifier = {
+				name = estate_church_false_culture
+				duration = -1
+			}
+			remove_province_modifier = estate_church_united_faith_and_culture
+		}
+	}
+}
+
+on_primary_culture_changed_privileges_effect = {
+	if = {
+		limit = {
+			has_estate_privilege = estate_church_one_faith_one_culture
+		}
+		every_owned_province = {
+			remove_province_modifier = estate_church_false_culture
+			remove_province_modifier = estate_church_united_faith_and_culture
+			if = {
+				limit = {
+					owner = {
+						OR = {
+							religion = PREV
+							has_harmonized_with = PREV
+							secondary_religion = PREV
+						}
+					}
+					OR = {
+						has_owner_accepted_culture = yes
+						culture_group = ROOT
+					}
+				}
+				add_province_modifier = {
+					name = estate_church_united_faith_and_culture
+					duration = -1
+				}
+			}
+			else_if = {
+				limit = {
+					has_province_modifier = estate_church_united_faith_and_culture
+				}
+				remove_province_modifier = estate_church_united_faith_and_culture
+			}
+			if = {
+				limit = {
+					NOT = { culture_group = ROOT }
+					has_owner_accepted_culture = no
+				}
+				add_province_modifier = {
+					name = estate_church_false_culture
+					duration = -1
+				}
+			}
+			else_if = {
+				limit = {
+					has_province_modifier = estate_church_false_culture
+				}
+				remove_province_modifier = estate_church_false_culture
+			}
+		}
 	}
 }
 
