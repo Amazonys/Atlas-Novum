@@ -17,7 +17,10 @@ country_event = {
 	trigger = {
 		has_country_flag = has_increased_religios_opinion
 		any_known_country = {
-			religion = ROOT
+			OR = {
+				ROOT = { has_harmonized_with = PREV }
+				religion = ROOT
+			}
 			NOT = {
 				has_opinion_modifier = {
 					who = ROOT
@@ -34,7 +37,10 @@ country_event = {
 	option = { 
 		every_known_country = {
 			limit = {
-				religion = ROOT
+				OR = {
+					ROOT = { has_harmonized_with = PREV }
+					religion = ROOT
+				}
 				NOT = {
 					has_opinion_modifier = {
 						who = ROOT
@@ -69,6 +75,7 @@ country_event = {
 	trigger = {
 		has_country_flag = has_increased_religios_opinion
 		any_known_country = {
+			ROOT = { NOT = { has_harmonized_with = PREV } }
 			NOT = { religion = ROOT }
 			has_opinion_modifier = {
 				who = ROOT
@@ -84,6 +91,7 @@ country_event = {
 	option = { 
 		every_known_country = {
 			limit = {
+				ROOT = { NOT = { has_harmonized_with = PREV } }
 				NOT = { religion = ROOT }
 				has_opinion_modifier = {
 					who = ROOT
@@ -209,7 +217,7 @@ country_event = {
 			}
 			reverse_add_opinion = {
 				who = ROOT
-				modifier = diplomatic_rabbi_opinion
+				modifier = diplomatic_rabbi_opinion_reverse
 			}
 		}
 		
@@ -229,7 +237,7 @@ country_event = {
 
 	trigger = {
 		NOT = { has_church_aspect = judaism_diplomatic_rabbi_aspect }
-		any_country = {
+		any_known_country = {
 			has_opinion_modifier = {
 				who = ROOT
 				modifier = diplomatic_rabbi_opinion
@@ -241,7 +249,7 @@ country_event = {
 		months = 1
 	}
 	
-	option = { 
+	option = {
 		every_country = {
 			limit = {
 				has_opinion_modifier = {
@@ -255,7 +263,7 @@ country_event = {
 			}
 			reverse_remove_opinion = {
 				who = ROOT
-				modifier = diplomatic_rabbi_opinion
+				modifier = diplomatic_rabbi_opinion_reverse
 			}
 		}
 		
@@ -380,6 +388,86 @@ country_event = {
 				has_siege = no
 			}
 			clr_province_flag = getting_retaken_by_owner
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Remove the unrest from seizure estate land
+province_event = {
+	id = passive_effects_events.9
+	title = none
+	desc = none
+	picture = none
+	hidden = yes
+
+	trigger = {
+		had_province_flag = {
+			flag = has_estate_unrest_flag
+			days = 3650
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 5
+	}
+
+	option = {
+		clr_province_flag = has_estate_unrest_flag
+		remove_named_unrest = estate_land_seized
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Add the province modifiers for secondary religion changes
+country_event = {
+	id = passive_effects_events.10
+	title = none
+	desc = none
+	picture = none
+	hidden = yes
+	is_triggered_only = yes
+
+	option = {
+		if = {
+			limit = {
+				OR = {
+					has_estate_privilege = estate_church_one_faith_one_culture
+					has_estate_privilege = estate_brahmins_one_faith_one_culture
+				}
+			}
+			every_owned_province = {
+				limit = {
+					has_province_modifier = estate_church_united_faith_and_culture
+					NOT = { religion = ROOT }
+				}
+				remove_province_modifier = estate_church_united_faith_and_culture
+			}
+			every_owned_province = {
+				limit = {				
+					NOT = { has_province_modifier = estate_church_united_faith_and_culture }
+					owner = {
+						OR = {
+							religion = PREV
+							secondary_religion = PREV
+						}
+					}
+					OR = {
+						culture_group = ROOT
+						has_owner_accepted_culture = yes
+					}
+				}
+				add_province_modifier = {
+					name = estate_church_united_faith_and_culture
+					duration = -1
+				}
+			}
 		}
 
 		ai_chance = {
@@ -617,6 +705,23 @@ country_event = {
 		event_target:converting_province = {
 			send_missionary = yes
 		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Event just created for the Chinese border disaster to not fall apart when the Great Mongol Empire forms
+province_event = {
+	id = passive_effects_events.13
+	title = none
+	desc = none
+	picture = none
+	hidden = yes
+	is_triggered_only = yes
+
+	option = {
+		clr_global_flag = is_forming_the_mongol_empire
 		ai_chance = {
 			factor = 1
 		}

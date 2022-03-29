@@ -4,7 +4,7 @@ interaction = {
 	cooldown_months = 60
 
     trigger = {
-        crown_land_share = 0.1
+        crown_land_share = 10
         NOT = { num_of_rebel_armies = 1 }
 		NOT = { num_of_rebel_controlled_provinces = 1 }
 		hidden_trigger = { has_any_estates = yes }
@@ -183,7 +183,34 @@ interaction = {
         }
     }
 	ai_will_do = {
-		factor = 0 # AI won't do agendas
+		# Only use if it will bring loyalty above 50 for all estates
+		# AI will most likely fail to complete the task
+		factor = 10
+		modifier = {
+			factor = 10
+			can_use_crown_land_interaction = seize_land
+			
+			estate_loyalty = {
+				estate = all
+				loyalty = 45.5
+			}
+			NOT = {
+				estate_loyalty = {
+					estate = all
+					loyalty = 50
+				}
+			}
+		}
+		modifier = {
+			factor = 0
+			NOT = {
+				estate_influence = {
+					estate = all
+					less_than = yes
+					influence = 90
+				}
+			}
+		}
 	}
 }
 
@@ -267,6 +294,7 @@ interaction = {
             loyalty = -20
             short = yes
         }
+		re_add_loyalty_from_seized_land = yes
 		custom_tooltip = seize_land_rebels_tt
 		if = {
 			limit = {
@@ -299,7 +327,64 @@ interaction = {
 		}
 	}
 	ai_will_do = {
-		factor = 25
+		factor = 50
+		modifier = {
+			factor = 0
+			# This check is needed to prevent collision with day-1 event theocracy.1
+			uses_devotion = yes
+			has_heir = no
+		}
+		modifier = {
+			factor = 0
+			# This is a hack for countries with enclaves that can be hard to get to, to kill the rebels
+			OR = {
+				tag = TEU
+				tag = COL
+				# Add more as necessary
+			}
+			NOT = {
+				estate_loyalty = {
+					estate = all
+					loyalty = 50
+				}
+			}
+		}
+		modifier = {
+			factor = 0.2
+			NOT = {
+				estate_loyalty = {
+					estate = all
+					loyalty = 50
+				}
+			}
+			NOT = {
+				army_size = 6
+			}
+		}
+		modifier = {
+			factor = 0.2
+
+			# This custom event target is set by code. If ai_will_do is higher when this is set (and >50) than when it isn't,
+			# the AI will raise maintenance and wait until the event target doesn't increase the ai_will_do score
+			NOT = { has_saved_event_target = ai_suppose_full_maintenance }
+
+			NOT = {
+				estate_loyalty = {
+					estate = all
+					loyalty = 50
+				}
+			}
+
+			OR = {
+				NOT = { land_maintenance = 0.9 }
+				num_mothballed_forts = 1
+				NOT = { all_regiments_morale_percent = 90 }
+				any_owned_province = {
+					fort_level = 1
+					NOT = { garrison = 400 }
+				}
+			}
+		}
 		modifier = {
 			factor = 0
 			crown_land_share = 30
@@ -321,18 +406,24 @@ interaction = {
 			}
 		}
 		modifier = {
-			factor = 0
+			factor = 0.5
 			crown_land_share = 30
+			NOT = {
+				estate_loyalty = {
+					estate = all
+					loyalty = 50
+				}
+			}
 			if = {
 				limit = { num_of_cities = 50 }
-				NOT = { army_size_percentage = 0.5 }
+				NOT = { army_size_percentage = 0.2 }
 			}
 			else_if = {
 				limit = { num_of_cities = 25 }
-				NOT = { army_size_percentage = 0.75 }
+				NOT = { army_size_percentage = 0.3 }
 			}
 			else = {
-				NOT = { army_size_percentage = 0.9 }
+				NOT = { army_size_percentage = 0.5 }
 			}
 			if = {
 				limit = { is_emperor = yes }
@@ -439,74 +530,11 @@ interaction = {
 			average_unrest = 3
 		}
 		modifier = {
-			factor = 0.5
-			has_country_flag = recent_land_seizure
-			NOT = {
-				had_country_flag = {
-					flag = recent_land_seizure
-					days = 5475
-				}
+			factor = 1.2
+			estate_loyalty = {
+				estate = all
+				loyalty = 50
 			}
-		}
-		modifier = {
-			factor = 0.75
-			has_country_flag = recent_land_seizure
-			NOT = {
-				had_country_flag = {
-					flag = recent_land_seizure
-					days = 10950
-				}
-			}
-		}
-		modifier = {
-			factor = 0.5
-			has_country_flag = recent_land_distribution
-			NOT = {
-				had_country_flag = {
-					flag = recent_land_distribution
-					days = 5475
-				}
-			}
-		}
-		modifier = {
-			factor = 0.5
-			NOT = {
-				estate_loyalty = {
-					estate = all
-					loyalty = 50
-				}
-			}
-		}
-		modifier = {
-			factor = 0.5
-			NOT = {
-				estate_loyalty = {
-					estate = all
-					loyalty = 40
-				}
-			}
-		}
-		modifier = {
-			factor = 0.5
-			NOT = {
-				estate_loyalty = {
-					estate = all
-					loyalty = 35 # Estate is almost disloyal
-				}
-			}
-		}
-		modifier = {
-			factor = 0
-			NOT = {
-				estate_loyalty = {
-					estate = all
-					loyalty = 30 # Estate is basically disloyal
-				}
-			}
-		}
-		modifier = {
-			factor = 0.75
-			NOT = { num_of_owned_areas = 2 }
 		}
 		modifier = {
 			factor = 10

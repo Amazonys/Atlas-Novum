@@ -169,7 +169,7 @@ country_event = {
 					}
 				}
 				change_government = monarchy
-				add_government_reform = autocracy_reform
+				add_government_reform = chinese_warlord
 				adopt_reform_progress = ROOT
 			}
 			if = {
@@ -198,6 +198,40 @@ country_event = {
 		name = ming_crisis.3.a
 		add_stability = -2
 		add_mandate = -10
+		CSH = {
+			define_ruler = {
+				name = "Zicheng"
+				dynasty = "Li"
+			}
+			add_yearly_manpower = 15
+			add_years_of_income = 15
+		}
+		if = {
+			limit = {
+				is_emperor_of_china = yes
+			}
+			CSH = {
+				declare_war_with_cb = {
+					who = root
+					casus_belli = cb_take_mandate
+				}
+			}
+		}
+		else = {
+			CSH = {
+				declare_war = root
+			}
+		}
+	}
+	
+	option = {
+		name = ming_crisis.3.b
+		trigger = {
+			ai = no
+		}
+		add_stability = -2
+		add_mandate = -10
+		switch_tag = CSH
 		CSH = {
 			define_ruler = {
 				name = "Zicheng"
@@ -327,7 +361,7 @@ country_event = {
 					}
 				}
 				change_government = monarchy
-				add_government_reform = autocracy_reform
+				add_government_reform = chinese_warlord
 				adopt_reform_progress = ROOT
 			}
 			if = {
@@ -362,6 +396,18 @@ country_event = {
 		name = ming_crisis.4.b
 		ai_chance = { factor = 0 }
 		add_mandate = 15
+		CDL = {
+			declare_war_with_cb = {
+				who = root
+				casus_belli = cb_independence_war
+			}
+		}
+	}
+	option = {
+		name = ming_crisis.4.c
+		trigger = { ai = no }
+		add_mandate = 15
+		switch_tag = CDL
 		CDL = {
 			declare_war_with_cb = {
 				who = root
@@ -442,7 +488,7 @@ country_event = {
 							}
 						}
 						change_government = monarchy
-						add_government_reform = autocracy_reform
+						add_government_reform = chinese_warlord
 						adopt_reform_progress = ROOT
 					}
 				}
@@ -485,7 +531,7 @@ country_event = {
 							}
 						}
 						change_government = monarchy
-						add_government_reform = autocracy_reform
+						add_government_reform = chinese_warlord
 						adopt_reform_progress = ROOT
 					}
 				}
@@ -564,6 +610,76 @@ country_event = {
 			}
 		}
 	}
+	option = {
+		name = ming_crisis.5.c
+		trigger = { ai = no }
+		ai_chance = { factor = 0 }
+		add_mandate = 15
+		switch_tag = YUE
+		if = {
+			limit = {
+				exists = YUE
+				YUE = {
+					is_subject_of = ROOT
+				}
+			}
+			YUE = {
+				declare_war_with_cb = {
+					who = root
+					casus_belli = cb_independence_war
+				}
+			}
+		}
+		if = {
+			limit = {
+				exists = WUU
+				WUU = {
+					is_subject_of = ROOT
+				}
+			}
+			WUU = {
+				declare_war_with_cb = {
+					who = root
+					casus_belli = cb_independence_war
+				}
+			}
+		}
+	}
+	option = {
+		name = ming_crisis.5.e
+		trigger = { ai = no }
+		ai_chance = { factor = 0 }
+		add_mandate = 15
+		switch_tag = WUU
+		if = {
+			limit = {
+				exists = YUE
+				YUE = {
+					is_subject_of = ROOT
+				}
+			}
+			YUE = {
+				declare_war_with_cb = {
+					who = root
+					casus_belli = cb_independence_war
+				}
+			}
+		}
+		if = {
+			limit = {
+				exists = WUU
+				WUU = {
+					is_subject_of = ROOT
+				}
+			}
+			WUU = {
+				declare_war_with_cb = {
+					who = root
+					casus_belli = cb_independence_war
+				}
+			}
+		}
+	}
 }
 
 # Peasants revolt in [area]
@@ -572,7 +688,7 @@ country_event = {
 	title = "ming_crisis.6.t"
 	desc = "ming_crisis.6.d"
 	picture = ANGRY_MOB_eventPicture
-	
+	goto = ming_disaster_rebel_province
 	is_triggered_only = yes
 	
 	trigger = {
@@ -831,3 +947,89 @@ country_event = {
 	}
 }
 	
+# Ming falls apart!
+country_event = {
+	id = ming_crisis.11
+	title = "ming_crisis.11.t"
+	desc = "ming_crisis.11.d"
+	picture = ANGRY_MOB_eventPicture
+	goto = ming_disaster_nationalist_province
+	is_triggered_only = yes
+	
+	trigger = {
+		any_owned_province = {
+			superregion = china_superregion
+			any_core_country = {
+				NOT = { tag = ROOT }
+				NOT = { tag = CSH }
+				NOT = { tag = WUU }
+				NOT = { tag = YUE }
+				exists = no
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_state = yes
+					superregion = china_superregion
+					any_core_country = {
+						NOT = { tag = ROOT }
+						NOT = { tag = CSH }
+						NOT = { tag = WUU }
+						NOT = { tag = YUE }
+						exists = no
+					}
+				}
+				save_event_target_as = ming_disaster_nationalist_province
+				random_core_country = {
+					limit = {
+						NOT = { tag = ROOT }
+						NOT = { tag = CSH }
+						NOT = { tag = WUU }
+						NOT = { tag = YUE }
+						exists = no
+					}
+					save_event_target_as = ming_disaster_new_tag
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = ming_crisis.11.a
+		ai_chance = { factor = 1 }
+		add_mandate = 5
+		event_target:ming_disaster_new_tag = {
+			event_target:ming_disaster_nationalist_province = {
+				spawn_rebels = {
+					type = nationalist_rebels
+					friend = PREV
+					size = 5
+				}
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	
+	option = {
+		name = ming_crisis.11.a
+		ai_chance = { factor = 1 }
+		add_mandate = -5
+		event_target:ming_disaster_nationalist_province = {
+			area = {
+				limit = {
+					owned_by = ROOT
+				}
+				add_local_autonomy = 10
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}

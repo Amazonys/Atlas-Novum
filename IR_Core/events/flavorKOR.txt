@@ -570,12 +570,26 @@ country_event = {
 		ai_chance = {
 			factor = 20
 		}
-		define_advisor = {
-			type = naval_reformer
-			name = "Yi Sun-sin"
-			culture = korean
-			skill = 2
-			discount = yes
+		if = {
+			limit = {
+				primary_culture = korean_new
+			}
+			define_advisor = {
+				type = naval_reformer
+				name = "Yi Sun-sin"
+				culture = korean_new
+				skill = 2
+				discount = yes
+			}
+		}
+		else = {
+			define_advisor = {
+				type = naval_reformer
+				name = "Yi Sun-sin"
+				culture = korean
+				skill = 2
+				discount = yes
+			}
 		}
 		
 	}
@@ -735,14 +749,20 @@ country_event = {
 			else_if = {
 				limit = {
 					any_owned_province = {
-						culture = korean
+						OR = {
+							culture = korean
+							culture = korean_new
+						}
 						NOT = { province_id = 2741 }
 						is_capital = no
 					}
 				}
 				random_owned_province = {
 					limit = {
-						culture = korean
+						OR = {
+							culture = korean
+							culture = korean_new
+						}
 						NOT = { province_id = 2741 }
 						is_capital = no
 					}
@@ -752,12 +772,18 @@ country_event = {
 			else_if = {
 				limit = {
 					any_owned_province = {
-						culture = korean
+						OR = {
+							culture = korean
+							culture = korean_new
+						}
 					}
 				}
 				random_owned_province = {
 					limit = {
-						culture = korean
+						OR = {
+							culture = korean
+							culture = korean_new
+						}
 					}
 					save_event_target_as = ImKkeokjeong_Revolt_Province
 				}
@@ -1624,7 +1650,6 @@ country_event = {
 	}
 }
 
-
 #Warning Event for Peasant Upheavals in Korea
 country_event = {
 	id = flavor_kor.12
@@ -1645,5 +1670,135 @@ country_event = {
 	option = {
 		name = flavor_kor.12.A
 		custom_tooltip = flavor_kor.12.tt
+	}
+}
+
+
+#Rise of the Manchu
+country_event = {
+	id = flavor_kor.13
+	title = flavor_kor.13.t
+	desc = flavor_kor.13.d
+	picture = HORDE_ON_HORSEBACK_eventPicture
+	fire_only_once = yes
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		OR = {
+			tag = MCH
+			overlord_of = ROOT
+		}
+	}
+
+	option = { #Our current overlord will protect us!
+		name = flavor_kor.13.a
+		overlord = {
+			add_trust = {
+				who = ROOT
+				value = 15
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	option = { #Side with the new Manchu Overlord
+		name = flavor_kor.13.b
+		if = {
+			limit = {
+				MCH = {
+					ai = no
+				}
+			}
+			MCH = {
+				country_event = {
+					id = flavor_kor.14
+				}
+			}
+		}
+		else = {
+			MCH = {
+				create_subject = {
+					subject_type = tributary_state
+					subject = ROOT
+				}
+				add_trust = {
+					who = ROOT
+					value = 50
+					mutual = yes
+				}
+				custom_tooltip = flavor_kor.14.a.tt
+				hidden_effect = {
+					korea_region = {
+						limit = {
+							owned_by = MCH
+						}
+						cede_province = KOR
+						add_core = KOR
+						remove_core = MCH
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = { #We are on our own!
+		name = flavor_kor.13.c
+		grant_independence = yes
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#Korea wants to become our tributary
+country_event = {
+	id = flavor_kor.14
+	title = flavor_kor.14.t
+	desc = flavor_kor.14.d
+	picture = DIPLOMACY_eventPicture
+	fire_only_once = yes
+	is_triggered_only = yes
+
+	option = { #They shall be our subject
+		name = flavor_kor.14.a
+		MCH = {
+			create_subject = {
+				subject_type = tributary_state
+				subject = KOR
+			}
+			add_trust = {
+				who = KOR
+				value = 50
+				mutual = yes
+			}
+			custom_tooltip = flavor_kor.14.a.tt
+			hidden_effect = {
+				korea_region = {
+					limit = {
+						owned_by = MCH
+					}
+					cede_province = KOR
+					add_core = KOR
+					remove_core = MCH
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = { #We don't need a tributary in our next expansion direction
+		name = flavor_kor.14.b
+		add_prestige = 5
+		ai_chance = {
+			factor = 0
+		}
 	}
 }
