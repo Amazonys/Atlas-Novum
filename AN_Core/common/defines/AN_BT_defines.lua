@@ -1,4 +1,4 @@
- -- IR + BT defines
+ -- AN + BT defines
  -- DO NOT CHANGE OR REPLACE WITHOUT PERMISSION PLEASE
   -- NGame changes
 -- NDefines.NGame.START_DATE = "1291.5.18" --from 1444.11.11 - per Draiocht's 1291
@@ -65,7 +65,23 @@ NDefines.NDiplomacy.PEACE_COST_PILLAGE_CAPITAL = 2 -- from 1
 NDefines.NDiplomacy.PEACE_COST_DEMAND_NON_OCCUPIED_PROVINCE_MULT = 1.5
 NDefines.NDiplomacy.PEACE_COST_DEMAND_CAPITAL_MULT = 2
  --End of Peace Costs
-
+ -- threaten war
+NDefines.NDiplomacy.THREATEN_WAR_PRESTIGE = 5				--	was 10	-- Prestige lost due to complying with Threaten War.
+NDefines.NDiplomacy.THREATEN_WAR_TRUCE_YEARS = 5			--	idk if to lower or raise	-- Length of truce imposed by Threaten War.
+NDefines.NDiplomacy.THREATEN_WAR_ALLIANCE_OFFSET = 2		--	was 1.5	-- If relative alliance strength is above this threshold, start applying gradient.
+NDefines.NDiplomacy.THREATEN_WAR_ALLIANCE_GRADIENT = 25		-- was 20	-- Relative alliance strength to acceptance value, capped at +100.
+NDefines.NDiplomacy.THREATEN_WAR_COALITION_GRADIENT = -25	--	was -50	-- Relative coalition strength to acceptance value, capped at -1000.
+ -- alliances
+NDefines.NDiplomacy.BREAK_ALLIANCE_STRENGTH_OFFSET = 2		--	idk	-- If relative alliance strength is above this threshold, start applying gradient.
+NDefines.NDiplomacy.BREAK_ALLIANCE_STRENGTH_GRADIENT = 25	--	idk	-- Relative alliance strength to acceptance value, capped at +100.
+NDefines.NDiplomacy.BREAK_ALLIANCE_DISTANCE_FACTOR = -0.25	--	was -0.15, changed per Segus request	-- AI acceptance factor depending on distance.
+NDefines.NDiplomacy.BREAK_ALLIANCE_WAREXHAUST_FACTOR = 2	--	idk	-- AI acceptance scoring depending on war exhaustion.
+NDefines.NDiplomacy.BREAK_ALLIANCE_DEBT_FACTOR = 0.5		--	idk	-- AI acceptance scoring depending on debt:income ratio.
+NDefines.NDiplomacy.BREAK_ALLIANCE_PENALTY_MONTHS = 240		--	was 120 -- Break Alliance causes resentment for this many months.
+NDefines.NDiplomacy.BREAK_ALLIANCE_PENALTY_SCALER = -0.75	--	was -0.85, slightly less	-- Break Alliance resentment is scaled by this value but is capped at -100.
+NDefines.NDiplomacy.BREAK_ALLIANCE_DIPLOREP_FACTOR = 3		-- idk		-- AI acceptance factor per diplomatic reputation
+NDefines.NDiplomacy.AE_COALITION_THRESHOLD = -50			-- considering a rebalance of AE to -100 = coalition		-- Coalitions can form below this amount of AE opinion
+	
  --Empire of China
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.03			-- from 0p06
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_DEVASTATION = -2.5			-- from -5p0
@@ -322,6 +338,11 @@ NDefines.NAI.PEACE_TERMS_PILLAGE_CAPITAL_MULT = 1.0 -- from 2
  -- abandon union
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_BASE_FACTOR = 10 --  was 60     AI scoring to abandoning Personal Union (given high enough LD and strength).
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 5 --  was 2.5      Threshold in relative strength for AI to give up on Personal Union.
+ -- distance 
+NDefines.NAI.DIPLOMATIC_INTEREST_DISTANCE = 100 -- was 150
+
+ --- govt cap
+NDefines.NAI.GOVERNING_CAPACITY_OVER_PERCENTAGE_TOLERATED = 0.25 -- was 0.5 - AN overcap is awful, halving
 	
  --NGraphics changes
 NDefines.NGraphics.CITY_SPRAWL_AMOUNT = 1.0			-- from 3p0
