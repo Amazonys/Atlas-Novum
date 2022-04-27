@@ -221,6 +221,8 @@ NDefines.NEconomy.GOLD_MINE_DEPLETION_THRESHOLD = 5				-- Gold mines above produ
 NDefines.NEconomy.GOLD_MINE_DEPLETION_CHANCE = 0.5					-- Chance of gold mine being depleted (yearly, per production above threshold) 
 NDefines.NEconomy.GOLD_MINE_SIZE_PRIMITIVES = 20
 NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided by this factor, do not set to zero!
+ -- Loans
+NDefines.NEconomy.BASE_INTERESTS = 5.0 -- was 4.0
  --Monopoly bonus
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
  --Necessary
