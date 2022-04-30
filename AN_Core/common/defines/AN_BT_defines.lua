@@ -214,7 +214,10 @@ NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 1 -- Affects chance of de
 NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.005 -- Minimum chance of increasing development for colonists promoting Settlement Growth
 NDefines.NCountry.SETTLEMENT_GROWTH_CHECK_INTERVAL = 365 -- Interval in days between checks for random development increase when working in Settlement Growth.
 
-
+ --CONCETRATE DEV
+NDefines.NCountry.CONCENTRATE_DEVELOPMENT_COOLDOWN_DURATION = 9999 --
+NDefines.NCountry.CONCENTRATE_DEVELOPMENT_DEVELOPMENT_DECREASE = 1 --
+	
  --NEconomy
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
 NDefines.NEconomy.GOLD_MINE_DEPLETION_THRESHOLD = 5				-- Gold mines above production level or above can be depleted
@@ -245,9 +248,24 @@ NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.2			-- from 0p25
 NDefines.NMilitary.FORTRESS_COST = 0.1			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
-NDefines.NMilitary.GARRISON_SIZE = 1000							-- GARRISON_SIZE
-NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 2	
+NDefines.NMilitary.GARRISON_SIZE = 500		-- from 1000		-- GARRISON_SIZE
+NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 4 -- from 3, to 2, to 4	
 NDefines.NMilitary.MIN_MONTHLY_MANPOWER = 0.25
+
+--NDefines.NMilitary.MAX_BREACH = 3
+NDefines.NMilitary.SIEGE_GARRISON_SURRENDER = 50			-- from 100		-- A siege ends when there is less than 100 defenders left.
+NDefines.NMilitary.ASSAULT_WIDTH_LIMIT = 5					-- how many times the garrison size that can effectively assault at the same time.
+--NDefines.NMilitary.ASSAULT_ATTACKER_LOSS = 1.0 					-- MDEF_ASSAULT_ATTACKER_LOSS = 10,
+NDefines.NMilitary.ASSAULT_DEFENDER_LOSS = 0.1 -- 0.05					-- _MDEF_ASSAULT_DEFENDER_LOSS = 10,
+NDefines.NMilitary.ASSAULT_DICE_MODIFIER = 5 	
+
+--NDefines.NMilitary.SIEGE_ATTRITION = 1
+NDefines.NMilitary.SIEGE_DISEASE_IMPACT = 0.1 -- from 0.05
+
+NDefines.NMilitary.SIEGE_BONUS_SUPPLIES_SHORTAGE = 1 -- form 1
+NDefines.NMilitary.SIEGE_BONUS_FOOD_SHORTAGE = 2 -- from 2
+NDefines.NMilitary.SIEGE_BONUS_WATER_SHORTAGE = 3 -- from 3
+NDefines.NMilitary.SIEGE_BONUS_DEFENDERS_DESERT = 2 -- from 2
  -- Devastation
 NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 100			-- from 5     I dont actually know how this works     Might have it reversed better check later
 NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -6
@@ -343,6 +361,8 @@ NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 5 --  was 2.5 
  -- distance 
 NDefines.NAI.DIPLOMATIC_INTEREST_DISTANCE = 100 -- was 150
 
+ -- concentrate dev
+NDefines.NAI.MIN_SCORE_TO_CONCENTRATE_DEVELOPMENT = 9999999 -- from 1.5
  --- govt cap
 NDefines.NAI.GOVERNING_CAPACITY_OVER_PERCENTAGE_TOLERATED = 0.25 -- was 0.5 - AN overcap is awful, halving
 	
@@ -393,6 +413,19 @@ NDefines.NGovernment.GOVERNMENT_REFORM_CHANGE_PROGRESS_COST = 50.0
 NDefines.NGovernment.DICTATORSHIP_TO_MONARCHY_REFORM_PENALTY = 4
 NDefines.NGovernment.NATIVE_REFORM_REFORM_PENALTY = 2
 NDefines.NGovernment.EXPAND_ADMIN_COST = 20.0
+
+
+--NDefines.NGovernment.GOVERNMENT_REFORM_COST_CENTRALIZE_STATE = 50.0
+NDefines.NGovernment.CENTRALIZE_STATE_ADM_COST = 100 -- from 50
+--NDefines.NGovernment.EXPAND_INFRASTRUCTURE_ADM_COST = 50
+--NDefines.NGovernment.CENTRALIZE_STATE_STATE_COST_LIMIT = 10.0
+--NDefines.NGovernment.CENTRALIZE_STATE_REDUCTION = 0.0
+NDefines.NGovernment.CENTRALIZE_STATE_YEARS = 10 -- from 5
+	
+NDefines.NGovernment.CONCENTRATE_DEVELOPMENT_CAPITAL_PROPORTION = 0 -- from 0.8
+NDefines.NGovernment.DEVASTATION_PER_DEV_STOLEN = 0 -- from 5
+NDefines.NGovernment.FREE_CONCENTRATE_DEVELOPMENT_CAPITAL_PROPORTION = 0 -- from 1
+NDefines.NGovernment.FREE_CONCENTRATE_DEVELOPMENT_OTHER_STATE_PROVINCES_PROPORTION = 0 -- from 0
 
 
  --NNationDesigner changes
