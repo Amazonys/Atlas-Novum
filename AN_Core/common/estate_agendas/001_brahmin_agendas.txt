@@ -1,0 +1,1443 @@
+
+#This one or the next one will always be valid
+estate_brahmins_hire_advisor = {
+	can_select = {
+		NOT = {
+			employed_advisor = {
+				category = ADM
+			}
+		}
+	}
+	selection_weight = {
+		factor = 1
+	}
+	task_requirements = {
+		employed_advisor = {
+			category = ADM
+		}
+		is_in_deficit = no
+	}
+    task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+    }
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+estate_brahmins_fire_advisor = {
+	can_select = {
+		employed_advisor = {
+			category = ADM
+		}
+	}
+	selection_weight = {
+		factor = 1
+		modifier = {
+			factor = 0.5
+			always = yes
+		}
+		modifier = {
+			factor = 0.5
+			employed_advisor = {
+				type = theologian
+				religion = hinduism
+			}
+		}
+		modifier = {
+			factor = 2
+			advisor = theologian
+			NOT = {
+				employed_advisor = {
+					type = theologian
+					religion = hinduism
+				}
+			}
+		}
+	}
+	immediate_effect = {
+		hidden_effect = {
+			set_country_flag = need_to_fire_adm_advisor
+		}
+	}
+	on_invalid = {
+		clr_country_flag = need_to_fire_adm_advisor
+	}
+	task_requirements = {
+		custom_trigger_tooltip = {
+			tooltip = fire_adm_advisor_tooltip
+			has_country_flag = just_fired_adm_advisor
+		}
+	}
+    task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		clr_country_flag = just_fired_adm_advisor
+		clr_country_flag = need_to_fire_adm_advisor
+	}
+	invalid_trigger = {
+		NOT = {
+			employed_advisor = {
+				category = ADM
+			}
+		}
+		NOT = { has_country_flag = just_fired_adm_advisor }
+	}
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+		clr_country_flag = need_to_fire_adm_advisor
+    }
+}
+
+#Convert a province
+estate_brahmins_convert_province_x = {
+	can_select = {
+		religion = hinduism
+		num_of_missionaries = 1
+		any_owned_province = {
+			is_state_core = root
+			NOT = { religion = root }
+			NOT = { has_province_modifier = religious_zeal_at_conv }
+			NOT = { has_province_modifier = expelled_minority }
+			NOT = { has_province_modifier = religious_migration }
+			NOT = { religion = secondary }
+			has_missionary = no
+			missionary_strength = 0.01
+		}
+	}
+	selection_weight = {
+		factor = 1
+		modifier = {
+			factor = 1.5
+			NOT = { religious_unity = 0.85 }
+		}
+		modifier = {
+			factor = 1.5
+			NOT = { religious_unity = 0.75 }
+		}
+		modifier = {
+			factor = 1.5
+			NOT = { religious_unity = 0.65 }
+		}
+		modifier = {
+			factor = 1.5
+			NOT = { religious_unity = 0.5 }
+		}
+		modifier = {
+			factor = 1.5
+			NOT = { religious_unity = 0.4 }
+		}
+		modifier = {
+			factor = 0.25
+			religion = confucianism
+		}
+		modifier = {
+			factor = 0.35
+			has_idea_group = humanist_ideas
+		}
+		modifier = {
+			factor = 2
+			has_idea_group = religious_ideas
+		}
+		modifier = {
+			factor = 0.75
+			NOT = { num_of_missionaries = 2 }
+		}
+		modifier = {
+			factor = 1.25
+			is_defender_of_faith = yes
+		}
+		modifier = {
+			factor = 0.35
+			has_country_modifier = recent_converted_province_mission_timer
+		}
+	}
+	pre_effect = {
+		random_owned_province = {
+			limit = {
+				is_state_core = root
+				NOT = { religion = root }
+				NOT = { has_province_modifier = religious_zeal_at_conv }
+				NOT = { has_province_modifier = expelled_minority }
+				NOT = { has_province_modifier = religious_migration }
+				NOT = { religion = secondary }
+				has_missionary = no
+			}
+			save_event_target_as = agenda_province
+		}
+		random_owned_province = {
+			limit = {
+				is_state_core = root
+				NOT = { religion = root }
+				NOT = { has_province_modifier = religious_zeal_at_conv }
+				NOT = { has_province_modifier = expelled_minority }
+				NOT = { has_province_modifier = religious_migration }
+				NOT = { religion = secondary }
+				has_missionary = no
+				development = 10
+			}
+			save_event_target_as = agenda_province
+		}
+	}
+	provinces_to_highlight = {
+		province_id = event_target:agenda_province
+	}
+	fail_if = {
+		event_target:agenda_province = {
+			NOT = { owned_by = root }
+		}
+	}
+	immediate_effect = {
+		event_target:agenda_province = {
+			add_province_modifier = {
+				name = agenda_conversion_zeal
+				duration = 7300
+			}
+		}
+	}
+	on_invalid = {
+		event_target:agenda_province = {
+			if = {
+				limit = { has_province_modifier = agenda_conversion_zeal }
+				remove_province_modifier = agenda_conversion_zeal
+			}
+		}
+	}
+	task_requirements = {
+		event_target:agenda_province = {
+			religion = root
+		}
+	}
+    task_completed_effect = {
+		hidden_effect = {
+			event_target:agenda_province = {
+				if = {
+					limit = { has_province_modifier = agenda_conversion_zeal }
+					remove_province_modifier = agenda_conversion_zeal
+				}
+			}
+			add_country_modifier = {
+				name = recent_converted_province_mission_timer
+				duration = 3650
+				hidden = yes
+			}
+		}
+		generate_scaled_advisor_of_type_and_religion_effect = {
+			type = inquisitor
+			religion = hinduism
+			discount = yes
+		}
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+    }
+    failing_effect = {
+		event_target:agenda_province = {
+			if = {
+				limit = { has_province_modifier = agenda_conversion_zeal }
+				remove_province_modifier = agenda_conversion_zeal
+			}
+		}
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+#Stop Converting a province
+estate_brahmins_stop_converting_province_x = {
+	can_select = {
+		NOT = { religion = hinduism }
+		num_of_missionaries = 1
+		any_owned_province = {
+			has_missionary = yes
+			religion = hinduism
+			missionary_strength = 0.01
+		}
+		is_free_or_tributary_trigger = yes
+	}
+	selection_weight = {
+		factor = 5
+	}
+	pre_effect = {
+		random_owned_province = {
+			limit = {
+				has_missionary = yes
+				religion = hinduism
+				missionary_strength = 0.01
+			}
+			save_event_target_as = agenda_province
+		}
+	}
+	provinces_to_highlight = {
+		province_id = event_target:agenda_province
+	}
+	fail_if = {
+		event_target:agenda_province = {
+			OR = {
+				NOT = { owned_by = root }
+				NOT = { religion = hinduism }
+			}
+		}
+	}
+	task_requirements = {
+		event_target:agenda_province = {
+			has_missionary = no
+			religion = hinduism
+		}
+	}
+    task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 15
+		}
+		event_target:agenda_province = {
+			add_province_modifier = {
+				name = agenda_hinduist_rallying
+				duration = 7300
+			}
+		}
+    }
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+#Reduce War Exhaustion
+estate_brahmins_reduce_war_exhaustion = {
+	can_select = {
+		war_exhaustion = 5
+		is_at_war = no
+		NOT = { has_country_modifier = national_recovery }
+	}
+	selection_weight = {
+		factor = 2
+		modifier = {
+			factor = 1.5
+			war_exhaustion = 7.5
+		}
+		modifier = {
+			factor = 1.5
+			war_exhaustion = 10
+		}
+	}
+	fail_if = {
+		is_at_war = yes
+	}
+	task_requirements = {
+		NOT = { war_exhaustion = 1 }
+	}
+    task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		add_country_modifier = {
+			name = national_recovery
+			duration = 5475
+		}
+    }
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+#Stabilise Country
+estate_brahmins_recover_stability = {
+	can_select = {
+		NOT = { stability = 0 }
+	}
+	selection_weight = {
+		factor = 2
+		modifier = {
+			factor = 1.5
+			NOT = { stability = -1 }
+		}
+	}
+	task_requirements = {
+		stability = 1
+	}
+    task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		add_prestige = 10
+    }
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+#Stabilise Country II
+estate_brahmins_increase_stability = {
+	can_select = {
+		NOT = { stability = 2 }
+		stability = 1
+	}
+	selection_weight = {
+		factor = 1
+	}
+	fail_if = {
+		NOT = { stability = 0 }
+	}
+	task_requirements = {
+		stability = 3
+	}
+    task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		add_prestige = 10
+    }
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+#Reduce overextension
+estate_brahmins_reduce_overextension = {
+	can_select = {
+		overextension_percentage = 0.50
+	}
+	selection_weight = {
+		factor = 2
+		modifier = {
+			factor = 1.5
+			overextension_percentage = 0.75
+		}
+		modifier = {
+			factor = 1.5
+			overextension_percentage = 1
+		}
+	}
+	provinces_to_highlight = {
+		owned_by = root
+		NOT = { is_core = root }
+	}
+	task_requirements = {
+		NOT = { overextension_percentage = 0.01 }
+	}
+    task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		add_adm_power = 50
+    }
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+#Restore devotion
+estate_brahmins_restore_devotion = {
+	can_select = {
+		NOT = { legitimacy_equivalent = 65 }
+		government = theocracy
+		religion = hinduism
+		has_dlc = "Common Sense"
+	}
+	selection_weight = {
+		factor = 2
+		modifier = {
+			factor = 1.5
+			NOT = { legitimacy_equivalent = 50 }
+		}
+		modifier = {
+			factor = 1.5
+			NOT = { legitimacy_equivalent = 35 }
+		}
+	}
+	fail_if = {
+		NOT = { government = theocracy }
+	}
+	task_requirements = {
+		legitimacy_equivalent = 90
+	}
+    task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		generate_scaled_advisor_of_type_and_religion_effect = {
+			type = theologian
+			religion = hinduism
+			discount = yes
+		}
+    }
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+
+#Crush Revolts (heretics)
+estate_brahmins_crush_religious_revolts = {
+	can_select = {
+		num_of_rebel_armies = 1
+		OR = {
+			has_spawned_rebels = heretic_rebels
+			has_spawned_rebels = lollard_rebels
+			has_spawned_rebels = sikhism_rebels
+			has_spawned_rebels = sunni_rebels
+			has_spawned_rebels = shiite_rebels
+			has_spawned_rebels = ibadi_rebels
+		}
+		religion = hinduism
+	}
+	selection_weight = {
+		factor = 2
+		modifier = {
+			factor = 2
+			num_of_rebel_controlled_provinces = 3
+		}
+		modifier = {
+			factor = 2
+			num_of_rebel_controlled_provinces = 5
+		}
+	}
+	provinces_to_highlight = {
+		owned_by = root
+		controlled_by = REB
+	}
+	fail_if = {
+		has_country_modifier = just_lost_to_rebels
+	}
+	task_requirements = {
+		NOT = { num_of_rebel_controlled_provinces = 1 }
+		NOT = { num_of_rebel_armies = 1 }
+		hidden_trigger = { NOT = { has_country_modifier = just_lost_to_rebels } }
+	}
+	task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 15
+		}
+	}
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+#Get allies
+estate_brahmins_get_allies = {
+	can_select = {
+		religion = hinduism
+		NOT = { num_of_allies = 3 }
+		NOT = { num_of_subjects = 3 }
+		is_at_war = no
+		num_of_free_diplomatic_relations = 1
+		NOT = { has_country_modifier = foreign_contacts }
+	}
+	selection_weight = {
+		factor = 1
+		modifier = {
+			factor = 2
+			NOT = { num_of_allies = 1 }
+			NOT = { num_of_subjects = 1 }
+		}
+	}
+	pre_effect = {
+		set_variable = {
+			which = estate_brahmins_get_allies_variable
+			value = 0
+		}
+		if = {
+			limit = {
+				OR = {
+					NOT = { num_of_allies = 1 }
+					AND = {
+						num_of_subjects = 2
+						NOT = { num_of_allies = 2 }
+					}
+					AND = {
+						NOT = { num_of_allies = 2 }
+						NOT = { num_of_free_diplomatic_relations = 2 }
+					}
+				}
+			}
+			set_variable = {
+				which = estate_brahmins_get_allies_variable
+				value = 1
+			}
+		}
+		else = {
+			set_variable = {
+				which = estate_brahmins_get_allies_variable
+				value = 2
+			}
+		}
+	}
+	fail_if = {
+		is_free_or_tributary_trigger = no
+	}
+	task_requirements = {
+		if = {
+			limit = {
+				check_variable = {
+					which = estate_brahmins_get_allies_variable
+					value = 2
+				}
+			}
+			num_of_allies = 3
+		}
+		else = {
+			num_of_allies = 2
+		}
+	}
+	task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		add_country_modifier = {
+			name = foreign_contacts
+			duration = 3650
+		}
+	}
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+
+#Befriend Rival of Rival
+estate_brahmins_befriend_rival_of_rival = {
+	can_select = {
+		religion = hinduism
+		any_rival_country = {
+			any_rival_country = {
+				religion = hinduism
+				NOT = { tag = root }
+				root = { knows_country = prev }
+				NOT = { is_rival = root }
+				NOT = { ROOT = { is_rival = prev } }
+				NOT = { alliance_with = root }
+				has_opinion = {
+					who = root
+					value = -50
+				}
+				NOT = {
+					has_opinion = {
+						who = root
+						value = 50
+					}
+				}
+			}
+		}
+	}
+	selection_weight = {
+		factor = 2
+		modifier = {
+			factor = 1.5
+			any_rival_country = {
+				army_size = root
+				any_rival_country = {
+					religion = hinduism
+					NOT = { tag = root }
+					root = { knows_country = prev }
+					NOT = { is_rival = root }
+					NOT = { ROOT = { is_rival = prev } }
+					NOT = { alliance_with = root }
+					has_opinion = {
+						who = root
+						value = -50
+					}
+					NOT = {
+						has_opinion = {
+							who = root
+							value = 50
+						}
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 0.5
+			NOT = { num_of_free_diplomatic_relations = 1 }
+		}
+	}
+	pre_effect = {
+		random_rival_country = {
+			limit = {
+				any_rival_country = {
+					religion = hinduism
+					NOT = { tag = root }
+					root = { knows_country = prev }
+					NOT = { is_rival = root }
+					NOT = { ROOT = { is_rival = prev } }
+					NOT = { alliance_with = root }
+					has_opinion = {
+						who = root
+						value = -50
+					}
+					NOT = {
+						has_opinion = {
+							who = root
+							value = 50
+						}
+					}
+				}
+			}
+			save_event_target_as = rival_country
+			random_rival_country = {
+				limit = {
+					religion = hinduism
+					NOT = { tag = root }
+					root = { knows_country = prev }
+					NOT = { is_rival = root }
+					NOT = { ROOT = { is_rival = prev } }
+					NOT = { alliance_with = root }
+					has_opinion = {
+						who = root
+						value = -50
+					}
+					NOT = {
+						has_opinion = {
+							who = root
+							value = 50
+						}
+					}
+				}
+				save_event_target_as = agenda_country
+			}
+		}
+		random_rival_country = {
+			limit = {
+				any_rival_country = {
+					religion = hinduism
+					NOT = { tag = root }
+					army_size = root
+					root = { knows_country = prev }
+					NOT = { is_rival = root }
+					NOT = { ROOT = { is_rival = prev } }
+					NOT = { alliance_with = root }
+					has_opinion = {
+						who = root
+						value = -50
+					}
+					NOT = {
+						has_opinion = {
+							who = root
+							value = 50
+						}
+					}
+				}
+			}
+			save_event_target_as = rival_country
+			random_rival_country = {
+				limit = {
+					religion = hinduism
+					NOT = { tag = root }
+					army_size = root
+					root = { knows_country = prev }
+					NOT = { is_rival = root }
+					NOT = { ROOT = { is_rival = prev } }
+					NOT = { alliance_with = root }
+					has_opinion = {
+						who = root
+						value = -50
+					}
+					NOT = {
+						has_opinion = {
+							who = root
+							value = 50
+						}
+					}
+				}
+				save_event_target_as = agenda_country
+			}
+		}
+	}
+	fail_if = {
+		event_target:agenda_country = {
+			OR = {
+				NOT = { num_of_cities = 1 }
+				war_with = root
+				NOT = { has_opinion = { who = root value = -100 } }
+			}
+		}
+	}
+	provinces_to_highlight = {
+		is_capital_of = event_target:agenda_country
+	}
+	task_requirements = {
+		event_target:agenda_country = {
+			has_opinion = {
+				who = root
+				value = 100
+			}
+		}
+	}
+	task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		generate_scaled_advisor_of_type_and_religion_effect = {
+			type = diplomat
+			religion = hinduism
+			discount = yes
+		}
+	}
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+#Improve Relations with X
+estate_brahmins_relations_with_X = {
+	can_select = {
+		any_known_country = {
+			NOT = { is_rival = root }
+			ROOT = { NOT = { is_rival = prev } }
+			OR = {
+				is_free_or_tributary_trigger = yes
+				is_subject_of = root
+			}
+			NOT = { war_with = root }
+			NOT = { has_opinion = { who = root value = 50 } }
+			has_opinion = { who = root value = -50 }
+			religion_group = root
+			NOT = {
+				any_owned_province = {
+					is_core = root
+				}
+			}
+			NOT = {
+				border_distance = {
+					who = root
+					distance = 200
+				}
+			}
+		}
+	}
+	selection_weight = {
+		factor = 1
+		modifier = {
+			factor = 1.5
+			any_known_country = {
+				OR = {
+					army_size = root
+					alliance_with = root
+				}
+				NOT = { is_rival = root }
+				ROOT = { NOT = { is_rival = prev } }
+				OR = {
+					is_free_or_tributary_trigger = yes
+					is_subject_of = root
+				}
+				NOT = { war_with = root }
+				NOT = { has_opinion = { who = root value = 50 } }
+				has_opinion = { who = root value = -50 }
+				religion_group = root
+				NOT = {
+					any_owned_province = {
+						is_core = root
+					}
+				}
+				NOT = {
+					border_distance = {
+						who = root
+						distance = 200
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 0.5
+			NOT = { num_of_free_diplomatic_relations = 1 }
+		}
+	}
+	fail_if = {
+		event_target:agenda_country = {
+			OR = {
+				NOT = { num_of_cities = 1 }
+				war_with = root
+				NOT = { has_opinion = { who = root value = -100 } }
+			}
+		}
+	}
+	pre_effect = {
+		set_variable = {
+			which = estate_brahmins_relations_with_X
+			value = 0
+		}
+		random_known_country = {
+			limit = {
+				NOT = { is_rival = root }
+				ROOT = { NOT = { is_rival = prev } }
+				OR = {
+					is_free_or_tributary_trigger = yes
+					is_subject_of = root
+				}
+				NOT = { war_with = root }
+				NOT = { has_opinion = { who = root value = 50 } }
+				has_opinion = { who = root value = -50 }
+				religion_group = root
+				NOT = {
+					any_owned_province = {
+						is_core = root
+					}
+				}
+				NOT = {
+					border_distance = {
+						who = root
+						distance = 200
+					}
+				}
+			}
+			save_event_target_as = agenda_country
+		}
+		random_known_country = {
+			limit = {
+				OR = {
+					army_size = root
+					alliance_with = root
+					religion = hinduism
+				}
+				NOT = { is_rival = root }
+				ROOT = { NOT = { is_rival = prev } }
+				OR = {
+					is_free_or_tributary_trigger = yes
+					is_subject_of = root
+				}
+				NOT = { war_with = root }
+				NOT = { has_opinion = { who = root value = 50 } }
+				has_opinion = { who = root value = -50 }
+				religion_group = root
+				NOT = {
+					any_owned_province = {
+						is_core = root
+					}
+				}
+				NOT = {
+					border_distance = {
+						who = root
+						distance = 200
+					}
+				}
+			}
+			save_event_target_as = agenda_country
+		}
+		if = {
+			limit = {
+				event_target:agenda_country = {
+					NOT = { has_opinion = { who = root value = 0 } }
+				}
+			}
+			set_variable = {
+				which = estate_brahmins_relations_with_X
+				value = 1
+			}
+		}
+		else = {
+			set_variable = {
+				which = estate_brahmins_relations_with_X
+				value = 2
+			}
+		}
+	}
+	provinces_to_highlight = {
+		is_capital_of = event_target:agenda_country
+	}
+	task_requirements = {
+		if = {
+			limit = {
+				check_variable = {
+					which = estate_brahmins_relations_with_X
+					value = 2
+				}
+			}
+			event_target:agenda_country = {
+				has_opinion = {
+					who = root
+					value = 100
+				}
+			}
+		}
+		else = {
+			event_target:agenda_country = {
+				has_opinion = {
+					who = root
+					value = 50
+				}
+			}
+		}
+	}
+	task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 15
+		}
+	}
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+
+
+#Get AE down (if there is a coalition) 
+estate_brahmins_break_coalition = {
+	can_select = {
+		religion = hinduism
+		any_country = {
+			coalition_target = root
+			has_opinion_modifier = {
+				who = root
+				modifier = aggressive_expansion
+			}
+			NOT = {
+				has_opinion_modifier = {
+					who = root
+					modifier = aggressive_expansion
+					value = -15
+				}
+			}
+		}
+		is_at_war = no
+	}
+	selection_weight = {
+		factor = 5
+		modifier = {
+			factor = 2
+			calc_true_if = {
+				amount = 5
+				all_country = {
+					coalition_target = root
+				}
+			}
+		}
+		modifier = {
+			factor = 0.5
+			NOT = {
+				any_country = {
+					coalition_target = root
+					army_size = root
+				}
+			}
+		}
+	}
+	provinces_to_highlight = {
+		is_capital = yes
+		owner = {
+			OR = {
+				coalition_target = root
+				AND = {
+					has_opinion_modifier = {
+						who = root
+						modifier = aggressive_expansion
+					}
+					NOT = {
+						has_opinion_modifier = {
+							who = root
+							modifier = aggressive_expansion
+							value = -15
+						}
+					}
+				}
+			}
+		}
+	}
+	fail_if = {
+		has_country_modifier = just_lost_war_timer
+	}
+	task_requirements = {
+		OR = {
+			custom_trigger_tooltip = {
+				tooltip = no_coalition_against_us_tooltip
+				NOT = {
+					any_country = {
+						coalition_target = root
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = no_one_has_15_ae_on_us_tooltip
+				NOT = {
+					any_country = {
+						has_opinion_modifier = {
+							who = root
+							modifier = aggressive_expansion
+						}
+						NOT = {
+							has_opinion_modifier = {
+								who = root
+								modifier = aggressive_expansion
+								value = -15
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		add_dip_power = 50
+	}
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+#Protect Brethren in X (religion)
+estate_brahmins_protect_brethren = {
+	can_select = {
+		religion = hinduism
+		is_free_or_tributary_trigger = yes
+		is_at_war = no
+		any_neighbor_country = {
+			NOT = { religion = root }
+		}
+		any_owned_province = {
+			any_neighbor_province = {
+				NOT = { owned_by = root }
+				is_city = yes
+				religion = root
+				has_discovered = root
+				owner = {
+					is_free_or_tributary_trigger = yes
+					NOT = { religion = root }
+					NOT = { religion = confucianism }
+					NOT = { is_subject_of = root }
+					NOT = { overlord_of = root }
+					NOT = { alliance_with = root }
+					NOT = { ROOT = { truce_with = prev } }
+					OR = {
+						is_part_of_hre = no
+						NOT = { hre_reform_passed = landfriede }
+						ROOT = { is_part_of_hre = no }
+					}
+				}
+				NOT = { religion = secondary }
+			}
+		}
+	}
+	selection_weight = {
+		factor = 2
+		modifier = {
+			factor = 2
+			has_idea_group = religious_ideas
+		}
+		modifier = {
+			factor = 0.25
+			any_country = {
+				coalition_target = root
+			}
+		}
+	}
+	pre_effect = {
+		random_owned_province = {
+			limit = {
+				any_neighbor_province = {
+					NOT = { owned_by = root }
+					is_city = yes
+					religion = root
+					has_discovered = root
+					owner = {
+						is_free_or_tributary_trigger = yes
+						NOT = { religion = root }
+						NOT = { religion = confucianism }
+						NOT = { is_subject_of = root }
+						NOT = { overlord_of = root }
+						NOT = { alliance_with = root }
+						NOT = { ROOT = { truce_with = prev } }
+						OR = {
+							is_part_of_hre = no
+							NOT = { hre_reform_passed = landfriede }
+							ROOT = { is_part_of_hre = no }
+						}
+					}
+					NOT = { religion = secondary }
+				}
+			}
+			random_neighbor_province = {
+				limit = {
+					NOT = { owned_by = root }
+					is_city = yes
+					religion = root
+					has_discovered = root
+					owner = {
+						is_free_or_tributary_trigger = yes
+						NOT = { religion = root }
+						NOT = { religion = confucianism }
+						NOT = { is_subject_of = root }
+						NOT = { overlord_of = root }
+						NOT = { alliance_with = root }
+						NOT = { ROOT = { truce_with = prev } }
+						OR = {
+							is_part_of_hre = no
+							NOT = { hre_reform_passed = landfriede }
+							ROOT = { is_part_of_hre = no }
+						}
+					}
+					NOT = { religion = secondary }
+				}
+				save_event_target_as = agenda_province
+				owner = { save_event_target_as = agenda_country }
+			}
+		}
+	}
+	immediate_effect = {
+		if = {
+			limit = {
+				event_target:agenda_province = {
+					OR = {
+						AND = {
+							NOT = { is_claim = root }
+							NOT = { is_core = root }
+						}
+						any_neighbor_province = {
+							owned_by = event_target:agenda_country
+							NOT = { is_claim = root }
+							NOT = { is_core = root }
+							religion = root
+						}
+					}
+				}
+			}
+			event_target:agenda_province = {
+				if = {
+					limit = {
+						NOT = { is_claim = root }
+						NOT = { is_core = root }
+					}
+					add_claim = root
+				}
+				every_neighbor_province = {
+					limit = {
+						owned_by = event_target:agenda_country
+						NOT = { is_claim = root }
+						NOT = { is_core = root }
+						religion = root
+					}
+					add_claim = root
+				}
+			}
+		}
+	}
+	on_invalid = {
+		event_target:agenda_province = {
+			if = {
+				limit = {
+					is_claim = root
+					NOT = { is_permanent_claim = root }
+				}
+				remove_claim = root
+			}
+			every_neighbor_province = {
+				if = {
+					limit = {
+						owned_by = event_target:agenda_country
+						is_claim = root
+						NOT = { is_permanent_claim = root }
+					}
+					remove_claim = root
+				}
+			}
+		}
+	}
+	provinces_to_highlight = {
+		province_id = event_target:agenda_province
+	}
+	task_requirements = {
+		event_target:agenda_province = {
+			custom_trigger_tooltip = {
+				tooltip = owned_by_country_of_root_religion
+				owner = {
+					religion = root
+				}
+			}
+			hidden_trigger = { religion = root }
+		}
+	}
+	fail_if = {
+		event_target:agenda_province = {
+			NOT = { religion = root }
+		}
+	}
+	task_completed_effect = {
+		if = {
+			limit = {
+				event_target:agenda_province = {
+					owned_by = root
+				}
+			}
+			event_target:agenda_province = {
+				add_nationalism = -5
+			}
+		}
+		else = {
+			custom_tooltip = estate_nobles_protect_our_culture_effect_tooltip
+		}
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 15
+		}
+	}
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+		event_target:agenda_province = {
+			if = {
+				limit = {
+					is_claim = root
+					NOT = { is_permanent_claim = root }
+				}
+				remove_claim = root
+			}
+			every_neighbor_province = {
+				if = {
+					limit = {
+						owned_by = event_target:agenda_country
+						is_claim = root
+						NOT = { is_permanent_claim = root }
+					}
+					remove_claim = root
+				}
+			}
+		}
+    }
+}
+
+
+#Restore legitimacy
+estate_brahmins_restore_legitimacy = {
+	can_select = {
+		NOT = { legitimacy_equivalent = 65 }
+		government = monarchy
+		NOT = { has_ruler_modifier = legitimacy_defended }
+	}
+	selection_weight = {
+		factor = 2
+		modifier = {
+			factor = 1.5
+			NOT = { legitimacy_equivalent = 50 }
+		}
+		modifier = {
+			factor = 1.5
+			NOT = { legitimacy_equivalent = 35 }
+		}
+	}
+	fail_if = {
+		OR = {
+			NOT = { government = monarchy }
+			has_regency = yes
+		}
+	}
+	task_requirements = {
+		legitimacy_equivalent = 90
+	}
+    task_completed_effect = {
+		add_estate_loyalty = {
+			estate = estate_brahmins
+			loyalty = 10
+		}
+		if = {
+			limit = {
+				has_reform = celestial_empire
+				has_dlc = "Mandate of Heaven"
+			}
+			add_prestige = 10
+		}
+		else = {
+			add_ruler_modifier = {
+				name = legitimacy_defended
+			}
+		}
+    }
+    failing_effect = {
+        add_estate_loyalty_modifier = {
+            estate = estate_brahmins
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
