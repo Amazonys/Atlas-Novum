@@ -29,4 +29,4 @@ tags={
 	"Graphics"
 }
 supported_version="1.33.*.*"
-path="C:/Users/Amyzonis/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/AN_Core"
+path="C:/Users/RJack/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/AN_Core"
