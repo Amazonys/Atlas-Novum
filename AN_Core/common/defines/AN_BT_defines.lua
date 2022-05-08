@@ -325,6 +325,10 @@ NDefines.NMilitary.LIGHT_SHIP_COST = 20							-- was 20
 NDefines.NMilitary.GALLEY_COST = 15							-- was, 10
 NDefines.NMilitary.TRANSPORT_COST = 10							-- _was 12
 
+NDefines.NMilitary.INFANTRY_COST = 10.0 							-- _MDEF_INFANTRY_COST = 10,
+NDefines.NMilitary.CAVALRY_COST = 20.0			-- was 25				-- _MDEF_CAVALRY_COST = 10,
+NDefines.NMilitary.ARTILLERY_COST = 30.0						-- _MDEF_ARTILLERY_COST = 10,
+
  --NAI changes
 NDefines.NAI.DEVELOPMENT_CAP_BASE = 100			-- from 10
 NDefines.NAI.DEVELOPMENT_CAP_MULT = 10 -- AI will not develop provinces that have more development than this or DEVELOPMENT_CAP_MULT*original development (whichever is bigger)
@@ -361,6 +365,7 @@ NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 5 --  was 2.5 
  -- distance 
 NDefines.NAI.DIPLOMATIC_INTEREST_DISTANCE = 100 -- was 150
 
+NDefines.FORCE_COMPOSITION_CHANGE_TECH_LEVEL = 19 -- was 11
  -- concentrate dev
 NDefines.NAI.MIN_SCORE_TO_CONCENTRATE_DEVELOPMENT = 9999999 -- from 1.5
  --- govt cap
