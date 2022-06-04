@@ -1,0 +1,151 @@
+country_decisions = {
+	indian_trade_company = {
+
+		potential = {
+			NOT = { tag = NED }
+			NOT = { has_country_modifier = hab_ostende_company }
+			NOT = { has_country_flag = trade_company }
+			NOT = {
+				capital_scope = {
+					continent = asia
+				}
+			}
+			NOT = {
+				capital_scope = {
+					continent = oceania
+				}
+			}
+			OR = {
+				japan_region = {
+					has_discovered = ROOT
+				}
+				burma_region = {
+					has_discovered = ROOT
+				}
+				west_india_region = {
+					has_discovered = ROOT
+				}
+				coromandel_region = {
+					has_discovered = ROOT
+				}
+				deccan_region = {
+					has_discovered = ROOT
+				}
+				bengal_region = {
+					has_discovered = ROOT
+				}
+				south_china_region = {
+					has_discovered = ROOT
+				}
+				north_china_region = {
+					has_discovered = ROOT
+				}
+			}
+			# to prevent overfeeding of provinces into conquer
+			OR = {
+				ai = no
+				AND = {
+					has_institution = global_trade
+					any_owned_province = {
+						OR = {
+							superregion = india_superregion
+							superregion = china_superregion
+							superregion = east_indies_superregion
+							region = japan_region
+						}
+						has_port = yes
+					}
+				}
+			}
+			num_of_ports = 2
+			NOT = {
+				has_country_modifier = portuguese_india_trade_co
+			}
+			NOT = {
+				has_country_modifier = scottish_india_trade_co
+			}
+		}
+
+		allow = {
+			has_institution = global_trade
+			custom_trigger_tooltip = {
+				tooltip = own_port_province_in_far_east_tooltip
+				any_owned_province = {
+					OR = {
+						superregion = india_superregion
+						superregion = china_superregion
+						superregion = east_indies_superregion
+						region = japan_region
+					}
+					has_port = yes
+				}
+			}
+		}
+
+		effect = {
+			set_country_flag = trade_company
+			add_treasury = 200
+			add_country_modifier = {
+				name = "india_trade_co"
+				duration = -1
+			}
+			hidden_effect = {
+				if = {
+					limit = {
+						OR = {
+							tag = ENG
+							tag = GBR
+						}
+					}
+					country_event = { id = flavor_eng.9145 days = 1 }
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	expel_foreign_traders = {
+		potential = {
+			any_owned_province = {
+				has_province_modifier = trade_company_factory
+			}
+		}
+
+		allow = {
+			has_institution = global_trade
+			is_at_war = no
+			is_free_or_tributary_trigger = yes
+			stability = 2
+		}
+
+		effect = {
+			every_owned_province = {
+				limit = { has_province_modifier = trade_company_factory }
+				remove_province_modifier = trade_company_factory
+			}
+			every_known_country = {
+				limit = {
+					has_institution = global_trade
+					provinces_on_capital_continent_of = ROOT
+					ROOT = {
+						NOT = { provinces_on_capital_continent_of = PREV }
+					}
+				}
+				add_casus_belli = {
+					target = ROOT
+					type = cb_trade_war_triggered
+					months = 60
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = opinion_expelled_traders
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+}
