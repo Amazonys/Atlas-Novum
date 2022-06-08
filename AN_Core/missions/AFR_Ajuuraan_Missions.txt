@@ -1,0 +1,1024 @@
+#First slot
+ajuuran_asian_trade_slot = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = AJU
+	}
+	has_country_shield = yes
+
+	#Annex Mogadishu
+	aju_annex_mogadishu = {
+		icon = mission_shipyards_of_gujarat
+		required_missions = {  }
+		position = 1
+		provinces_to_highlight = {
+			OR = {
+				AND = {
+					NOT = { owned_by = ROOT }
+					province_id = 1205
+				}
+				owned_by = MDI
+			}
+		}
+		trigger = {
+			owns_core_province = 1205
+			NOT = { exists = MDI }
+		}
+		effect = {
+			1205 = {
+				add_base_tax = 3
+				add_base_production = 3
+				add_base_manpower = 2
+			}
+		}
+	}
+
+	#Get gold production going
+	aju_gold_minting = {
+		icon = mission_entrepot_of_india
+		required_missions = { aju_annex_mogadishu }
+		position = 3
+		provinces_to_highlight = {
+			trade_goods = gold
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			has_discovered = ROOT
+		}
+		trigger = {
+			OR = {
+				gold = 1
+				any_known_country = {
+					gold = 1
+					OR = {
+						is_subject_of = ROOT
+						AND = {
+							alliance_with = ROOT
+							has_opinion = {
+								who = ROOT
+								value = 100
+							}
+						}
+					}
+				}
+			}
+		}
+		effect = {
+			custom_tooltip = aju_gold_minting_ct
+			if = {	#Cash
+				limit = {
+					OR = {
+						gold = 1
+						any_subject_country = {
+							gold = 1
+						}
+					}
+				}
+				country_event = {
+					id = flavor_aju.4
+				}
+			}
+			else_if = {	#Deal with the other owner
+				limit = {
+					any_known_country = {
+						gold = 1
+						alliance_with = ROOT
+						has_opinion = {
+							who = ROOT
+							value = 100
+						}
+					}
+				}
+				random_ally = {
+					limit = {
+						gold = 1
+						has_opinion = {
+							who = ROOT
+							value = 100
+						}
+					}
+					country_event = {
+						id = flavor_aju.1
+					}
+				}
+			}
+			unlock_estate_privilege = {
+				estate_privilege = estate_burghers_control_over_the_mint
+			}
+		}
+	}
+
+	#Trade in India
+	aju_indian_trade = {
+		icon = mission_dominate_trade_in_bengal
+		required_missions = { aju_gold_minting }
+		position = 4
+		provinces_to_highlight = {
+			is_indian_trade_node_province = yes
+		}
+		trigger = {
+			any_province = {
+				is_indian_trade_node_province = yes
+				OR = {
+					trade_share = {
+						country = ROOT
+						share = 5
+					}
+					is_strongest_trade_power = ROOT
+				}
+			}
+		}
+		effect = {
+			custom_tooltip = aju_indian_trade_ct
+			hidden_effect = {
+				504 = {
+					every_trade_node_member_country = {
+						limit = { 504 = { trade_share = { country = PREV share = 5 } } NOT = { tag = ROOT } }
+						country_event = { id = flavor_aju.5 }
+					}
+				}
+				507 = {
+					every_trade_node_member_country = {
+						limit = { 507 = { trade_share = { country = PREV share = 5 } } NOT = { tag = ROOT } }
+						country_event = { id = flavor_aju.5 }
+					}
+				}
+				524 = {
+					every_trade_node_member_country = {
+						limit = { 524 = { trade_share = { country = PREV share = 5 } } NOT = { tag = ROOT } }
+						country_event = { id = flavor_aju.5 }
+					}
+				}
+				1343 = {
+					every_trade_node_member_country = {
+						limit = { 1343 = { trade_share = { country = PREV share = 5 } } NOT = { tag = ROOT } }
+						country_event = { id = flavor_aju.5 }
+					}
+				}
+				1948 = {
+					every_trade_node_member_country = {
+						limit = { 1948 = { trade_share = { country = PREV share = 5 } } NOT = { tag = ROOT } }
+						country_event = { id = flavor_aju.5 }
+					}
+				}
+				1340 = {
+					every_trade_node_member_country = {
+						limit = { 1340 = { trade_share = { country = PREV share = 5 } } NOT = { tag = ROOT } }
+						country_event = { id = flavor_aju.5 }
+					}
+				}
+			}
+			add_country_modifier = {
+				name = aju_merchants_in_india
+				duration = 9125
+			}
+			504 = {
+				add_trade_modifier = {
+					who = ROOT
+					duration = -1
+					power = 10
+					key = AJU_INDIAN_MERCHANTS
+				}
+			}
+			1340 = {
+				add_trade_modifier = {
+					who = ROOT
+					duration = -1
+					power = 10
+					key = AJU_INDIAN_MERCHANTS
+				}
+			}
+		}
+	}
+
+	#Get a trade company in China
+	aju_chinese_trade_company = {
+		icon = mission_trade_company_region_abroad
+		required_missions = { aju_indian_trade }
+		position = 5
+		provinces_to_highlight = {
+			province_id = 4233
+		}
+		trigger = {
+			4233 = {
+				has_merchant = ROOT
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					any_country = { is_emperor_of_china = yes }
+				}
+				event_target:EmperorOfChina = {
+					country_event = {
+						id = flavor_aju.6
+					}
+				}
+			}
+			else_if = {	#Fringe case of no emperor existing
+				limit = {
+					NOT = { owns_or_non_sovereign_subject_of = 1816 }
+				}
+				1816 = {
+					owner = {
+						country_event = {
+							id = flavor_aju.6
+						}
+					}
+				}
+			}
+			else = {
+				1816 = {
+					add_permanent_province_modifier = {
+						name = aju_exotic_zoo
+						duration = 9125
+					}
+				}
+			}
+			add_mercantilism = 5
+		}
+	}
+}
+
+#Second slot
+ajuuran_internal_slot = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = AJU
+	}
+	has_country_shield = yes
+
+	#Build forts
+	aju_castle_builders = {
+		icon = mission_portuguese_oman
+		required_missions = {  }
+		position = 1
+		provinces_to_highlight = {
+			is_capital_of = ROOT
+			has_fort_building_trigger = no
+		}
+		trigger = {
+			capital_scope = {
+				has_fort_building_trigger = yes
+			}
+		}
+		effect = {
+			add_mil_power = 50
+			define_advisor = {
+				type = fortification_expert
+				cost_multiplier = 0.25
+				skill = 2
+			}
+		}
+	}
+
+	#Unlock the Hydraulic idea
+	aju_hydraulic_expertise = {
+		icon = mission_se_along_the_river
+		required_missions = {
+			aju_castle_builders
+			aju_markets_of_ajuuran
+		}
+		position = 2
+		provinces_to_highlight = {
+			owned_by = ROOT
+			NOT = { num_of_times_improved_by_owner = 2 }
+		}
+		trigger = {
+			OR = {
+				NOT = { has_idea_group = AJU_ideas }
+				has_idea = aju_hydraulic_empire
+			}
+			num_of_owned_provinces_with = {
+				num_of_times_improved_by_owner = 2
+				value = 5
+			}
+		}
+		effect = {
+			unlock_estate_privilege = {
+				estate_privilege = estate_burghers_hydraulic_rights
+			}
+		}
+	}
+
+	#Take over the Maldives
+	aju_maldives_dynasty = {
+		icon = mission_raid_christian_trade
+		required_missions = { aju_expand_navy }
+		position = 3
+		provinces_to_highlight = {
+			province_id = 1248
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			owns_or_non_sovereign_subject_of = 1248
+		}
+		effect = {
+			if = {
+				limit = {
+					1248 = {
+						owner = {
+							NOT = { tag = ROOT }
+							is_subject_of = ROOT
+						}
+					}
+				}
+				1248 = {
+					owner = {
+						country_event = {
+							id = flavor_aju.9
+						}
+					}
+				}
+			}
+			add_adm_power = 50
+			add_dip_power = 50
+			add_mil_power = 50
+		}
+	}
+
+	#Develop Istunka
+	aju_invent_istunka = {
+		icon = mission_son_back_to_the_roots
+		required_missions = {  }
+		position = 4
+		provinces_to_highlight = {
+			province_id = 2776
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+				NOT = { infantry_in_province = 20 }
+				NOT = { infantry_in_province = ROOT }
+			}
+		}
+		trigger = {
+			owns_core_province = 2776
+			custom_trigger_tooltip = {
+				tooltip = aju_invent_istunka_tt
+				2776 = {
+					infantry_in_province = 20
+					infantry_in_province = ROOT
+				}
+			}
+			is_at_war = no
+		}
+		effect = {
+			2776 = {
+				add_base_tax = 2
+				add_base_production = 2
+				add_base_manpower = 1
+				hidden_effect = {
+					add_province_triggered_modifier = ajuuran_place_of_istunka
+				}
+			}
+			custom_tooltip = aju_invent_istunka_ct
+		}
+	}
+
+	#Trade in Vietnam
+	aju_merchants_in_dai_viet = {
+		icon = mission_asian_trader
+		required_missions = { aju_indian_trade }
+		position = 5
+		provinces_to_highlight = {
+			province_id = 613
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			owner = {
+				NOT = {
+					has_opinion = {
+						who = ROOT
+						value = 100
+					}
+				}
+			}
+		}
+		trigger = {
+			613 = {
+				owner = {
+					OR = {
+						tag = ROOT
+						is_subject_of = ROOT
+						has_opinion = {
+							who = ROOT
+							value = 100
+						}
+					}
+				}
+			}
+		}
+		effect = {
+			613 = {
+				owner = {
+					country_event = {
+						id = flavor_aju.12
+					}
+				}
+			}
+			add_years_of_trade_income = {
+				years = 2
+				custom_tooltip = zim_dominate_upstream_trade_ct
+			}
+		}
+	}
+}
+
+#Third slot
+ajuuran_own_trade_slot = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = AJU
+	}
+	has_country_shield = yes
+
+	#Build markets
+	aju_markets_of_ajuuran = {
+		icon = mission_restore_trade_superiority
+		required_missions = {  }
+		position = 1
+		provinces_to_highlight = {
+			owned_by = ROOT
+			has_trade_building_trigger = no
+		}
+		trigger = {
+			num_of_owned_provinces_with = {
+				has_trade_building_trigger = yes
+				value = 3
+			}
+			if = {
+				limit = {
+					has_dlc = "Dharma"
+				}
+				2783 = {
+					province_has_center_of_trade_of_level = 2
+				}
+			}
+			else = {
+				2783 = {
+					development = 10
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = aju_trade_influence
+				duration = 9125
+			}
+		}
+	}
+
+	#Build markets
+	aju_sofaala_claims = {
+		icon = mission_arabian_fort
+		required_missions = { aju_expand_navy }
+		position = 3
+		provinces_to_highlight = {
+			province_id = 1186
+			NOT = { owned_by = ROOT }
+		}
+		trigger = {
+			1186 = {
+				owned_by = ROOT
+				is_in_capital_area = yes
+			}
+		}
+		effect = {
+			1186 = {
+				add_province_modifier = {
+					name = aju_ajuuran_sofala
+					duration = -1
+				}
+				change_culture = ROOT
+			}
+		}
+	}
+
+	#Have trade presence the Moluccas
+	aju_trade_on_java = {
+		icon = mission_mnd_maj_candi_shrines
+		required_missions = { aju_indian_trade }
+		position = 5
+		provinces_to_highlight = {
+			province_id = 1357
+		}
+		trigger = {
+			1357 = {
+				OR = {
+					trade_share = {
+						country = ROOT
+						share = 5
+					}
+					is_strongest_trade_power = ROOT
+				}
+			}
+		}
+		effect = {
+			every_country = {
+				limit = {
+					capital_scope = {
+						OR = {
+							area = banten_area
+							area = west_java_area
+							area = central_java_area
+							area = surabaya_area
+						}
+					}
+				}
+				country_event = {
+					id = flavor_aju.13
+				}
+			}
+			1357 = {
+				add_trade_modifier = {
+					who = ROOT
+					duration = 9125
+					power = 25
+					key = AJU_JAVA_MERCHANTS
+				}
+			}
+		}
+	}
+}
+
+#Fourth slot
+ajuuran_defense_slot = {
+	slot = 4
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = AJU
+	}
+	has_country_shield = yes
+
+	#Send ships to Aden
+	aju_protect_trade_aden = {
+		icon = mission_market_place_with_asian_traders
+		required_missions = {  }
+		position = 1
+		provinces_to_highlight = {
+			province_id = 4346
+		}
+		trigger = {
+			4346 = {
+				OR = {
+					trade_share = {
+						country = ROOT
+						share = 10
+					}
+					is_strongest_trade_power = ROOT
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = aju_fleet_investment
+				duration = 9125
+			}
+		}
+	}
+
+	#More Ships please
+	aju_expand_navy = {
+		icon = mission_establish_high_seas_navy
+		required_missions = { aju_protect_trade_aden }
+		position = 2
+		trigger = {
+			naval_forcelimit = 25
+			navy_size_percentage = 1
+		}
+		effect = {
+			add_navy_tradition = 20
+			if = {
+				limit = {
+					DGL = {
+						exists = yes
+						is_free_or_tributary_trigger = yes
+					}
+				}
+				add_casus_belli = {
+					type = cb_vassalize_mission
+					target = DGL
+				}
+				add_permanent_claim = 1248
+			}
+			else = {
+				add_core = 1248
+			}
+			northern_swahili_coast_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			mombasa_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			central_swahili_coast_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			mozambique_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			quelimane_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}		
+	}
+
+	#Convenient alliance
+	aju_ally_the_ottomans = {
+		icon = mission_ottoman_diplomacy
+		required_missions = {  }
+		position = 3
+		provinces_to_highlight = {
+			owned_by = TUR
+		}
+		trigger = {
+			if = {
+				limit = {
+					exists = TUR
+				}
+				alliance_with = TUR
+			}
+			else_if = {
+				limit = {
+					any_country = {
+						capital_scope = {
+							OR = {
+								region = anatolia_region
+								region = balkan_region
+							}
+						}
+						religion = sunni
+					}
+				}
+				any_country = {
+					capital_scope = {
+						OR = {
+							region = anatolia_region
+							region = balkan_region
+						}
+					}
+					religion = sunni
+					alliance_with = ROOT
+				}
+			}
+			else = {
+				total_development = 300
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					OR = {
+						any_country = {
+							capital_scope = {
+								OR = {
+									region = anatolia_region
+									region = balkan_region
+								}
+							}
+							religion = sunni
+							alliance_with = ROOT
+						}
+						alliance_with = TUR
+					}
+				}
+				custom_tooltip = flavor_eth.49.a.tt
+				hidden_effect = {
+					set_country_flag = aju_can_use_janissaries_mercs
+				}
+				if = {
+					limit = {
+						alliance_with = TUR
+					}
+					add_trust = {
+						who = TUR
+						value = 15
+						mutual = yes
+					}
+				}
+			}
+			add_power_projection = {
+				type = mission_rewards_power_projection
+				amount = 25
+			}
+		}
+	}
+
+	#Convenient alliance
+	aju_buy_modernization = {
+		icon = mission_assemble_an_army
+		required_missions = { aju_ally_the_ottomans }
+		position = 4
+		trigger = {
+			treasury = 3000
+			mil_power = 200
+			TUR = {
+				OR = {
+					alliance_with = ROOT
+					NOT = { exists = TUR }
+					NOT = { tech_difference = 1 }
+				}
+			}
+		}
+		effect = {
+			country_event = {
+				id = flavor_aju.14
+			}
+		}
+	}
+
+	#Deal with the migrations
+	aju_oromo_invasion = {
+		icon = mission_african_soldier
+		required_missions = {  }
+		position = 5
+		provinces_to_highlight = {
+			owned_by = ROOT
+			culture = oromo
+		}
+		trigger = {
+			custom_trigger_tooltip = {
+				tooltip = aju_oromo_invasion_tt
+				had_global_flag = {
+					flag = eth_start_of_the_oromo
+					days = 3650
+				}
+			}
+			NOT = {
+				any_owned_province = {
+					culture = oromo
+				}
+			}
+		}
+		effect = {
+			add_stability = 2
+		}
+	}
+}
+
+#Fith slot
+ajuuran_offense_slot = {
+	slot = 5
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = AJU
+	}
+	has_country_shield = yes
+
+	#Hire Mamluk merc company
+	aju_the_mamluk_soldiers = {
+		icon = mission_egyptian_mamluk_soldier
+		required_missions = {  }
+		position = 1
+		trigger = {
+			custom_trigger_tooltip = {
+				tooltip = aju_the_mamluk_soldiers_tt
+				any_hired_mercenary_company = {
+					template = merc_aju_mamluk_soldiers
+				}
+			}
+		}
+		effect = {
+			add_army_tradition = 10
+			majarteen_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			somaliland_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			add_permanent_claim = 2778
+		}
+	}
+
+	#Conquer Hafun
+	aju_the_tip_of_the_horn = {
+		icon = mission_envoy_to_ethiopia
+		required_missions = { aju_the_mamluk_soldiers }
+		position = 2
+		provinces_to_highlight = {
+			OR = {
+				area = majarteen_area
+				area = somaliland_area
+				province_id = 2778
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				OR = {
+					area = majarteen_area
+					area = somaliland_area
+					province_id = 2778
+				}
+				value = 7
+			}
+		}
+		effect = {
+			ogaden_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			ifat_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			aussa_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Conquer Adal
+	aju_unite_the_clans = {
+		icon = mission_build_up_to_force_limit
+		required_missions = { aju_the_tip_of_the_horn }
+		position = 3
+		provinces_to_highlight = {
+			OR = {
+				area = ifat_area
+				area = aussa_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				OR = {
+					area = ifat_area
+					area = aussa_area
+					province_id = 1208
+					province_id = 1210
+				}
+				value = 5
+			}
+		}
+		effect = {
+			custom_tooltip = aju_unite_the_clans_tt
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						culture = somali
+					}
+					add_province_modifier = {
+						name = aju_united_somali_clans
+						duration = 9125
+					}
+				}
+			}
+			shewa_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			central_ethiopia_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			tigray_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Conquer Ethiopia
+	aju_liberate_sheik_hussein = {
+		icon = mission_end_tamil_insurgency
+		required_missions = { aju_unite_the_clans }
+		position = 4
+		provinces_to_highlight = {
+			OR = {
+				area = shewa_area
+				area = central_ethiopia_area
+				area = tigray_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			owns_core_province = 2761			
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				OR = {
+					area = shewa_area
+					area = central_ethiopia_area
+					area = tigray_area
+				}
+				value = 6
+			}
+		}
+		effect = {
+			2761 = {
+				change_province_name = "Sheik Hussein"
+				rename_capital = "Sheik Hussein"
+				add_base_tax = 4
+				add_base_production = 4
+				add_base_manpower = 3
+				add_latest_building = {
+					tax = yes
+					builder = ROOT
+				}
+			}
+			horn_of_africa_region = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Clean up the rest
+	aju_consolidate_the_horn = {
+		icon = mission_empire
+		required_missions = { aju_liberate_sheik_hussein }
+		position = 5
+		provinces_to_highlight = {
+			region = horn_of_africa_region
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			horn_of_africa_region = {
+				country_or_non_sovereign_subject_holds = ROOT
+				type = all
+			}
+		}
+		effect = {
+			add_adm_power = 100
+			add_dip_power = 100
+			add_mil_power = 100
+		}
+	}
+}

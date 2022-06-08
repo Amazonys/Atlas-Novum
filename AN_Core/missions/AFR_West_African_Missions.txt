@@ -1,0 +1,849 @@
+#West African regional missions
+
+#Military missions branch
+
+west_africa_military_missions = { 
+	slot = 2
+	generic = yes
+	ai = no 
+	potential_on_load = {
+        has_dlc = "Origins"
+    }
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		NOT = { tag = MAL  } # Not Mali
+        NOT = { tag = SON  } # Not Songhai
+		capital_scope = {
+			OR = {
+				region = sahel_region
+				region = niger_region
+				region = guinea_region	
+			}
+		}
+	} 
+	
+	#1st mission: Assemble a Warband
+	west_africa_assemble_warband = { 
+		icon = mission_kon_conquer_ckw
+		required_missions = {  } 
+		position = 1
+		trigger = { 
+			OR = {
+				army_size_percentage = 1 
+				num_of_mercenaries = 1 #1 company of mercenaries
+			} 
+		}
+		effect = { 
+			add_country_modifier = { 
+				name = "warband_assembled" #Reduced mercenary maintenance cost
+				duration = 9125 #25 years
+			}
+		}
+	}
+
+	#2nd mission: Strong Leadership
+	west_africa_strong_leadership = { 
+		icon = mission_mal_fighting_musa
+		required_missions = { west_africa_assemble_warband west_africa_gathering_tributes } 
+		position = 2
+		provinces_to_highlight = {
+			owner = {
+				NOT = { tag = ROOT }
+				is_rival = ROOT
+			}
+		}
+		trigger = {
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = obj_humiliate_rival_tooltip
+					has_country_flag = humiliated_rival
+				}
+				custom_trigger_tooltip = {
+					tooltip = west_africa_strong_leadership_ct
+					NOT = {
+						any_known_country = {
+							capital_scope = {
+								OR = {
+									region = sahel_region
+									region = niger_region
+									region = guinea_region
+								}
+							}
+							is_subject = no
+							total_development = ROOT
+						}
+					}
+				}
+			}
+		}
+		effect = {
+			add_mil_power = 75
+			capital_scope = {
+				region = {
+					limit = {
+						NOT = { is_permanent_claim = ROOT }
+						NOT = { is_core = ROOT }
+						NOT = { owner = { is_subject_of = ROOT } }
+					}
+					add_claim = ROOT
+				}
+			}
+		}
+	}
+
+	#3rd mission: Unite Home Region
+	west_africa_unite_home_region = {
+		icon = mission_mal_west_african_great_power
+		required_missions = { west_africa_strong_leadership west_africa_clearings_irrigations } 
+		position = 3
+		provinces_to_highlight = {
+			region_for_scope_province = {
+				is_capital_of = ROOT
+			}
+			NOT = { owned_by = ROOT }
+		}
+		trigger = {
+			custom_trigger_tooltip = {
+				tooltip = unite_home_region_ct
+				capital_scope = {
+					region_for_scope_province = {
+						type = all
+						owned_by = ROOT #Subjects won't count, empty provinces will need to be colonized.
+					}
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = hegemonic_ambition
+				duration = 9125
+			}
+		}
+	}
+
+	#4th mission: Gunpowder Weapons
+	west_africa_gunpowder_weapons = { 
+		icon = mission_son_military_expertise
+		required_missions = { west_africa_unite_home_region } 
+		position = 4
+		provinces_to_highlight = {
+			NOT = { has_building = weapons }
+			owned_by = ROOT
+			OR = {
+				trade_goods = iron
+				trade_goods = copper
+			}
+		}
+		trigger = {
+			weapons = 1 
+			army_tradition = 40
+		}
+		effect = {
+			add_country_modifier = {
+				name = w_african_modern_weapons
+				duration = 7300
+			}
+		}
+	}
+
+	#5th mission: Greater than Mali!
+	west_africa_greater_than_mali = { 
+		icon = mission_son_invade_mali
+		required_missions = { west_africa_gunpowder_weapons west_africa_manufacturing_africa } 
+		position = 5
+		provinces_to_highlight = {
+			OR = {
+				region = sahel_region
+				region = niger_region
+				region = guinea_region
+			}
+			NOT = { owned_by = ROOT }
+		}
+		trigger = {
+			num_of_owned_provinces_with = {
+				OR = {
+					region = sahel_region
+					region = niger_region
+					region = guinea_region
+				}
+				value = 60
+			}
+		}
+		effect = {
+			add_power_projection = {
+				type = mission_rewards_power_projection
+				amount = 35
+			}
+			add_adm_power = 50
+			add_dip_power = 50
+			add_mil_power = 50
+			add_country_modifier = {
+				name = w_african_unity_of_west_african
+				duration = -1
+			}
+		}
+	}
+}
+
+#Economic missions branch
+
+west_africa_economic_missions = {
+	slot = 3
+	generic = yes
+	ai = yes
+	potential_on_load = {
+        has_dlc = "Origins"
+    }
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		NOT = { tag = MAL  } # Not Mali
+        NOT = { tag = SON  } # Not Songhai
+		capital_scope = {
+			OR = {
+				region = sahel_region
+				region = niger_region
+				region = guinea_region	
+			}
+		}
+	}
+
+	#1st mission: Gathering Tributes
+	west_africa_gathering_tributes = { 
+		icon = mission_kon_conquer_ksj
+		required_missions = {  } 
+		position = 1
+		provinces_to_highlight = {  }
+		trigger = {
+			if = {
+				limit = {
+					has_dlc = "Art of War"
+				}
+				num_of_war_reparations = 3
+			}
+			else = {
+				treasury = 200
+				NOT = { num_of_loans = 1 }
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = w_african_tax_collectors
+				duration = 3650
+			}
+		}
+	}
+
+	#2nd mission: Clearings and irrigations
+	west_africa_clearings_irrigations = { 
+		icon = mission_mal_subjugate_zaf
+		required_missions = { west_africa_gathering_tributes } 
+		position = 2
+		provinces_to_highlight = {
+			owned_by = ROOT
+			NOT = { development = 20 }
+		}
+		trigger = {
+			num_of_owned_provinces_with = {
+				development = 20
+				value = 3
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = w_african_develop_modifier
+				duration = 9125
+			}
+		}
+	}
+
+	#3rd mission: Salt, cloth and shells
+	west_africa_salt_cloth_shells = { 
+		icon = mission_market_place_with_asian_traders
+		required_missions = { west_africa_clearings_irrigations } 
+		position = 3
+		provinces_to_highlight = {  }
+		trigger = {
+			home_trade_node = {
+				trade_share = {
+					country = ROOT
+					share = 50
+				}
+			}
+		}
+		effect = {
+			hidden_effect = {
+				home_trade_node_effect_scope = {
+					random_trade_node_member_province = {
+						limit = {
+							owned_by = ROOT
+						}
+						save_event_target_as = reward_province
+					}
+					random_trade_node_member_province = {
+						limit = {
+							owned_by = ROOT
+							is_capital = yes
+						}
+						save_event_target_as = reward_province
+					}
+					random_trade_node_member_province = {
+						limit = {
+							owned_by = ROOT
+							development = CAPITAL
+							is_capital = no
+						}
+						save_event_target_as = reward_province
+					}
+					random_trade_node_member_province = {
+						limit = {
+							owned_by = ROOT
+							development = CAPITAL
+							is_capital = no
+							development = 20
+						}
+						save_event_target_as = reward_province
+					}
+					random_trade_node_member_province = {
+						limit = {
+							owned_by = ROOT
+							development = CAPITAL
+							is_capital = no
+							development = 25
+						}
+						save_event_target_as = reward_province
+					}
+					random_trade_node_member_province = {
+						limit = {
+							owned_by = ROOT
+							development = CAPITAL
+							is_capital = no
+							development = 30
+						}
+						save_event_target_as = reward_province
+					}
+				}
+			}
+			if = {
+				limit = { has_saved_event_target = reward_province }
+				event_target:reward_province = {
+					add_province_modifier = {
+						name = "dominant_trade_hub"
+						duration = -1
+					}
+				}
+			}
+			else = {
+				custom_tooltip = dominant_home_node_reward_tooltip
+			}
+		}
+	}
+
+	#4th mission: Manufacturing in Africa
+	west_africa_manufacturing_africa = {
+		icon = mission_son_own_develop_clothes_and_salt
+		required_missions = { west_africa_salt_cloth_shells west_africa_unite_home_region }
+		position = 4
+		provinces_to_highlight = {
+			owned_by = ROOT
+			has_manufactory_trigger = no
+			NOT = { trade_goods = gold }
+		}
+		trigger = {
+			calc_true_if = {
+				desc = build_manufactories_mission_tooltip
+				all_owned_province = {
+					OR = {
+						has_building = mills
+						has_building = farm_estate
+						has_building = tradecompany
+						has_building = plantations
+						has_building = textile
+						has_building = weapons
+						has_building = wharf
+						has_building = furnace
+					}
+				}
+				amount = 4
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = "proto_industrialization"
+				duration = 9125
+			}
+			add_years_of_income = 1.5
+		}
+	}
+
+	#5th mission: Bilad al-Sudan Trade
+	west_africa_bilad_sudan_trade = { 
+		icon = mission_mal_riches_of_trade
+		required_missions = { west_africa_manufacturing_africa } 
+		position = 5
+		provinces_to_highlight = {
+		}
+		trigger = {
+			always = yes
+			if = {
+				limit = {
+					has_dlc = "Dharma"
+				}
+				num_of_owned_provinces_with = {
+					province_has_center_of_trade_of_level = 3
+					value = 2
+				}
+				num_of_owned_provinces_with = {
+					province_has_center_of_trade_of_level = 2
+					value = 5
+				}
+			}
+			else = {
+				calc_true_if = {
+					all_province = {
+						OR = {
+							province_id = 1132
+							province_id = 1149
+							province_id = 1466
+						}
+						trade_share = {
+							country = ROOT
+							share = 25
+						}
+					}
+					amount = 3
+				}
+			}
+		}
+		effect = {
+			add_mercantilism = 10
+		}
+	}
+}
+
+#Religious missions branches, one for fetishist and other for sunni countries
+
+west_africa_religious_missions_fetishist = {
+	slot = 4
+	generic = yes
+	ai = yes
+	potential_on_load = {
+        has_dlc = "Origins"
+    }
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		NOT = { tag = MAL } # Not Mali
+        NOT = { tag = SON } # Not Songhai
+		capital_scope = {
+			OR = {
+				region = sahel_region
+				region = niger_region
+				region = guinea_region	
+			}
+		}
+		religion = shamanism
+	}
+
+	#1st mission: Embracing Old Traditions
+	west_africa_embracing_old_traditions = { 
+		icon = mission_kon_collect_cults
+		required_missions = {  } 
+		position = 1
+		provinces_to_highlight = {  }
+		trigger = {
+			stability = 2
+		}
+		effect = {
+			add_country_modifier = {
+				name = w_african_cult_collector
+				duration = 9125
+			}
+		}
+	}
+
+	#2nd mission: Brothers in Tradition
+	west_africa_brothers_in_tradition_fetishist = { 
+		icon = mission_mal_more_tolerance_to_heathens
+		required_missions = { west_africa_embracing_old_traditions } 
+		position = 2
+		provinces_to_highlight = {
+			owner = {
+				religion = ROOT
+				NOT = { alliance_with = ROOT }
+				NOT = { is_rival = ROOT }
+				NOT = { is_enemy = ROOT }
+				NOT = { is_subject_of = ROOT }
+				NOT = { tag = ROOT }
+			}
+			has_discovered = ROOT
+		}
+		trigger = {
+			calc_true_if = {
+				all_known_country = {
+					OR = {
+						is_subject_of = ROOT
+						alliance_with = ROOT
+					}
+					religion = ROOT
+				}
+				amount = 3
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = w_african_shamans
+				duration = 9125
+			}
+		}
+	}
+
+	#3rd mission: Shamans
+	west_africa_shamans = { 
+		icon = mission_son_back_to_the_roots
+		required_missions = { west_africa_brothers_in_tradition_fetishist } 
+		position = 3
+		provinces_to_highlight = {
+			has_discovered = ROOT
+			religion = ROOT
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				religion = ROOT
+				value = 15
+			}
+		}
+		effect = {
+			add_stability = 1
+			custom_tooltip = west_africa_shamans_ct
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						religion = ROOT
+					}
+					add_province_modifier = {
+						name = w_african_fetishist_rights
+						duration = 9125
+					}
+				}
+			}
+		}
+	}
+
+	#4th mission: #Sankore University
+	west_africa_sankore_university_fetishist = { 
+		icon = mission_son_expand_djenne_mosque
+		required_missions = { west_africa_shamans } 
+		position = 4
+		provinces_to_highlight = {
+			province_id = 1132
+			if = {
+				limit = {
+					has_dlc = "Leviathan"
+				}
+				NOT = {
+					has_great_project = {
+						type = sankore_madrasah
+						tier = 2
+					}
+				}
+				NOT = {
+					has_great_project = {
+						type = sankore_madrasah
+						tier = 3
+					}
+				}
+			}
+			else = {
+				NOT = { has_building = university }
+			}
+		}
+		trigger = {
+			owns_core_province = 1132
+			if = {
+				limit = {
+					has_dlc = "Leviathan"
+				}
+				1132 = {
+					OR = {
+						has_great_project = {
+							type = sankore_madrasah
+							tier = 2
+						}
+						has_great_project = {
+							type = sankore_madrasah
+							tier = 3
+						}
+					}
+				}
+			}
+			else = {
+				1132 = {
+					has_building = university
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					has_dlc = "Rule Britannia"
+				}
+				change_innovativeness = 3
+			}
+			else = {
+				add_adm_power = 100
+			}
+		}
+	}
+
+	#5th mission: Sincretic Rituals
+	west_africa_sincretic_rituals = { 
+		icon = mission_son_fetishist_alliances
+		required_missions = { west_africa_sankore_university_fetishist } 
+		position = 5
+		provinces_to_highlight = {  }
+		trigger = {
+			OR = {
+				has_estate_privilege = estate_church_heir_shrine
+				has_estate_privilege = estate_church_flexible_cults
+				has_estate_privilege = estate_church_embrace_singluar_cult
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = w_african_tolerance
+				duration = -1
+				desc = w_african_tolerance_desc	#Until you switch the religion
+			}
+		}
+	}
+}
+
+west_africa_religious_missions_sunni = {
+	slot = 4
+	generic = yes
+	ai = yes
+	potential_on_load = {
+        has_dlc = "Origins"
+    }
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		NOT = { tag = MAL  } # Not Mali
+        NOT = { tag = SON  } # Not Songhai
+		capital_scope = {
+			OR = {
+				region = sahel_region
+				region = niger_region
+				region = guinea_region	
+			}
+		}
+		religion = sunni
+	}
+
+	#1st mission: Embracing New Traditions
+	west_africa_embracing_new_traditions = { 
+		icon = mission_bedouins
+		required_missions = {  } 
+		position = 1
+		provinces_to_highlight = {
+			owned_by = ROOT
+			NOT = { religion = ROOT }
+		}
+		trigger = {
+			religious_unity = 1
+			estate_loyalty = {
+				estate = estate_church
+				loyalty = 60
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = w_african_defender_of_sunni_faith
+				duration = 9125
+			}
+		}
+	}
+
+	#2nd mission: Brothers in Faith
+	west_africa_brothers_in_faith_sunni = { 
+		icon = mission_non-western_soldiers
+		required_missions = { west_africa_embracing_new_traditions } 
+		position = 2
+		provinces_to_highlight = {
+			owner = {
+				religion = ROOT
+				NOT = { alliance_with = ROOT }
+				NOT = { is_rival = ROOT }
+				NOT = { is_enemy = ROOT }
+				NOT = { is_subject_of = ROOT }
+				NOT = { tag = ROOT }
+			}
+			has_discovered = ROOT
+		}
+		trigger = {
+			calc_true_if = {
+				all_known_country = {
+					OR = {
+						is_subject_of = ROOT
+						alliance_with = ROOT
+					}
+					religion = ROOT
+				}
+				amount = 3
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = w_african_missionaries
+				duration = 9125
+			}
+		}
+	}
+
+	#3rd mission: Marabouts
+	west_africa_marabouts = { 
+		icon = mission_mal_jihad_upon_own_population
+		required_missions = { west_africa_brothers_in_faith_sunni } 
+		position = 3
+		provinces_to_highlight = {
+			has_discovered = ROOT
+			religion = ROOT
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				religion = ROOT
+				value = 15
+			}
+		}
+		effect = {
+			add_stability = 1
+			custom_tooltip = west_africa_marabouts_ct
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						religion = ROOT
+					}
+					add_province_modifier = {
+						name = w_african_sunni_rights
+						duration = 9125
+					}
+				}
+			}
+		}
+	}
+
+	#4th mission: #Sankore University
+	west_africa_sankore_university_sunni = { 
+		icon = mission_son_expand_djenne_mosque
+		required_missions = { west_africa_marabouts } 
+		position = 4
+		provinces_to_highlight = {
+			province_id = 1132
+			if = {
+				limit = {
+					has_dlc = "Leviathan"
+				}
+				NOT = {
+					has_great_project = {
+						type = sankore_madrasah
+						tier = 2
+					}
+				}
+				NOT = {
+					has_great_project = {
+						type = sankore_madrasah
+						tier = 3
+					}
+				}
+			}
+			else = {
+				NOT = { has_building = university }
+			}
+		}
+		trigger = {
+			owns_core_province = 1132
+			if = {
+				limit = {
+					has_dlc = "Leviathan"
+				}
+				1132 = {
+					OR = {
+						has_great_project = {
+							type = sankore_madrasah
+							tier = 2
+						}
+						has_great_project = {
+							type = sankore_madrasah
+							tier = 3
+						}
+					}
+				}
+			}
+			else = {
+				1132 = {
+					has_building = university
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					has_dlc = "Rule Britannia"
+				}
+				change_innovativeness = 3
+			}
+			else = {
+				add_adm_power = 100
+			}
+		}
+	}
+
+	#5th mission: The Only Faith
+	west_africa_the_only_faith = { 
+		icon = mission_mosque
+		required_missions = { west_africa_sankore_university_sunni } 
+		position = 5
+		provinces_to_highlight = {
+			OR = {
+				region = sahel_region
+				region = niger_region
+				region = guinea_region
+			}
+			NOT = { religion = ROOT }
+		}
+		trigger = {
+			sahel_region = {
+				OR = {
+					is_empty = yes
+					religion = ROOT
+				}
+				type = all
+			}
+			niger_region = {
+				OR = {
+					is_empty = yes
+					religion = ROOT
+				}
+				type = all
+			}
+			guinea_region = {
+				OR = {
+					is_empty = yes
+					religion = ROOT
+				}
+				type = all
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = w_african_tolerance
+				duration = -1
+				desc = w_african_tolerance_desc	#Until you switch the religion
+			}
+		}
+	}
+}

@@ -1,0 +1,1223 @@
+#Ethiopian Contact with Europeans + Modernizing
+ethiopia_european_slot = {
+	slot = 1
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = ETH
+	}
+	has_country_shield = yes
+
+	#Gain sea access
+	eth_gain_sea_access = {
+		icon = mission_galleys_in_port
+		required_missions = {  }
+		position = 1
+		trigger = {
+			num_of_ports = 1
+			treasury = 75
+		}
+		effect = {
+			custom_tooltip = eth_gain_sea_access_tt
+			hidden_effect = {
+				random_owned_province = {
+					limit = {
+						has_port = yes
+					}
+					add_building = shipyard
+				}
+			}
+			add_sailors = 1000
+			add_treasury = -75
+		}
+	}
+
+	#Try to get contact
+	eth_create_a_navy = {
+		icon = mission_rb_a_mighty_fleet
+		required_missions = { eth_gain_sea_access }
+		position = 2
+		trigger = {
+			navy_size_percentage = 0.8
+		}
+		effect = {
+			add_navy_tradition = 20
+			custom_tooltip = eth_create_a_navy_tt
+			hidden_effect = {
+				country_event = {
+					id = flavor_eth.41
+					days = 30
+				}
+			}
+		}
+	}
+
+	#Improve relations with Portugal
+	eth_find_other_christians = {
+		icon = mission_portuguese_interference
+		required_missions = { eth_create_a_navy }
+		position = 3
+		provinces_to_highlight = {
+			owned_by = POR
+			has_discovered = ROOT
+		}
+		trigger = {
+			OR = {
+				AND = {
+					is_year = 1550
+					custom_trigger_tooltip = {
+						tooltip = eth_find_other_christians_tt
+						POR = {
+							any_owned_province = {
+								has_discovered = ROOT
+							}
+						}
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = eth_find_other_christians_ct
+					has_country_flag = eth_contact_with_portugal
+				}
+				NOT = { exists = POR }
+			}
+			monthly_dip = 9
+		}
+		effect = {
+			if = {
+				limit = {
+					exists = POR
+					POR = { is_free_or_tributary_trigger = yes }
+				}
+				country_event = {
+					id = flavor_eth.44
+				}
+			}
+			else = {
+				add_dip_power = 100
+			}
+		}
+	}
+
+	#Trade with the Europeans
+	eth_market_of_the_west = {
+		icon = mission_african_trade_post
+		required_missions = {
+			eth_find_other_christians
+			eth_the_riches_of_the_south
+		}
+		position = 4
+		provinces_to_highlight = {
+			OR = {
+				province_id = 1293	#Sevilla Trade
+				province_id = 1295	#Valencia Trade
+				province_id = 1298	#Genoa Trade
+				province_id = 1308	#Venice Trade
+			}
+			has_discovered = ROOT
+		}
+		trigger = {
+			OR = {
+				1293 = {
+					trade_share = {
+						country = ROOT
+						share = 5
+					}
+				}
+				1295 = {
+					trade_share = {
+						country = ROOT
+						share = 5
+					}
+				}
+				1298 = {
+					trade_share = {
+						country = ROOT
+						share = 5
+					}
+				}
+				1308 = {
+					trade_share = {
+						country = ROOT
+						share = 5
+					}
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = eth_merchants_in_europe
+				duration = 7300
+			}
+			add_years_of_income = 1
+		}
+	}
+
+	#Become a more modern state
+	eth_ideas_and_institutions = {
+		icon = pontifical_universities
+		required_missions = { eth_market_of_the_west }
+		position = 5
+		trigger = {
+			has_better_tech_than_westerns = yes
+			has_more_institutions_than_westerns = yes
+		}
+		effect = {
+			if = {
+				limit = { 
+					has_dlc = "Rule Britannia"
+				}
+				change_innovativeness = 10
+			}
+			add_adm_power = 100
+			add_dip_power = 100
+			add_mil_power = 100
+		}
+	}
+
+	#Upgrade your units
+	eth_westernize_the_army = {
+		icon = mission_assemble_an_army
+		required_missions = { 
+			eth_ideas_and_institutions
+			eth_cawa_discipline
+		}
+		position = 6
+		trigger = {
+			OR = {
+				AND = {
+					army_tradition = 75
+					army_professionalism = 0.8
+				}
+				mil_tech = 20
+			}
+			mil_power = 200
+		}
+		effect = {
+			country_event = {
+				id = flavor_eth.48
+			}
+		}
+	}
+}
+
+#Ethiopian's development + Oromo incident
+ethiopia_policy_with_the_cushitic_people = {
+	slot = 2
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = ETH
+	}
+	has_country_shield = yes
+
+	#Build to troop limit
+	eth_build_an_army = {
+		icon = mission_build_up_to_force_limit
+		required_missions = {  }
+		position = 1
+		trigger = {
+			army_size_percentage = 1
+			num_of_generals = 1
+		}
+		effect = {
+			southern_ethiopia_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			hadiya_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Kaffa, Welayta, etc
+	eth_conquer_southern_kingdoms = {
+		icon = mission_conquer_50_development
+		required_missions = { eth_build_an_army }
+		position = 2
+		provinces_to_highlight = {
+			OR = {
+				area = southern_ethiopia_area
+				area = hadiya_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			southern_ethiopia_area = {
+				country_or_non_sovereign_subject_holds = ROOT
+				type = all
+			}
+			hadiya_area = {
+				country_or_non_sovereign_subject_holds = ROOT
+				type = all
+			}
+		}
+		effect = {
+			southern_ethiopia_area = {
+				limit = {
+					NOT = { religion = ROOT }
+				}
+				add_province_modifier = {
+					name = eth_active_missionaries
+					duration = 9125
+				}
+			}
+			hadiya_area = {
+				limit = {
+					NOT = { religion = ROOT }
+				}
+				add_province_modifier = {
+					name = eth_active_missionaries
+					duration = 9125
+				}
+			}
+		}
+	}
+
+	#Develop Gold mission
+	eth_the_riches_of_the_south = {
+		icon = mission_war_chest
+		required_missions = { eth_conquer_southern_kingdoms }
+		position = 3
+		provinces_to_highlight = {
+			OR = {
+				province_id = 2762
+				province_id = 2757
+			}
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { base_production = 6 }
+				NOT = { is_core = ROOT }
+			}
+		}
+		trigger = {
+			2762 = {
+				owned_by = ROOT
+				is_core = ROOT
+				base_production = 6
+			}
+			2757 = {
+				owned_by = ROOT
+				is_core = ROOT
+				base_production = 6
+			}
+		}
+		effect = {
+			unlock_estate_privilege = {
+				estate_privilege = estate_burghers_control_over_the_mint
+			}
+			2762 = {
+				add_local_autonomy = -100
+				add_province_modifier = {
+					name = eth_increased_gold_mining
+					duration = 9125
+				}
+			}
+			2757 = {
+				add_local_autonomy = -100
+				add_province_modifier = {
+					name = eth_increased_gold_mining
+					duration = 9125
+				}
+			}
+			change_government_reform_progress = 100
+		}
+	}
+
+	#Train the Cawa
+	eth_cawa_discipline = {
+		icon = mission_son_military_expertise
+		required_missions = {}
+		position = 5
+		trigger = {
+			num_of_cawa = 30
+			if = {
+				limit = {
+					has_dlc = "Cradle of Civilization"
+				}
+				army_professionalism = 0.4
+				army_tradition = 30
+			}
+			else = {
+				army_tradition = 60
+			}
+			num_of_generals = 1
+		}
+		effect = {
+			add_army_professionalism = 0.05
+			unlock_estate_privilege = {
+				estate_privilege = estate_nobles_cawa_peace_keepers
+			}
+			unlock_estate_privilege = {
+				estate_privilege = estate_nobles_cawa_offensive_fighters
+			}
+		}
+	}
+}
+
+#Religion slot
+ethiopia_religion_slot = {
+	slot = 3
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = ETH
+	}
+	has_country_shield = yes
+
+	#Handle the rebels
+	eth_eliminate_the_semien_rebels = {
+		icon = mission_cannons_firing
+		required_missions = {  }
+		position = 1
+		provinces_to_highlight = {
+			OR = {
+				AND = {
+					owned_by = ROOT
+					controlled_by = REB
+				}
+				owned_by = BTI	#For the case the player releases Semien
+				AND = {
+					province_id = 2771
+					NOT = { owned_by = ROOT }
+				}
+				AND = {
+					province_id = 2772
+					NOT = { owned_by = ROOT }
+				}
+				AND = {
+					province_id = 1227
+					NOT = { owned_by = ROOT }
+				}
+			}
+		}
+		trigger = {
+			NOT = { num_of_rebel_armies = 1 }
+			all_owned_province = {
+				NOT = { controlled_by = REB }
+			}
+			NOT = { exists = BTI }
+			owns = 2771
+			owns = 2772
+			owns = 1227
+		}
+		effect = {
+			if = {
+				limit = {
+					NOT = { religion = jewish }
+				}
+				country_event = {
+					id = flavor_eth.40
+				}
+			}
+			else = {
+				add_stability = 1
+			}
+		}
+	}
+
+	#Eliminate the followers of Gudit
+	eth_secure_religious_unity = {
+		icon = mission_rb_control_state_religion
+		required_missions = { eth_eliminate_the_semien_rebels }
+		position = 2
+		provinces_to_highlight = {
+			NOT = { religion = ROOT }
+			owned_by = ROOT
+		}
+		trigger = {
+			religious_unity = 0.75
+			OR = {
+				advisor = theologian
+				advisor = inquisitor
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					religion_group = christian
+				}
+				1227 = {
+					add_province_modifier = {
+						name = eth_new_christians
+						duration = 7300
+					}
+				}
+				2771 = {
+					add_province_modifier = {
+						name = eth_new_christians
+						duration = 7300
+					}
+				}
+				2772 = {
+					add_province_modifier = {
+						name = eth_new_christians
+						duration = 7300
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					religion = jewish
+				}
+				add_church_power = 100
+			}
+			else_if = {
+				limit = {
+					religion_group = muslim
+				}
+				add_piety = 0.25
+				add_adm_power = 100
+			}
+			else = {
+				add_adm_power = 150
+			}
+		}
+	}
+
+	#Yaqob's making a compromise for church
+	eth_church_reforms = {
+		icon = mission_european_church
+		required_missions = { eth_secure_religious_unity }
+		position = 3
+		trigger = {
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = eth_church_reforms_ct
+					has_country_flag = eth_had_centralization_event
+				}
+				is_year = 1460
+			}
+			estate_loyalty = {
+				estate = estate_church
+				loyalty = 65
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					religion_group = christian
+				}
+				unlock_estate_privilege = {
+					estate_privilege = estate_church_yakobs_churches
+				}
+			}
+			else = {
+				if = {
+					limit = {
+						religion = jewish
+					}
+					add_church_power = 100
+				}
+				else = {
+					add_adm_power = 100
+				}
+				hidden_effect = {
+					unlock_estate_privilege = {
+						estate_privilege = estate_church_yakobs_churches
+					}
+				}
+			}
+			add_country_modifier = {
+				name = eth_united_church
+				duration = 9125
+			}
+			change_government_reform_progress = 100
+		}
+	}
+
+	#Coptic mission - Qasr Ibrim
+	eth_conquest_of_qasr_ibrim = {
+		icon = mission_bedouins
+		required_missions = { }
+		provinces_to_highlight = {
+			province_id = 1234
+			OR = {
+				NOT = { religion = ROOT }
+				NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			}
+			has_discovered = ROOT
+		}
+		trigger = {
+			owns_or_non_sovereign_subject_of = 1234
+			1234 = { religion = ROOT }
+		}
+		position = 4
+		effect = {
+			add_country_modifier = {
+				name = eth_coptic_offense
+				duration = 9125
+			}
+			egypt_region = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Coptic mission - Alexandria
+	eth_conquest_of_alexandria = {
+		icon = mission_rb_seize_alexandria
+		required_missions = { eth_conquest_of_qasr_ibrim }
+		provinces_to_highlight = {
+			province_id = 358
+			OR = {
+				NOT = { religion = ROOT }
+				NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			}
+			has_discovered = ROOT
+		}
+		trigger = {
+			owns_or_non_sovereign_subject_of = 358
+			358 = { religion = ROOT }
+		}
+		position = 5
+		effect = {
+			add_accepted_culture = al_misr_arabic
+			add_country_modifier = {
+				name = eth_legacy_of_alexandria
+				duration = 9125
+			}
+			palestine_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			syria_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			aleppo_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Coptic mission - Antioch
+	eth_conquest_of_antioch = {
+		icon = mission_religious
+		required_missions = { eth_conquest_of_alexandria }
+		provinces_to_highlight = {
+			province_id = 2313
+			OR = {
+				NOT = { religion = ROOT }
+				NOT = { country_or_non_sovereign_subject_holds = ROOT }
+			}
+			has_discovered = ROOT
+		}
+		trigger = {
+			2313 = { religion = ROOT }
+		}
+		position = 6
+		effect = {
+			add_country_modifier = {
+				name = eth_conversion_focus
+				duration = 18250
+			}
+		}
+	}
+
+	#Big Mission Tree Reward
+	eth_blessed_empire = {
+		icon = mission_empire
+		required_missions = {
+			eth_westernize_the_army
+			eth_conquest_of_antioch
+			eth_restore_aksumite_empire
+		}
+		provinces_to_highlight = {
+			region = horn_of_africa_region
+			NOT = { religion = ROOT }
+		}
+		trigger = {
+			horn_of_africa_region = {
+				religion = ROOT
+				type = all
+			}
+			stability = 2
+			religious_unity = 0.8
+		}
+		position = 7
+		effect = {
+			add_country_modifier = {
+				name = eth_blessed_empire
+				duration = -1
+			}
+		}
+	}
+}
+
+#Conquest missions - part 1
+ethiopia_trade_slot = {
+	slot = 4
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = ETH
+	}
+	has_country_shield = yes
+
+	#Handle vassals
+	eth_please_the_vassals = {
+		icon = mission_have_two_subjects
+		required_missions = {  }
+		position = 1
+		provinces_to_highlight = {
+			OR = {
+				owned_by = DAM
+				owned_by = HDY
+			}
+		}
+		trigger = {
+			OR = {
+				DAM = {
+					has_opinion = {
+						who = ROOT
+						value = 150
+					}
+				}
+				NOT = { exists = DAM }
+			}
+			OR = {
+				HDY = {
+					has_opinion = {
+						who = ROOT
+						value = 150
+					}
+				}
+				NOT = { exists = HDY }
+			}
+		}
+		effect = {
+			#Event for Damot and Hadiya to join us
+			if = {
+				limit = {
+					OR = {
+						AND = {
+							exists = DAM
+							DAM = {
+								is_subject_of = ROOT
+							}
+						}
+						AND = {
+							exists = HDY
+							HDY = {
+								is_subject_of = ROOT
+							}
+						}
+					}
+				}
+				country_event = {
+					id = flavor_eth.35
+				}
+			}
+			sennar_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			upper_nubia_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			dongola_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			lower_nubia_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Push towards north
+	eth_unify_the_kingdoms = {
+		icon = trade_with_the_natives
+		required_missions = { eth_please_the_vassals }
+		position = 2
+		provinces_to_highlight = {
+			OR = {
+				area = sennar_area
+				area = upper_nubia_area
+				area = dongola_area
+				area = lower_nubia_area
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				OR = {
+					area = sennar_area
+					area = upper_nubia_area
+					area = dongola_area
+					area = lower_nubia_area
+				}
+				value = 8
+			}
+		}
+		effect = {
+			create_colony_mission_reward = {
+				province = 1217
+			}
+			add_accepted_culture = nubian
+			add_permanent_claim = 1232
+		}
+	}
+
+	#Retake Suakin
+	eth_retake_suakin = {
+		icon = new_pilings
+		required_missions = { eth_unify_the_kingdoms }
+		position = 3
+		provinces_to_highlight = {
+			province_id = 1232
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			owns_or_non_sovereign_subject_of = 1232
+		}
+		effect = {
+			country_event = {
+				id = flavor_eth.37
+			}
+			change_government_reform_progress = 100
+		}
+	}
+
+	#Reform the government
+	eth_reform_the_negusa_government = {
+		icon = mission_zim_strong_rulership
+		required_missions = {}
+		position = 5
+		trigger = {
+			OR = {
+				reform_level = 6
+				NOT = { has_reform = negusa_nagast }
+			}
+			OR = {
+				has_estate_privilege = estate_church_yakobs_churches
+				AND = {
+					NOT = { religion_group = christian }
+					religious_unity = 0.9
+				}
+			}
+			OR = {
+				absolutism = 40
+				AND = {
+					stability = 3
+					monthly_adm = 9
+				}
+			}
+		}
+		effect = {
+			custom_tooltip = eth_reform_the_negusa_government_ct
+			hidden_effect = {
+				set_country_flag = unlocked_solomid_empire_reform
+			}
+			country_event = { id = flavor_eth.30 }
+		}
+	}
+}
+
+#Conquest missions - part 2
+ethiopia_slot_aksumite_empire = {
+	slot = 5
+	generic = no
+	ai = yes
+	potential_on_load = {
+		has_dlc = "Origins"
+	}
+	potential = {
+		has_dlc = "Origins"
+		NOT = { map_setup = map_setup_random }
+		tag = ETH
+	}
+	has_country_shield = yes
+
+	#Develop our Ancestor's Capital
+	eth_develop_the_ancestors_city = {
+		icon = conquer_tuscany
+		required_missions = {  }
+		position = 1
+		provinces_to_highlight = {
+			province_id = 1227
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+				NOT = { num_of_times_improved = 5 }
+			}
+		}
+		trigger = {
+			1227 = {
+				is_core = ROOT
+				owned_by = ROOT
+				num_of_times_improved = 5
+			}
+		}
+		effect = {
+			1227 = {
+				add_building_construction = {
+					building = cathedral
+					speed = 1
+					cost = 0
+				}
+				add_province_modifier = {
+					name = eth_obelisk_of_axum
+					duration = -1
+				}
+			}
+			if = {
+				limit = {
+					NOT = { is_core = 1230 }
+				}
+				add_core = 1230
+			}
+			if = {
+				limit = {
+					NOT = { is_core = 2787 }
+				}
+				add_core = 2787
+			}
+			if = {
+				limit = {
+					NOT = { is_core = 2766 }
+				}
+				add_core = 2766
+			}
+		}
+	}
+
+	#Adulis, the harbor of Aksum
+	eth_harbor_city_adulis = {
+		icon = capture_adriatic_ports
+		required_missions = { eth_develop_the_ancestors_city }
+		position = 2
+		provinces_to_highlight = {
+			province_id = 1230
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { num_of_times_improved = 5 }
+			}
+		}
+		trigger = {
+			owns = 1230
+			1230 = {
+				religion = ROOT
+				num_of_times_improved = 5
+			}
+		}
+		effect = {
+			country_event = {
+				id = flavor_eth.38
+			}
+			aussa_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			ifat_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			if = {
+				limit = {
+					NOT = { is_permanent_claim = 1208 }
+					NOT = { is_core = 1208 }
+				}
+				add_permanent_claim = 1208
+			}
+			if = {
+				limit = {
+					NOT = { is_permanent_claim = 1210 }
+					NOT = { is_core = 1210 }
+				}
+				add_permanent_claim = 1210
+			}
+		}
+	}
+
+	#Face Adal
+	eth_conquer_adal = {
+		icon = mission_non-western_soldiers
+		required_missions = { eth_harbor_city_adulis }
+		position = 3
+		provinces_to_highlight = {
+			OR = {
+				area = aussa_area
+				area = ifat_area
+				province_id = 1208
+				province_id = 1210
+			}
+		}
+		trigger = {
+			num_of_owned_provinces_with = {
+				OR = {
+					area = aussa_area
+					area = ifat_area
+					province_id = 1208
+				}
+				value = 6
+			}
+			owns = 1210
+		}
+		effect = {
+			ogaden_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			somaliland_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			majarteen_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			ajuuran_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			mogadishu_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Go east
+	eth_unify_the_horn_of_africa = {
+		icon = mission_arabian_fort
+		required_missions = {
+			eth_retake_suakin
+			eth_conquer_adal
+		}
+		position = 4
+		provinces_to_highlight = {
+			region = horn_of_africa_region
+			NOT = { owned_by = ROOT }
+			is_empty = no
+		}
+		trigger = {
+			horn_of_africa_region = {
+				type = all
+				OR = {
+					is_empty = yes
+					owned_by = ROOT
+				}
+			}
+		}
+		effect = {
+			add_country_modifier = {
+				name = eth_lord_of_the_horn
+				duration = 9125
+			}
+			tihama_al_yemen_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			yemen_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			hadramut_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Eliminate Yemen
+	eth_yemens_coasts = {
+		icon = mission_persian_soldiers
+		required_missions = { eth_unify_the_horn_of_africa }
+		position = 5
+		provinces_to_highlight = {
+			OR = {
+				area = tihama_al_yemen_area
+				area = yemen_area
+				area = hadramut_area
+			}
+			NOT = { owned_by = ROOT }
+		}
+		trigger = {
+			owns = 387
+			num_of_owned_provinces_with = {
+				OR = {
+					area = tihama_al_yemen_area
+					area = yemen_area
+					area = hadramut_area
+				}
+				value = 5
+			}
+		}
+		effect = {
+			4346 = {
+				add_trade_modifier = {
+					who = ROOT
+					duration = -1
+					power = 20
+					key = ETH_CONTROL_OVER_GATE_OF_TEARS
+				}
+			}			
+			mecca_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			medina_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			tabuk_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			upper_yemen_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			asir_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			mahra_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			dhofar_area = {
+				limit = {
+					NOT = { is_permanent_claim = ROOT }
+					NOT = { is_core = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+
+	#Restore Aksumite Empire
+	eth_restore_aksumite_empire = {
+		icon = prester_john
+		required_missions = { 
+			eth_yemens_coasts
+			eth_reform_the_negusa_government
+		}
+		position = 6
+		provinces_to_highlight = {
+			region = arabia_region
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				region = arabia_region
+				value = 25
+			}
+		}
+		effect = {
+			country_event = {
+				id = flavor_eth.39
+			}
+			add_prestige = 30
+			add_country_modifier = {
+				name = eth_surpassed_aksumite_empire
+				duration = 18250
+			}
+		}
+	}
+}
