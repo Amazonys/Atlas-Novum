@@ -1,0 +1,192 @@
+namespace = IR_seize
+
+#New Control reward
+country_event = { 
+	id = IR_seize.1
+	title = "IR_seize.1.t"
+	desc = "IR_seize.1.d"
+	picture = BATTLE_eventPicture
+	
+	is_triggered_only = yes
+	
+	#immediate = {	
+	#	random_owned_province = { 
+	#		limit = { has_province_flag = cede_prov@event_target:cede_to_tag }
+	#		controller = { save_event_target_as = cede_to_tag }
+	#	}
+	#}
+	
+	after = {
+		clr_country_flag = cede_prompt@event_target:cede_to_tag
+	}
+	
+	option = {
+		name = "IR_seize.1.a" 
+		ai_chance = { factor = 99 }
+	#	trigger = { NOT = { capital_scope = { has_province_flag = cede_prov@event_target:cede_to_tag } } }
+		tooltip = {
+			every_province = {
+				limit = { has_province_flag = cede_prov@event_target:cede_to_tag }
+				cede_province = event_target:cede_to_tag
+			}
+		}
+		set_country_flag = cede_agreed
+		event_target:cede_to_tag = { country_event = { id = IR_seize.2 days = 1 } }
+	} 
+	#option = {
+	#	name = "IR_seize.1.b" 
+	#	trigger = { capital_scope = { has_province_flag = cede_prov@event_target:cede_to_tag } }
+	#	tooltip = {
+	#		collapse_nation = yes
+	#		release_all_subjects = yes
+	#	}
+	#	set_country_flag = cede_collapse
+	#	event_target:cede_to_tag = { country_event = { id = IR_seize.2 days = 1 } }
+	#} 
+	option = {
+		name = "IR_seize.1.c" 
+		trigger = { ai = no }
+		tooltip = {
+			every_province = {
+				limit = { has_province_flag = cede_prov@event_target:cede_to_tag }
+				add_core = event_target:cede_to_tag
+			}
+		}
+		set_country_flag = cede_decline
+		add_war_exhaustion = 5
+		event_target:cede_to_tag = { country_event = { id = IR_seize.2 days = 1 } }
+	} 
+} 
+
+country_event = { 
+	id = IR_seize.2
+	title = "IR_seize.2.t"
+	desc = {
+		trigger = { FROM = { has_country_flag = cede_agreed } }
+		desc = IR_seize.2.d1
+	}
+	desc = {
+		trigger = { FROM = { has_country_flag = cede_decline } }
+		desc = IR_seize.2.d2
+	}
+	desc = {
+		trigger = { FROM = { has_country_flag = cede_collapse } }
+		desc = IR_seize.2.d3
+	}
+	picture = BATTLE_eventPicture
+	
+	is_triggered_only = yes
+	
+	
+	immediate = {	
+		hidden_effect = {
+			if = {
+				limit = { FROM = { has_country_flag = cede_agreed } }
+				every_province = {
+					limit = { has_province_flag = cede_prov@ROOT }
+					change_controller = ROOT 
+					cede_province = ROOT
+				}
+				white_peace = FROM
+			}
+			else_if = {
+				limit = { FROM = { has_country_flag = cede_collapse } }
+				every_province = {
+					limit = { has_province_flag = cede_prov@ROOT }
+					change_controller = ROOT 
+					cede_province = ROOT
+				}
+				white_peace = FROM
+				FROM = {
+					collapse_nation = yes
+					release_all_subjects = yes
+					every_neighbor_country = {
+						limit = { NOT = { tag = event_target:cede_to_tag } any_core_province = { owned_by = FROM } }
+						cede_province = PREV
+					}
+				}
+				if = {
+					limit = { FROM = { exists = yes } }
+					FROM = {
+						random_neighbor_country = {
+							limit = { FROM = { NOT = { any_neighbor_country = { total_development = PREV } } } NOT = { tag = event_target:cede_to_tag } }
+							save_event_target_as = inheritor
+						}
+						if = {
+							limit = { ai = no }
+							switch_tag = event_target:inheritor
+						}
+					}
+					event_target:inheritor = {
+						inherit = FROM
+					}
+				}
+			}
+			else = {
+				every_province = {
+					limit = { has_province_flag = cede_prov@ROOT }
+					add_core = ROOT
+				}
+			}
+		}
+	}
+	
+	after = {
+		clr_country_flag = cede_to_tag@ROOT
+		every_province = {
+			limit = { has_province_flag = cede_prov@ROOT }
+			clr_province_flag = cede_prov@ROOT
+		}
+	}
+	
+	option = {
+		name = "IR_seize.2.a" 
+		trigger = { FROM = { has_country_flag = cede_agreed } }
+		tooltip = {
+			every_province = {
+				limit = { has_province_flag = cede_prov@ROOT }
+				cede_province = ROOT
+			}
+			white_peace = FROM
+		}
+	} 
+	#option = {
+	#	name = "IR_seize.2.b" 
+	#	trigger = { FROM = { has_country_flag = cede_collapse } }
+	#	tooltip = {
+	#		every_province = {
+	#			limit = { has_province_flag = cede_prov@ROOT }
+	#			change_controller = ROOT 
+	#			cede_province = ROOT
+	#		}
+	#		white_peace = FROM
+	#		FROM = {
+	#			collapse_nation = yes
+	#			release_all_subjects = yes
+		#		every_neighbor_country = {
+		#			limit = { NOT = { tag = event_target:cede_to_tag } any_core_province = { owned_by = FROM } }
+		#			cede_province = PREV
+		#		}
+		#	}
+		#	event_target:inheritor = {
+		#		inherit = FROM
+		#	}
+		#}
+	#} 
+	option = {
+		name = "IR_seize.2.c" 
+		trigger = { FROM = { has_country_flag = cede_decline } }
+		tooltip = {
+			add_war_exhaustion = 5
+			every_province = {
+				limit = { has_province_flag = cede_prov@ROOT }
+				add_territorial_core = ROOT
+			}
+		}
+	} 
+} 
+
+
+
+
+

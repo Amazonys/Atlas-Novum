@@ -1,0 +1,329 @@
+namespace = BtPLegacyItalyHRE
+
+#Written by Driaocht 18-11-16
+#Please note this is currently a pretty bandaid fix, but it is better than what we had, given BT's Italy.
+#I'll try to find the time to do a proper job later.
+
+#Italy removed from the HRE part 1
+country_event = {
+	id = BtPLegacyItalyHRE.1
+	title = "BtPLegacyItalyHRE.EVTNAME1"
+	desc = "BtPLegacyItalyHRE.EVTDESC1"
+	picture = HRE_eventPicture
+
+	is_triggered_only = yes
+	
+	option = {	#leave the Empire
+		name = "BtPLegacyItalyHRE.EVTOPTA1"
+		ai_chance = { factor = 30 }
+		set_country_flag = left_the_empire
+		set_in_empire = no
+		every_country = {
+			limit = {
+				ai = no
+				overlord_of = ROOT
+				NOT = { has_country_flag = shadow_kingdom }
+				NOT = { has_country_flag = had_shadow_kingdom_info }
+			}
+			country_event = { id = BtPLegacyItalyHRE.5 } #Info Event
+			set_country_flag = had_shadow_kingdom_info
+		}
+		every_country = {
+			limit = {
+				ai = no
+				overlord_of = ROOT
+				NOT = { has_country_flag = shadow_kingdom }
+				NOT = { has_country_flag = had_shadow_kingdom_info }
+			}
+			country_event = { id = BtPLegacyItalyHRE.5 } #Info Event
+		}
+		every_neighbor_country = {
+			limit = {
+				ai = no
+				NOT = { overlord_of = ROOT }
+				NOT = { has_country_flag = shadow_kingdom }
+				NOT = { has_country_flag = had_shadow_kingdom_info }
+			}
+			country_event = { id = BtPLegacyItalyHRE.5 } #Info Event
+		}
+		if = {
+			limit = { is_elector = yes }
+			elector = no
+		}
+		emperor = { add_opinion = { who = ROOT modifier = slipped_out_of_empire } }
+		add_opinion = { who = emperor modifier = slipped_out_of_empire }
+	}
+	
+	option = {	#Lobby to remain
+		name = "BtPLegacyItalyHRE.EVTOPTB1"
+		ai_chance = {
+			factor = 5
+			modifier = {
+				factor = 5
+				has_country_modifier = bt_ghibelline_nation
+			}
+			modifier = {
+				factor = 10
+				is_elector = yes
+			}
+			modifier = {
+				factor = 20
+				culture_group = germanic
+			}
+			modifier = {
+				factor = 20
+				capital_scope = { area = trentino_area }
+			}
+			modifier = {
+				factor = 20
+				capital_scope = { province_id = 4738 }
+			}
+		}
+		custom_tooltip = bt_lobby_to_remain_in_the_hre
+		hidden_effect = {
+			set_country_flag = bt_lobbied_to_stay_in_the_empire
+			emperor = {
+				country_event = {
+					id = BtPLegacyItalyHRE.2
+					days = 5
+				}
+			}
+		}
+	}
+}
+
+#Italy removed from the HRE part 2
+country_event = {
+	id = BtPLegacyItalyHRE.2
+	title = "BtPLegacyItalyHRE.EVTNAME2"
+	desc = "BtPLegacyItalyHRE.EVTDESC2"
+	picture = HRE_eventPicture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	trigger = { NOT = { has_country_flag = bt_emperor_lobbied_to_retain_italy } }			#Only hits emeperor once.
+
+	option = {	#Yes
+		name = "BtPLegacyItalyHRE.EVTOPTA2"
+		ai_chance = { factor = 25 }
+		custom_tooltip = bt_allow_italy_to_reamain_in_hre
+		if = {
+			limit = {
+				any_known_country = {
+					NOT = { culture_group = germanic }
+					NOT = { capital_scope = { area = trentino_area } }
+					NOT = { capital_scope = { province_id = 4738 } }
+					has_country_flag = bt_lobbied_to_stay_in_the_empire
+				}
+			}
+			add_country_modifier = {
+				name = bt_violated_league_war_treaty
+					duration = 7300
+			}
+		}
+		hidden_effect = {
+			set_country_flag = bt_emperor_lobbied_to_retain_italy
+			every_country = {
+				limit = {
+					is_part_of_hre = yes
+					capital_scope = { region = italy_region }
+					has_country_flag = bt_lobbied_to_stay_in_the_empire
+					any_neighbor_country = { is_part_of_hre = yes }
+				}
+				country_event = { id = BtPLegacyItalyHRE.3 }
+				clr_country_flag = shadow_kingdom
+				clr_country_flag = bt_lobbied_to_stay_in_the_empire
+				clr_country_flag = had_shadow_kingdom_info
+			}
+			every_country = {
+				limit = {
+					is_part_of_hre = yes
+					capital_scope = { region = italy_region }
+					has_country_flag = bt_lobbied_to_stay_in_the_empire
+					NOT = { any_neighbor_country = { is_part_of_hre = yes } }
+				}
+				country_event = { id = BtPLegacyItalyHRE.4 }
+				clr_country_flag = shadow_kingdom
+				clr_country_flag = bt_lobbied_to_stay_in_the_empire
+			}
+		}
+	}
+	
+	option = {	#No
+		name = "BtPLegacyItalyHRE.EVTOPTB2"
+		ai_chance = { factor = 75 }
+		custom_tooltip = bt_release_all_of_italy_from_hre
+		hidden_effect = {
+			set_country_flag = bt_emperor_lobbied_to_retain_italy
+			every_country = {
+				limit = {
+					is_part_of_hre = yes
+					capital_scope = { region = italy_region }
+					NOT = { capital_scope = { area = trentino_area } }
+					NOT = { capital_scope = { province_id = 4738 } }
+				}
+				country_event = { id = BtPLegacyItalyHRE.4 }
+				clr_country_flag = shadow_kingdom
+				clr_country_flag = bt_lobbied_to_stay_in_the_empire
+			}
+			italy_region = {
+				limit = {
+					is_part_of_hre = yes
+					owner = {
+						is_part_of_hre = yes
+						NOT = { capital_scope = { region = italy_region } }
+					}
+				}
+				set_in_empire = no
+				owner = {
+					country_event = { id = BtPLegacyItalyHRE.5 } #Info Event
+					set_country_flag = had_shadow_kingdom_info
+				}
+			}
+		}
+	}
+}
+
+#Italy removed from the HRE part 3
+country_event = {
+	id = BtPLegacyItalyHRE.3
+	title = "BtPLegacyItalyHRE.EVTNAME3"
+	desc = "BtPLegacyItalyHRE.EVTDESC3"
+	picture = HRE_eventPicture
+
+	is_triggered_only = yes
+	
+	option = {
+		name = "BtPLegacyItalyHRE.EVTOPTA3"
+		add_opinion = {
+			who = emperor
+			modifier = stayed_in_the_empire
+		}
+		emperor = {
+			add_imperial_influence = 3
+			add_opinion = {
+				who = ROOT
+				modifier = stayed_in_the_empire
+			}
+		}
+	}
+}
+
+#Italy removed from the HRE part 4
+country_event = {
+	id = BtPLegacyItalyHRE.4
+	title = "BtPLegacyItalyHRE.EVTNAME4"
+	desc = "BtPLegacyItalyHRE.EVTDESC4"
+	picture = HRE_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = { NOT = { emperor = { overlord_of = ROOT } } }
+	
+	option = {
+		name = "BtPLegacyItalyHRE.EVTOPTA4"
+		set_in_empire = no
+		every_country = {
+			limit = {
+				ai = no
+				overlord_of = ROOT
+				NOT = { has_country_flag = shadow_kingdom }
+				NOT = { has_country_flag = had_shadow_kingdom_info }
+			}
+			country_event = { id = BtPLegacyItalyHRE.5 } #Info Event
+		}
+		every_neighbor_country = {
+			limit = {
+				ai = no
+				NOT = { overlord_of = ROOT }
+				NOT = { has_country_flag = shadow_kingdom }
+				NOT = { has_country_flag = had_shadow_kingdom_info }
+			}
+			country_event = { id = BtPLegacyItalyHRE.5 } #Info Event
+		}
+		if = {
+			limit = { is_elector = yes }
+			elector = no
+		}
+		emperor = { add_opinion = { who = ROOT modifier = slipped_out_of_empire } }
+		add_opinion = { who = emperor modifier = slipped_out_of_empire }
+	}
+}
+
+#Italy removed from the HRE part 5
+country_event = {
+	id = BtPLegacyItalyHRE.5
+	title = "BtPLegacyItalyHRE.EVTNAME5"
+	desc = "BtPLegacyItalyHRE.EVTDESC5"
+	picture = HRE_eventPicture
+
+	is_triggered_only = yes
+	
+	option = {
+		name = "hre_event.3.a"
+		trigger = {
+			OR = {
+				culture_group = latin
+				capital_scope = {
+					region = italy_region
+				}
+			}
+			is_part_of_hre = no
+		}
+		every_owned_province = {
+			limit = {
+				is_part_of_hre = yes
+				region = italy_region
+			}
+			set_in_empire = no
+		}
+	}
+	
+	option = {
+		name = "hre_event.3.b"
+		trigger = {
+			NOT = {
+				culture_group = latin
+				capital_scope = {
+					region = italy_region
+				}
+			}
+			is_part_of_hre = no
+		}
+	}
+	
+	option = {
+		name = "hre_event.3.c"
+		trigger = {
+			NOT = {
+				culture_group = latin
+				capital_scope = {
+					region = italy_region
+				}
+			}
+			is_part_of_hre = yes
+		}
+	}
+}
+
+#Switzerland removed from the HRE
+country_event = {
+	id = BtPLegacyItalyHRE.6
+	title = "BtPLegacyItalyHRE.EVTNAME6"
+	desc = "BtPLegacyItalyHRE.EVTDESC6"
+	picture = HRE_eventPicture
+
+	is_triggered_only = yes
+	
+	option = {
+		name = "BtPLegacyItalyHRE.EVTOPTA6"
+		set_in_empire = no
+		if = {
+			limit = { is_elector = yes }
+			elector = no
+		}
+		emperor = { add_opinion = { who = ROOT modifier = slipped_out_of_empire } }
+		add_opinion = { who = emperor modifier = slipped_out_of_empire }
+	}
+}

@@ -1,0 +1,453 @@
+namespace = IR_flavor_ger_misc
+
+country_event = {
+	id = IR_flavor_ger_misc.3
+	title = "IR_flavor_ger_misc.3.t"
+	desc = "IR_flavor_ger_misc.3.d"
+	picture = COURT_eventPicture
+
+	trigger = {
+		OR = {
+			tag = SAX
+			tag = BAV
+			tag = UBV
+			tag = LBV
+			tag = ING
+			#any german nation without primogeniture
+		}
+		#has king with at least a male heir
+		NOT = { has_country_flag = IR_flavor_ger_misc.1_b }
+		always = no
+	}
+
+	is_triggered_only = yes #currently bugged, not supposed to fire yet
+	
+#	mean_time_to_happen = {
+#		months = 100
+#		#needs to be sorta random? how do I do this @amyz?
+#	}
+		
+	option = { #We must divide our nation between my sons
+		name = "IR_flavor_ger_misc.3.a"
+		ai_chance = { factor = 50 }
+		#random cored nation cedes from the country
+		#saxony = thuringen etc. 
+	}
+	option = { #We must institute Primogeniture
+		name = "IR_flavor_ger_misc.3.b"
+		ai_chance = { factor = 50 }
+		#any province: revolt = { type = pretender_rebels size = 2 } controller = REB
+		#unrest revolt = type = nationalist_rebels? ??
+		set_country_flag = IR_flavor_ger_misc.1_b
+	}
+}
+
+namespace = IR_flavor_SAX
+
+#Saxon Fratricidal War:
+#REPLACE WITH CRISIS???
+#country event Fraticidal War of Saxony https://en.wikipedia.org/wiki/Saxon_Fratricidal_War
+	#   Link
+	#	war broke out 1446 after the brothers were unable to resolve the dispute among the inheritance between them
+
+#Incorporated into vanilla events
+#country_event = { 	
+#	id = IR_flavor_SAX.1
+#	title = "IR_flavor_SAX.1.t"
+#	desc = "IR_flavor_SAX.1.d"
+#	picture = COURT_eventPicture
+#}
+
+#Peace Out
+country_event = {
+	id = IR_flavor_SAX.2
+	title = "IR_flavor_SAX.2.t"
+	desc = "IR_flavor_SAX.2.d"
+	picture = COURT_eventPicture
+
+	fire_only_once = yes
+	major = yes
+	major_trigger = {
+		tag = THU
+	}
+
+	trigger = {
+		tag = SAX
+		war_with = THU
+		has_country_flag = sax_thu_brother_war
+	}
+
+	mean_time_to_happen = {
+		months = 36
+	}
+	option = {
+		name = "IR_flavor_SAX.2.a"
+		ai_chance = { factor = 1 }
+		white_peace = THU
+		clr_country_flag = sax_thu_brother_war
+		THU = {
+			clr_country_flag = sax_thu_brother_war
+			clr_country_flag = thu_hussite_mercs
+		}
+	}
+	option = { #continue fighting
+		name = "IR_flavor_SAX.2.b"
+		trigger = {
+			war_score = 25
+		}
+		ai_chance = {
+			factor = 4
+			modifier = {
+				factor = 0.1
+				war_exhaustion = 10
+			}
+		}
+	}
+}
+
+#Thuringen seeks help from Bohemia
+country_event = {
+	id = IR_flavor_SAX.3
+	title = "IR_flavor_SAX.3.t"
+	desc = "IR_flavor_SAX.3.d"
+	picture = COURT_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = THU
+		war_with = SAX
+		has_country_flag = sax_thu_brother_war
+	}
+
+	mean_time_to_happen = {
+		months = 3
+	}
+	option = {
+		name = "IR_flavor_SAX.3.a"
+		ai_chance = { factor = 1 }
+		set_country_flag = thu_hussite_mercs
+		add_treasury = -100
+	}
+	option = {
+		name = "IR_flavor_SAX.3.b"
+	}
+}
+
+#cleanup country_flag
+country_event = {
+	id = IR_flavor_SAX.4
+	title = "IR_flavor_SAX.2.t"
+	desc = "IR_flavor_SAX.2.d"
+	picture = COURT_eventPicture
+
+	fire_only_once = yes
+	hidden = yes
+
+	trigger = {
+		tag = SAX
+		NOT = { war_with = THU }
+		has_country_flag = sax_thu_brother_war
+	}
+
+	mean_time_to_happen = {
+		months = 1
+	}
+	immediate = {
+		clr_country_flag = sax_thu_brother_war
+		THU = {
+			clr_country_flag = sax_thu_brother_war
+			clr_country_flag = thu_hussite_mercs
+		}
+	}
+	option = {
+		name = "IR_flavor_SAX.2.a"
+		ai_chance = { factor = 1 }
+	}
+}
+
+
+#death of one of the saxon lines
+#Probably will be reworked
+country_event = {
+	id = IR_flavor_SAX.5
+	title = "IR_flavor_SAX.5.t"
+	desc = "IR_flavor_SAX.5.d"
+	picture = COURT_eventPicture
+
+	fire_only_once = yes
+	major = yes
+	major_trigger = {
+		OR = { 
+		tag = THU
+		tag = SAX
+		}
+	}
+
+	trigger = {
+		OR = {
+		tag = SAX
+		tag = THU
+		}
+		exists = THU
+		exists = SAX
+		dynasty = "von Wettin"
+		is_year = 1475
+		NOT = { 
+			is_year = 1490
+		}
+		ai = yes #fix until i can make it work properly
+	}
+
+	mean_time_to_happen = {
+		months = 36
+		modifier = {
+			factor = 0.5
+			tag = THU
+		}
+	}
+	immediate = {
+		if = { limit = { ai = yes tag = SAX }
+			THU = { inherit = SAX set_country_flag = treaty_of_leipzig.initialize }
+		}
+		else_if = { limit = { ai = yes tag = THU }
+			SAX = { inherit = THU set_country_flag = treaty_of_leipzig.initialize }
+		}
+	}
+	option = {
+		name = "IR_flavor_SAX.5.a"
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Treaty of Leipzig
+country_event = { 	
+	id = IR_flavor_SAX.6
+	title = "IR_flavor_SAX.6.t"
+	desc = "IR_flavor_SAX.6.d"
+	picture = COURT_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		has_country_flag = treaty_of_leipzig.initialize
+	}
+
+	mean_time_to_happen = {
+		months = 48
+	}
+	option = {
+		name = "IR_flavor_SAX.6.a"
+		ai_chance = { factor = 50 }
+		hidden_effect = {
+			every_owned_province = {
+				limit = { 
+					OR = { 
+						province_id = 61
+						province_id = 7181
+						province_id = 10558
+						province_id = 4744
+						province_id = 62
+						province_id = 4743
+					}
+				}
+			remove_core = SAX
+			cede_province = MEI
+			}
+			MEI = { 
+				define_ruler = {
+				name = "Albert III"
+				dynasty = "von Wettin"
+				culture = ROOT
+				religion = ROOT
+				dip = 3
+				adm = 3
+				mil = 3
+				}
+			}
+			set_capital = 59
+		}
+		tooltip = {
+			release = MEI
+		}
+	}
+	option = {
+		name = "IR_flavor_SAX.6.c"
+		ai_chance = { factor = 50 }
+		hidden_effect = {
+			every_owned_province = {
+				limit = { 
+					OR = { 
+						province_id = 61
+						province_id = 7181
+						province_id = 10558
+						province_id = 4744
+						province_id = 62
+						province_id = 4743
+					}
+				}
+			remove_core = SAX
+			cede_province = MEI
+			}
+			MEI = { 
+				define_ruler = {
+				name = "Albert III"
+				dynasty = "von Wettin"
+				culture = ROOT
+				religion = ROOT
+				dip = 3
+				adm = 3
+				mil = 3
+				}
+			}
+			switch_tag = MEI
+		}
+		tooltip = {
+			switch_tag = MEI
+		}
+		
+	}
+}
+
+namespace = IR_flavor_BAV
+
+country_event = {
+	id = IR_flavor_BAV.1
+	title = "IR_flavor_BAV.1.t"
+	desc = "IR_flavor_BAV.1.d"
+	picture = COURT_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = ING
+		is_year = 1444
+		#ING = { dynasty = "von Wittelsbach" }
+		#NOT = { ruler_has_personality = fertile	} broken
+	}
+
+	mean_time_to_happen = {
+		months = 36
+	}
+		
+	option = {
+		name = "IR_flavor_BAV.1.a"
+		LBV = { inherit = ING }
+	}
+}
+
+
+country_event = {
+	id = IR_flavor_BAV.10
+	title = "IR_flavor_BAV.1.t"
+	desc = "IR_flavor_BAV.1.d"
+	picture = COURT_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		always = no
+	}
+
+		
+	option = {
+		enable_hre_leagues = yes
+	}	
+	option = {
+		enable_hre_leagues = no
+	}
+	option = {
+		join_league = protestant
+	}
+	option = {
+		join_league = catholic
+	}
+	option = { 
+		set_hre_religion_locked = yes
+	}
+}
+
+namespace = IR_flavor_Swiss
+
+
+country_event = { #Old Zürich War
+	id = IR_flavor_Swiss.1
+	title = IR_flavor_Swiss.1.t
+	desc = IR_flavor_Swiss.1.desc
+	picture = BATTLE_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = SWZ
+	}
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = {
+		name = IR_flavor_Swiss.1.a
+		ai_chance = { factor = 4 }
+		ZCH = { 
+			declare_war_with_cb = {
+				who = ROOT
+				casus_belli = cb_annex
+			}
+		}
+		GAU = { 
+			join_all_offensive_wars_of = ZCH
+		}
+		set_country_flag = oldzurichwar_continued
+	}
+	
+	option = {
+		name = IR_flavor_Swiss.1.b
+		ai_chance = { 
+			factor = 1
+		}
+	}
+}
+
+country_event = { #Old Zürich War Forced Peace
+	id = IR_flavor_Swiss.2
+	title = IR_flavor_Swiss.2.t
+	desc = IR_flavor_Swiss.2.desc
+	picture = BATTLE_eventPicture
+	
+	trigger = {
+		tag = SWZ
+		war_with = ZCH
+		has_country_flag = oldzurichwar_continued
+		OR = {
+			AND = {
+				controls = 1869
+				war_exhaustion = 5
+			}
+			AND = {
+				war_exhaustion = 10
+				ZCH = { war_exhaustion = 10 }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 2
+	}
+	
+	option = { #Peace out
+		name = IR_flavor_Swiss.2.a
+		ai_chance = { factor = 4 }
+		white_peace = ZCH
+		vassalize = ZCH
+		add_prestige = -10
+	}
+	
+	option = { #Continue
+		name = IR_flavor_Swiss.2.b
+		ai_chance = { 
+			factor = 1
+		}
+		add_war_exhaustion = 4
+	}
+}
