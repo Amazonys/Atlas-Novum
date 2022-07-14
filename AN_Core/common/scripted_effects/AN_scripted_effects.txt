@@ -1,28 +1,22 @@
 # CUSTOM SCRIPTED EFFECTS
 ## MISSION OVERHAUL
 complete_module_1 = {
+	clr_country_flag = $MODULE$_active 
+	set_country_flag = $MODULE$_completed
+	clr_country_flag = $SIDE$_module_active
 	if = {
-		limit = { 
-			mission_completed = $PREREQ_1$
-		}
-		clr_country_flag = $MODULE$_active 
-		set_country_flag = $MODULE$_completed
-		clr_country_flag = $SIDE$_module_active
-		if = {
-			limit = { NOT = { has_country_flag = left_module_active } }
-			country_event = { id = AN_module_load.2 days = 0 }
-		}
-		if = {
-			limit = { NOT = { has_country_flag = right_module_active } }
-			country_event = { id = AN_module_load.3 days = 0 }
-		}
+		limit = { NOT = { has_country_flag = left_module_active } }
+		country_event = { id = AN_module_load.2 days = 0 }
+	}
+	if = {
+		limit = { NOT = { has_country_flag = right_module_active } }
+		country_event = { id = AN_module_load.3 days = 0 }
 	}
 }
 complete_module_2 = {
 	if = {
 		limit = { 
 			mission_completed = $PREREQ_1$
-			mission_completed = $PREREQ_2$
 		}
 		clr_country_flag = $MODULE$_active 
 		set_country_flag = $MODULE$_completed
@@ -42,7 +36,6 @@ complete_module_3 = {
 		limit = { 
 			mission_completed = $PREREQ_1$
 			mission_completed = $PREREQ_2$
-			mission_completed = $PREREQ_3$
 		}
 		clr_country_flag = $MODULE$_active 
 		set_country_flag = $MODULE$_completed
@@ -58,6 +51,26 @@ complete_module_3 = {
 	}
 }
 complete_module_4 = {
+	if = {
+		limit = { 
+			mission_completed = $PREREQ_1$
+			mission_completed = $PREREQ_2$
+			mission_completed = $PREREQ_3$
+		}
+		clr_country_flag = $MODULE$_active 
+		set_country_flag = $MODULE$_completed
+		clr_country_flag = $SIDE$_module_active
+		if = {
+			limit = { NOT = { has_country_flag = left_module_active } }
+			country_event = { id = AN_module_load.2 days = 0 }
+		}
+		if = {
+			limit = { NOT = { has_country_flag = right_module_active } }
+			country_event = { id = AN_module_load.3 days = 0 }
+		}
+	}
+}
+complete_module_5 = {
 	if = {
 		limit = { 
 			mission_completed = $PREREQ_1$
@@ -111,36 +124,23 @@ control_mission_cede = {
 	}
 }
 
-province_group_cede = {
-	every_province = {
-		limit = { $PROVINCES$ = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } owned_by = $TAG$ }
-		cede_province = PREV
-	}
-}
-
 discover_mission_cede = { # NEW CODE
 	if = { 
-		limit = { $PROVINCE_ID$ = { is_empty = yes } NOT = { has_global_flag = AN_discovery_missions_disabled } }
-		hidden_effect = {
-			$PROVINCE_ID$ = {
-				change_trade_goods = $TRADE_GOOD$
-				change_religion = ROOT	
-				change_culture = ROOT
-				add_territorial_core = ROOT	
-			}
+		limit = { $PROVINCE_ID$ = { is_empty = yes } }
+		hidden_effect = { 
+			$PROVINCE_ID$ = { 
+				add_territorial_core = ROOT 
+				change_trade_goods = $TRADE_GOOD$ 
+			} 
 		}
-		add_treasury = $COST$
 		$PROVINCE_ID$ = { 
 			cede_province = ROOT 
-			add_building = $BUILDING$
 		}
 	}
 	else_if = { 
-		limit = { $PROVINCE_ID$ = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } NOT = { has_global_flag = AN_discovery_missions_disabled } }
+		limit = { $PROVINCE_ID$ = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } }
 		if = {
-			limit = { 
-				$PROVINCE_ID$ = { owner = { is_colonizer_tech_group = no } }
-			}
+			limit = { $PROVINCE_ID$ = { owner = { is_colonizer_tech_group = no } } }
 			hidden_effect = {
 				$PROVINCE_ID$ = {
 					owner = { country_event = { id = AN_seize.1 days = 0 } }
@@ -148,64 +148,20 @@ discover_mission_cede = { # NEW CODE
 					add_territorial_core = ROOT	
 				}	
 			}
-			add_treasury = $COST$
 			$PROVINCE_ID$ = { 
 				cede_province = ROOT 
-				add_building = $BUILDING$
 			}
 		}
-		else = { #changed from #else_if
-		#	limit = { $PROVINCE_ID$ = { owner = { is_colonizer_tech_group = yes } } }
+		else = {
+			limit = { $PROVINCE_ID$ = { owner = { is_colonizer_tech_group = yes } } }
 			$PROVINCE_ID$ = { add_permanent_claim = ROOT }
 		}
 	}
 }
 
-discover_mission_cede_alt = { # NO BUILDING
-	if = { 
-		limit = { $PROVINCE_ID$ = { is_empty = yes } NOT = { has_global_flag = AN_discovery_missions_disabled } }
-		hidden_effect = {
-			$PROVINCE_ID$ = {
-				change_trade_goods = $TRADE_GOOD$
-				change_religion = ROOT	
-				change_culture = ROOT
-				add_territorial_core = ROOT	
-			}
-		}
-		$PROVINCE_ID$ = { 
-			cede_province = ROOT 
-			#add_building = $BUILDING$
-		}
-	}
-	else_if = { 
-		limit = { $PROVINCE_ID$ = { is_city = yes NOT = { country_or_non_sovereign_subject_holds = ROOT } } NOT = { has_global_flag = AN_discovery_missions_disabled } }
-		if = {
-			limit = { 
-				$PROVINCE_ID$ = { owner = { is_colonizer_tech_group = no } }
-			}
-			hidden_effect = {
-				$PROVINCE_ID$ = {
-					owner = { country_event = { id = AN_seize.1 days = 0 } }
-					change_trade_goods = $TRADE_GOOD$
-					add_territorial_core = ROOT	
-				}	
-			}
-			add_treasury = $COST$
-			$PROVINCE_ID$ = { 
-				cede_province = ROOT 
-				#add_building = $BUILDING$
-			}
-		}
-		else = { #changed from #else_if
-		#	limit = { $PROVINCE_ID$ = { owner = { is_colonizer_tech_group = yes } } }
-			$PROVINCE_ID$ = { add_permanent_claim = ROOT }
-		}
-	}
-}
-
+#NEEDS REDO
 colony_mission_cede = {
 	add_treasury = $COST$
-	custom_tooltip = $TOOLTIP$
 	every_province = {
 		limit = { $PROVINCES$ = yes NOT = { owned_by = ROOT } }
 		if = { 
@@ -222,7 +178,7 @@ colony_mission_cede = {
 			if = {
 				limit = { owner = { is_colonizer_tech_group = no } }
 				hidden_effect = {
-					owner = { country_event = { id = orion_seize.1 days = 0 } }
+					owner = { country_event = { id = AN_seize.1 days = 0 } }
 					add_territorial_core = ROOT		
 					cede_province = ROOT 
 				}
@@ -230,142 +186,6 @@ colony_mission_cede = {
 			else = { add_permanent_claim = ROOT }
 		}
 	}
-}
-
-assign_claim_core = {
-	hidden_effect = {
-		every_province = {
-			limit = {
-				$PROVINCES$ = yes
-				NOT = { country_or_non_sovereign_subject_holds = PREV }
-                NOT = { is_$TYPE$ = PREV }
-			}
-			add_$TYPE$ = PREV
-		}
-	}
-}
-
-assign_group_trade_goods = {
-	#hidden_effect = {
-		every_province = {
-			limit = { $PROVINCES$ = yes NOT = { trade_goods = $TRADE_GOOD$ } }
-			change_trade_goods = $TRADE_GOOD$
-		}
-	#}
-}
-
-assign_group_building = {
-	#hidden_effect = {
-		every_province = {
-			limit = { $PROVINCES$ = yes NOT = { has_building = $BUILDING$ } }
-			add_building = $BUILDING$
-		}
-	#}
-}
-
-assign_group_prov_modifier = {
-	tooltip = {
-		10034 = {
-			add_province_modifier = {
-				name = $MODIFIER$
-				duration = $DURATION$
-			}
-		}
-	}
-	hidden_effect = {
-		every_province = {
-			limit = {
-				$PROVINCES$ = yes
-				is_$TYPE$ = yes
-				NOT = { has_province_modifier = $MODIFIER$ }
-			}
-			add_province_modifier = {
-				name = $MODIFIER$
-				duration = $DURATION$
-			}
-		}
-	}
-}
-
-#this does not use the 10034 "Any highlighed province"
-assign_group_prov_modifier_alt = {
-	#tooltip = {
-	#	10034 = {
-	#		add_province_modifier = {
-	#			name = $MODIFIER$
-	#			duration = $DURATION$
-	#		}
-	#	}
-	#}
-	#hidden_effect = {
-		every_province = {
-			limit = {
-				$PROVINCES$ = yes
-				is_$TYPE$ = yes
-				NOT = { has_province_modifier = $MODIFIER$ }
-			}
-			add_province_modifier = {
-				name = $MODIFIER$
-				duration = $DURATION$
-			}
-		}
-	#}
-}
-
-#COLONY RESERVATIONS WITH MODIFIERS
-#this does not use the 10034 
-assign_colony_reserve = {
-	tooltip = {
-		10034 = {
-			add_permanent_province_modifier = {
-				name = $MODIFIER$
-				duration = $DURATION$
-			}
-		}
-	}
-	hidden_effect = {
-		every_province = {
-			limit = {
-				$PROVINCES$ = yes
-				OR = {
-					is_empty = yes
-					is_colony = yes
-				}
-				NOT = { has_province_modifier = $MODIFIER$ }
-			}
-			add_permanent_province_modifier = {
-				name = $MODIFIER$
-				duration = $DURATION$
-			}
-		}
-	}
-}
-
-assign_colony_reserve_alt = {
-	#tooltip = {
-	#	10034 = {
-	#		add_permanent_province_modifier = {
-	#			name = $MODIFIER$
-	#			duration = $DURATION$
-	#		}
-	#	}
-	#}
-	#hidden_effect = {
-		every_province = {
-			limit = {
-				$PROVINCES$ = yes
-				OR = {
-					is_empty = yes
-					is_colony = yes
-				}
-				NOT = { has_province_modifier = $MODIFIER$ }
-			}
-			add_permanent_province_modifier = {
-				name = $MODIFIER$
-				duration = $DURATION$
-			}
-		}
-	#}
 }
 
 
