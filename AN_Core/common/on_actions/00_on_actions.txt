@@ -1012,6 +1012,7 @@ on_siege_lost_province =  {
 # root = location, from = country that abandons colony
 # Fired right before the colony is abandoned.
 on_abandon_colony = {
+	### AMYZ - AI TRIES TO SELL EVENT?
 }
 
 # province
@@ -4256,43 +4257,82 @@ on_lose_great_power_status = {
 
 # province
 on_province_religion_converted = {
-	on_province_religion_converted_estate_privileges_effect = yes
 	if = {
 		limit = {
-			owner = {
-				has_country_modifier = son_fetishism_as_secondary_religion
+			owner = { OR = { has_province_modifier = AN_conv_to_majority has_province_modifier = AN_conv_total } }
+		}
+		if = {
+			limit = {
+				owner = { has_province_modifier = AN_conv_to_majority }
 			}
-			religion = shamanism
-			NOT = { has_province_modifier = son_fetishism_as_secondary_religion_province }
+			set_variable = {
+				which = AN_minority_religion
+				which = AN_province_religion
+			}
+			set_variable = { which = AN_minority_religion_size value = 3 } 
+			AN_check_religion_minorities = yes
+		}	
+		
+		### vanilla
+		on_province_religion_converted_estate_privileges_effect = yes
+		if = {
+			limit = {
+				owner = {
+					has_country_modifier = son_fetishism_as_secondary_religion
+				}
+				religion = shamanism
+				NOT = { has_province_modifier = son_fetishism_as_secondary_religion_province }
+			}
+			add_province_modifier = {
+				name = son_fetishism_as_secondary_religion_province
+				duration = -1
+				desc = son_fetishism_as_secondary_religion_province_desc
+			}
 		}
-		add_province_modifier = {
-			name = son_fetishism_as_secondary_religion_province
-			duration = -1
-			desc = son_fetishism_as_secondary_religion_province_desc
+		else_if = {
+			limit = {
+				OR = {
+					owner = {
+						NOT = { has_country_modifier = son_fetishism_as_secondary_religion }
+					}
+					NOT = { religion = shamanism }
+				}
+				has_province_modifier = son_fetishism_as_secondary_religion_province
+			}
+			remove_province_modifier = son_fetishism_as_secondary_religion_province
 		}
+		judaism_on_province_change_religion_or_change_owner_effect = yes
+		###
 	}
 	else_if = {
-		limit = {
-			OR = {
-				owner = {
-					NOT = { has_country_modifier = son_fetishism_as_secondary_religion }
-				}
-				NOT = { religion = shamanism }
-			}
-			has_province_modifier = son_fetishism_as_secondary_religion_province
+		limit = { 
+			owner = { religion = variable:PREV:AN_minority_religion } }
 		}
-		remove_province_modifier = son_fetishism_as_secondary_religion_province
+		if = { 
+			limit = { 
+				check_variable = { which = AN_minority_religion_size value = 3 }
+			}
+			set_variable = {
+				which = AN_minority_religion
+				which = AN_province_religion
+			}
+			AN_check_religion_minorities = yes
+		}
+		else_if = {
+			limit = { 
+				check_variable = { which = AN_minority_religion_size value = 1 }
+			}
+			change_religion = variable:AN_province_religion
+			change_variable = { which = AN_minority_religion_size value = 1 }
+			AN_check_religion_minorities = yes
+		}
 	}
-	judaism_on_province_change_religion_or_change_owner_effect = yes
-	
-	#Atlas Novum Minorities
-	# If culture converted, set previous culture as a large minority
-	set_variable = {
-		which = AN_minority_religion
-		which = AN_province_religion
+	else = {
+		export_to_variable = { name = AN_minority_religion value = religion }
+		change_religion = variable:AN_province_religion
+		set_variable = { which = AN_minority_religion_size value = 1 }
+		AN_check_religion_minorities = yes
 	}
-	set_variable = { which = AN_minority_religion_size value = 3 } 
-	AN_check_religion_minorities = yes
 }
 
 # province
@@ -5256,79 +5296,79 @@ on_colonist_boosting_colony = {
 	hidden_effect = {
 		if = {
 			limit = {
-				OR = {
+				#OR = {
 					religion = noreligion
 					#test if colonists outnumber natives
-					variable_arithmetic_trigger = {
-						custom_tooltip = colonysize_is_larger_than_nativesize_tt
-						export_to_variable = {
-							which = vab_colonysize
-							value = trigger_value:colonysize
-						}
-						export_to_variable = {
-							which = vab_nativesize
-							value = trigger_value:native_size
-						}
-						multiply_variable = {
-							which = vab_nativesize
-							value = 100
-						}
-						check_variable = {
-							which = vab_colonysize
-							which = vab_nativesize
-						}
-					}
-					is_in_capital_area = yes
-					OR = {
-						continent = north_america
-						continent = south_america
-					}
-					NOT = {
-						OR = {
-							has_dlc = "Dharma"
-							has_dlc = "Wealth of Nations"
-						}
-					}
-				}
+				#	variable_arithmetic_trigger = {
+				#		custom_tooltip = colonysize_is_larger_than_nativesize_tt
+				#		export_to_variable = {
+				#			which = vab_colonysize
+				#			value = trigger_value:colonysize
+				#		}
+				#		export_to_variable = {
+				#			which = vab_nativesize
+				#			value = trigger_value:native_size
+				#		}
+				#		multiply_variable = {
+				#			which = vab_nativesize
+				#			value = 100
+				#		}
+				#		check_variable = {
+				#			which = vab_colonysize
+				#			which = vab_nativesize
+				#		}
+				#	}
+				#	is_in_capital_area = yes
+				#	OR = {
+				#		continent = north_america
+				#		continent = south_america
+				#	}
+				#	NOT = {
+				#		OR = {
+				#			has_dlc = "Dharma"
+				#			has_dlc = "Wealth of Nations"
+				#		}
+				#	}
+				#}
 			}
 			change_religion = FROM
 		}
 		if = {
 			limit = {
-				OR = {
+				#OR = {
 					culture = noculture
 					#test if colonists outnumber natives
-					variable_arithmetic_trigger = {
-						custom_tooltip = colonysize_is_larger_than_nativesize_tt
-						export_to_variable = {
-							which = vab_colonysize
-							value = trigger_value:colonysize
-						}
-						export_to_variable = {
-							which = vab_nativesize
-							value = trigger_value:native_size
-						}
-						multiply_variable = {
-							which = vab_nativesize
-							value = 100
-						}
-						check_variable = {
-							which = vab_colonysize
-							which = vab_nativesize
-						}
-					}
-					is_in_capital_area = yes
-					OR = {
-						continent = north_america
-						continent = south_america
-					}
-					NOT = {
-						OR = {
-							has_dlc = "Dharma"
-							has_dlc = "Wealth of Nations"
-						}
-					}
-				}
+					#variable_arithmetic_trigger = {
+					#	custom_tooltip = colonysize_is_larger_than_nativesize_tt
+					#	export_to_variable = {
+					#		which = vab_colonysize
+					#		value = trigger_value:colonysize
+					#	}
+					#	export_to_variable = {
+					#		which = vab_nativesize
+					#		value = trigger_value:native_size
+					#	}
+					#	multiply_variable = {
+					#		which = vab_nativesize
+					#		value = 100
+					#	}
+					#	check_variable = {
+					#		which = vab_colonysize
+					#		which = vab_nativesize
+					#	}
+					#}
+					#is_in_capital_area = yes
+					#OR = {
+					#	continent = north_america
+					#	continent = south_america
+					#}
+					#NOT = {
+					#	OR = {
+					#		has_dlc = "Dharma"
+					#		has_dlc = "Wealth of Nations"
+					#	}
+					#}
+				#}
 			}
 			change_culture = FROM
 			change_original_culture = FROM
