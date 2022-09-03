@@ -1,5 +1,13 @@
 AN_check_minorities = {
 	hidden_effect = {
+		export_to_variable = {
+			variable_name = AN_province_culture
+			value = culture
+		}
+		export_to_variable = {
+			variable_name = AN_province_religion
+			value = religion
+		}
 		if = {
 			limit = { owner = { OR = { primary_culture = variable:PREV:AN_minority_culture accepted_culture = variable:PREV:AN_minority_culture } } }
 			if = {
@@ -453,19 +461,16 @@ AN_culture_calc = {
 				}
 			}
 			else = {
-				change_culture = variable:AN_target_culture
-				set_variable = { which = AN_target_culture value = 0 }
-				set_variable = { which = AN_minority_culture value = 0 } 
-				set_variable = { which = AN_minority_culture_size value = 0 } 
-				remove_province_modifier = AN_integrated_minority_culture_1
-				remove_province_modifier = AN_integrated_minority_culture_2
-				remove_province_modifier = AN_integrated_minority_culture_3
-				remove_province_modifier = AN_coexisting_minority_culture_1
-				remove_province_modifier = AN_coexisting_minority_culture_2
-				remove_province_modifier = AN_coexisting_minority_culture_3
-				remove_province_modifier = AN_oppressed_minority_culture_1
-				remove_province_modifier = AN_oppressed_minority_culture_2
-				remove_province_modifier = AN_oppressed_minority_culture_3
+				if = { 
+					limit = { NOT = { is_variable_equal = { which = AN_province_culture which = AN_target_culture } } }
+					change_culture = variable:AN_target_culture
+					set_variable = {
+						which = AN_province_culture
+						which = AN_target_culture
+					}
+				}
+				subtract_variable = { which = AN_minority_culture_size value = 1 } 
+				AN_check_minorities = yes 
 			}
 			set_variable = { which = AN_majority_progress value = 0 }
 		}
@@ -500,19 +505,22 @@ AN_culture_calc = {
 				AN_check_minorities = yes
 			}
 			else = {
-				change_culture = variable:AN_target_culture
-				set_variable = { which = AN_target_culture value = 0 }
-				set_variable = { which = AN_minority_culture value = 0 } 
-				set_variable = { which = AN_minority_culture_size value = 0 } 
-				remove_province_modifier = AN_integrated_minority_culture_1
-				remove_province_modifier = AN_integrated_minority_culture_2
-				remove_province_modifier = AN_integrated_minority_culture_3
-				remove_province_modifier = AN_coexisting_minority_culture_1
-				remove_province_modifier = AN_coexisting_minority_culture_2
-				remove_province_modifier = AN_coexisting_minority_culture_3
-				remove_province_modifier = AN_oppressed_minority_culture_1
-				remove_province_modifier = AN_oppressed_minority_culture_2
-				remove_province_modifier = AN_oppressed_minority_culture_3
+				if = { 
+					limit = { NOT = { is_variable_equal = { which = AN_minority_culture which = AN_target_culture } } }
+					set_variable = { which = AN_minority_culture which = AN_target_culture }
+				}
+				if = {
+					limit = { check_variable = { which = AN_minority_culture_size value = 3 } } 
+					change_culture = variable:AN_minority_culture
+					set_variable = {
+						which = AN_minority_culture
+						which = AN_province_culture
+					}
+				}
+				else = { 
+					change_variable = { which = AN_minority_culture_size value = 1 } 
+				}
+				AN_check_minorities = yes 
 			}
 			set_variable = { which = AN_minority_progress value = 0 }
 		}
