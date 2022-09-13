@@ -109,6 +109,7 @@ default = {
 	manpower_to_overlord = 0.0							# Percent of subject FL to use as base for modifiers
 	sailors_to_overlord = 0.0							# Percent of subject FL to use as base for modifiers
 	military_focus = 1.0								# How much the AI subject should spend etc. on army and forts. 0 should make them spend nothing. Very high values will probably not make a big difference since there will be sanity checks.
+	annex_cost_per_development = 8.0					# annex/integrate cost per development
 
 	relative_power_class = 1 							# See description above
 	should_quit_wars_on_activation = yes
@@ -222,6 +223,23 @@ vassal = {
 	modifier_overlord = {
 		modifier = vassal_subject
 	}
+	modifier_overlord = {
+		modifier = pirate_subject
+		trigger = {
+			has_government_attribute = is_pirate_republic_reform
+			overlord = {
+				has_government_attribute = pirate_vassal_bonus
+			}
+		}
+	}
+	modifier_subject = {
+		modifier = subject_tax_modifier
+		trigger = {
+			overlord = {
+				has_government_attribute = subject_tax_modifier_25
+			}
+		}
+	}
 
 	overlord_opinion_modifier = is_vassal
 	subject_opinion_modifier = is_vassal
@@ -269,6 +287,14 @@ march = {
 		}
 		expiration_message_overlord = MARCHTOOLARGE
 		expiration_message_subject = MARCHTOOLARGEUS
+	}
+	modifier_subject = {
+		modifier = subject_tax_modifier
+		trigger = {
+			overlord = {
+				has_government_attribute = subject_tax_modifier_25
+			}
+		}
 	}
 }
 
@@ -386,6 +412,18 @@ personal_union = {
 	modifier_overlord = {
 		modifier = union_subject
 	}
+	modifier_overlord = {
+		trigger = {
+			overlord = { has_government_attribute = personal_union_war_contribution }
+		}
+		modifier = pu_overlord_bonus
+	}
+	modifier_subject = {
+		trigger = {
+			overlord = { has_government_attribute = personal_union_war_contribution }
+		}
+		modifier = pu_subject_bonus
+	}
 
 	overlord_opinion_modifier = in_union
 	subject_opinion_modifier = in_union
@@ -489,12 +527,19 @@ colony = {
 	start_colonial_war = yes
 	increase_tariffs = yes
 	decrease_tariffs = yes
+	enforce_culture = yes
 
 	# Modifiers:
 	modifier_overlord = {
 		modifier = large_colonial_nation
 		trigger = {
 			num_of_cities = 10
+		}
+	}
+	modifier_subject = {
+		modifier = new_world_exploitation_modifier
+		trigger = {
+			overlord = { has_government_attribute = extra_trade_goods_for_colonial_subjects }
 		}
 	}
 
@@ -525,6 +570,7 @@ crown_colony = {
 	takeondebt = yes
 	block_settlement_growth = yes
 	allow_settlement_growth = yes
+	enforce_culture = yes
 	
 	# Modifiers:
 	modifier_overlord = clear
@@ -554,6 +600,7 @@ private_enterprise = {
 	replace_governor = no
 	block_settlement_growth = no
 	allow_settlement_growth = no
+	enforce_culture = yes
 	
 	# Modifiers:	
 	modifier_overlord = clear
@@ -584,6 +631,7 @@ self_governing_colony = {
 	block_settlement_growth = no
 	allow_settlement_growth = no
 	press_sailors = no
+	enforce_culture = yes
 	
 	# Modifiers:	
 	modifier_overlord = clear
@@ -606,19 +654,24 @@ tributary_state = {
 
 	# Triggers:
 	is_potential_overlord = {
-		has_dlc = "Mandate of Heaven"
-		NOT = { 
-			is_subject_of_type = tributary_state
-		}
 		OR = {
-			has_reform = celestial_empire
-			has_government_attribute = has_tributaries
-			has_country_flag = can_create_tributaries_flag
-			has_country_flag = can_create_tributaries_flag_estate
-			is_nomad = yes
-			religion_group = eastern
-			technology_group = chinese
-			technology_group = polynesian_tech
+			AND = {
+				has_dlc = "Mandate of Heaven"
+				NOT = { 
+					is_subject_of_type = tributary_state
+				}
+				OR = {
+					has_reform = celestial_empire
+					has_government_attribute = has_tributaries
+					has_country_flag = can_create_tributaries_flag
+					has_country_flag = can_create_tributaries_flag_estate
+					is_nomad = yes
+					religion_group = eastern
+					technology_group = chinese
+					technology_group = polynesian_tech
+				}
+			}
+			has_country_flag = forced_tributary_state	#A special flag for the Ottomans so they can get Crimea without allowing them to make tributaries by default
 		}
 	}
 	

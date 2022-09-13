@@ -24,13 +24,14 @@ country_event = { #Coup Rumors
 			factor = 75
 			modifier = {
 				factor = 0
-				NOT = { treasury = 100 }
+				NOT = { years_of_income = 1.5 }
 			}
 		}
-		add_treasury = -100
+		add_years_of_income = -1.5
 		random_list = {
-			30 = {
+			25 = {
 				custom_tooltip = "coup_ended_tooltip"
+				set_country_flag = plot_failed_flag
 				hidden_effect = {
 					country_event = { 
 						id = coup_in_palace_events.2
@@ -39,7 +40,7 @@ country_event = { #Coup Rumors
 					}
 				}
 			}
-			70 = {
+			75 = {
 				custom_tooltip = "nothing_found_tooltip"
 				hidden_effect = {
 					add_disaster_progress = {
@@ -62,20 +63,17 @@ country_event = { #Coup Rumors
 			factor = 25
 			modifier = {
 				factor = 4
-				NOT = { treasury = 100 }
+				NOT = { years_of_income = 1.5 }
 			}
 		}
 		random_list = {
 			10 = {
 				custom_tooltip = "gossips_end_tooltip"
+				set_country_flag = plot_failed_flag
 				end_disaster = coup_attempt_disaster
 			}
 			90 = {
 				custom_tooltip = "gossips_continue_tooltip"
-				add_disaster_progress = {
-					disaster = coup_attempt_disaster
-					value = 50
-				}
 				hidden_effect = {
 					country_event = { 
 						id = coup_in_palace_events.3
@@ -102,7 +100,8 @@ country_event = { #Plot Discovered
 	
 	option = {
 		name = coup_in_palace_events.2.a #Hang Traitors
-		end_disaster = coup_attempt_disaster
+		set_country_flag = plot_failed_flag 
+		country_event = { id = coup_in_palace_events.6 } 
 	}
 }
 
@@ -120,26 +119,175 @@ country_event = { #Plot Continues
 	
 	option = {
 		name = coup_in_palace_events.3.a #What Will Happen?
-		random_list = {
-			10 = {
-				custom_tooltip = "coup_fails_tooltip"
-				end_disaster = coup_attempt_disaster
-			}
-			90 = {
-				custom_tooltip = "coup_succeeds_tooltip"
-				add_disaster_progress = {
-					disaster = coup_attempt_disaster
-					value = 50
+		ai_chance = { factor = 10 }
+		if = { 
+			limit = { 
+				OR =  {
+					ruler_has_personality = intricate_web_weaver_personality 
+					spymaster = 3 
 				}
-				hidden_effect = {
-					country_event = { 
-						id = coup_in_palace_events.3
-						days = 30
-						random = 15
+			}
+			random_list = {
+				30 = {
+					custom_tooltip = "coup_fails_tooltip"
+					hidden_effect = {
+						country_event = { 
+							id = coup_in_palace_events.4
+							days = 30
+							random = 15
+						}
+						set_country_flag = plot_failed_flag
+					}
+				}
+				70 = {
+					custom_tooltip = "coup_succeeds_tooltip"
+					hidden_effect = {
+						country_event = { 
+							id = coup_in_palace_events.5
+							days = 30 
+							random = 15
+						}
+						set_country_flag = plot_succeeded_flag
 					}
 				}
 			}
 		}
+		else_if = {
+			limit = { 
+				spymaster = 1
+			} 
+			random_list = {
+				25 = {
+					custom_tooltip = "coup_fails_tooltip"
+					hidden_effect = {
+						country_event = { 
+							id = coup_in_palace_events.4
+							days = 30
+							random = 15
+						}
+						set_country_flag = plot_failed_flag
+					}
+				}
+				75 = {
+					custom_tooltip = "coup_succeeds_tooltip"
+					hidden_effect = {
+						country_event = { 
+							id = coup_in_palace_events.5
+							days = 30
+							random = 15
+						}
+						set_country_flag = plot_succeeded_flag
+					}
+				}
+			}
+		}
+		else = { 
+			random_list = {
+				15 = {
+					custom_tooltip = "coup_fails_tooltip"
+					hidden_effect = {
+						country_event = { 
+							id = coup_in_palace_events.4
+							days = 30
+							random = 15
+						}
+						set_country_flag = plot_failed_flag
+					} 
+				}
+				85 = {
+					custom_tooltip = "coup_succeeds_tooltip"
+					hidden_effect = {
+						country_event = { 
+							id = coup_in_palace_events.5
+							days = 30
+							random = 15
+						}
+						set_country_flag = plot_succeeded_flag
+					}
+				}
+			}
+		}
+	}
+	
+	option = { 
+		name = coup_in_palace_events.3.b #It's time for a purge...
+		
+		ai_chance = { factor = 1 }
+		if = {
+			limit = { 
+				OR = {
+					has_estate_led_regency = { estate = estate_nobles }
+					has_country_flag = noble_coup 
+				}
+			}
+			add_estate_loyalty = { 
+				estate = estate_nobles 
+				loyalty = -25
+			}
+			random_owned_province = {
+				limit = { controlled_by = ROOT } 
+				spawn_rebels = {
+					type = noble_rebels
+					size = 3
+				}
+				spawn_rebels = {
+					type = noble_rebels
+					size = 2
+				}
+			} 
+		}
+		else_if = {
+			limit = { 
+				OR = {
+					has_country_flag = burgher_coup
+					has_estate_led_regency = { estate = estate_burghers }
+				}
+			}
+			add_estate_loyalty = { 
+				estate = estate_burghers 
+				loyalty = -25
+			}
+			random_owned_province = {
+				limit = { controlled_by = ROOT } 
+				spawn_rebels = {
+					type = particularist_rebels
+					size = 3
+				}
+				spawn_rebels = {
+					type = particularist_rebels
+					size = 2
+				}
+			}
+		}
+		else_if = {
+			limit = { 
+				OR = {
+					has_country_flag = church_coup
+					has_estate_led_regency = { estate = estate_church }
+				}
+			}
+			add_estate_loyalty = { 
+				estate = estate_church
+				loyalty = -25
+			}
+			random_owned_province = {
+				limit = { controlled_by = ROOT } 
+				spawn_rebels = { 
+					type = leadered_peasant_rebels
+					size = 2
+				}
+				spawn_rebels = { 
+					type = leadered_peasant_rebels
+					size = 3 
+				}
+			}
+		}
+		add_stability = -4 
+		remove_advisor = random
+		remove_advisor = random
+		clr_country_flag = plot_succeeded_flag 
+		set_country_flag = plot_failed_flag 
+		country_event = { id = coup_in_palace_events.6 } 
 	}
 }
 
@@ -157,7 +305,9 @@ country_event = { #Plot Fails
 	
 	option = {
 		name = coup_in_palace_events.4.a #The Coup Fails
-		end_disaster = coup_attempt_disaster
+		
+		set_country_flag = plot_failed_flag
+		country_event = { id = coup_in_palace_events.6 } 
 	}
 }
 
@@ -175,10 +325,36 @@ country_event = { #Plot Succeeds
 	
 	option = {
 		name = coup_in_palace_events.5.a #The Coup Succeeds
-		add_disaster_progress = {
-			disaster = coup_attempt_disaster
-			value = 50
+		set_country_flag = plot_succeeded_flag 
+		add_absolutism = -75
+		if = { 
+			limit = { has_country_flag = church_coup } 
+			change_estate_land_share = { 
+				estate = estate_church 
+				share = 25 
+			}
 		}
+		else_if = { 
+			limit = { has_country_flag = burgher_coup } 
+			change_estate_land_share = { 
+				estate = estate_burghers 
+				share = 25 
+			}
+		}
+		else_if = { 
+			limit = { has_country_flag = noble_coup } 
+			change_estate_land_share = { 
+				estate = estate_nobles 
+				share = 25 
+			}
+		}
+		else = { 
+			change_estate_land_share = { 
+				estate = all 
+				share = 30 
+			}
+		}
+		country_event = { id = coup_in_palace_events.6 }
 	}
 }
 
@@ -190,143 +366,74 @@ country_event = { #The Aftermath
 	
 	is_triggered_only = yes
 	
-	mean_time_to_happen = {
-		days = 1
-	}
+	immediate = { set_country_flag = plot_ended_flag } 
 	
 	option = {
 		name = coup_in_palace_events.6.a #What now?
-		if = {
-			limit = { #Estate vs Estate
-				has_estate_led_regency = {
-					estate = any
-				}
-			}
-			if = {
-				limit = {
-					has_country_flag = burgher_coup
-				}
-				define_ruler = {
-					regency = {
-						estate = estate_burghers	
-					}
-				}
-				clr_country_flag = burgher_coup
-			}
-			else_if = {
-				limit = {
-					has_country_flag = church_coup
-				}
-				define_ruler = {
-					regency = {
-						estate = estate_church	
-					}
-				}
-				clr_country_flag = church_coup
-			}
-			else_if = {
-				limit = {
-					has_country_flag = noble_coup
-				}
-				define_ruler = {
-					regency = {
-						estate = estate_nobles	
-					}
-				}
-				clr_country_flag = noble_coup
+		trigger = { 
+			custom_trigger_tooltip = {
+				tooltip = plot_succeeded_tooltip
+				has_country_flag = plot_succeeded_flag 
 			}
 		}
-		else_if = { #Estate vs Heir
-			limit = {
-				has_country_flag = estate_vs_heir
-			}
-			change_estate_regent_to_ruler = yes
-			clr_country_flag = estate_vs_heir	
-		}
-		else_if = {
-			limit = { #Estate vs Consort
-				has_consort_regency = yes
-			}
-			if = {
-				limit = {
-					has_country_flag = burgher_coup
-					NOT = {
-						OR = {
-							has_country_flag = church_coup
-							has_country_flag = noble_coup
-						}
-					}
-				}
-				define_ruler = {
-					regency = {
-						estate = estate_burghers	
-					}
-				}
-			}
-			else_if = {
-				limit = {
-					has_country_flag = church_coup
-					NOT = {
-						OR = {
-							has_country_flag = burgher_coup
-							has_country_flag = noble_coup
-						}
-					}
-				}
-				define_ruler = {
-					regency = {
-						estate = estate_church	
-					}
-				}
-			}
-			else_if = {
-				limit = {
-					has_country_flag = noble_coup
-					NOT = {
-						OR = {
-							has_country_flag = burgher_coup
-							has_country_flag = church_coup
-						}
-					}
-				}
-				define_ruler = {
-					regency = {
-						estate = estate_nobles	
-					}
-				}
-			}
-			else_if = {
-				limit = {
-					has_country_flag = noble_coup
-					OR = {
-						has_country_flag = burgher_coup
-						has_country_flag = church_coup
-					}
-				}
-				define_ruler = {
-					regency = {
-						estate = estate_nobles
-					}
-				}
-			}
-			else_if = {
-				limit = {
-					has_country_flag = burgher_coup
-					has_country_flag = church_coup
-					NOT = {
-						has_country_flag = noble_coup
-					}
-				}
-				define_ruler = {
-					regency = {
-						estate = estate_church	
-					}
-				}
+		if = { 
+			limit = { has_consort_regency = yes } 
+			kill_consort = yes 
+			remove_heir = { } 
+			define_ruler = {
+				max_random_adm = 3 
+				max_random_dip = 3 
+				max_random_mil = 3 
+				claim = 5 
 			}
 		}
+		else = {
+			custom_tooltip = estate_regent_prevails_tt
+			hidden_effect = { change_estate_regent_to_ruler = yes }
+		}
+		end_disaster = coup_attempt_disaster 
 		clr_country_flag = burgher_coup
 		clr_country_flag = church_coup
 		clr_country_flag = noble_coup
 		clr_country_flag = coup_attempt_starts
+		clr_country_flag = plot_failed_flag
+		clr_country_flag = plot_succeeded_flag
+		clr_country_flag = plot_ended_flag
+		
+		hidden_effect = { 
+			add_country_modifier = {
+				name = recent_coup_modifier
+				duration = 7300 
+				hidden = yes 
+			}
+		}
+	}
+	
+	option = { 
+		name = coup_in_palace_events.6.b 
+		trigger = { 
+			custom_trigger_tooltip = {
+				tooltip = plot_failed_tooltip
+				has_country_flag = plot_failed_flag  
+			}
+		}
+		end_disaster = coup_attempt_disaster 
+		add_legitimacy = 25 
+		add_stability_or_adm_power = yes 
+		clr_country_flag = burgher_coup
+		clr_country_flag = church_coup
+		clr_country_flag = noble_coup
+		clr_country_flag = coup_attempt_starts
+		clr_country_flag = plot_failed_flag
+		clr_country_flag = plot_succeeded_flag	
+		clr_country_flag = plot_ended_flag
+		
+		hidden_effect = { 
+			add_country_modifier = {
+				name = recent_coup_modifier
+				duration = 7300 
+				hidden = yes 
+			}
+		}
 	}
 }

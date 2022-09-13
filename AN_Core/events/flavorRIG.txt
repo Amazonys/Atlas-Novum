@@ -1,0 +1,693 @@
+########################################
+# DLC Events for Riga
+#
+# written by Ogulcan Yildirim
+# localised by Vasilis Samelis
+########################################
+
+namespace = flavor_rig
+normal_or_historical_nations = yes
+
+# The Subjugation of the Teutonic Order
+country_event = {
+	id = flavor_rig.1
+	title = flavor_rig.1.t
+	desc = {
+		desc = flavor_rig.1.desc.a
+		trigger = {
+			religion = catholic
+		}
+	}
+	desc = {
+		desc = flavor_rig.1.desc.b
+		trigger = {
+			NOT = { religion = catholic }
+		}
+	}
+	picture = BATTLE_VISTULA_LAGOON_eventPicture
+	is_triggered_only = yes
+	
+	option = {	#
+		name = flavor_rig.1.a
+		add_historical_friend = TEU
+		TEU = {
+			kill_ruler = yes
+			if = {
+				limit = { has_heir = yes }
+				kill_heir = {
+					allow_new_heir = no
+				}
+			}
+			add_historical_friend = ROOT
+		}
+		add_prestige = 25
+		
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# The order becomes free
+country_event = {
+	id = flavor_rig.2
+	title = flavor_rig.2.t
+	desc = flavor_rig.2.desc
+	picture = BATTLE_VISTULA_LAGOON_eventPicture
+	trigger = {
+		has_country_modifier = rig_order_of_riga
+		OR = {
+			is_free_or_tributary_trigger = yes
+			AND = {
+				is_or_was_tag = {
+					tag = LIV
+				}
+				overlord = {
+					NOT = { has_country_modifier = rig_livonian_overlord }
+				}
+			}
+			AND = {
+				is_or_was_tag = {
+					tag = TEU
+				}
+				overlord = {
+					NOT = { has_country_modifier = rig_teutonic_overlord }
+				}
+			}
+		}
+	}
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = {	#We are free from Riga!
+		name = flavor_rig.2.a
+		remove_country_modifier = rig_order_of_riga
+		
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# Riga loses the Teutonic Order
+country_event = {
+	id = flavor_rig.3
+	title = flavor_rig.3.t
+	desc = flavor_rig.3.desc
+	picture = BATTLE_VISTULA_LAGOON_eventPicture
+	fire_only_once = yes
+	trigger = {
+		has_country_modifier = rig_teutonic_overlord
+		NOT = {
+			any_subject_country = {
+				is_or_was_tag = {	#Teutonic Order should maybe be allowed to form Prussia under Riga for the extra fun
+					tag = TEU
+				}
+			}
+		}
+	}
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = {	#Oof
+		name = flavor_rig.3.a
+		remove_country_modifier = rig_teutonic_overlord
+		
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# Riga loses the Livonian Order
+country_event = {
+	id = flavor_rig.4
+	title = flavor_rig.4.t
+	desc = flavor_rig.4.desc
+	picture = BATTLE_VISTULA_LAGOON_eventPicture
+	fire_only_once = yes
+	trigger = {
+		has_country_modifier = rig_livonian_overlord
+		NOT = {
+			any_subject_country = {
+				is_or_was_tag = {	#Same for Livonia
+					tag = LIV
+				}
+			}
+		}
+	}
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = {	#Oof
+		name = flavor_rig.4.a
+		remove_country_modifier = rig_livonian_overlord
+		
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+#Transfer Money event
+country_event = {
+	id = flavor_rig.5
+	title = none
+	desc = none
+	picture = BATTLE_VISTULA_LAGOON_eventPicture
+	hidden = yes
+    is_triggered_only = yes
+    
+    immediate = {
+        hidden_effect = {
+            export_to_variable = {
+                which = rig_money_to_transfer
+                value = monthly_income
+                who = ROOT
+            }
+            multiply_variable = {
+                which = rig_money_to_transfer
+                value = 3
+            }
+        }
+    }
+	
+	option = {
+		transfer_treasury = {
+            giver = ROOT
+            taker = FROM
+            variable = rig_money_to_transfer
+		}
+		
+		ai_chance = { 
+			factor = 1
+		}
+    }
+}
+
+# Dissolving a bishopric
+country_event = {
+	id = flavor_rig.6
+	title = flavor_liv.2.t
+	desc = flavor_liv.2.desc
+	picture = CHURCH_ESTATE_UPSET_eventPicture
+	is_triggered_only = yes
+	
+	option = {	#Dissolve Dorpat's Bishopric
+		name = flavor_liv.2.a
+		goto = 1834
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				has_estate_privilege = estate_church_bishopric_of_dorpat
+			}
+			owns_or_non_sovereign_subject_of = 1834
+		}
+		LIV = { remove_estate_privilege = estate_church_bishopric_of_dorpat }
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -10
+		}
+		1834 = {
+			spawn_province_religious_rebels = {
+				size = 3
+			}
+		}
+		add_absolutism = 15
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Dissolve Ösel's Bishopric
+		name = flavor_liv.2.b
+		goto = 35
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				has_estate_privilege = estate_church_bishopric_of_osel_wiek
+			}
+			owns_or_non_sovereign_subject_of = 35
+		}
+		LIV = { remove_estate_privilege = estate_church_bishopric_of_osel_wiek }
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -10
+		}
+		35 = {
+			spawn_province_religious_rebels = {
+				size = 3
+			}
+		}
+		add_absolutism = 15
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Dissolve Courland's Bishopric
+		name = flavor_liv.2.c
+		goto = 39
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				has_estate_privilege = estate_church_bishopric_of_courland
+			}
+			owns_or_non_sovereign_subject_of = 39
+		}
+		LIV = { remove_estate_privilege = estate_church_bishopric_of_courland }
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -5
+		}
+		39 = {
+			spawn_province_religious_rebels = {
+				size = 2
+			}
+		}
+		add_absolutism = 10
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Dissolve Reval's Bishopric
+		name = flavor_liv.2.d
+		goto = 36
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				has_estate_privilege = estate_church_bishopric_of_reval
+			}
+			owns_or_non_sovereign_subject_of = 36
+		}
+		LIV = { remove_estate_privilege = estate_church_bishopric_of_reval }
+		36 = {
+			spawn_province_religious_rebels = {
+				size = 1
+			}
+		}
+		add_absolutism = 5
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Debug
+		name = flavor_liv.2.e
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				OR = {
+					has_estate_privilege = estate_church_bishopric_of_dorpat
+					has_estate_privilege = estate_church_bishopric_of_osel_wiek
+					has_estate_privilege = estate_church_bishopric_of_courland
+					has_estate_privilege = estate_church_bishopric_of_reval
+				}
+			}
+			NOT = { owns_or_non_sovereign_subject_of = 1834 }
+			NOT = { owns_or_non_sovereign_subject_of = 35 }
+			NOT = { owns_or_non_sovereign_subject_of = 39 }
+			NOT = { owns_or_non_sovereign_subject_of = 36 }
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Debug
+		name = flavor_liv.2.f
+		trigger = {
+			LIV = {
+				NOT = {
+					OR = {
+						has_estate_privilege = estate_church_bishopric_of_dorpat
+						has_estate_privilege = estate_church_bishopric_of_osel_wiek
+						has_estate_privilege = estate_church_bishopric_of_courland
+						has_estate_privilege = estate_church_bishopric_of_reval
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# Buying a bishopric
+country_event = {
+	id = flavor_rig.7
+	title = flavor_liv.3.t
+	desc = flavor_liv.3.desc
+	picture = CORRUPTION_eventPicture
+	is_triggered_only = yes
+	
+	option = {	#Dissolve Dorpat's Bishopric
+		name = flavor_liv.3.a
+		goto = 1834
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				has_estate_privilege = estate_church_bishopric_of_dorpat
+			}
+			owns_or_non_sovereign_subject_of = 1834
+		}
+		LIV = { remove_estate_privilege = estate_church_bishopric_of_dorpat }
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -10
+		}
+		add_years_of_income = -4
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Dissolve Ösel's Bishopric
+		name = flavor_liv.3.b
+		goto = 35
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				has_estate_privilege = estate_church_bishopric_of_osel_wiek
+			}
+			owns_or_non_sovereign_subject_of = 35
+		}
+		LIV = { remove_estate_privilege = estate_church_bishopric_of_osel_wiek }
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -10
+		}
+		add_years_of_income = -2
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Dissolve Courland's Bishopric
+		name = flavor_liv.3.c
+		goto = 39
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				has_estate_privilege = estate_church_bishopric_of_courland
+			}
+			owns_or_non_sovereign_subject_of = 39
+		}
+		LIV = { remove_estate_privilege = estate_church_bishopric_of_courland }
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -5
+		}
+		add_years_of_income = -1
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Dissolve Reval's Bishopric
+		name = flavor_liv.3.d
+		goto = 36
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				has_estate_privilege = estate_church_bishopric_of_reval
+			}
+			owns_or_non_sovereign_subject_of = 36
+		}
+		LIV = { remove_estate_privilege = estate_church_bishopric_of_reval }
+		add_years_of_income = -0.5
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Debug
+		name = flavor_liv.2.e
+		trigger = {
+			LIV = {
+				is_subject_of = ROOT
+				OR = {
+					has_estate_privilege = estate_church_bishopric_of_dorpat
+					has_estate_privilege = estate_church_bishopric_of_osel_wiek
+					has_estate_privilege = estate_church_bishopric_of_courland
+					has_estate_privilege = estate_church_bishopric_of_reval
+				}
+			}
+			NOT = { owns_or_non_sovereign_subject_of = 1834 }
+			NOT = { owns_or_non_sovereign_subject_of = 35 }
+			NOT = { owns_or_non_sovereign_subject_of = 39 }
+			NOT = { owns_or_non_sovereign_subject_of = 36 }
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {	#Debug
+		name = flavor_liv.2.f
+		trigger = {
+			LIV = {
+				NOT = {
+					OR = {
+						has_estate_privilege = estate_church_bishopric_of_dorpat
+						has_estate_privilege = estate_church_bishopric_of_osel_wiek
+						has_estate_privilege = estate_church_bishopric_of_courland
+						has_estate_privilege = estate_church_bishopric_of_reval
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# Imperial Connection
+country_event = {
+	id = flavor_rig.9
+	title = flavor_rig.9.t
+	desc = flavor_rig.9.desc
+	picture = HRE_eventPicture
+	is_triggered_only = yes
+	
+	option = {	#
+		name = flavor_rig.9.a
+		set_in_empire = yes
+		
+		ai_chance = {
+			factor = 100
+		}
+	}
+	
+	option = {	#
+		name = flavor_rig.9.b
+		add_prestige = 10
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Become a Theocratic Plutocracy...
+country_event = {
+	id = flavor_rig.10
+	title = flavor_rig.10.t
+	desc = flavor_rig.10.desc
+	picture = PAY_POPE_eventPicture
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			unlock_government_reform = {
+				government_reform = merchant_theocracy_reform
+			}
+		}
+	}
+	
+	option = {	#A Theocracy with a Merchant focus
+		name = flavor_rig.10.a
+		unlock_government_reform = {
+			government_reform = merchant_theocracy_reform
+		}
+		if = {
+			limit = { NOT = { government = theocracy } }
+			change_government = theocracy
+		}
+		add_government_reform = merchant_theocracy_reform
+
+		ai_chance = {
+			factor = 100
+		}
+	}
+	
+	option = {	#Thanks, but I don't want to be either of them
+		name = flavor_rig.10.b
+		hidden_effect = {
+			unlock_government_reform = {
+				government_reform = merchant_theocracy_reform
+			}
+		}
+		change_government_reform_progress = -50
+		add_papal_influence = 50
+		add_stability_or_adm_power = yes
+		add_estate_loyalty = {
+			estate = estate_burghers
+			loyalty = -20
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Become a Reformer State
+country_event = {
+	id = flavor_rig.11
+	title = flavor_rig.10.t
+	desc = flavor_rig.11.desc
+	picture = PROTESTANT_RELIGIOUS_DOUBTS_eventPicture
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			unlock_government_reform = {
+				government_reform = merchant_theocracy_reform
+			}
+		}
+	}
+	
+	option = {	#A Theocracy with a Merchant focus
+		name = flavor_rig.11.a
+		unlock_government_reform = {
+			government_reform = reformer_state_reform
+		}
+		if = {
+			limit = { NOT = { government = theocracy } }
+			change_government = theocracy
+		}
+		add_government_reform = reformer_state_reform
+
+		ai_chance = {
+			factor = 100
+		}
+	}
+	
+	option = {	#Thanks, but I don't want to be either of them
+		name = flavor_rig.11.b
+		hidden_effect = {
+			unlock_government_reform = {
+				government_reform = reformer_state_reform
+			}
+		}
+		add_stability_or_adm_power = yes
+		change_government_reform_progress = -100
+		add_estate_loyalty = {
+			estate = estate_burghers
+			loyalty = -20
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Hansa breaks apart! - Lübeck
+country_event = {
+	id = flavor_rig.12
+	title = flavor_rig.12.t
+	desc = flavor_rig.12.desc
+	picture = SAD_MERCHANT_eventPicture
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			FROM = {
+				save_global_event_target_as = rigan_trade_league
+			}
+		}
+	}
+	
+	option = {	#Oof
+		name = flavor_rig.12.a
+		hidden_effect = {
+			every_known_country = {
+				limit = {
+					is_trade_league_leader = no
+					is_in_trade_league_with = ROOT
+					NOT = { tag = FROM }
+				}
+				set_country_flag = former_hansa_member
+			}
+		}
+		if = {
+			limit = {
+				prestige = -30
+			}
+			custom_tooltip = flavor_rig.12.a.tt
+			hidden_effect = {
+				add_prestige = -200
+				add_prestige = 30
+			}
+		}
+		every_known_country = {
+			limit = {
+				has_country_flag = former_hansa_member
+			}
+			country_event = {
+				id = flavor_rig.13
+				days = 3
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	
+	option = {	#Grant them more freedom, immediately!
+		name = flavor_rig.12.b
+		add_country_modifier = {
+			name = rig_broken_hanseatic_league
+			duration = 18250
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Hansa breaks apart! - Trade League members
+country_event = {
+	id = flavor_rig.13
+	title = flavor_rig.13.t
+	desc = flavor_rig.13.desc
+	picture = SAD_MERCHANT_eventPicture
+	is_triggered_only = yes
+	after = {
+		clr_country_flag = former_hansa_member
+	}
+	
+	option = {	#We are now part of Riga's Trade League!
+		name = flavor_rig.13.a
+		event_target:rigan_trade_league = { join_trade_league = ROOT }
+		reverse_add_opinion = {
+			who = FROM
+			modifier = rig_left_the_hansa
+		}
+
+		ai_chance = {
+			factor = 100
+		}
+	}
+	
+	option = {	#Thanks, but I don't want to be either of them
+		name = flavor_rig.13.b
+		reverse_add_opinion = {
+			who = FROM
+			modifier = rig_stayed_in_the_hansa
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}

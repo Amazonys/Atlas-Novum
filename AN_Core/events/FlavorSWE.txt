@@ -10,8 +10,19 @@ normal_or_historical_nations = yes
 country_event = {
 	id = flavor_swe.1
 	title = flavor_swe.1.t
-	desc = flavor_swe.1.d
-	picture = REFORM_eventPicture
+	desc = flavor_swe.1.swe_debt_with_the_burghers
+	picture = {
+		trigger = {
+			has_dlc = "Lions of the North"
+		}
+		picture = VASA_REFORMS_eventPicture
+	}
+	picture = {
+		trigger = {
+			NOT = { has_dlc = "Lions of the North" }
+		}
+		picture = REFORM_eventPicture
+	}
 
 
 	fire_only_once = yes
@@ -27,6 +38,7 @@ country_event = {
 		}
 		is_free_or_tributary_trigger = yes
 		is_at_war = no
+		NOT = { has_dlc = "Lions of the North" }
 	}
 
 	mean_time_to_happen = {
@@ -133,6 +145,7 @@ country_event = {
 	trigger = {
 		tag = SWE
 		junior_union_with = DAN
+		NOT = { has_dlc = "Lions of the North" }
 	}
 	
 	mean_time_to_happen = {
@@ -186,7 +199,7 @@ country_event = {
 		tag = SWE
 		junior_union_with = DAN
 		is_year = 1470
-		
+		NOT = { has_dlc = "Lions of the North" }
 	}
 
 	mean_time_to_happen = {
@@ -230,29 +243,26 @@ country_event = {
 		tag = SWE
 		junior_union_with = DAN
 		is_year = 1490
+		NOT = { has_country_flag = swe_had_vasa_event }
 	}
 
 	mean_time_to_happen = {
-		months = 200
-	}
-
-	immediate = {
-		set_country_flag = SWE_had_event_3219
+		months = 12
 	}
 
 	option = {		# Freedom!
 		name = "flavor_swe.EVTOPTA3219"
-		add_liberty_desire = 25
+		custom_tooltip = swe_vasa_leads_the_rebellion_tt
+		add_country_modifier = {
+			name = swe_vasa_leads_the_rebellion
+			duration = 9125
+		}		
+		hidden_effect = { set_country_flag = swe_support_from_Gustav_vasa }
 		DAN = {
 			add_opinion = {
 				who = ROOT
 				modifier = swe_renounced_the_union
 			}
-		}
-		add_casus_belli = {
-			target = DAN
-			type = cb_independence_war
-			months = 120
 		}
 		# Danish notification event
 		hidden_effect = {
@@ -525,7 +535,7 @@ country_event = {
 		}
 		add_innovativeness_small_effect = yes
 	}
-	option = {		# Mercenary Core
+	option = {		# Mercenary Core		TODO
 		name = "flavor_swe.EVTOPTB3228"
 		ai_chance = { factor = 5 }
 		add_army_professionalism = 0.05
@@ -548,17 +558,30 @@ country_event = {
 	}
 }
 
+
+
 # The Sinking of Vasa
 country_event = {
-	id = flavor_swe.1628	
+	id = flavor_swe.1628
 	title = "flavor_swe.EVTNAME1628"
 	desc = "flavor_swe.EVTDESC1628"
-	picture = SHIP_SAILING_eventPicture
-	
-	
+	picture = {
+		trigger = {
+			has_dlc = "Golden Century"
+		}
+		picture = FLAGSHIP_SUNK_eventPicture
+	}
+	picture = {
+		trigger = {
+			NOT = { has_dlc = "Golden Century" }
+		}
+		picture = SHIP_SAILING_eventPicture
+	}
+	goto = sink_sink_province	
 	fire_only_once = yes
 	
 	trigger = {
+		NOT = { has_country_flag = sca_swe_unsinkable_vasa }
 		OR = {
 			tag = SWE
 			AND = {
@@ -568,19 +591,40 @@ country_event = {
 			}		
 		}
 		dip_tech = 15
-		1 = {
-			has_construction = navy
+		num_of_heavy_ship = 1
+		any_owned_province = {
+			heavy_ships_in_province = ROOT
 		}
 	}
 	
 	mean_time_to_happen = {
 		months = 12
 	}
+
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					heavy_ships_in_province = ROOT
+				}
+				save_event_target_as = sink_sink_province
+				kill_units = {
+					type = heavy_ship
+					who = ROOT
+					amount = 1
+				}
+			}
+		}
+	}
 	
 	
 	option = {		# Our reputation is ruined!
 		name = "flavor_swe.EVTOPTA1628"
-		add_prestige = -5
+		add_prestige = -25
+		event_target:sink_sink_province = {
+			custom_tooltip = flavor_swe.1628.a.tt
+		}
+		set_country_flag = lost_first_vasa_ship
 	}
 }
 
@@ -875,12 +919,12 @@ country_event = {
 		has_consort_regency = no
 		NOT = { is_year = 1670 }
 		has_country_flag = swe_oxenstierna
+		has_estate = estate_nobles 
 	}
 
 	mean_time_to_happen = {
 		months = 4
 	}
-
 
 
 	option = {		# Grant the aristocracy new privileges
@@ -889,7 +933,7 @@ country_event = {
 		add_stability_or_adm_power = yes
 		add_ruler_modifier = {
 			name = aristocratic_privileges
-			duration = -1
+			duration = 9125
 		}
 	}
 	option = {		# Resist these tendencies
@@ -1025,7 +1069,9 @@ country_event = {
 			}		
 		}
 		is_female = yes
-		religion = protestant
+		religion_group = christian
+		NOT = { religion = catholic }
+		ruler_religion = catholic
 		has_regency = no
 	}
 
@@ -1224,13 +1270,14 @@ country_event = {
 		add_army_professionalism = 0.05
 		add_country_modifier = {
 			name = the_great_army_reorganization
-			duration = -1
+			duration = 9125
 		}
 	}
 	option = {		# Maintain present system
 		name = "flavor_swe.EVTOPTB3244"
 		ai_chance = { factor = 10 }
-		add_stability = 2		
+		add_stability_or_adm_power = yes 
+		add_army_tradition = 10 
 	}
 }
 
@@ -1268,7 +1315,7 @@ country_event = {
 		add_stability = -1
 		add_country_modifier = {
 			name = the_product_act
-			duration = -1
+			duration = 9125
 		}
 	}
 	option = {		# The present policy is perfect
@@ -1314,7 +1361,7 @@ country_event = {
 		ai_chance = { factor = 75 }
 		add_country_modifier = {
 			name = the_conventicle_edict
-			duration = -1
+			duration = 9125
 		}
 	}
 	option = {		# Allow Pietism
@@ -1322,7 +1369,7 @@ country_event = {
 		ai_chance = { factor = 25 }
 		add_country_modifier = {
 			name = pietism
-			duration = -1
+			duration = 9125
 		}
 	}
 }
@@ -1354,7 +1401,10 @@ country_event = {
 		}
 		RUS = {
 			any_owned_province = {
-				is_core = SWE
+				OR = {
+					is_core = SCA
+					is_core = SWE
+				}
 			}
 		}
 		num_of_generals = 1
@@ -1524,7 +1574,7 @@ country_event = {
 		add_stability = -1
 		add_country_modifier = {
 			name = the_act_of_union_and_security
-			duration = -1
+			duration = 9125
 		}
 	}
 	option = {		# Refuse the Act
@@ -1567,6 +1617,35 @@ country_event = {
 			name = the_great_agricultural_reform
 			duration = -1
 		}
+		change_government_reform_progress = -50
+		random_owned_province = {
+			limit = { 
+				region = scandinavia_region 
+				trade_goods = grain 
+			}
+			add_base_production = 1 
+		}
+		random_owned_province = {
+			limit = { 
+				region = scandinavia_region 
+				trade_goods = grain 
+			}
+			add_base_production = 1 
+		}
+		random_owned_province = {
+			limit = { 
+				region = scandinavia_region 
+				trade_goods = grain 
+			}
+			add_base_production = 1 
+		}
+		random_owned_province = {
+			limit = { 
+				region = scandinavia_region 
+				trade_goods = grain 
+			}
+			add_base_production = 1 
+		} 
 	}
 	option = {		# Carry on as before
 		name = "flavor_swe.EVTOPTB3264"
@@ -1873,7 +1952,7 @@ country_event = {
 				NOT = { stability = 1 }
 			}
 		}
-		add_stability = -3
+		add_stability = -5
 	}
 }
 
@@ -2276,3 +2355,1888 @@ country_event = {
 }
 
 
+
+########################################
+# DLC Events for Sweden
+#
+# written by Ogulcan Yildirim
+########################################
+
+# The League War - Swedish Contribution
+country_event = {
+	id = flavor_swe.101
+	title = "flavor_swe.101.t"
+	desc = "flavor_swe.101.desc"
+	picture = SWEDEN_LEAGUE_WAR_eventPicture
+	trigger = {
+		has_dlc = "Art of War"
+		OR = {
+			AND = {
+				has_country_flag = swe_catholic_modifier_for_league_war
+				in_league = catholic
+			}
+			AND = {
+				has_country_flag = swe_reformation_modifier_for_league_war
+				in_league = protestant
+			}
+		}
+		NOT = { has_country_modifier = swe_fight_for_the_catholic_league }
+		NOT = { has_country_modifier = swe_fight_for_the_protestant_league }
+		is_in_league_war = yes
+	}
+	fire_only_once = yes
+	mean_time_to_happen = { months = 1 }
+	option = {		# Let us show these infidels what Swedish soldiers are made of!
+		name = "flavor_swe.101.a"
+		if = {
+			limit = { has_country_flag = swe_catholic_modifier_for_league_war }
+			add_country_modifier = {
+				name = swe_fight_for_the_catholic_league
+				duration = -1
+				desc = swe_fight_for_league_tt
+			}
+		}
+		if = {
+			limit = { has_country_flag = swe_reformation_modifier_for_league_war }
+			add_country_modifier = {
+				name = swe_fight_for_the_protestant_league
+				duration = -1
+				desc = swe_fight_for_league_tt
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# The League War - End of Swedish Contribution
+country_event = {
+	id = flavor_swe.1010
+	title = "flavor_swe.1010.t"
+	desc = "flavor_swe.1010.desc"
+	picture = SWEDEN_LEAGUE_WAR_eventPicture
+	trigger = {
+		OR = {
+			has_country_modifier = swe_fight_for_the_catholic_league
+			has_country_modifier = swe_fight_for_the_protestant_league
+		}
+		is_in_league_war = no
+	}
+	fire_only_once = yes
+	mean_time_to_happen = { months = 1 }
+	option = {		# It was a good run
+		name = "flavor_swe.1010.a"
+		remove_country_modifier = swe_fight_for_the_catholic_league
+		remove_country_modifier = swe_fight_for_the_protestant_league
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# The Engelbrekt Rebellion - Mission Reward
+country_event = {
+	id = flavor_swe.102
+	title = "flavor_swe.EVTNAME3217"
+	desc = "flavor_swe.102.desc"
+	picture = ANGRY_MOB_eventPicture
+	is_triggered_only = yes
+	major = yes
+	major_trigger = {
+		OR = {
+			tag = NOR
+			tag = DAN
+		}
+	}
+	option = {		# The time has not come yet
+		name = "flavor_swe.102.a"
+		ai_chance = { factor = 20 }
+		DAN = {
+			add_opinion = {
+				who = ROOT
+				modifier = swe_supports_the_union
+			}
+		}
+		add_liberty_desire = -25
+	}
+	option = {		# Pick up the torch of freedom!
+		name = "flavor_swe.102.b"
+		ai_chance = { factor = 60 }
+		add_manpower = 10
+		add_liberty_desire = 25
+		DAN = {
+			add_opinion = {
+				who = ROOT
+				modifier = swe_renounced_the_union
+			}
+		}
+	}
+}
+
+# The Allotment System of Sweden
+country_event = {
+	id = flavor_swe.103
+	title = "flavor_swe.103.t"
+	desc = "flavor_swe.103.desc"
+	picture = CAROLEANS_eventPicture
+	is_triggered_only = yes
+
+	option = {		# The time has not come yet
+		name = "flavor_swe.103.a"
+		unlock_government_reform = {
+			government_reform = allotment_system
+		}
+		if = {
+			limit = { government = monarchy }
+			add_government_reform = allotment_system
+		}
+		add_army_professionalism = 0.05
+		ai_chance = { 
+			factor = 100
+		}
+	}
+}
+
+# A new rebellion leader rises!
+country_event = {
+	id = flavor_swe.104
+	title = flavor_swe.104.t
+	desc = flavor_swe.104.desc
+	picture = VASA_eventPicture
+	is_triggered_only = yes
+	major = yes
+	major_trigger = {
+		OR = {
+			tag = DAN
+			tag = NOR
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_country_flag = swe_had_vasa_event
+		}
+	}
+	
+	option = {		# A vasa will lead our armies!
+		name = "flavor_swe.104.a"
+		if = {
+			limit = {
+				NOT = { is_year = 1490 }
+			}
+			define_general = {
+				name = "Johan Vasa"
+				shock = 4
+				fire = 1
+				manuever = 4
+				siege = 1
+			}
+			hidden_effect = { set_country_flag = swe_support_from_Johan_vasa }
+		}
+		else_if = {
+			limit = {
+				NOT = { is_year = 1520 }
+			}
+			define_general = {
+				name = "Erik Vasa"
+				shock = 4
+				fire = 1
+				manuever = 4
+				siege = 1
+			}
+			hidden_effect = { set_country_flag = swe_support_from_Erik_vasa }
+		}
+		else = {
+			define_general = {
+				name = "Gustav Vasa"
+				shock = 4
+				fire = 1
+				manuever = 4
+				siege = 1
+			}
+			hidden_effect = { set_country_flag = swe_support_from_Gustav_vasa }
+		}
+		add_country_modifier = {
+			name = swe_any_vasa_leads_the_rebellion
+			duration = 10950
+		}
+		custom_tooltip = swe_vasa_will_lead_sweden_tt
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Vasa's Victory
+country_event = {
+	id = flavor_swe.105
+	title = flavor_swe.105.t
+	desc = flavor_swe.105.desc
+	picture = GOOD_WITH_MONARCH_eventPicture
+	is_triggered_only = yes
+	
+	option = {		# VICTORY OVER THE DANES
+		name = "flavor_swe.105.a"
+		remove_country_modifier = swe_any_vasa_leads_the_rebellion
+		if = {
+			limit = {
+				has_leader = "Johan Vasa"
+			}
+			define_leader_to_ruler = {
+				name = "Johan Vasa"
+				adm = 6
+				dip = 4
+				mil = 4
+				claim = 50
+				fixed = yes
+			}
+		}
+		else_if = {
+			limit = {
+				has_leader = "Erik Vasa"
+			}
+			define_leader_to_ruler = {
+				name = "Erik Vasa"
+				adm = 6
+				dip = 4
+				mil = 4
+				claim = 50
+				fixed = yes
+			}
+		}
+		else_if = {
+			limit = {
+				has_leader = "Gustav Vasa"
+			}
+			define_leader_to_ruler = {
+				name = "Gustav Vasa"
+				adm = 6
+				dip = 4
+				mil = 4
+				claim = 50
+				fixed = yes
+			}
+		}
+		else_if = {
+			limit = {
+				NOT = { is_year = 1490 }
+			}
+			define_ruler = {
+				name = "Johan I"
+				dynasty = "Vasa"
+				age = 25
+				adm = 6
+				dip = 4
+				mil = 4
+			}
+		}
+		else_if = {
+			limit = {
+				NOT = { is_year = 1520 }
+			}
+			define_ruler = {
+				name = "Erik I"
+				dynasty = "Vasa"
+				age = 25
+				adm = 6
+				dip = 4
+				mil = 4
+			}
+		}
+		else = {
+			define_ruler = {
+				name = "Gustav I"
+				dynasty = "Vasa"
+				age = 25
+				adm = 6
+				dip = 4
+				mil = 4
+			}
+			hidden_effect = {
+				add_ruler_personality = lawgiver_personality
+				add_ruler_personality = industrious_personality
+			}
+		}
+		add_ruler_modifier = {
+			name = swe_rise_of_a_new_dynasty
+			duration = -1
+		}
+		remove_heir = {}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				OR = {
+					AND = {
+						adm = 4
+						dip = 4
+						mil = 4
+					}
+					AND = {
+						adm = 3
+						dip = 3
+						mil = 5
+					}
+					AND = {
+						adm = 3
+						dip = 5
+						mil = 3
+					}
+					AND = {
+						adm = 5
+						dip = 3
+						mil = 3
+					}
+				}
+			}
+		}
+	}
+	option = {	#I want to keep the current king though
+		name = "flavor_swe.105.b"
+		remove_country_modifier = swe_any_vasa_leads_the_rebellion
+		add_legitimacy = 30
+		add_ruler_modifier = {
+			name = swe_rise_of_a_new_dynasty
+			duration = -1
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					OR = {
+						AND = {
+							adm = 4
+							dip = 4
+							mil = 4
+						}
+						AND = {
+							adm = 3
+							dip = 3
+							mil = 5
+						}
+						AND = {
+							adm = 3
+							dip = 5
+							mil = 3
+						}
+						AND = {
+							adm = 5
+							dip = 3
+							mil = 3
+						}
+					}
+				}
+			}
+		}
+	}
+
+	after = {
+		clr_country_flag = swe_support_from_Johan_vasa
+		clr_country_flag = swe_support_from_Erik_vasa
+		clr_country_flag = swe_support_from_Gustav_vasa
+	}
+}
+
+# Foreign Supporters
+country_event = {
+	id = flavor_swe.106
+	title = flavor_swe.106.t
+	desc = flavor_swe.106.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			every_country = {
+				limit = {
+					NOT = { overlord_of = ROOT }
+					OR = {
+						is_rival = DAN
+						is_enemy = DAN
+					}
+				}
+				set_country_flag = swe_flag_for_supporters
+			}
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			every_country = {
+				limit = {
+					has_country_flag = swe_flag_for_supporters
+				}
+				clr_country_flag = swe_flag_for_supporters
+			}
+		}
+	}
+
+	option = {	#Accept foreign alliances
+		name = flavor_swe.106.a
+		trigger = {
+			hidden_trigger = {
+				any_known_country = {
+					has_country_flag = swe_flag_for_supporters
+				}
+			}
+		}
+		custom_tooltip = flavor_swe.106.a.tt
+		hidden_effect = {
+			every_country = {
+				limit = {
+					has_country_flag = swe_flag_for_supporters
+					NOT = { is_supporting_independence_of = ROOT }
+					has_opinion = { who = ROOT value = 0 }
+				}
+				country_event = {
+					id = flavor_swe.107
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				overlord = {
+					reverse_has_opinion = {
+						who = ROOT
+						value = 100
+					}
+				}
+			}
+		}
+	}
+
+	option = {	#We will defeat the Danes on our own
+		name = flavor_swe.106.b
+		add_country_modifier = {
+			name = swe_fight_for_independence
+			duration = -1
+			desc = swe_fight_for_independence_tt
+		}
+		custom_tooltip = flavor_swe.106.b.tt
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				overlord = {
+					reverse_has_opinion = {
+						who = ROOT
+						value = 100
+					}
+				}
+			}
+		}
+	}
+
+	option = {	#The Kalmar Union is our future, actually
+		name = flavor_swe.106.c
+		add_liberty_desire = -50
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				overlord = {
+					NOT = {
+						reverse_has_opinion = {
+							who = ROOT
+							value = 100
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# End of the Fighting of our own
+country_event = {
+	id = flavor_swe.1060
+	title = flavor_swe.1060.t
+	desc = {
+		trigger = {
+			is_at_war = no
+			has_country_flag = swe_defeated_denmark
+		}
+		desc = flavor_swe.1060.desc.a
+	}
+	desc = {
+		trigger = {
+			is_at_war = yes
+			num_of_allies = 1
+		}
+		desc = flavor_swe.1060.desc.b
+	}
+	desc = {
+		trigger = {
+			is_at_war = no
+			NOT = { has_country_flag = swe_defeated_denmark }
+		}
+		desc = flavor_swe.1060.desc.c
+	}
+	picture = {
+		picture = GOOD_WITH_MONARCH_eventPicture
+		trigger = {
+			is_at_war = no
+			has_country_flag = swe_defeated_denmark
+		}
+	}
+	picture = {
+		picture = BAD_WITH_MONARCH_eventPicture
+		trigger = {
+			is_at_war = yes
+			num_of_allies = 1
+		}
+	}
+	picture = {
+		picture = DIPLOMACY_eventPicture
+		trigger = {
+			is_at_war = no
+			NOT = { has_country_flag = swe_defeated_denmark }
+		}
+	}
+	trigger = {
+		has_country_modifier = swe_fight_for_independence
+		is_subject = no
+		OR = {
+			is_at_war = no
+			AND = {
+				is_in_war = {
+					attacker_leader = ROOT
+					defender_leader = DAN
+				}
+				num_of_allies = 1
+			}
+		}
+	}
+	fire_only_once = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {	#We have won our independence!
+		name = flavor_swe.1060.a
+		trigger = {
+			is_at_war = no
+			has_country_flag = swe_defeated_denmark
+		}
+		remove_country_modifier = swe_fight_for_independence
+		add_prestige = 25
+		add_legitimacy = 10
+		add_splendor = 200
+		add_adm_power = 100
+		add_dip_power = 100
+		add_mil_power = 100
+		custom_tooltip = flavor_swe.1060.a.tt
+		hidden_effect = {
+			every_country = {
+				limit = {
+					OR = {
+						is_rival = DAN
+						is_enemy = DAN
+						ai_attitude = {
+							who = DAN
+							attitude = attitude_threatened
+						}
+						ai_attitude = {
+							who = DAN
+							attitude = attitude_hostile
+						}
+						ai_attitude = {
+							who = DAN
+							attitude = attitude_outraged
+						}
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = swe_defeated_denmark_alone
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = {	#We had to rely on allies after all...
+		name = flavor_swe.1060.b
+		trigger = {
+			is_in_war = {
+				attacker_leader = ROOT
+				defender_leader = DAN
+			}
+			num_of_allies = 1
+		}
+		remove_country_modifier = swe_fight_for_independence
+		add_prestige = -15
+		add_legitimacy = -20
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = {	#Huh... that was easier than expected
+		name = flavor_swe.1060.c
+		trigger = {
+			is_at_war = no
+			NOT = { has_country_flag = swe_defeated_denmark }
+		}
+		remove_country_modifier = swe_fight_for_independence
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Choice of supporting Sweden's independence
+country_event = {
+	id = flavor_swe.107
+	title = flavor_swe.107.t
+	desc = flavor_swe.107.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	major = yes
+	major_trigger = {
+		OR = {
+			tag = DAN
+			tag = SWE
+			tag = NOR
+		}
+	}
+	trigger = {
+		FROM = { is_subject = yes }
+	}
+
+	option = {	#We will help the Swedes!
+		name = flavor_swe.107.a
+		support_independence_of = FROM
+
+		ai_chance = {
+			factor = 100
+			modifier = {
+				factor = 100
+				OR = {
+					is_rival = DAN
+					is_enemy = DAN
+				}
+			}
+			modifier = {
+				factor = 0
+				alliance_with = DAN
+			}
+		}
+	}
+
+	option = {	#Nah, not feeling it
+		name = flavor_swe.107.b
+		FROM = {
+			add_opinion = {
+				who = ROOT
+				modifier = swe_refused_to_support_independence
+			}
+			overlord = {
+				reverse_add_opinion = {
+					who = ROOT
+					modifier = dan_refused_to_support_independence
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 0
+			modifier = {
+				factor = 100
+				alliance_with = DAN
+			}
+		}
+	}
+}
+
+# Support from the Estates
+country_event = {
+	id = flavor_swe.108
+	title = flavor_swe.108.t
+	desc = flavor_swe.108.desc
+	picture = NOBLE_ESTATE_DEMANDS_eventPicture
+
+	is_triggered_only = yes
+
+	immediate = { hidden_effect = { set_country_flag = swe_in_estate_event } }
+	after = { hidden_effect = { clr_country_flag = swe_in_estate_event } }
+
+	option = {	#We take the Support from the Nobles
+		name = flavor_swe.108.a
+		trigger = {
+			num_of_estate_privileges = {
+				estate = estate_nobles
+				value = 3
+			}
+		}
+		define_advisor = {
+			type = commandant
+			skill = 2
+			cost_multiplier = 0.25
+		}
+		add_country_modifier = {
+			name = swe_debt_with_the_nobles
+			duration = -1
+		}
+		custom_tooltip = swe_in_debt_with_the_nobles_tt
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	option = {	#We take the Support from the Burghers
+		name = flavor_swe.108.b
+		trigger = {
+			num_of_estate_privileges = {
+				estate = estate_burghers
+				value = 3
+			}
+			any_owned_province = {
+				has_port = yes
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_port = yes
+			}
+			add_unit_construction = {
+				type = galley
+				cost = 0
+				speed = 0.1
+				amount = 10
+			}
+		}
+		add_country_modifier = {
+			name = swe_debt_with_the_burghers
+			duration = -1
+		}
+		custom_tooltip = swe_in_debt_with_the_burghers_tt
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	option = {	#We take the Support from the Clergy
+		name = flavor_swe.108.c
+		trigger = {
+			num_of_estate_privileges = {
+				estate = estate_church
+				value = 3
+			}
+		}
+		if = {
+			limit = {
+				religion = catholic
+			}
+			add_papal_influence = 200
+			1 = { add_cardinal = yes }
+		}
+		else_if = {
+			limit = {
+				religion = protestant
+			}
+			add_church_power = 200
+			add_years_of_income = 0.25
+		}
+		else_if = {
+			limit = {
+				religion = reformed
+			}
+			add_fervor = 100
+			add_years_of_income = 0.25
+		}
+		else_if = {
+			limit = {
+				religion = orthodox
+			}
+			add_patriarch_authority = 20
+			add_years_of_income = 0.25
+		}
+		else = {
+			add_years_of_income = 0.5
+		}
+		add_country_modifier = {
+			name = swe_debt_with_the_clergy
+			duration = -1
+		}
+		custom_tooltip = swe_in_debt_with_the_clergy_tt
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	option = {	#We need nobody but ourselves
+		name = flavor_swe.108.d
+		add_prestige = 20
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Free Support from the Estates
+country_event = {
+	id = flavor_swe.1080
+	title = flavor_swe.1080.t
+	desc = flavor_swe.1080.desc
+	picture = NOBLE_ESTATE_eventPicture
+
+	is_triggered_only = yes
+
+	immediate = { hidden_effect = { set_country_flag = swe_in_estate_event } }
+	after = { hidden_effect = { clr_country_flag = swe_in_estate_event } }
+
+	option = {	#We take the Support from the Nobles
+		name = flavor_swe.108.a
+		define_advisor = {
+			type = commandant
+			skill = 2
+			cost_multiplier = 0.25
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = {	#We take the Support from the Burghers
+		name = flavor_swe.108.b
+		trigger = {
+			any_owned_province = {
+				has_port = yes
+			}
+		}
+		random_owned_province = {
+			limit = {
+				has_port = yes
+			}
+			add_unit_construction = {
+				type = galley
+				cost = 0
+				speed = 0.1
+				amount = 10
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = {	#We take the Support from the Clergy
+		name = flavor_swe.108.c
+		if = {
+			limit = {
+				religion = catholic
+			}
+			add_papal_influence = 200
+			1 = { add_cardinal = yes }
+		}
+		else_if = {
+			limit = {
+				religion = protestant
+			}
+			add_church_power = 200
+			add_years_of_income = 0.25
+		}
+		else_if = {
+			limit = {
+				religion = reformed
+			}
+			add_fervor = 100
+			add_years_of_income = 0.25
+		}
+		else_if = {
+			limit = {
+				religion = orthodox
+			}
+			add_patriarch_authority = 20
+			add_years_of_income = 0.25
+		}
+		else = {
+			add_years_of_income = 0.5
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Formation of the Sweden Empire
+country_event = {
+	id = flavor_swe.109
+	title = flavor_swe.109.t
+	desc = flavor_swe.109.desc
+	picture = EMPEROR_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = flavor_swe.109.a
+		if = {
+			limit = { NOT = { government_rank = 3 } }
+			set_government_rank = 3
+		}
+		add_country_modifier = {
+			name = sca_great_empire_of_scandinavia
+			duration = -1
+		}
+		custom_tooltip = allow_earlier_scandinavia_formation_tt
+		hidden_effect = { set_country_flag = can_form_scandinavia_earlier }
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Pillage of Lübeck
+country_event = {
+	id = flavor_swe.110
+	title = flavor_swe.110.t
+	desc = flavor_swe.110.desc
+	picture = SIEGE_eventPicture
+	is_triggered_only = yes
+
+	option = {	#Barbarians...
+		name = flavor_swe.110.a
+		tooltip = {
+			45 = {
+				add_loot_from_rich_province_general_effect = {
+					LOOTER = ROOT
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Gustav I Vasa's Victory
+country_event = {
+	id = flavor_swe.111
+	title = flavor_swe.105.t
+	desc = flavor_swe.105.desc
+	picture = GOOD_WITH_MONARCH_eventPicture
+	is_triggered_only = yes
+	
+	option = {		# Gustav I Vasa will lead us to victory!
+		name = "flavor_swe.105.a"
+		remove_country_modifier = swe_vasa_leads_the_rebellion
+		define_ruler = {
+			name = "Gustav I"
+			dynasty = "Vasa"
+			age = 27
+			adm = 6
+			dip = 4
+			mil = 4
+		}
+		if = {
+			limit = { has_heir = yes }
+			remove_heir = {}
+		}
+		hidden_effect = {
+			add_ruler_personality = lawgiver_personality
+			add_ruler_personality = industrious_personality
+		}
+		add_ruler_modifier = {
+			name = swe_rise_of_a_new_dynasty
+			duration = -1
+		}
+	}
+	option = {	#I want to keep the current king though
+		name = "flavor_swe.105.b"
+		remove_country_modifier = swe_any_vasa_leads_the_rebellion
+		add_legitimacy = 30
+		add_ruler_modifier = {
+			name = swe_rise_of_a_new_dynasty
+			duration = -1
+		}
+	}
+
+	after = {
+		clr_country_flag = swe_support_from_Johan_vasa
+		clr_country_flag = swe_support_from_Erik_vasa
+		clr_country_flag = swe_support_from_Gustav_vasa
+	}
+}
+
+# Investment of Dalaskogen
+country_event = {
+	id = flavor_swe.112
+	title = flavor_swe.112.t
+	desc = flavor_swe.112.desc
+	picture = FALUN_COPPER_MINE_eventPicture
+	is_triggered_only = yes
+
+	option = {	#Invest into the Copper mine itself
+		name = flavor_swe.112.a
+		trigger = {
+			has_dlc = "Leviathan"
+			8 = {
+				NOT = {
+					has_great_project = {
+						type = falun_copper_mine
+						tier = 2
+					}
+				}
+				NOT = {
+					has_great_project = {
+						type = falun_copper_mine
+						tier = 3
+					}
+				}
+			}
+		}
+		8 = {
+			set_great_project_tier_2 = {
+				type = falun_copper_mine
+			}
+		}
+		add_treasury = -1500
+
+		ai_chance = {
+			factor = 100
+		}
+	}
+
+	option = {	#Expand into the infrastructure around the Mine
+		name = flavor_swe.112.b
+		trigger = {
+			8 = {
+				NOT = { trade_goods = gold }	#Will never be true, but better safe tahn 
+				NOT = { has_manufactory_trigger = yes }
+				NOT = { has_building = counting_house }
+			}
+		}
+		8 = {
+			add_manufactory = yes
+			add_building = counting_house
+		}
+		add_treasury = -750
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+
+	option = {	#We don't have to do anything
+		name = flavor_swe.112.c
+		8 = {
+			add_base_production = 4
+		}
+		
+		ai_chance = {
+			factor = 25
+		}
+	}
+}
+
+#Construction of the Vasa (II)
+country_event = {
+	id = flavor_swe.113
+	title = flavor_swe.113.t
+	desc = {
+		desc = flavor_swe.113.desc.a
+		trigger = {
+			NOT = { has_country_flag = lost_first_vasa_ship }
+		}
+	}
+	desc = {
+		desc = flavor_swe.113.desc.b
+		trigger = {
+			has_country_flag = lost_first_vasa_ship
+		}
+	}
+	picture = SHIP_SAILING_eventPicture
+	is_triggered_only = yes
+	goto = vasa_ii_province
+	immediate = { 
+		hidden_effect = { 
+			set_country_flag = sca_swe_unsinkable_vasa 
+			random_owned_province = {
+				limit = {
+					has_port = yes
+				}
+				save_event_target_as = vasa_ii_province
+			}
+		} 
+	}
+	
+	option = {	#This will make a fine flagship!
+		name = flavor_swe.113.a
+		trigger = {
+			NOT = { has_country_flag = lost_first_vasa_ship }
+		}
+		add_navy_tradition = 20
+		event_target:vasa_ii_province = {
+			create_flagship = {
+				name = "Vasa"
+				type = heavy_ship
+			}
+		}
+		create_admiral = {
+			tradition = 100
+		}
+	}
+	
+	option = {	#And this time it will NOT sink!
+		name = flavor_swe.113.b
+		trigger = {
+			has_country_flag = lost_first_vasa_ship
+		}
+		add_navy_tradition = 20
+		add_prestige = 10
+		event_target:vasa_ii_province = {
+			create_flagship = {
+				name = "Vasa II, the Unsinkable"
+				type = heavy_ship
+			}
+		}
+		create_admiral = {
+			tradition = 100
+		}
+	}
+}
+
+# Monopolization of Copper
+country_event = {
+	id = flavor_swe.114
+	title = flavor_swe.114.t
+	desc = flavor_swe.114.desc
+	picture = TRADE_GOODS_METALS_AND_MINING_EQUIPENT_eventPicture
+	is_triggered_only = yes
+	major = yes
+	
+	option = {	#Monopolize the Copper Market
+		name = "flavor_swe.114.a"
+		add_mercantilism = 5
+		change_price = {
+			trade_goods = copper
+			key = SWEDEN_COPPER_MONOPOLIZATION
+			value = 1.5
+			duration = 14600
+		}
+		change_price = {
+			trade_goods = iron
+			key = SWEDEN_IRON_MONOPOLIZATION
+			value = 0.25
+			duration = 14600
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	
+	option = {	#Flood the Copper Market
+		name = "flavor_swe.114.b"
+		add_years_of_owned_provinces_production_income = {
+			years = 10
+			trigger = {
+				OR = {
+					province_id = 8
+					province_id = 4
+					province_id = 5
+					province_id = 1985
+				}
+			}
+			custom_tooltip = swe_industrialize_sweden_tt
+		}
+		change_price = {
+			trade_goods = copper
+			key = SWEDEN_COPPER_FLOOD
+			value = -0.5
+			duration = 14600
+		}
+		change_price = {
+			trade_goods = iron
+			key = SWEDEN_IRON_FLOOD
+			value = -0.15
+			duration = 14600
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	
+	option = {	#Keep it moderate
+		name = "flavor_swe.114.c"
+		add_years_of_owned_provinces_production_income = {
+			years = 5
+			trigger = {
+				OR = {
+					province_id = 8
+					province_id = 4
+					province_id = 5
+					province_id = 1985
+				}
+			}
+			custom_tooltip = swe_industrialize_sweden_tt
+		}
+		add_mercantilism = 2
+		change_price = {
+			trade_goods = copper
+			key = SWEDEN_COPPER
+			value = 0.2
+			duration = 14600
+		}
+		change_price = {
+			trade_goods = iron
+			key = SWEDEN_IRON
+			value = 0.1
+			duration = 14600
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# The universities of Lund and Uppsala
+country_event = {
+	id = flavor_swe.119
+	title = flavor_swe.119.t
+	desc = flavor_swe.119.desc
+	picture = UNIVERSITY_eventPicture
+	is_triggered_only = yes
+	
+	option = {
+		name = "flavor_swe.119.a"
+		add_adm_power = 200
+		change_innovativeness = 3
+		1 = { add_building = university }
+		6 = { add_building = university }
+	}
+}
+
+# Fate of Scania
+country_event = {
+	id = flavor_swe.120
+	title = flavor_swe.120.t
+	desc = flavor_swe.120.desc
+	picture = CONQUEST_eventPicture
+	is_triggered_only = yes
+	
+	option = {	#Assimilate the Danes
+		name = "flavor_swe.120.a"
+		add_stability = -1
+		skaneland_area = {
+			limit = {
+				owned_by = ROOT
+				NOT = { culture = ROOT }
+			}
+			change_culture = ROOT
+			add_local_autonomy = -100
+			add_nationalism = -10
+		}
+		add_historical_rival = DAN
+		DAN = { add_historical_rival = ROOT }
+		6 = {
+			spawn_rebels = {
+				type = nationalist_rebels
+				friend = DAN
+				size = 2
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = {	#With time they will learn to accept us
+		name = "flavor_swe.120.b"
+		add_stability_or_adm_power = yes
+		skaneland_area = {
+			limit = {
+				owned_by = ROOT
+				NOT = { culture = ROOT }
+			}
+			add_local_autonomy = 10
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Fate of an independent Sweden
+country_event = {
+	id = flavor_swe.121
+	title = flavor_swe.121.t
+	desc = flavor_swe.121.desc
+	picture = MILITARY_CAMP_eventPicture
+	fire_only_once = yes
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = swe_declared_independence_war
+		}
+	}
+	
+	option = {	#The World stands at our feet!
+		name = "flavor_swe.121.a"
+		if = {
+			limit = { NOT = { owns_core_province = 16 } }
+			add_permanent_claim = 16
+		}
+		if = {
+			limit = { NOT = { owns_core_province = 315 } }
+			add_permanent_claim = 315
+		}
+		if = {
+			limit = { NOT = { owns_core_province = 1777 } }
+			add_permanent_claim = 1777
+		}
+		if = {
+			limit = { NOT = { owns_core_province = 1776 } }
+			add_permanent_claim = 1776
+		}
+		karelia_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		north_karelia = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		novgorod_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		estonia_ingria_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		livonia_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		curonia_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Lord of Eastern Europe
+country_event = {
+	id = flavor_swe.123
+	title = flavor_swe.123.t
+	desc = flavor_swe.123.desc
+	picture = TRADE_GOODS_FURS_FISH_AND_SALT_eventPicture
+	is_triggered_only = yes
+	
+	option = {
+		name = "flavor_swe.123.a"
+		if = {
+			limit = { has_dlc = "Rights of Man" }
+			add_ruler_personality = entrepreneur_personality
+		}
+		else = { add_dip_power = 100 } 
+		change_dip = 1 		
+		33 = {
+			add_trade_modifier = {
+				who = ROOT
+				duration = -1
+				power = 15
+				key = swe_the_varangian_route
+			}
+		}
+		280 = {
+			add_trade_modifier = {
+				who = ROOT
+				duration = -1
+				power = 15
+				key = swe_the_varangian_route
+			}
+		}
+		1322 = {
+			add_trade_modifier = {
+				who = ROOT
+				duration = -1
+				power = 15
+				key = swe_the_varangian_route
+			}
+		}
+		1652 = {
+			add_trade_modifier = {
+				who = ROOT
+				duration = -1
+				power = 15
+				key = swe_the_varangian_route
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# The Poland Question
+country_event = {
+	id = flavor_swe.124
+	title = flavor_swe.124.t
+	desc = flavor_swe.124.desc
+	picture = DEBATE_REPUBLICAN_eventPicture
+	is_triggered_only = yes
+
+	immediate = { hidden_effect = { set_country_flag = swe_selecting_polish_goal } }
+	after = { hidden_effect = { clr_country_flag = swe_selecting_polish_goal } }
+	
+	option = {	#Try to get our dynasty on their throne
+		name = "flavor_swe.124.a"
+		trigger = {
+			religion_group = christian
+		}
+		custom_tooltip = flavor_swe.124.a.tt
+		hidden_effect = {
+			set_country_flag = swe_polish_throne_goal
+			clr_country_flag = swe_poland_conquest_goal
+			clr_country_flag = swe_polish_swedish_coexistence_goal
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	
+	option = {	#Poland is our claim!
+		name = "flavor_swe.124.b"
+		custom_tooltip = flavor_swe.124.b.tt
+		hidden_effect = {
+			clr_country_flag = swe_polish_throne_goal
+			set_country_flag = swe_poland_conquest_goal
+			clr_country_flag = swe_polish_swedish_coexistence_goal
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = {	#We have no business with the Poles
+		name = "flavor_swe.124.c"
+		custom_tooltip = flavor_swe.124.c.tt
+		hidden_effect = {
+			clr_country_flag = swe_polish_throne_goal
+			clr_country_flag = swe_poland_conquest_goal
+			set_country_flag = swe_polish_swedish_coexistence_goal
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Purchase of Memel
+country_event = {
+	id = flavor_swe.125
+	title = flavor_swe.125.t
+	desc = flavor_swe.125.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	goto = 40
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { exists = PLC }
+				PLC = { save_event_target_as = swe_polish_ally }
+			}
+			else_if = {
+				limit = { exists = POL }
+				POL = { save_event_target_as = swe_polish_ally }
+			}
+		}
+	}
+	
+	option = {	#Buy Memel from Poland
+		name = "flavor_swe.125.a"
+		trigger = { has_saved_event_target = swe_polish_ally }
+		event_target:swe_polish_ally = {
+			country_event = {
+				id = flavor_swe.126
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = {	#Not worth it
+		name = "flavor_swe.125.b"
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Purchase of Memel - Sweden asks
+country_event = {
+	id = flavor_swe.126
+	title = flavor_swe.126.t
+	desc = flavor_swe.126.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	goto = 40
+	
+	option = {	#Accepts
+		name = "flavor_swe.126.a"
+		40 = {
+			tooltip = {
+				cede_province = FROM
+				if = {
+					limit = { is_core = ROOT }
+					remove_core = ROOT
+				}
+				if = {
+					limit = {
+						OR = {
+							is_permanent_claim = ROOT
+							is_claim = ROOT
+						}
+					}
+					remove_claim = ROOT
+				}
+			}
+		}
+		add_treasury = 500
+		FROM = {
+			country_event = {
+				id = flavor_swe.127
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = {	#Nah
+		name = "flavor_swe.126.b"
+		FROM = {
+			country_event = {
+				id = flavor_swe.128
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Purchase of Memel - Poland sells Memel
+country_event = {
+	id = flavor_swe.127
+	title = flavor_swe.127.t
+	desc = flavor_swe.127.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	goto = 40
+	
+	option = {	#Accepts
+		name = "flavor_swe.127.a"
+		add_treasury = -500
+		40 = {
+			cede_province = ROOT
+			if = {
+				limit = { is_core = FROM }
+				remove_core = FROM
+			}
+			if = {
+				limit = {
+					OR = {
+						is_permanent_claim = FROM
+						is_claim = FROM
+					}
+				}
+				remove_claim = FROM
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Purchase of Memel - Poland refuses to sell Memel
+country_event = {
+	id = flavor_swe.128
+	title = flavor_swe.128.t
+	desc = flavor_swe.128.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	goto = 40
+	
+	option = {	#Accepts
+		name = "flavor_swe.128.a"
+		add_prestige = -5
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Purchase of Riga
+country_event = {
+	id = flavor_swe.129
+	title = flavor_swe.129.t
+	desc = flavor_swe.129.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	goto = 38
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { exists = PLC }
+				PLC = { save_event_target_as = swe_polish_ally }
+			}
+			else_if = {
+				limit = { exists = POL }
+				POL = { save_event_target_as = swe_polish_ally }
+			}
+		}
+	}
+	
+	option = {	#Buy Riga from Poland
+		name = "flavor_swe.129.a"
+		trigger = { has_saved_event_target = swe_polish_ally }
+		event_target:swe_polish_ally = {
+			country_event = {
+				id = flavor_swe.130
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = {	#Not worth it
+		name = "flavor_swe.129.b"
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Purchase of Riga - Sweden asks
+country_event = {
+	id = flavor_swe.130
+	title = flavor_swe.130.t
+	desc = flavor_swe.130.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	goto = 38
+	
+	option = {	#Accepts
+		name = "flavor_swe.130.a"
+		38 = { 
+			tooltip = {
+				cede_province = FROM
+				if = {
+					limit = { is_core = ROOT }
+					remove_core = ROOT
+				}
+				if = {
+					limit = {
+						OR = {
+							is_permanent_claim = ROOT
+							is_claim = ROOT
+						}
+					}
+					remove_claim = ROOT
+				}
+			}
+		}
+		add_treasury = 1000
+		FROM = {
+			country_event = {
+				id = flavor_swe.131
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = {	#Nah
+		name = "flavor_swe.130.b"
+		FROM = {
+			country_event = {
+				id = flavor_swe.132
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Purchase of Riga - Poland sells Riga
+country_event = {
+	id = flavor_swe.131
+	title = flavor_swe.131.t
+	desc = flavor_swe.131.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	goto = 38
+	
+	option = {	#Accepts
+		name = "flavor_swe.131.a"
+		add_treasury = -1000
+		38 = {
+			cede_province = ROOT
+			if = {
+				limit = { is_core = FROM }
+				remove_core = FROM
+			}
+			if = {
+				limit = {
+					OR = {
+						is_permanent_claim = FROM
+						is_claim = FROM
+					}
+				}
+				remove_claim = FROM
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Purchase of Riga - Poland refuses to sell Riga
+country_event = {
+	id = flavor_swe.132
+	title = flavor_swe.132.t
+	desc = flavor_swe.132.desc
+	picture = DIPLOMACY_eventPicture
+	is_triggered_only = yes
+	goto = 38
+	
+	option = {	#Accepts
+		name = "flavor_swe.132.a"
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# The Centralization Reforms of Gustav Vasa
+country_event = {
+	id = flavor_swe.133
+	title = flavor_swe.1.t
+	desc = flavor_swe.1.d
+	picture = VASA_REFORMS_eventPicture
+	is_triggered_only = yes
+
+	option = {		# Reform and claim
+		name = flavor_swe.1.a
+		ai_chance = { factor = 100 }
+		if = {
+			limit = {
+				NOT = { has_completed_all_reforms_trigger = yes }
+			}
+			add_reform_progress_small_effect = yes
+		}		
+		
+		1 = {	# Stockholm
+			add_base_tax = 2
+		}
+		2 = {	#Östergötland
+			add_base_tax = 1
+		}
+		7 = {	#Västergötland
+			add_base_tax = 1
+		}
+		27 = {	#Finland
+			add_base_tax = 1
+		}
+
+		1 = {	# Stockholm
+			add_base_manpower = 2
+		}
+		27 = {	#Finland
+			add_base_manpower = 1
+		}
+		
+		add_adm_power = -50
+		add_dip_power = -50
+		add_mil_power = -50
+		
+		add_country_modifier = {
+			name = vasa_centralization_reforms
+			duration = -1
+		}
+	}
+}
+
+# Sweden proclaims Protection for the Protestants
+country_event = {
+	id = flavor_swe.134
+	title = flavor_swe.134.t
+	desc = flavor_swe.134.desc
+	picture = PROTESTANT_CATHOLIC_DEBATE_eventPicture
+	is_triggered_only = yes
+	major = yes
+	
+	option = {	#I will lead you to victory!
+		name = "flavor_swe.134.a"
+		enable_hre_leagues = yes
+		join_league = protestant
+		set_global_flag = evangelical_union_happened
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Sweden provokes the creation of the Evangelical Union
+country_event = {
+	id = flavor_swe.135
+	title = flavor_swe.135.t
+	desc = flavor_swe.135.desc
+	picture = PROTESTANT_CATHOLIC_DEBATE_eventPicture
+	is_triggered_only = yes
+	major = yes
+	
+	option = {	#Sweden will lead us to victory!
+		name = "flavor_swe.135.a"
+		enable_hre_leagues = yes
+		join_league = protestant
+		FROM = { join_league = protestant }
+		set_global_flag = evangelical_union_happened
+		ai_chance = {
+			factor = 1
+		}
+	}
+}

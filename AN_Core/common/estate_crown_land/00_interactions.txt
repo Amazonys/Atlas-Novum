@@ -35,6 +35,12 @@ interaction = {
         }
 		if = {
 			limit = {
+				has_government_attribute = selling_titles_increases_pa
+			}
+			add_patriarch_authority = 0.05
+		}
+		if = {
+			limit = {
 				has_country_flag = recent_land_distribution
 			}
 			clr_country_flag = recent_land_distribution
@@ -169,18 +175,27 @@ interaction = {
 		}
 		set_country_flag = recent_estate_agenda
 
-        add_estate_influence_modifier = {
-            estate = all
-            desc = EST_VAL_DIET_SUMMONED
-            duration = 7300
-            influence = 5
-            short = yes
-        }
+		if = {
+			limit = { NOT = { has_government_attribute = diet_increases_not_influence } }
+			add_estate_influence_modifier = {
+				estate = all
+				desc = EST_VAL_DIET_SUMMONED
+				duration = 7300
+				influence = 5
+				short = yes
+			}
+		}
         add_estate_loyalty = {
             estate = all
             loyalty = 5
             short = yes
         }
+		if = {
+			limit = {
+				has_government_attribute = republican_tradition_from_diets
+			}
+			add_scaled_republican_tradition = 2
+		}
     }
 	ai_will_do = {
 		# Only use if it will bring loyalty above 50 for all estates
@@ -275,6 +290,10 @@ interaction = {
 			NOT = { has_estate_privilege = estate_church_statutory_rights }
 		}
         is_at_war = no
+		if = {
+			limit = { has_government_attribute = can_not_seize_land }
+			NOT = { has_government_attribute_short_desc = can_not_seize_land }
+		}
     }
     effect = {
         custom_tooltip = ESTATES_SEIZE_LAND_DESC
@@ -288,12 +307,24 @@ interaction = {
 			clr_country_flag = recent_land_seizure
 		}
 		set_country_flag = recent_land_seizure
-
-        add_estate_loyalty = {
-            estate = all
-            loyalty = -20
-            short = yes
-        }
+		if = {
+			limit = {
+				has_government_attribute = seizing_land_loyalty
+			}
+			add_estate_loyalty = {
+				estate = all
+				loyalty = -15
+				short = yes
+			}
+		}
+		else = {
+			add_estate_loyalty = {
+				estate = all
+				loyalty = -20
+				short = yes
+			}
+		}
+		custom_tooltip = ESTATES_SEIZE_LAND_EXCEPTION_DESC
 		re_add_loyalty_from_seized_land = yes
 		custom_tooltip = seize_land_rebels_tt
 		if = {
@@ -325,6 +356,12 @@ interaction = {
 			}
 			spawn_rebels_seize_land_switch = yes
 		}
+		if = {
+			limit = {
+				has_government_attribute = seizing_land_takes_karma
+			}
+			add_karma = -10
+		}
 	}
 	ai_will_do = {
 		factor = 50
@@ -339,7 +376,7 @@ interaction = {
 			# This is a hack for countries with enclaves that can be hard to get to, to kill the rebels
 			OR = {
 				tag = TEU
-				tag = COL
+				tag = KOL
 				# Add more as necessary
 			}
 			NOT = {

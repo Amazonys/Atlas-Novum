@@ -5,7 +5,6 @@ united_cantons_reform = {
 		governing_capacity = -50
 		free_policy = 1
 		mercenary_manpower = 0.5
-		max_absolutism = 10
 	}
 	valid_for_nation_designer = yes
 	nation_designer_cost = 40
@@ -32,12 +31,20 @@ united_cantons_reform = {
 			is_subject = yes
 		}
 	}
+
+	custom_attributes = {
+		mercs_do_not_cost_army_professionalism = yes
+	}
 }
 
 parliamentary_reform = {
 	icon = "judge"
 	modifiers = {
 		global_unrest = -1
+	}
+	potential = {
+		is_revolutionary = no
+		NOT = { has_government_attribute = is_pirate_republic_reform }
 	}
 	
 	trigger = {		
@@ -52,6 +59,10 @@ parliamentary_reform = {
 		if = {
 			limit = { has_dlc = "Res Publica" }
 			NOT = { has_reform = elective_monarchy }
+		}
+		if = {
+			limit = { has_dlc = "Lions of the North" }
+			NOT = { has_reform = polish_elective_monarchy }
 		}
 		if = {
 			limit = { NOT = { has_dlc = "Mandate of Heaven" } }
@@ -214,8 +225,8 @@ penal_colonies_reform = {
 	icon = "merchant_ship"
 	allow_normal_conversion = yes
 	potential = {
-		num_of_colonists = 1
 		has_dlc = "Golden Century"
+		has_idea_group = exploration_ideas
 		capital_scope = {
 			NOT = {
 				OR = {
@@ -228,11 +239,11 @@ penal_colonies_reform = {
 		}
 	}
 	trigger = {
-		num_of_colonists = 1
-		num_of_continents = 2
+		has_idea_group = exploration_ideas
 	}
 	modifiers = {
-		expel_minorities_cost = -0.3
+		expel_minorities_cost = -1
+		colonist_placement_chance = 0.05
 	}
 	ai = {
 		factor = 0.1
@@ -273,7 +284,982 @@ holy_state_reform = {
 	}
 	rulers_can_be_generals = yes
 	heirs_can_be_generals = yes
+	custom_attributes = {
+		monastic_order = yes
+	}
 	ai = {
 		factor = 10
+	}
+}
+
+# State and Religion
+
+papal_embassy_reform = {
+	icon = "pope"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = catholic
+		NOT = { tag = PAP }
+	}
+	trigger = {
+		NOT = {
+			has_country_modifier = the_statue_in_restraint_of_appeals
+		}
+	}
+	modifiers = {
+		papal_influence_from_cardinals = 0.33
+		curia_treasury_contribution = 0.33
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.05
+		curia_powers_cost = -0.1
+	}
+	effect = {
+		hidden_effect = {
+			add_opinion = {
+				who = PAP
+				modifier = papal_embassy
+			}
+			reverse_add_opinion = {
+				who = PAP
+				modifier = papal_embassy
+			}
+		}
+	}
+	removed_effect = {
+		hidden_effect = {
+			remove_opinion = {
+				who = PAP
+				modifier = papal_embassy
+			}
+			reverse_remove_opinion = {
+				who = PAP
+				modifier = papal_embassy
+			}
+		}
+	}
+	custom_attributes = {
+		improved_opinion_of_pope = yes	#Popesman has +25 opinion of you
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+i_am_the_church_reform = {
+	icon = "pope"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = catholic
+		tag = PAP
+	}
+	modifiers = {
+		devotion = 0.5
+		max_absolutism = 10
+		appoint_cardinal_cost = -0.1
+	}
+	effect = {
+		hidden_effect = {
+			if = {
+				limit = { is_defender_of_faith = yes }
+				add_country_modifier = {
+					name = gov_improved_defender_of_faith_mod
+					duration = -1
+				}
+			}
+		}
+	}
+	post_removed_effect = {
+		remove_country_modifier = gov_improved_defender_of_faith_mod
+	}
+	custom_attributes = {
+		improved_defender_of_faith = yes	#Being Defender of Faith increases Dip Rep, Tolerance and Morale
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+focus_of_the_patriarchy_reform = {
+	icon = "pope"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = coptic
+	}
+	modifiers = {
+		institution_spread_from_true_faith = 0.25
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.1
+	}
+	custom_attributes = {
+		active_holy_sites_improve_clergy_loyalty = yes
+		clerical_ministers_tech_buff = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+lands_for_the_monasteries_reform = {
+	icon = "pope"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = orthodox
+	}
+	modifiers = {
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.15
+		yearly_patriarch_authority = 0.002
+	}
+	custom_attributes = {
+		free_religious_culture = yes
+		on_church_built_clergy_loyalty = yes
+	}
+	conditional = {
+		allow = { has_dlc = "Third Rome" }
+		custom_attributes = {
+			selling_titles_increases_pa = yes
+		}
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+zoroastrian_focus_reform = {
+	icon = "articles_of_agreement"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = zoroastrian
+	}
+	modifiers = {
+		no_religion_penalty = yes
+		global_unrest = -1
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.1
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+power_to_the_synagogoues_reform = {
+	icon = "rabbi"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion_group = jewish_group
+	}
+	modifiers = {
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.1
+		idea_cost = -0.05
+		church_power_modifier = 0.1
+	}
+	conditional = {
+		allow = { has_dlc = "Origins" }
+		custom_attributes = {
+			loyalty_from_celebration = yes	#Celebrating will now give +20 Loyalty
+		}
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+head_of_the_reformed_church_reform = {
+	icon = "regionally_elected_commanders"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		NOT = { religion = catholic }
+		NOT = { religion = coptic }
+		NOT = { religion = orthodox }
+		religion_group = christian
+	}
+	modifiers = {
+		church_influence_modifier = -0.05
+		global_tax_modifier = 0.15
+		church_power_modifier = 0.1
+		monthly_fervor_increase = 0.25
+	}
+	effect = {
+		hidden_effect = {
+			if = {
+				limit = { is_defender_of_faith = yes }
+				add_country_modifier = {
+					name = gov_improved_defender_of_faith_mod
+					duration = -1
+				}
+			}
+		}
+	}
+	post_removed_effect = {
+		remove_country_modifier = gov_improved_defender_of_faith_mod
+	}
+	custom_attributes = {
+		improved_defender_of_faith = yes	#Being Defender of Faith increases Dip Rep, Tolerance and Morale
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+confucian_governing_reform = {
+	icon = "asian_scripture"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = confucianism
+	}
+	modifiers = {
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.1
+		harmonization_speed = 0.1
+		governing_capacity_modifier = 0.05
+	}
+	conditional = {
+		allow = { has_dlc = "Mandate of Heaven" }
+		custom_attributes = {
+			full_loyalty_on_harmonization = yes	#Add +100 Loyalty when harmonizing something
+		}
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+empower_buddhist_temples_reform = {
+	icon = "religious_harmony_reform"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		OR = {
+			religion = buddhism
+			religion = vajrayana
+			religion = mahayana
+		}
+	}
+	modifiers = {
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.1
+		yearly_karma_decay = 0.05
+		stability_cost_modifier = -0.1
+	}
+	conditional = {
+		allow = { has_dlc = "Common Sense" }
+		custom_attributes = {
+			clergy_estate_agendas_gives_karma = yes	#Adds Karma by 10
+			seizing_land_takes_karma = yes	#Reduces Karma by 10
+			enable_karma_decision = yes	#Allows decision every 20 years to add or remove 10 Karma
+		}
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+public_hindu_practices_reform = {
+	icon = "indian_crown"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = hinduism
+	}
+	modifiers = {
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.1
+		brahmins_hindu_influence_modifier = 0.1
+		brahmins_hindu_loyalty_modifier = 0.1
+		tolerance_own = 1
+	}
+	conditional = {
+		allow = { has_dlc = "Wealth of Nations" }
+		custom_attributes = {
+			reduce_new_deity_decision_cd = yes	#Reduce it by 15 years
+		}
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+strengthen_shaman_privileges_reform = {
+	icon = "tribal_martial_society"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = shamanism
+	}
+	modifiers = {
+		church_loyalty_modifier = 0.1
+		global_missionary_strength = 0.01
+	}
+	conditional = {
+		allow = { has_dlc = "Rights of Man" }
+		custom_attributes = {
+			no_influence_from_fetishist_privileges = yes
+		}
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+abolished_caste_system_reform = {
+	icon = "indian_sultanate"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = sikhism
+	}
+	modifiers = {
+		all_estate_influence_modifier = -0.15
+		stability_cost_modifier = -0.2
+	}
+	custom_attributes = {
+		seizing_land_no_rebels = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+strengthen_the_ulema_reform = {
+	icon = "mamluk_government"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion_group = muslim
+	}
+	modifiers = {
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.1
+		dhimmi_influence_modifier = -0.1
+		dhimmi_loyalty_modifier = -0.1
+		global_missionary_strength = 0.015
+	}
+	conditional = {
+		allow = { has_dlc = "Cradle of Civilization" }
+		custom_attributes = {
+			allow_piety_switch_decision = yes	#Enables a decision which gives 1 stabhit, but turns your piety 180°
+		}
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+strengthen_the_dhimmi_reform = {
+	icon = "noble_muslim"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion_group = muslim
+		has_estate = estate_dhimmi
+	}
+	modifiers = {
+		dhimmi_influence_modifier = 0.1
+		dhimmi_loyalty_modifier = 0.1
+		church_influence_modifier = -0.1
+		church_loyalty_modifier = -0.1
+		tolerance_of_heathens_capacity = 1
+	}
+	custom_attributes = {
+		free_guarantee_dhimmi_autonomy = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+legacy_of_the_steppes_reform = {
+	icon = "horde_riding"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = tengri_pagan_reformed
+	}
+	modifiers = {
+		monarch_military_power = 1
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.1
+	}
+	custom_attributes = {
+		winning_battles_increases_legitimacy = yes	#Every single won battle adds +2 Legitimacy and +0.25 Absolutism
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+state_and_shrines_intertwined_reform = {
+	icon = "shogunate"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = shinto
+	}
+	modifiers = {
+		church_loyalty_modifier = 0.15
+		religious_unity = 0.25
+	}
+	custom_attributes = {
+		enables_divine_idea_group = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+embedded_norse_government_reform = {
+	icon = "all_under_tengri_reform"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		religion = norse_pagan_reformed
+	}
+	modifiers = {
+		may_perform_slave_raid = yes
+		church_influence_modifier = 0.1
+		army_tradition_from_battle = 0.5
+		naval_tradition_from_battle = 0.5
+	}
+	custom_attributes = {
+		winning_war_increases_legitimacy = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+strengthen_clergy_reform = {
+	icon = "church"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		NOT = { religion = jewish }
+		NOT = { religion = zoroastrian }
+		NOT = { religion = hinduism }
+		NOT = { religion = sikhism }
+		NOT = { religion_group = muslim }
+		NOT = { religion_group = christian }
+		NOT = { religion_group = eastern }
+		NOT = { religion = tengri_pagan_reformed }
+		NOT = { religion = shamanism }
+		NOT = { religion = norse_pagan_reformed }
+	}
+	modifiers = {
+		church_influence_modifier = 0.1
+		church_loyalty_modifier = 0.1
+		war_exhaustion = -0.03
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+curtail_clergy_power_reform = {
+	icon = "monks"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+	}
+	modifiers = {
+		adm_tech_cost_modifier = -0.1
+		church_influence_modifier = -0.1
+	}
+	custom_attributes = {
+		seizing_land_no_rebels_from_estate_church = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+secure_clergy_power_reform = {
+	icon = "warrior_monks_reform"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+	}
+	modifiers = {
+		church_influence_modifier = 0.05
+		adm_advisor_cost = -0.1
+	}
+	effect = {
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					has_tax_building_trigger = yes
+				}
+				add_province_modifier = {
+					name = gov_expanded_temple_rights_mod
+					duration = -1
+				}
+			}
+		}
+	}
+	post_removed_effect = {
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					has_province_modifier = gov_expanded_temple_rights_mod
+				}
+				remove_province_modifier = gov_expanded_temple_rights_mod
+			}
+		}
+	}
+	custom_attributes = {
+		temples_modifier = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+maintain_clergy_balance_of_power_reform = {
+	icon = "consolidate_power_in_cities_reform"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+	}
+	modifiers = {
+		all_estate_loyalty_equilibrium = 0.05
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+separate_clergy_from_state_affairs_reform = {
+	icon = "partial_secularisation_reform"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+		OR = {
+			has_idea_group = innovativeness_ideas
+			has_idea_group = humanist_ideas
+		}
+		NOT = { has_idea_group = religious_ideas }
+		NOT = { has_idea_group = theocracy_ideas }
+	}
+	trigger = {
+		OR = {
+			full_idea_group = innovativeness_ideas
+			full_idea_group = humanist_ideas
+		}
+	}
+	modifiers = {
+		tolerance_of_heathens_capacity = 1
+		tolerance_of_heretics_capacity = 1
+		innovativeness_gain = 0.25
+	}
+	custom_attributes = {
+		disables_clergy = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+#Revolutionary
+cult_of_reason_reform = {
+	icon = "cult_of_reason"
+	allow_normal_conversion = yes
+	potential = {
+		is_revolutionary = yes
+		has_dlc = "Emperor"
+	}
+	trigger = {
+		has_country_modifier = cult_of_reason
+	}
+	modifiers = {
+		rr_jacobins_influence = 0.1
+		idea_cost = -0.2
+		possible_policy = 1
+		free_policy = 1
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+conserve_the_religion_reform = {
+	icon = "cult_of_supreme_being"
+	allow_normal_conversion = yes
+	potential = {
+		is_revolutionary = yes
+		has_dlc = "Emperor"
+	}
+	modifiers = {
+		rr_royalists_influence = 0.1
+		papal_influence = 100
+		tolerance_own = 2
+		idea_cost = -0.05
+	}
+	effect = {
+		if = {
+			limit = { has_country_modifier = cult_of_reason }
+			add_stability = -1
+			remove_country_modifier = cult_of_reason
+		}
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+secularization_of_the_state_reform = {
+	icon = "partial_secularisation_reform"
+	allow_normal_conversion = yes
+	potential = {
+		is_revolutionary = yes
+		has_dlc = "Emperor"
+	}
+	modifiers = {
+		rr_girondists_influence = 0.1
+		no_religion_penalty = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+#Economical Matters
+
+empower_the_burghers_reform = {
+	icon = "prussian_monarchy_2"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+	}
+	modifiers = {
+		global_trade_power = 0.05
+		trade_efficiency = 0.05
+		burghers_loyalty_modifier = 0.05
+		burghers_influence_modifier = 0.1
+		vaisyas_loyalty_modifier = 0.05
+		vaisyas_influence_modifier = 0.1
+		jains_influence_modifier = 0.05
+		jains_influence_modifier = 0.1
+	}
+	ai = {
+		factor = 1
+	}
+}
+
+curtail_the_burghers_reform = {
+	icon = "assembly_hall"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		OR = {
+			is_revolutionary = no
+			NOT = { has_dlc = "Emperor" }
+		}
+	}
+	modifiers = {
+		trade_company_governing_cost = -0.1
+		yearly_corruption = -0.1
+		burghers_influence_modifier = -0.1
+	}
+	custom_attributes = {
+		seizing_land_no_rebels_from_estate_burghers = yes
+	}
+	ai = {
+		factor = 1
+	}
+}
+
+reestablish_the_burgeoisie_reform = {
+	icon = "dutch_republic"
+	allow_normal_conversion = yes
+	potential = {
+		is_revolutionary = yes
+		has_dlc = "Emperor"
+	}
+	modifiers = {
+		global_trade_goods_size_modifier = 0.1
+		max_revolutionary_zeal = -10
+	}
+	custom_attributes = {
+		enables_burghers = yes
+	}
+	ai = {
+		factor = 1
+	}
+}
+
+new_world_exploitation_reform = {
+	icon = "compass"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		capital_scope = {
+			NOT = { continent = north_america }
+			NOT = { continent = south_america }
+			NOT = { continent = new_world }
+			NOT = { colonial_region = colonial_australia }
+		}
+		OR = {
+			has_idea_group = expansion_ideas
+			has_idea_group = exploration_ideas
+		}
+	}
+	trigger = {
+		OR = {
+			full_idea_group = expansion_ideas
+			full_idea_group = exploration_ideas
+		}
+		if = {
+			limit = {
+				is_revolutionary = yes
+				has_dlc = "Emperor"
+			}
+			NOT = { has_estate_privilege = estate_burghers_indebted_to_burghers }
+		}
+	}
+	modifiers = {
+		global_tariffs = 0.25
+		treasure_fleet_income = 0.25
+	}
+	custom_attributes = {
+		extra_trade_goods_for_colonial_subjects = yes
+	}
+	ai = {
+		factor = 1
+	}
+}
+
+mercantilistic_approach_reform = {
+	icon = "paper_with_seal"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+	}
+	trigger = {
+		if = {
+			limit = {
+				is_revolutionary = yes
+				has_dlc = "Emperor"
+			}
+			NOT = { has_estate_privilege = estate_burghers_indebted_to_burghers }
+		}
+	}
+	modifiers = {
+		mercantilism_cost = -0.1
+		global_own_trade_power = 0.15
+		placed_merchant_power = 5
+	}
+	custom_attributes = {
+		no_mercantilism_loss_from_privilege = yes
+	}
+	ai = {
+		factor = 1
+	}
+}
+
+free_trade_reform = {
+	icon = "merchant"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+	}
+	trigger = {
+		if = {
+			limit = {
+				is_revolutionary = yes
+				has_dlc = "Emperor"
+			}
+			NOT = { has_estate_privilege = estate_burghers_indebted_to_burghers }
+		}
+	}
+	modifiers = {
+		global_institution_spread = 0.25
+		global_foreign_trade_power = 0.2
+	}
+	custom_attributes = {
+		monarch_power_on_institutions = yes
+	}
+	conditional = {
+		allow = { has_dlc = "Cradle of Civilization" }
+		custom_attributes = {
+			free_improve_inland_routes = yes
+		}
+	}
+	ai = {
+		factor = 1
+	}
+}
+
+lockean_proviso_reform = {
+	icon = "paper_money_map"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		has_idea_group = economic_ideas
+	}
+	trigger = {
+		full_idea_group = economic_ideas
+		if = {
+			limit = {
+				is_revolutionary = yes
+				has_dlc = "Emperor"
+			}
+			NOT = { has_estate_privilege = estate_burghers_indebted_to_burghers }
+		}
+	}
+	modifiers = {
+		development_cost = -0.05
+		global_trade_goods_size_modifier = 0.05
+	}
+	ai = {
+		factor = 1
+	}
+}
+
+embrace_the_economic_theory_reform = {
+	icon = "dutch_flag"
+	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+	}
+	trigger = {
+		if = {
+			limit = {
+				is_revolutionary = yes
+				has_dlc = "Emperor"
+			}
+			NOT = { has_estate_privilege = estate_burghers_indebted_to_burghers }
+		}
+	}
+	modifiers = {
+		production_efficiency = 0.1
+		inflation_reduction = 0.1
+	}
+	ai = {
+		factor = 1
 	}
 }
