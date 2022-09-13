@@ -59,7 +59,7 @@ NDefines.NDiplomacy.PEACE_COST_RELEASE_ANNEXED = 0.75			-- from 1   Some peace c
 NDefines.NDiplomacy.PEACE_COST_RELEASE_VASSAL = 0.75		-- from 0p5
 NDefines.NDiplomacy.PEACE_COST_CONVERSION = 0.1		-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   I know people love their beliefs and resist religious change but the absurdly high price of this made it only possible against very small tags where it was usually preferable to just annex   Now this might be useful
 NDefines.NDiplomacy.PEACE_COST_RELEASE = 1			-- from 2
-NDefines.NDiplomacy.ANNEX_DIP_COST_PER_DEVELOPMENT = 4 -- from 8
+
 NDefines.NDiplomacy.PEACE_COST_PILLAGE_CAPITAL = 2 -- from 1
 
 NDefines.NDiplomacy.PEACE_COST_DEMAND_NON_OCCUPIED_PROVINCE_MULT = 1.5
@@ -129,7 +129,7 @@ NDefines.NCountry.STATE_MAINTENANCE_DISTANCE_FACTOR = 0.002	-- from 0p001
 NDefines.NCountry.STATE_MAINTENANCE_CONTINENT_FACTOR = 0.3	-- from 0p25
 NDefines.NCountry.STATE_MAINTENANCE_CULTURE_FACTOR = 0.15		-- from 0p25
 NDefines.NCountry.CORRUPTION_FROM_BANNERS = 0.5
-NDefines.NCountry.NOMAD_DEVELOPMENT_SCALE = 1200			-- from 600     I dont actually know how this works     Might have it reversed better check later
+NDefines.NCountry.COUNTRY_DEVELOPMENT_SCALE = 1200			-- from 600     I dont actually know how this works     Might have it reversed better check later
 NDefines.NCountry.CULTURAL_UNION_MIN_DEV = 2000			-- from 1000
 NDefines.NCountry.MIN_DEV_FOR_FREE_CITY = 20			-- from 10
 NDefines.NCountry.RANDOM_LUCKY_DEVELOPMENT_WEIGHT = 0.2			-- from 0p4
@@ -254,7 +254,7 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local auto
 
  --NMilitary changes
 NDefines.NMilitary.SLACKEN_AP_DROP = 0.1 -- was 0.05 +100% cost
-NDefines.NMilitary.SLACKEN_MANPOWER_INCREASE = 2.5 -- was 2.5 +25% manpower
+NDefines.NMilitary.SLACKEN_MANPOWER_INCREASE = 1.5 -- was 1 +50% manpower
  
 NDefines.NMilitary.BASE_COMBAT_WIDTH = 10
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
@@ -309,9 +309,9 @@ NDefines.NMilitary.LOOTED_RECOVERY = 0.2
 NDefines.NMilitary.SLAVE_RAIDS_SAILOR_FACTOR = 0.2						
 NDefines.NMilitary.SLAVE_RAIDS_DURATION = 7300
  --Defence penalties
-NDefines.NMilitary.RIVER_CROSSING_PENALTY = -1						-- Dice roll penalty from river crossing
-NDefines.NMilitary.STRAIT_CROSSING_PENALTY = -2					-- Dice roll penalty from strait crossing
-NDefines.NMilitary.SEA_LANDING_PENALTY = -2
+NDefines.NMilitary.RIVER_CROSSING_PENALTY = 1						-- Dice roll penalty from river crossing
+NDefines.NMilitary.STRAIT_CROSSING_PENALTY = 2					-- Dice roll penalty from strait crossing
+NDefines.NMilitary.SEA_LANDING_PENALTY = 2
  --suppression
 NDefines.NMilitary.MAX_REBEL_SUPPRESSION = 10.0				-- Maximum amount of rebel suppression by troops in a province
 NDefines.NMilitary.INF_SUPPRESSION = 0.5					-- The amount of reduction to unrest for each friendly infantry regiment in a province
@@ -426,7 +426,7 @@ NDefines.NGovernment.EFFICIENT_FARMING_DUCAT_MULTIPLIER = 2
 NDefines.NGovernment.LAND_AQUISITION_MANPOWER_MULTIPLIER = 0.05
 	
 NDefines.NGovernment.GOVERNMENT_REFORM_BASE_COST = 100.0
-NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 100.0
+NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 100.0 -- to be set to 0 soon
 NDefines.NGovernment.GOVERNMENT_REFORM_YEARLY_BASE_PROGRESS = 10.0
 NDefines.NGovernment.GOVERNMENT_REFORM_HISTORIC_AUTONOMY = 0.25
 NDefines.NGovernment.GOVERNMENT_REFORM_CHANGE_PROGRESS_COST = 50.0

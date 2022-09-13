@@ -18,8 +18,84 @@ divorce_consort_aspect = {
 	effect = {
 		custom_tooltip = divorce_consort_tooltip
 		hidden_effect = {
+			export_to_variable = {
+				which = consort_adm_var
+				value = consort_adm
+			}
+			export_to_variable = {
+				which = consort_dip_var
+				value = consort_dip
+			}
+			export_to_variable = {
+				which = consort_mil_var
+				value = consort_mil
+			}
+			#Multiply with -12 because a) it should be the inverse stat which gives monarch power (so divorcing a 0/0/0 gets you the most monarch power) and b) we assume the consort would have ruled for 12 months
+			multiply_variable = {
+				which = consort_adm_var
+				value = -12
+			}
+			multiply_variable = {
+				which = consort_dip_var
+				value = -12
+			}
+			multiply_variable = {
+				which = consort_mil_var
+				value = -12
+			}
+			change_variable = {
+				which = consort_adm_var
+				value = 72
+			}
+			change_variable = {
+				which = consort_dip_var
+				value = 72
+			}
+			change_variable = {
+				which = consort_mil_var
+				value = 72
+			}
+			while = {
+				limit = {
+					check_variable = {
+						which = consort_adm_var
+						value = 12
+					}
+				}
+				add_adm_power = 12
+				subtract_variable = {
+					which = consort_adm_var
+					value = 12
+				}
+			}
+			while = {
+				limit = {
+					check_variable = {
+						which = consort_dip_var
+						value = 12
+					}
+				}
+				add_dip_power = 12
+				subtract_variable = {
+					which = consort_dip_var
+					value = 12
+				}
+			}
+			while = {
+				limit = {
+					check_variable = {
+						which = consort_mil_var
+						value = 12
+					}
+				}
+				add_mil_power = 12
+				subtract_variable = {
+					which = consort_mil_var
+					value = 12
+				}
+			}
 			remove_consort = yes
-		}		
+		}
 	}
 	ai_will_do = {
 		factor = 2
@@ -57,10 +133,17 @@ gain_consort_aspect = {
 		has_regency = no
 	}
 	effect = {
-		define_consort = {
-			country_of_origin = ROOT
-			hide_skills = yes
-			female = yes
+		custom_tooltip = gain_consort_aspect_tt
+		hidden_effect = {
+			define_consort = {
+				country_of_origin = ROOT
+				hide_skills = yes
+				female = yes
+			}
+			add_ruler_modifier = {
+				name = a_new_consort_heir_modifier
+				duration = 5475
+			}
 		}
 	}
 	ai_will_do = {
@@ -80,12 +163,22 @@ dissolve_monasteries_aspect = {
 	sprite = "GFX_dissolve_monasteries_icon"
 	cost = 100
 	trigger = {
-		NOT = {
-			treasury = 1000000
-		}
+		has_estate = estate_church
 	}
 	effect = {
-		add_years_of_income = 0.25
+		custom_tooltip = dissolve_monasteries_aspect_tt
+		hidden_effect = {
+			add_estate_influence_modifier = {
+				estate = estate_church
+				influence = -10
+				duration = 5475
+				desc = dissolve_monasteries_aspect_ct
+			}
+		}
+		change_estate_land_share = {
+		   estate = estate_church
+		   share = -3
+	    }
 	}
 	ai_will_do = {
 		factor = 1
@@ -100,12 +193,18 @@ monopoly_aspect = {
 	sprite = "GFX_grant_monopoly_icon"
 	cost = 100
 	trigger = {
-		NOT = {
-			mercantilism = 100
+		OR = {
+			NOT = {
+				treasury = 1000000
+			}
+			NOT = {
+				mercantilism = 100
+			}
 		}
 	}
 	effect = {
 		add_mercantilism = 1
+		add_years_of_income = 0.25
 	}
 	ai_will_do = {
 		factor = 1
@@ -120,12 +219,22 @@ stability_aspect = {
 	sprite = "GFX_progress_of_the_supreme_governor_icon"
 	cost = 200
 	trigger = {
-		NOT = {
-			stability = 3
+		OR = {
+			NOT = {
+				stability = 3
+			}
+			NOT = {
+				legitimacy_equivalent = 90
+			}
 		}
 	}
 	effect = {
 		add_stability = 1
+		add_legitimacy = 10
+		add_devotion = 10
+		add_horde_unity = 10
+		add_meritocracy = 10
+		add_republican_tradition = 5
 	}
 	ai_will_do = {
 		factor = 3
@@ -140,6 +249,154 @@ stability_aspect = {
 		modifier = {
 			factor = 0.5
 			stability = 2
+		}
+		modifier = {
+			factor = 0
+			stability = 3
+		}
+	}
+}
+
+innovativeness_aspect = {
+	sprite = "GFX_innovativeness_aspect"
+	cost = 100
+	trigger = {
+	}
+	effect = {
+		custom_tooltip = innovativeness_aspect_tt
+		hidden_effect = {
+			add_country_modifier = {
+				name = anglican_innovativeness
+				duration = 5475
+			}
+			random_owned_province = {
+				limit = {
+					OR = {
+						has_building = temple
+						has_building = cathedral
+						has_building = university
+					}
+					religion = ROOT
+					controlled_by = ROOT
+					same_continent = ROOT
+				}
+				add_base_production = 1
+			}
+		}
+	}
+	ai_will_do = {
+		factor = 2
+		modifier = {
+			factor = 0.25
+			innovativeness = 90
+		}
+		modifier = {
+			factor = 0.25
+			reform_level = 5
+		}
+	}
+}
+
+expel_heretics_aspect = {
+	sprite = "GFX_expel_heretics_aspect"
+	cost = 100
+	trigger = {
+	}
+	effect = {
+		custom_tooltip = expel_heretics_aspect_tt
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					is_colony = yes
+				}
+				add_colonysize = 100
+				random_list = {
+					67 = {}
+					11 = {
+						change_religion = catholic
+					}
+					11 = {
+						trigger = { is_religion_enabled = protestant }
+						change_religion = protestant
+					}
+					11 = {
+						trigger = { is_religion_enabled = reformed }
+						change_religion = reformed
+					}
+				}
+			}
+			add_country_modifier = {
+				name = expelling_heretics
+				duration = 5475
+			}
+		}
+	}
+	ai_will_do = {
+		factor = 3
+		modifier = {
+			factor = 0.5
+			stability = 0
+		}
+		modifier = {
+			factor = 0.5
+			stability = 1
+		}
+		modifier = {
+			factor = 0.5
+			stability = 2
+		}
+	}
+}
+
+diplomats_of_the_reformation_aspect = {
+	sprite = "GFX_diplomats_of_the_reformation_aspect"
+	cost = 100
+	trigger = {}
+	effect = {
+		custom_tooltip = diplomats_of_the_reformation_aspect_tt
+		hidden_effect = {
+			every_known_country = {
+				limit = {
+					OR = {
+						religion = protestant
+						religion = reformed
+						religion = anglican
+					}
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = anglican_reformation_diplomacy
+				}
+				reverse_add_opinion = {
+					who = ROOT
+					modifier = anglican_reformation_diplomacy
+				}
+			}
+		}
+	}
+	ai_will_do = {
+		factor = 0
+	}
+}
+
+icons_of_the_church_aspect = {
+	sprite = "GFX_icons_of_the_church_icon"
+	cost = 200
+	trigger = {}
+	effect = {
+		custom_tooltip = icons_of_the_church_aspect_tt
+		hidden_effect = {
+			add_country_modifier = {
+				name = anglican_militarized_church_aspect
+				duration = 5475
+			}
+		}
+	}
+	ai_will_do = {
+		factor = 3
+		modifier = {
+			factor = 0
+			is_at_war = no
 		}
 	}
 }
