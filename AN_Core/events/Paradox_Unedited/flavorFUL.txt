@@ -1,0 +1,201 @@
+########################################
+# Events for Fulo
+#
+# written by Henrik Lohmander
+########################################
+
+namespace = flavor_ful
+normal_or_historical_nations = yes
+
+#The Marabout Wars
+province_event = {
+	id = flavor_ful.1
+	title = flavor_ful.1.t
+	desc = flavor_ful.1.d
+	picture = RELIGIOUS_TURMOIL_eventPicture
+
+	fire_only_once = yes
+
+	trigger = {
+		is_year = 1640
+		NOT = { is_year = 1677 }
+		culture = fulani
+		continent = africa
+		NOT = { has_province_flag = ful_marabout_happened }
+		owner = {
+			OR = {
+				NOT = { religion = sunni }
+				NOT = { piety = -0.3 }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 360
+		modifier = {
+			factor = 0.5
+			is_year = 1660
+		}
+		modifier = {
+			factor = 0.5
+			is_year = 1670
+		}
+		modifier = {
+			factor = 0.7
+			owner = { religion_group = christian } #In many cases a reaction to European influence
+		}
+	}
+	
+	option = {
+		name = flavor_ful.1.a	#
+		ai_chance = { factor = 1 }
+		if = {
+			limit = {
+				NOT = { religion = sunni }
+			}
+			change_religion = sunni
+		}
+		set_province_flag = ful_marabout_happened
+		add_province_modifier = {
+			name = ful_marabout_wars
+			duration = 3650
+		}
+	}
+}
+
+#Orthodox Muslim Revolutionaries
+country_event = {
+	id = flavor_ful.2
+	title = flavor_ful.2.t
+	desc = flavor_ful.2.d
+	picture = RELIGIOUS_TURMOIL_eventPicture
+
+
+	trigger = {
+		is_year = 1680
+		NOT = { has_country_flag = fulani_jihad_happened }
+		capital_scope = {
+			OR = {
+				area = cap_verde_area
+				area = tekrur_area
+				area = manding_area
+				area = baghena_area
+				area = niger_bend_area
+				area = dendi_area
+				area = massina_area
+				area = jenne_area
+			}
+		}
+		OR = {
+			primary_culture = fulani
+			any_owned_province = {
+				culture = fulani
+				religion = sunni
+			}
+		}
+		OR = {
+			NOT = { piety = -0.35 }
+			religion_group = pagan
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 405
+		modifier = {
+			factor = 0.5
+			any_owned_province = {
+				culture = fulani
+				religion = sunni
+			}
+		}
+	}
+	
+	option = {
+		name = flavor_ful.2.a	#Stand with the Revolutionaries
+		ai_chance = { factor = 1 }
+		trigger = {
+			OR = {
+				primary_culture = fulani
+				primary_culture = soninke
+				primary_culture = senegambian
+				primary_culture = bambara
+			}
+		}
+		set_country_flag = fulani_jihad_state
+		set_country_flag = fulani_jihad_happened
+		add_piety = -0.5
+		random_owned_province = {
+			spawn_rebels = {
+				type = shamanism_rebels
+				size = 2
+			}
+		}
+		if = {
+			limit = { NOT = { religion = sunni } }
+			change_religion = sunni
+		}
+		define_ruler = {
+			mil = 5
+			age = 28
+			claim = 65
+		}
+		if = {
+			limit = {
+				has_states_general_mechanic = yes
+			}
+			change_statists_vs_orangists = 1
+		}
+		add_stability = -5
+		swap_free_idea_group = yes		#keep progress
+	}
+	option = {
+		name = flavor_ful.2.b #We must preserve our traditions!
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				OR = {
+					primary_culture = fulani
+					primary_culture = soninke
+				}
+			}
+		}
+		set_country_flag = fulani_jihad_state
+		set_country_flag = fulani_jihad_happened
+		random_owned_province = {
+			spawn_rebels = {
+				type = sunni_rebels
+				size = 3
+			}
+		}
+		clr_country_flag = fulani_jihad_state
+	}
+}
+
+#Fulani Jihad Ends
+country_event = {
+	id = flavor_ful.3
+	title = flavor_ful.3.t
+	desc = flavor_ful.3.d
+	picture = RELIGIOUS_CONVERSION_eventPicture
+
+
+	trigger = {
+		has_country_flag = fulani_jihad_state
+		NOT = { religion = sunni }
+		NOT = { tag = SOK }
+	}
+	
+	immediate = {
+		clr_country_flag = fulani_jihad_state
+	}
+	
+	mean_time_to_happen = {
+		months = 1
+	}
+	
+	option = {
+		name = flavor_ful.3.a	#
+		swap_free_idea_group = yes		#keep progress
+	}
+}

@@ -1,0 +1,334 @@
+###########################################################
+# Events for Extended Regencies
+#
+# written by Verónica Pazos
+###########################################################
+
+namespace = extended_regency_events
+
+#Assassination Attempt Against the Regent
+country_event = { 
+	id = extended_regency_events.1
+	title = extended_regency_events.1.t
+	desc = extended_regency_events.1.d
+	picture = ASSASSINATION_eventPicture
+	
+	trigger = {
+		NOT = { stability = 1 }
+		government = monarchy
+		NOT = { legitimacy_or_horde_unity = 50 }
+		has_regency = yes
+		has_heir = yes
+		OR = {
+			heir_adm = 3
+			heir_dip = 3
+			heir_mil = 3
+			heir_claim = 75
+		}
+		NOT = { has_ruler_flag = paranoid_regent }
+		NOT = { has_ruler_flag = paranoid_regent_investigation }
+	}
+	
+	mean_time_to_happen = {
+		months = 36
+	}
+	
+	option = {
+		name = extended_regency_events.1.a
+		random_list = {
+			25 = {
+				kill_ruler = yes
+			}
+			75 = {
+				set_ruler_flag = paranoid_regent
+			}
+		}
+	}
+}
+
+#Paranoid Regent
+country_event = { 
+	id = extended_regency_events.2
+	title = extended_regency_events.2.t
+	desc = extended_regency_events.2.d
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	trigger = {
+		has_ruler_flag = paranoid_regent
+		has_regency = yes
+		government = monarchy
+		NOT = { has_ruler_flag = paranoid_regent_investigation }
+	}
+	
+	mean_time_to_happen = {
+		months = 3
+	}
+
+	immediate = {
+		hidden_effect = {
+			clr_ruler_flag = paranoid_regent
+		}
+	}
+	
+	option = { #Try to stop him
+		trigger = {
+			stability = 1
+		}
+		name = extended_regency_events.2.a
+		random_list = {
+			75 = { }
+			25 = {
+				extend_regency = 5
+				set_ruler_flag = paranoid_regent_investigation
+			}
+		}
+	}
+	
+	option = { #Try to stop him a bit less
+		trigger = {
+			NOT = { stability = 1 }
+		}
+		name = extended_regency_events.2.b
+		random_list = {
+			50 = { }
+			50 = {
+				extend_regency = 5
+				set_ruler_flag = paranoid_regent_investigation
+			}
+		}
+
+	}
+	
+	option = { #It's not that bad
+		trigger = {
+			NOT = { stability = -1 }
+		}		
+		name = extended_regency_events.2.c
+		add_legitimacy = -10
+		extend_regency = 5
+	}
+	
+	option = { #Plot to kill him
+		name = extended_regency_events.2.e
+		random_list = {
+			50 = {
+				kill_ruler = yes
+				if = {
+					limit = { has_heir = no }
+					define_ruler = {
+						dynasty = ROOT
+						claim = 20
+						max_random_dip = 4
+						max_random_adm = 4
+						max_random_mil = 4
+					}
+				}
+			}
+			50 = {
+				add_stability = -1
+				extend_regency = 5
+				set_ruler_flag = paranoid_regent_investigation
+			}
+		}
+	}
+}
+
+#Regent Investigates
+country_event = { 
+	id = extended_regency_events.3
+	title = extended_regency_events.3.t
+	desc = extended_regency_events.3.d
+	picture = SPY_eventPicture
+	
+	trigger = {
+		has_ruler_flag = paranoid_regent_investigation
+		has_regency = yes
+		government = monarchy
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			clr_ruler_flag = paranoid_regent_investigation
+		}
+	}
+	
+	option = { #It's a waste of time
+		name = extended_regency_events.3.a
+		add_legitimacy = -15
+	}
+	
+	option = { #Let him be
+		name = extended_regency_events.3.b
+		if = {
+			limit = {
+				treasury = 150
+			}
+			add_treasury = -50
+			extend_regency = 5
+		}
+		else_if = {
+			limit = {
+				treasury = 50
+			}
+			add_treasury = -20
+			extend_regency = 5
+		}
+		else = {
+			add_years_of_income = -0.25
+			extend_regency = 5
+		}
+	}
+}
+
+#The Country Suffers from the Regent's Corruption
+country_event = { 
+	id = extended_regency_events.4
+	title = extended_regency_events.4.t
+	desc = extended_regency_events.4.d
+	picture = CORRUPTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_regency = yes
+		corruption = 3
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = { #exiliate him
+		name = extended_regency_events.4.a
+		kill_ruler = yes
+		add_corruption = -0.5
+		if = {
+			limit = {
+				OR = {
+					has_heir = no
+					NOT = { heir_claim = 25 }
+				}
+			}
+			define_ruler = {
+				dynasty = ROOT
+				min_age = 50
+				claim = 10
+			}
+		}
+	}
+	
+	option = { #let him be
+		name = extended_regency_events.4.b
+		extend_regency = 5
+		add_corruption = 0.5
+	}
+	
+	option = { #it's too late now
+		name = extended_regency_events.4.c
+		trigger = { 
+			corruption = 5
+		}
+		add_corruption = 1
+		extend_regency = 5
+		add_stability = -1
+	}
+}
+
+#Regent Imprisons Heir
+country_event = { 
+	id = extended_regency_events.5
+	title = extended_regency_events.5.t
+	desc = extended_regency_events.5.d
+	picture = CIVIL_WAR_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_heir = yes
+		NOT = { heir_age = 12 }
+		is_in_extended_regency = yes
+		NOT = { stability = 1 }
+		OR = {
+			ruler_has_personality = cruel_personality
+			ruler_has_personality = zealot_personality
+			ruler_has_personality = sinner_personality
+			ruler_has_personality = malevolent_personality
+			ruler_has_personality = drunkard_personality
+			ruler_has_personality = intricate_web_weaver_personality
+			ruler_has_personality = secretive_personality
+			ruler_has_personality = craven_personality
+			AND = {
+				NOT = { adm = 2 }
+				NOT = { dip = 2 }
+				NOT = { mil = 2 }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 1.5
+			stability = 0
+		}
+	}
+	
+	option = { #good riddance
+		name = extended_regency_events.5.a
+		remove_heir = {}
+		extend_regency = 5
+		capital_scope = {
+			add_unrest = 2
+		}
+	}
+}
+
+#Regent Is an Excellent Ruler
+country_event = { 
+	id = extended_regency_events.6
+	title = extended_regency_events.6.t
+	desc = extended_regency_events.6.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_regency = yes
+		has_heir = yes
+		heir_age = 13
+		stability = 0
+		OR = {
+			adm = 4
+			dip = 4
+			mil = 4
+		}
+		OR = {
+			NOT = { heir_adm = 3 }
+			NOT = { heir_dip = 3 }
+			NOT = { heir_mil = 3 }
+			NOT = { heir_claim = 50 }
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = { #nice
+		name = extended_regency_events.6.a
+		add_legitimacy = 10
+		add_stability = 1
+		add_heir_claim = -10
+		extend_regency = 5
+	}
+	
+	option = { #nah
+		name = extended_regency_events.6.b
+		add_heir_claim = 10
+		add_corruption = 1
+	}
+}

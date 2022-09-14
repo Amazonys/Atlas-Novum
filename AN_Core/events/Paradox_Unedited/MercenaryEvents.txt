@@ -1,0 +1,764 @@
+namespace = mercs
+
+# Discontent Among Mercenaries
+country_event = {
+	id = mercs.1
+	title = mercs.1.t
+	desc = mercs.1.d
+	picture = SCOTTISH_MERCENARIES_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		any_hired_mercenary_company = {
+			is_foreign_company = yes
+			hired_for_months = 3
+			home_province = {
+				NOT = { unrest = 3 }
+				owner = {
+					war_with = ROOT
+				}
+			}
+			location = {
+				owner = {
+					war_with = ROOT
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_hired_mercenary_company = {
+				limit = {
+					is_foreign_company = yes
+					hired_for_months = 3
+					home_province = {
+						NOT = { unrest = 3 }
+						owner = {
+							war_with = ROOT
+						}
+					}
+					location = {
+						owner = {
+							war_with = ROOT
+						}
+					}
+				}
+				save_event_target_as = patriotic_mercs
+				home_province = {
+					save_event_target_as = merc_home_province
+					owner = {
+						save_event_target_as = merc_home_country
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = mercs.1.a
+		event_target:patriotic_mercs = {
+			add_company_manpower = -0.25
+			hidden_effect = {
+				kill_mercenary_leader = THIS
+			}
+			custom_tooltip = patriotic_company_leader_deserts
+		}
+	}
+	option = { # all Scots are Jake
+		name = mercs.1.b
+		highlight = yes
+		trigger = {
+			event_target:patriotic_mercs = {
+				home_province = {
+					OR = {
+						culture = highland_scottish
+						culture = scottish
+					}
+				}
+			}
+		}
+		add_treasury = -5
+	}
+}
+
+	
+# Enemy of Their Enemy
+country_event = {
+	id = mercs.2
+	title = mercs.2.t
+	desc = mercs.2.d
+	picture = SCOTTISH_MERCENARIES_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		NOT = {
+			has_country_modifier = bloodthirsty_mercs_modifier
+		}
+		NOT = {
+			has_country_modifier = bloodthirsty_mercs_modifier_universal
+		}
+		any_hired_mercenary_company = {
+			is_foreign_company = yes
+			hired_for_months = 3
+			home_province = {
+				owner = {
+					any_rival_country = {
+						war_with = ROOT
+					}
+				}
+			}
+			location = {
+				owner = {
+					war_with = ROOT
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_hired_mercenary_company = {
+				limit = {
+					is_foreign_company = yes
+					hired_for_months = 3
+					home_province = {
+						owner = {
+							any_rival_country = {
+								war_with = ROOT
+							}
+						}
+					}
+					location = {
+						owner = {
+							war_with = ROOT
+						}
+					}
+				}
+				save_event_target_as = bloodthirsty_mercs
+				home_province = {
+					save_event_target_as = bloodthirsty_mercs_home_province
+					owner = {
+						save_event_target_as = bloodthirsty_mercs_home
+						random_rival_country = {
+							limit = {
+								war_with = ROOT
+							}
+							save_event_target_as = bloodthirsty_mercs_enemy
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = mercs.2.a
+		add_country_modifier = {
+			name = "bloodthirsty_mercs_modifier"
+			duration = 3650
+		}
+	}
+	option = {
+		name = mercs.2.b
+		highlight = yes
+		trigger = {
+			event_target:bloodthirsty_mercs_home_province = {
+				owned_by = ROOT
+			}
+		}
+		add_country_modifier = {
+			name = "bloodthirsty_mercs_modifier_universal"
+			duration = 3650
+		}
+	}
+}
+	
+# Payment in Plunder
+country_event = {
+	id = mercs.3
+	title = mercs.3.t
+	desc = mercs.3.d
+	picture = IMPALED_SOLDIERS_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		is_at_war = yes
+		num_of_hired_mercenary_companies = 2
+		any_hired_mercenary_company = {
+			is_foreign_company = yes
+			hired_for_months = 3
+		}
+		NOT = {
+			OR = {
+				has_country_modifier = mercs_allowed_to_loot
+				has_country_modifier = mercs_not_allowed_to_loot_money
+				has_country_modifier = mercs_not_allowed_to_loot_morale
+			}
+		}
+		any_country = {
+			war_with = ROOT
+			any_owned_province = { development = 20 }
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_hired_mercenary_company = {
+				limit = {
+					is_foreign_company = yes
+					hired_for_months = 3
+				}
+				save_event_target_as = loot_mercs
+			}
+			random_country = {
+				limit = {
+					war_with = ROOT
+					any_owned_province = { development = 20 }
+				}
+				random_owned_province = {
+					limit = {
+						development = 20
+					}
+					save_event_target_as = rich_enemy_province
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = mercs.3.a
+		add_prestige = -5
+		add_country_modifier = {
+			name = mercs_allowed_to_loot
+			duration = 7300
+		}
+	}
+	
+	option = {
+		name = mercs.3.b
+		add_country_modifier = {
+			name = mercs_not_allowed_to_loot_money
+			duration = 7300
+		}
+	}
+	option = {
+		name = mercs.3.c
+		add_country_modifier = {
+			name = mercs_not_allowed_to_loot_morale
+			duration = 7300
+		}
+	}
+}
+
+# Veterans Flock to the [Mercenary Company]
+country_event = {
+	id = mercs.4
+	title = mercs.4.t
+	desc = mercs.4.d
+	picture = GENERALS_DISCUSSING_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		is_at_war = yes
+		any_hired_mercenary_company = {
+			NOT = { has_company_manpower = 0.25 }
+			is_foreign_company = yes
+			hired_for_months = 3
+		}
+		prestige = 50
+		is_in_deficit = no
+		is_bankrupt = no
+		NOT = { has_country_modifier = veteran_mercs_modifier }
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_hired_mercenary_company = {
+				limit = {
+					is_foreign_company = yes
+					NOT = { has_company_manpower = 0.25 }
+					hired_for_months = 3
+				}
+				save_event_target_as = veteran_mercs
+			}
+		}
+	}
+	
+	option = {
+		name = mercs.4.a
+		event_target:veteran_mercs = {
+			add_company_manpower = 1
+		}
+		add_country_modifier = {
+			name = "veteran_mercs_modifier"
+			duration = 7300
+		}
+	}
+}
+
+
+# Elephants!
+country_event = {
+	id = mercs.5
+	title = mercs.5.t
+	desc = {
+		trigger = {
+			technology_group = indian
+		}
+		desc = mercs.5.d
+	}
+	desc = {
+		trigger = {
+			NOT = { technology_group = indian }
+		}
+		desc = mercs.5.d2
+	}
+	picture = BATTLE_eventPicture
+	
+	fire_only_once = yes
+	major = yes
+	
+	trigger = {
+		NOT = { has_country_modifier = elephants_in_europe }
+		OR = {
+			AND = {
+				technology_group = indian
+				any_country = {
+					war_with = ROOT
+					any_owned_province = {
+						continent = europe
+						num_of_units_in_province = {
+							who = ROOT
+							type = cavalry
+							amount = 1
+						}
+					}
+				}
+			}
+			any_hired_mercenary_company = {
+				is_foreign_company = yes
+				location = {
+					owner = {
+						war_with = ROOT
+					}
+					continent = europe
+					num_of_units_in_province = {
+						who = ROOT
+						type = cavalry
+						amount = 1
+					}
+				}
+				home_province = {
+					superregion = india_superregion
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 3
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = {
+						technology_group = indian
+					}
+				}
+				random_hired_mercenary_company = {
+					limit = {
+						is_foreign_company = yes
+						location = {
+							continent = europe
+						}
+						home_province = {
+							superregion = india_superregion
+						}
+					}
+					save_event_target_as = elephant_mercs
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = mercs.5.a
+		trigger = {
+			NOT = { technology_group = indian }
+		}
+		add_country_modifier = {
+			name = "elephants_in_europe_mercs"
+			duration = 7300
+		}
+	}
+	option = {
+		name = mercs.5.b
+		trigger = {
+			technology_group = indian
+		}
+		add_country_modifier = {
+			name = "elephants_in_europe"
+			duration = 7300
+		}
+	}
+}
+	
+# Amazons
+country_event = {
+	id = mercs.6
+	title = mercs.6.t
+	desc = mercs.6.d
+	picture = GENERALS_DISCUSSING_eventPicture
+	
+	trigger = {
+		NOT = {
+			has_country_flag = female_mercs
+		}
+		has_active_policy = mandatory_service
+	}
+	
+	mean_time_to_happen = {
+		months = 36
+	}
+	
+	option = {
+		name = mercs.6.a
+		set_country_flag = female_mercs
+		custom_tooltip = female_mercs_tt
+	}
+}
+
+# Mercenary company in demand
+country_event = {
+	id = mercs.7
+	title = mercs.7.t
+	desc = mercs.7.d
+	picture = GENERALS_DISCUSSING_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	goto = popular_mercs_origin
+	
+	trigger = {
+		calc_true_if = {
+			all_known_country = {
+				any_hired_mercenary_company = {
+					is_foreign_company = yes
+					home_province = {
+						owned_by = ROOT
+						controlled_by = ROOT
+					}
+				}
+			}
+			amount = 3
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					any_hired_mercenary_company = {
+						is_foreign_company = yes
+						home_province = {
+							owned_by = ROOT
+							controlled_by = ROOT
+						}
+					}
+				}
+				random_hired_mercenary_company = {
+					limit = {
+						is_foreign_company = yes
+						home_province = {
+							owned_by = ROOT
+							controlled_by = ROOT
+						}
+					}
+					save_event_target_as = popular_mercs
+					home_province = {
+						save_event_target_as = popular_mercs_origin
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = mercs.7.a
+		goto = popular_mercs_origin
+		event_target:popular_mercs_origin = {
+			add_base_manpower = 1
+		}
+	}
+	option = {
+		name = mercs.7.b
+		goto = popular_mercs_origin
+		trigger = {
+			NOT = {
+				event_target:popular_mercs_origin = {
+					has_province_modifier = popular_mercs_prosperity
+				}
+			}
+		}
+		event_target:popular_mercs_origin = {
+			add_province_modifier = {
+				name = "popular_mercs_prosperity"
+				duration = 7300
+			}
+		}
+	}
+}
+	
+# Mercenary leader becomes regular general
+country_event = {
+	id = mercs.8
+	title = mercs.8.t
+	desc = mercs.8.d
+	picture = SCOTTISH_MERCENARIES_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		is_bankrupt = no
+		NOT = { corruption = 10 }
+		NOT = { num_of_loans = 10 }
+		any_hired_mercenary_company = {
+			is_foreign_company = yes
+			hired_for_months = 6
+			has_leader = yes
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_hired_mercenary_company = {
+				limit = {
+					is_foreign_company = yes
+					hired_for_months = 6
+					has_leader = yes
+				}
+				save_event_target_as = long_time_hires
+			}
+		}
+	}
+	
+	option = {
+		name = mercs.8.a
+		add_treasury = -50
+		event_target:long_time_hires = {
+			convert_leader_to_general = THIS
+		}
+	}
+	
+	option = {
+		name = mercs.8.b
+		add_prestige = 5
+	}
+}
+
+# New mercs in Europe
+country_event = {
+	id = mercs.9
+	title = mercs.9.t
+	desc = mercs.9.d
+	picture = GENERALS_DISCUSSING_eventPicture
+	
+	major = yes
+	fire_only_once = yes
+	
+	trigger = {
+		OR = {
+			current_age = age_of_absolutism
+			current_age = age_of_revolutions
+		}
+		NOT = { has_global_flag = new_european_mercs }
+		OR = {
+			1762 = {
+				owned_by = ROOT
+			}
+			252 = {
+				owned_by = ROOT
+			}
+			157 = {
+				owned_by = ROOT
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+	
+	option = {
+		name = mercs.9.a
+		custom_tooltip = new_mercs_europe_tt
+		set_global_flag = new_european_mercs
+	}
+}
+
+# Religious fervor
+country_event = {
+	id = mercs.10
+	title = mercs.10.t
+	desc = mercs.10.d
+	picture = LAND_MILITARY_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		any_hired_mercenary_company = {
+			is_foreign_company = yes
+			home_province = {
+				religion = ROOT
+			}
+			hired_for_months = 3
+		}
+		is_at_war = yes
+		OR = {
+			is_in_war = {
+				casus_belli = cb_crusade
+				attacker_leader = ROOT
+			}
+			is_in_war = {
+				casus_belli = cb_defender_of_the_faith
+				attacker_leader = ROOT
+			}
+			is_in_war = {
+				casus_belli = cb_heretic
+				attacker_leader = ROOT
+			}
+			is_in_war = {
+				casus_belli = cb_excommunication
+				attacker_leader = ROOT
+			}
+		}
+		NOT = {
+			has_country_modifier = pious_mercenaries
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_hired_mercenary_company = {
+				limit = {
+					is_foreign_company = yes
+					home_province = {
+						religion = ROOT
+					}
+					hired_for_months = 3
+				}
+				save_event_target_as = pious_mercs
+				home_province = {
+					save_event_target_as = pious_mercs_origin
+				}
+			}
+			random_country = {
+				limit = {
+					war_with = ROOT
+					OR = {
+						is_in_war = {
+							casus_belli = cb_crusade
+							attacker_leader = ROOT
+						}
+						is_in_war = {
+							casus_belli = cb_defender_of_the_faith
+							attacker_leader = ROOT
+						}
+						is_in_war = {
+							casus_belli = cb_heretic
+							attacker_leader = ROOT
+						}
+						is_in_war = {
+							casus_belli = cb_excommunication
+							attacker_leader = ROOT
+						}
+					}
+				}
+				save_event_target_as = pious_mercs_enemy
+			}
+		}
+	}
+	
+	option = {
+		name = mercs.10.a
+		add_fervor = 15
+		add_country_modifier = {
+			name = "pious_mercenaries"
+			duration = 7300
+		}
+	}
+}
+
+# Delayed Payments
+country_event = {
+	id = mercs.11
+	title = mercs.11.t
+	desc = mercs.11.d
+	picture = SCOTTISH_MERCENARIES_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		any_hired_mercenary_company = {
+			is_foreign_company = yes
+			location = {
+				owned_by = ROOT
+				controlled_by = ROOT
+			}
+			hired_for_months = 3
+		}
+		OR = {
+			num_of_loans = 5
+			corruption = 10
+			NOT = { prestige = 1 }
+		}
+		NOT = {
+			has_country_modifier = delayed_payments
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_hired_mercenary_company = {
+				limit = {
+					is_foreign_company = yes
+					location = {
+						owned_by = ROOT
+						controlled_by = ROOT
+					}
+					hired_for_months = 3
+				}
+				save_event_target_as = unpaid_mercs
+			}
+		}
+	}
+	
+	option = {
+		name = mercs.11.a
+		add_country_modifier = {
+			name = "delayed_payments"
+			duration = 7300
+		}
+	}
+	option = {
+		name = mercs.11.b
+		add_years_of_income = -0.15
+	}
+	option = {
+		name = mercs.11.c
+		ai_chance = {
+			factor = 0
+		}
+		add_prestige = -10
+		event_target:unpaid_mercs = {
+			disband_mercenary_company = THIS
+		}
+	}
+}

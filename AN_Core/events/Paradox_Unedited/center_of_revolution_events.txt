@@ -1,0 +1,2871 @@
+########################################
+# Events concerning Revolution Spread
+#
+# written by Pierre du Plessis
+########################################
+
+namespace = center_of_revolution
+
+###Mechanical Events
+
+#Spawning the Center
+province_event = {
+	id = center_of_revolution.1000
+	title = center_of_revolution.1000.name
+	desc = center_of_revolution.1000.desc
+	picture = REVOLUTION_eventPicture
+	major = yes
+	goto = root
+
+	trigger = {
+		has_dlc = "Emperor"
+		current_age = age_of_revolutions
+		development = 30
+		enlightenment = 100
+		owner = {
+			is_great_power = yes
+			has_institution = enlightenment
+			is_free_or_tributary_trigger = yes
+			NOT = { tag = PAP }
+			#NOT = { has_reform = celestial_empire }
+		}
+		NOT = { has_province_modifier = religious_center }
+	}
+	mean_time_to_happen = {
+		years = 600
+		modifier = {
+			factor = 20
+			NOT = { continent = europe }
+		}
+		modifier = {
+			factor = 0.75
+			is_capital = yes
+		}
+		modifier = {
+			factor = 1.5
+			owner = {
+				capital_scope = {
+					NOT = { region = root }
+				}
+			}
+		}
+		modifier = {
+			factor = 0.8
+			NOT = {
+				europe = {
+					NOT = { province_id = root }
+					higher_development_than = root
+				}
+			}
+		}
+		modifier = {
+			factor = 2
+			is_in_capital_area = no
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				government = monarchy
+			}
+		}
+		modifier = {
+			factor = 0.9
+			is_institution_enabled = industrialization
+		}
+		modifier = {
+			factor = 0.9
+			industrialization = 100
+		}
+		modifier = {
+			factor = 1.2
+			owner = { NOT = { has_estate = estate_burghers } }
+		}
+		#target absolutist states more
+		modifier = {
+			factor = 10
+			NOT = { owner = { absolutism = 10 } }
+		}
+		modifier = {
+			factor = 2
+			NOT = { owner = { absolutism = 20 } }
+		}
+		modifier = {
+			factor = 1.2
+			NOT = { owner = { absolutism = 30 } }
+		}
+		modifier = {
+			factor = 1.2
+			NOT = { owner = { absolutism = 40 } }
+		}
+		modifier = {
+			factor = 1.2
+			NOT = { owner = { absolutism = 50 } }
+		}
+		modifier = {
+			factor = 1.2
+			NOT = { owner = { absolutism = 60 } }
+		}
+		modifier = {
+			factor = 0.95
+			owner = { absolutism = 70 }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { absolutism = 80 }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { absolutism = 90 }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { absolutism = 100 }
+		}
+		#cities are breeding grounds for revolution
+		modifier = {
+			factor = 0.95
+			development = 35
+		}
+		modifier = {
+			factor = 0.95
+			development = 40
+		}
+		modifier = {
+			factor = 0.9
+			development = 45
+		}
+		modifier = {
+			factor = 0.9
+			development = 50
+		}
+		#Production-based checks
+		modifier = {
+			factor = 0.8
+			OR = {
+				base_production = 20
+				province_trade_power = 30
+			}
+			owner = {
+				OR = {
+					has_estate = estate_burghers
+					has_estate = estate_jains
+					has_estate = estate_vaisyas
+				}
+				OR = {
+					AND = {
+						NOT = {
+							estate_influence = {
+								estate = estate_burghers
+								influence = 20
+							}
+						}
+						NOT = {
+							estate_influence = {
+								estate = estate_jains
+								influence = 20
+							}
+						}
+						NOT = {
+							estate_influence = {
+								estate = estate_vaisyas
+								influence = 20
+							}
+						}
+					}
+					AND = {
+						NOT = {
+							estate_loyalty = {
+								estate = estate_burghers
+								loyalty = 25
+							}
+						}
+						NOT = {
+							estate_loyalty = {
+								estate = estate_jains
+								loyalty = 25
+							}
+						}
+						NOT = {
+							estate_loyalty = {
+								estate = estate_vaisyas
+								loyalty = 25
+							}
+						}
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 0.8
+			owner = {
+				variable_arithmetic_trigger = { #trade and production is 75% of national income
+					export_to_variable = {
+						value = trigger_value:production_income_percentage
+						which = burgher_income_proportion
+					}
+					export_to_variable = {
+						value = trigger_value:trade_income_percentage
+						which = trade_income_proportion
+					}
+					change_variable = {
+						which = burgher_income_proportion
+						which = trade_income_proportion
+					}
+					check_variable = {
+						which = burgher_income_proportion
+						value = 0.75
+					}
+				}
+				OR = {
+					has_estate = estate_burghers
+					has_estate = estate_jains
+					has_estate = estate_vaisyas
+				}
+				OR = {
+					AND = {
+						NOT = {
+							estate_influence = {
+								estate = estate_burghers
+								influence = 20
+							}
+						}
+						NOT = {
+							estate_influence = {
+								estate = estate_jains
+								influence = 20
+							}
+						}
+						NOT = {
+							estate_influence = {
+								estate = estate_vaisyas
+								influence = 20
+							}
+						}
+					}
+					AND = {
+						NOT = {
+							estate_loyalty = {
+								estate = estate_burghers
+								loyalty = 25
+							}
+						}
+						NOT = {
+							estate_loyalty = {
+								estate = estate_jains
+								loyalty = 25
+							}
+						}
+						NOT = {
+							estate_loyalty = {
+								estate = estate_vaisyas
+								loyalty = 25
+							}
+						}
+					}
+				}
+			}
+		}
+		#National Vulnerability factors
+		modifier = {
+			factor = 0.8
+			owner = {
+				revanchism = 50
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				num_of_loans = 20
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				num_of_loans = 30
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				NOT = { stability = 1 }
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				NOT = { stability = -1 }
+			}
+		}
+		modifier = {
+			factor = 1.2
+			owner = {
+				stability = 3
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				NOT = { prestige = -10 }
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				NOT = { prestige = -50 }
+			}
+		}
+		#Special flavour modifiers
+		modifier = {
+			factor = 0.75
+			owner = {
+				has_country_flag = revolutionary_sentiment_flour_wars
+			}
+		}
+		modifier = {
+			factor = 0.75
+			owner = {
+				has_country_flag = revolutionary_sentiment_many_loans
+			}
+		}
+		modifier = {
+			factor = 0.75
+			owner = {
+				has_country_flag = revolutionary_sentiment_necker_reforms
+			}
+		}
+		modifier = {
+			factor = 0.75
+			owner = {
+				has_country_flag = revolutionary_sentiment_3rd_estate_demands
+			}
+		}
+		#Time-based checks
+		modifier = {
+			factor = 0.8
+			is_year = 1750
+		}
+		modifier = {
+			factor = 0.8
+			is_year = 1765
+		}
+		modifier = {
+			factor = 0.8
+			is_year = 1780
+		}
+		modifier = {
+			factor = 0.5
+			is_year = 1800
+		}
+	}
+	fire_only_once = yes
+
+	immediate = {
+		hidden_effect = {
+			set_saved_name = { #deliberately never cleared
+				key = first_center_revolutionary_philosopher
+				type = advisor
+			}
+			save_global_event_target_as = revolution_center
+			save_global_event_target_as = first_revolution_center
+		}
+	}
+
+	option = {
+		name = center_of_revolution.1000.A
+		spawn_center_of_revolution = root
+		set_province_flag = first_revolution_center
+		set_global_flag = first_revolution_center_spawned #to check time since spawn for backup center
+		
+		log = "Center of Revolution spawned in [Root.GetName] (owner: [Root.Owner.GetName]) in [GetYear]"
+	}
+}
+
+
+#Spawning the Center - backup event
+province_event = {
+	id = center_of_revolution.1001
+	title = center_of_revolution.1001.name
+	desc = center_of_revolution.1001.desc
+	picture = REVOLUTION_eventPicture
+	fire_only_once = yes
+	goto = root
+	major = yes
+	
+	trigger = {
+		has_dlc = "Emperor"
+		has_revolution_in_province = yes
+		has_global_flag = first_revolutionary_center_snuffed_out
+#		has_global_flag = first_revolution_center_spawned #not needed
+		OR = {
+			NOT = {
+				had_global_flag = {
+					flag = first_revolution_center_spawned
+					days = 9125
+				}
+			}
+			AND = {
+				owner = { is_revolution_target = yes }
+				NOT = {
+					had_global_flag = {
+						flag = first_revolution_center_spawned
+						days = 18250
+					}
+				}
+			}
+		}
+		NOT = { has_global_flag = no_more_revolutions_ever }
+		development = 30
+		enlightenment = 100
+		owner = {
+			is_great_power = yes
+			has_institution = enlightenment
+			is_free_or_tributary_trigger = yes
+			NOT = { tag = PAP }
+			#NOT = { has_reform = celestial_empire }
+		}
+		NOT = { has_province_modifier = religious_center }
+		NOT = { has_province_flag = first_revolution_center }
+	}
+	mean_time_to_happen = { #slightly simplified version of .1000's weights
+		years = 15
+		modifier = {
+			factor = 0.75
+			is_capital = yes
+			owner = { is_revolutionary = yes }
+		}
+		modifier = {
+			factor = 10
+			NOT = {
+				event_target:revolution_center = {
+					same_continent = root
+				}
+			}
+		}
+		modifier = {
+			factor = 0.75
+			owner = { is_revolution_target = yes }
+		}
+		modifier = {
+			factor = 0.75
+			owner = { is_revolutionary = yes }
+		}
+		modifier = {
+			factor = 0.75
+			owner = {
+				is_revolutionary = yes
+				revolutionary_zeal = 80
+			}
+		}
+		modifier = {
+			factor = 0.75
+			is_capital = yes
+		}
+		modifier = {
+			factor = 1.5
+			owner = {
+				capital_scope = {
+					NOT = { region = root }
+				}
+			}
+		}
+		modifier = {
+			factor = 0.8
+			NOT = {
+				europe = {
+					NOT = { province_id = root }
+					higher_development_than = root
+				}
+			}
+		}
+		modifier = {
+			factor = 2
+			is_in_capital_area = no
+		}
+		modifier = {
+			factor = 1.2
+			owner = { NOT = { has_estate = estate_burghers } }
+		}
+		#target absolutist states more
+		modifier = {
+			factor = 1.5
+			NOT = { owner = { absolutism = 35 } }
+		}
+		modifier = {
+			factor = 1.2
+			NOT = { owner = { absolutism = 50 } }
+		}
+		modifier = {
+			factor = 0.9
+			owner = { absolutism = 75 }
+		}
+		modifier = {
+			factor = 0.8
+			owner = { absolutism = 90 }
+		}
+		modifier = {
+			factor = 0.8
+			owner = { absolutism = 100 }
+		}
+		#cities are breeding grounds for revolution
+		modifier = {
+			factor = 0.9
+			development = 40
+		}
+		modifier = {
+			factor = 0.8
+			development = 50
+		}
+		#Production-based checks
+		modifier = {
+			factor = 0.8
+			OR = {
+				base_production = 20
+				province_trade_power = 30
+			}
+			owner = {
+				OR = {
+					has_estate = estate_burghers
+					has_estate = estate_jains
+					has_estate = estate_vaisyas
+				}
+				OR = {
+					AND = {
+						NOT = {
+							estate_influence = {
+								estate = estate_burghers
+								influence = 20
+							}
+						}
+						NOT = {
+							estate_influence = {
+								estate = estate_jains
+								influence = 20
+							}
+						}
+						NOT = {
+							estate_influence = {
+								estate = estate_vaisyas
+								influence = 20
+							}
+						}
+					}
+					AND = {
+						NOT = {
+							estate_loyalty = {
+								estate = estate_burghers
+								loyalty = 25
+							}
+						}
+						NOT = {
+							estate_loyalty = {
+								estate = estate_jains
+								loyalty = 25
+							}
+						}
+						NOT = {
+							estate_loyalty = {
+								estate = estate_vaisyas
+								loyalty = 25
+							}
+						}
+					}
+				}
+			}
+		}
+		modifier = {
+			factor = 0.8
+			owner = {
+				variable_arithmetic_trigger = { #trade and production is 75% of national income
+					export_to_variable = {
+						value = trigger_value:production_income_percentage
+						which = burgher_income_proportion
+					}
+					export_to_variable = {
+						value = trigger_value:trade_income_percentage
+						which = trade_income_proportion
+					}
+					change_variable = {
+						which = burgher_income_proportion
+						which = trade_income_proportion
+					}
+					check_variable = {
+						which = burgher_income_proportion
+						value = 0.75
+					}
+				}
+				OR = {
+					has_estate = estate_burghers
+					has_estate = estate_jains
+					has_estate = estate_vaisyas
+				}
+				OR = {
+					AND = {
+						NOT = {
+							estate_influence = {
+								estate = estate_burghers
+								influence = 20
+							}
+						}
+						NOT = {
+							estate_influence = {
+								estate = estate_jains
+								influence = 20
+							}
+						}
+						NOT = {
+							estate_influence = {
+								estate = estate_vaisyas
+								influence = 20
+							}
+						}
+					}
+					AND = {
+						NOT = {
+							estate_loyalty = {
+								estate = estate_burghers
+								loyalty = 25
+							}
+						}
+						NOT = {
+							estate_loyalty = {
+								estate = estate_jains
+								loyalty = 25
+							}
+						}
+						NOT = {
+							estate_loyalty = {
+								estate = estate_vaisyas
+								loyalty = 25
+							}
+						}
+					}
+				}
+			}
+		}
+		#National Vulnerability factors
+		modifier = {
+			factor = 0.8
+			owner = {
+				revanchism = 50
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				num_of_loans = 20
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				NOT = { stability = 0 }
+			}
+		}
+		modifier = {
+			factor = 1.2
+			owner = {
+				stability = 2
+			}
+		}
+		modifier = {
+			factor = 0.9
+			owner = {
+				NOT = { prestige = -50 }
+			}
+		}
+		#Special flavour modifiers
+		modifier = {
+			factor = 0.75
+			owner = {
+				has_country_flag = revolutionary_sentiment_flour_wars
+			}
+		}
+		modifier = {
+			factor = 0.75
+			owner = {
+				has_country_flag = revolutionary_sentiment_many_loans
+			}
+		}
+		modifier = {
+			factor = 0.75
+			owner = {
+				has_country_flag = revolutionary_sentiment_necker_reforms
+			}
+		}
+		modifier = {
+			factor = 0.75
+			owner = {
+				has_country_flag = revolutionary_sentiment_3rd_estate_demands
+			}
+		}
+	}
+	immediate = {
+		hidden_effect = {
+			clear_global_event_target = revolution_center
+			save_global_event_target_as = revolution_center
+			log = "2nd Center of Revolution spawned in [Root.GetName] (owner: [Root.Owner.GetName]) in [GetYear]"
+		}
+	}
+	option = {
+		name = center_of_revolution.1001.A
+		trigger = {
+			owner = {
+				is_revolutionary = no
+			}
+		}
+		spawn_center_of_revolution = root
+	}
+	option = {
+		name = center_of_revolution.1001.B
+		trigger = {
+			owner = {
+				is_revolutionary = yes
+			}
+		}
+		spawn_center_of_revolution = root
+	}
+}
+
+#on_dismantle_revolution event
+country_event = {
+	id = center_of_revolution.1500
+	title = center_of_revolution.1500.name
+	desc = center_of_revolution.1500.desc
+	picture = FAILED_REVOLUTION_eventPicture
+	is_triggered_only = yes
+	major = yes
+
+	option = {
+		name = center_of_revolution.1500.A
+		remove_government_reform = revolutionary_empire_reform
+		change_government_to_monarchy = yes
+		kill_ruler = yes
+		if = {
+			limit = { has_heir = yes }
+			kill_heir = { allow_new_heir = no }
+		}
+		if = {
+			limit = { is_revolution_target = yes }
+			set_revolution_target = ---
+		}
+		if = {
+			limit = {
+				any_province = {
+					is_center_of_revolution = yes
+					previous_owner = prev
+				}
+			}
+			remove_center_of_revolution = yes
+			if = {
+				limit = { NOT = { has_global_flag = first_revolutionary_center_snuffed_out } }
+				set_global_flag = first_revolutionary_center_snuffed_out
+			}
+		}
+
+		if = {
+			limit = {
+				has_country_flag = ruler_of_france_exiled
+				NOT = {
+					had_country_flag = {
+						flag = ruler_of_france_exiled
+						days = 7300
+					}
+				}
+			}
+			set_ruler = ruler_of_france
+		}
+		if = {
+			limit = {
+				has_country_flag = heir_of_france_exiled
+				NOT = {
+					had_country_flag = {
+						flag = heir_of_france_exiled
+						days = 10950
+					}
+				}
+			}
+			set_heir = heir_of_france
+		}
+		if = {
+			limit = { #you can't get rid of them that easily...
+				has_country_flag = habsburgs_exiled_flag
+			}
+			define_ruler = {
+				dynasty = "von Habsburg"
+			}
+		}
+		if = {
+			limit = {
+				has_country_modifier = the_reign_of_terror
+			}
+			remove_country_modifier = the_reign_of_terror
+		}
+		set_country_flag = last_revolutionary_country
+	}
+}
+
+#Remove Revolutionary Sentiment from provinces in the same region as you just defeated them in
+country_event = {
+	id = center_of_revolution.1600
+	title = center_of_revolution.1600.name
+	desc = center_of_revolution.1600.desc
+	picture = FAILED_REVOLUTION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = center_of_revolution.1600.A
+		from = {
+			region = {
+				limit = {
+					has_revolution_in_province = yes
+					owned_by = root
+					is_center_of_revolution = no
+				}
+				remove_revolution_from_province_effect = yes
+			}
+		}
+	}
+}
+
+
+###Events pre-spawning of the first Center
+
+
+#Laissez-faire grain supply is totally a great idea!
+country_event = {
+	id = center_of_revolution.2000
+	title = center_of_revolution.2000.name
+	desc = center_of_revolution.2000.desc
+	picture = TRADEGOODS_eventPicture
+
+	trigger = {
+		has_dlc = "Emperor"
+		current_age = age_of_revolutions
+		has_institution = enlightenment
+		is_great_power = yes
+		is_free_or_tributary_trigger = yes
+		num_of_owned_provinces_with = {
+			value = 2
+			trade_goods = grain
+			culture_group = root
+		}
+		any_owned_province = {
+			development = 30
+			enlightenment = 100
+		}
+		NOT = { has_country_flag = laissez_faire_flour_happened }
+		NOT = { has_global_flag = flour_wars_happened }
+		NOT = { has_global_flag = first_revolution_center_spawned }
+	}
+	is_triggered_only = yes
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 0.2
+			NOT = { capital_scope = { continent = europe } }
+		}
+	}
+
+	immediate = {
+		set_country_flag = laissez_faire_flour_happened
+	}
+	option = {
+		name = center_of_revolution.2000.A
+
+		custom_tooltip = revolutionary_sentiment_warning
+		custom_tooltip = laissez_faire_grain_trade_tooltip
+		hidden_effect = {
+			add_country_modifier = {
+				name = laissez_faire_grain_trade_timer
+				duration = 1825
+				hidden = yes
+			}
+			every_owned_province = {
+				limit = {
+					trade_goods = grain
+					culture_group = root
+				}
+				add_province_modifier = {
+					name = laissez_faire_grain_trade
+					duration = 1825
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = center_of_revolution.2000.B
+
+		add_prestige = -10
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#Maybe it isn't after all: The Flour Wars
+country_event = {
+	id = center_of_revolution.2001
+	title = center_of_revolution.2001.name
+	desc = center_of_revolution.2001.desc
+	picture = ANGRY_MOB_eventPicture
+
+	trigger = {
+		has_country_modifier = laissez_faire_grain_trade_timer
+		is_month = 3
+		NOT = { is_month = 6 }
+		NOT = { has_global_flag = first_revolution_center_spawned }
+	}
+	mean_time_to_happen = {
+		years = 1
+	}
+	immediate = {
+		set_global_flag = flour_wars_happened
+		set_country_flag = revolutionary_sentiment_flour_wars
+		add_stability = -1
+	}
+	option = {
+		name = center_of_revolution.2001.A
+
+		custom_tooltip = laissez_faire_grain_trade_removed_tooltip
+		hidden_effect = {
+			remove_country_modifier = laissez_faire_grain_trade_timer
+			every_owned_province = {
+				limit = {
+					has_province_modifier = laissez_faire_grain_trade
+				}
+				remove_province_modifier = laissez_faire_grain_trade
+			}
+		}
+		add_prestige = -15
+
+		ai_chance = {
+			factor = 2
+		}
+	}
+	option = {
+		name = center_of_revolution.2001.B
+
+		capital_scope = {
+			spawn_rebels = {
+				size = 3
+				type = anti_tax_rebels
+			}
+		}
+		random_owned_province = {
+			limit = {
+				is_in_capital_area = yes
+				is_capital = no
+				culture_group = root
+				is_state_core = root
+			}
+			spawn_rebels = {
+				size = 2
+				type = anti_tax_rebels
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#High National Debt
+country_event = {
+	id = center_of_revolution.2002
+	title = center_of_revolution.2002.name
+	desc = center_of_revolution.2002.desc
+	picture = BANKRUPTCY_eventPicture
+
+	trigger = {
+		has_dlc = "Emperor"
+		current_age = age_of_revolutions
+		has_institution = enlightenment
+		num_of_loans = 20
+		is_great_power = yes
+		is_free_or_tributary_trigger = yes
+		any_owned_province = {
+			development = 30
+			enlightenment = 100
+		}
+		NOT = { has_country_flag = revolutionary_sentiment_many_loans_happened }
+		NOT = { has_global_flag = first_revolution_center_spawned }
+		NOT = {
+			1 = {
+				check_variable = { #it can only happen to 2 countries
+					which = revolutionary_sentiment_many_loans_happened
+					value = 2
+				}
+			}
+		}
+		NOT = { has_country_modifier = revolution_administrative_reforms }
+	}
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 0.2
+			NOT = { capital_scope = { continent = europe } }
+		}
+	}
+	is_triggered_only = yes
+	immediate = {
+		set_country_flag = revolutionary_sentiment_many_loans_happened
+		hidden_effect = {
+			1 = {
+				change_variable = { #it can only happen to 2 countries
+					which = revolutionary_sentiment_many_loans_happened
+					value = 1
+				}
+			}
+		}
+	}
+
+	option = { #give in to their demands
+		name = center_of_revolution.2002.A
+
+		custom_tooltip = revolutionary_sentiment_warning
+		set_country_flag = revolutionary_sentiment_many_loans
+		add_country_modifier = {
+			name = revolution_higher_taxes_for_debts
+			duration = 3650
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = { #decline
+		name = center_of_revolution.2002.B
+
+		add_country_modifier = {
+			name = revolution_administrative_reforms
+			duration = 3650
+		}
+		add_stability = -1
+		reduce_reform_progress_medium_effect = yes
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#The Reforms of Necker
+country_event = {
+	id = center_of_revolution.2003
+	title = center_of_revolution.2003.name
+	desc = center_of_revolution.2003.desc
+	picture = ADVISOR_eventPicture
+
+	trigger = {
+		has_dlc = "Emperor"
+		current_age = age_of_revolutions
+		has_institution = enlightenment
+		master_of_mint = 3
+		is_great_power = yes
+		is_free_or_tributary_trigger = yes
+		absolutism = 75
+		any_owned_province = {
+			development = 30
+			enlightenment = 100
+		}
+		NOT = { has_global_flag = necker_reforms_happened }
+		NOT = { has_global_flag = first_revolution_center_spawned }
+		NOT = { has_country_modifier = revolution_administrative_reforms }
+	}
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 0.2
+			NOT = { capital_scope = { continent = europe } }
+		}
+	}
+	is_triggered_only = yes
+	immediate = {
+		set_global_flag = necker_reforms_happened
+	}
+	option = { #agree
+		name = center_of_revolution.2003.A
+
+		add_adm_power = -100
+		add_dip_power = -100
+		add_stability = -1
+		add_country_modifier = {
+			name = revolution_administrative_reforms
+			duration = 3650
+		}
+		
+		ai_chance = {
+			factor = 3
+			modifier = {
+				factor = 0.1
+				NOT = { stability = 0 }
+			}
+		}
+	}
+	option = { #decline
+		name = center_of_revolution.2003.B
+
+		custom_tooltip = revolutionary_sentiment_warning
+		set_country_flag = revolutionary_sentiment_necker_reforms
+
+		remove_advisor_by_category = ADM
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+
+#Demand for Reforms by the 3rd estate (if you have more than 75% income from them)
+country_event = {
+	id = center_of_revolution.2010
+	title = center_of_revolution.2010.name
+	desc = center_of_revolution.2010.desc
+	picture = BURGHER_ESTATE_UPSET_eventPicture
+
+	trigger = {
+		has_dlc = "Emperor"
+		current_age = age_of_revolutions
+		has_institution = enlightenment
+		absolutism = 75
+		is_great_power = yes
+		is_free_or_tributary_trigger = yes
+		any_owned_province = {
+			development = 30
+			enlightenment = 100
+		}
+		NOT = { has_country_flag = demands_of_the_3rd_estate_happened }
+		NOT = { has_global_flag = first_revolution_center_spawned }
+		NOT = {
+			1 = {
+				check_variable = { #it can only happen to 2 countries
+					which = demands_of_the_3rd_estate_happened
+					value = 2
+				}
+			}
+		}
+		has_estate = estate_burghers
+		OR = {
+			NOT = {
+				estate_influence = {
+					estate = estate_burghers
+					influence = 20
+				}
+			}
+			NOT = {
+				estate_loyalty = {
+					estate = estate_burghers
+					loyalty = 25
+				}
+			}
+		}
+		variable_arithmetic_trigger = { #trade and production is 75% of national income
+			export_to_variable = {
+				value = trigger_value:production_income_percentage
+				which = burgher_income_proportion
+			}
+			export_to_variable = {
+				value = trigger_value:trade_income_percentage
+				which = trade_income_proportion
+			}
+			change_variable = {
+				which = burgher_income_proportion
+				which = trade_income_proportion
+			}
+			check_variable = {
+				which = burgher_income_proportion
+				value = 0.75
+			}
+		}
+	}
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 0.2
+			NOT = { capital_scope = { continent = europe } }
+		}
+	}
+	is_triggered_only = yes
+	immediate = {
+		set_country_flag = demands_of_the_3rd_estate_happened
+		hidden_effect = {
+			1 = {
+				change_variable = { #it can only happen to 2 countries
+					which = demands_of_the_3rd_estate_happened
+					value = 1
+				}
+			}
+		}
+	}
+
+	option = { #give in to their demands
+		name = center_of_revolution.2010.A
+
+		add_estate_loyalty = {
+			estate = estate_burghers
+			loyalty = 20
+		}
+		reduce_estate_nobles_loyalty_effect = yes
+		reduce_estate_church_loyalty_effect = yes
+		give_estate_land_share_gigantic = { estate = estate_burghers }
+		add_absolutism = -15
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = { #decline
+		name = center_of_revolution.2010.B
+
+		custom_tooltip = revolutionary_sentiment_warning
+		set_country_flag = revolutionary_sentiment_3rd_estate_demands
+		add_stability = -1
+		add_estate_loyalty = {
+			estate = estate_burghers
+			loyalty = -15
+		}
+		random_owned_province = {
+			limit = {
+				development = 30
+				OR = {
+					continent = europe
+					NOT = {
+						root = {
+							any_owned_province = {
+								development = 30
+								continent = europe
+								enlightenment = 100
+							}
+						}
+					}
+				}
+				enlightenment = 100
+			}
+			spawn_rebels = {
+				size = 3
+				type = revolutionary_rebels
+			}
+		}
+		ai_chance = {
+			factor = 2
+		}
+	}
+}
+
+
+#Warning for Revolutionaries: 
+country_event = {
+	id = center_of_revolution.2950
+	title = center_of_revolution.2950.name
+	desc = center_of_revolution.2950.desc
+	picture = REVOLUTION_eventPicture
+	is_triggered_only = yes
+
+	trigger = {
+		is_revolutionary = yes
+		years_since_dismantle_revolution = 10
+		NOT = { has_country_flag = has_had_revolution_failure_warning }
+	}
+
+	immediate = {
+		set_country_flag = has_had_revolution_failure_warning
+	}
+
+	option = {
+		name = center_of_revolution.2950.A
+		custom_tooltip = center_of_revolution.2950.A.tt
+	}
+}
+
+#Fully dismantle all Revolution stuff 20 years after the Revolution has failed
+country_event = {
+	id = center_of_revolution.3000
+	title = center_of_revolution.3000.name
+	desc = {
+		desc = center_of_revolution.3000.desc.last_rev
+		trigger = {
+			OR = {
+				has_country_flag = last_revolutionary_country
+				any_country = {
+					has_country_flag = last_revolutionary_country
+				}
+			}
+		}
+	}
+	desc = {
+		desc = center_of_revolution.3000.desc.no_last_rev
+		trigger = {
+			NOT = { has_country_flag = last_revolutionary_country }
+			NOT = {
+				any_country = {
+					has_country_flag = last_revolutionary_country
+				}
+			}
+			NOT = {
+				AND = {
+					had_global_flag = {
+						flag = first_revolution_center_spawned
+						days = 10950
+					}
+					revolution_target_exists = no
+					NOT = { years_since_dismantle_revolution = 0 }
+				}
+			}
+		}
+	}
+	desc = {
+		desc = center_of_revolution.3000.desc.never_rev
+		trigger = {
+			had_global_flag = {
+				flag = first_revolution_center_spawned
+				days = 10950
+			}
+			revolution_target_exists = no
+			NOT = { years_since_dismantle_revolution = 0 }
+		}
+	}
+	picture = FAILED_REVOLUTION_eventPicture
+	is_triggered_only = yes
+	fire_only_once = yes
+	major = yes
+
+	trigger = {
+		has_dlc = "Emperor"
+		has_global_flag = first_revolution_center_spawned
+		revolution_target_exists = no
+		OR = {
+			years_since_dismantle_revolution = 20
+			AND = { #No one ever became RT
+				had_global_flag = {
+					flag = first_revolution_center_spawned
+					days = 10950
+				}
+				revolution_target_exists = no
+				NOT = { years_since_dismantle_revolution = 0 }
+			}
+		}
+		OR = {
+			has_country_flag = last_revolutionary_country
+			AND = {
+				NOT = {
+					any_country = {
+						has_country_flag = last_revolutionary_country
+					}
+				}
+				any_owned_province = {
+					is_center_of_revolution = yes
+				}
+			}
+			AND = {
+				NOT = {
+					any_country = {
+						has_country_flag = last_revolutionary_country
+					}
+				}
+				NOT = {
+					any_province = {
+						is_center_of_revolution = yes
+					}
+				}
+				any_owned_province = {
+					has_province_flag = first_revolution_center
+				}
+			}
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_global_flag = no_more_revolutions_ever
+			if = {
+				limit = {
+					any_country = {
+						has_country_flag = last_revolutionary_country
+					}
+				}
+				random_country = {
+					limit = {
+						has_country_flag = last_revolutionary_country
+					}
+					save_event_target_as = last_revolutionary_country
+				}
+			}
+			every_country_including_inactive = {
+				limit = { NOT = { tag = ROOT } }
+				country_event = { id = center_of_revolution.3001 }
+			}
+		}
+	}
+
+	option = {
+		name = center_of_revolution.3000.A
+		every_country = {
+			limit = {
+				any_owned_province = {
+					is_center_of_revolution = yes
+				}
+			}
+			remove_center_of_revolution = yes
+		}
+		custom_tooltip = center_of_revolution.3000.A.tt
+		hidden_effect = {
+			every_province = {
+				limit = { has_revolution_in_province = yes }
+				remove_revolution_from_province_effect = yes
+			}
+		}
+		if = {
+			limit = { has_reform = junior_revolutionary_republic_reform }
+			add_government_reform = noble_elite_reform
+			add_government_reform = parliamentary_reform
+			add_republican_tradition = -50
+		}
+		if = {
+			limit = { has_reform = revolutionary_empire_reform }
+			add_government_reform = autocracy_reform
+		}
+		hidden_effect = { log = "The Revolution has failed" }
+	}
+}
+
+
+country_event = {
+	id = center_of_revolution.3001
+	title = center_of_revolution.3000.name
+	desc = {
+		desc = center_of_revolution.3000.desc.last_rev
+		trigger = {
+			OR = {
+				has_country_flag = last_revolutionary_country
+				any_country = {
+					has_country_flag = last_revolutionary_country
+				}
+			}
+		}
+	}
+	desc = {
+		desc = center_of_revolution.3000.desc.no_last_rev
+		trigger = {
+			NOT = { has_country_flag = last_revolutionary_country }
+			NOT = {
+				any_country = {
+					has_country_flag = last_revolutionary_country
+				}
+			}
+			NOT = {
+				AND = {
+					had_global_flag = {
+						flag = first_revolution_center_spawned
+						days = 10950
+					}
+					revolution_target_exists = no
+					NOT = { years_since_dismantle_revolution = 0 }
+				}
+			}
+		}
+	}
+	desc = {
+		desc = center_of_revolution.3000.desc.never_rev
+		trigger = {
+			had_global_flag = {
+				flag = first_revolution_center_spawned
+				days = 10950
+			}
+			revolution_target_exists = no
+			NOT = { years_since_dismantle_revolution = 0 }
+		}
+	}
+	picture = FAILED_REVOLUTION_eventPicture
+	is_triggered_only = yes
+	#major = yes
+
+	
+	option = {
+		name = center_of_revolution.3000.A
+		trigger = {
+			is_revolutionary = no
+		}
+		custom_tooltip = center_of_revolution.3000.A.tt2
+		custom_tooltip = center_of_revolution.3000.A.tt
+	}
+	option = {
+		name = center_of_revolution.3000.B
+		trigger = {
+			is_revolutionary = yes
+		}
+		custom_tooltip = center_of_revolution.3000.A.tt2
+		custom_tooltip = center_of_revolution.3000.A.tt
+		if = {
+			limit = { has_reform = junior_revolutionary_republic_reform }
+			add_government_reform = noble_elite_reform
+			add_government_reform = parliamentary_reform
+			add_republican_tradition = -50
+		}
+		if = {
+			limit = { has_reform = revolutionary_empire_reform }
+			add_government_reform = autocracy_reform
+		}
+	}
+}
+
+
+###Flavour Events relating to spread of Revolution
+
+# A Philosopher publishes a work
+country_event = {
+	id = center_of_revolution.1
+	title = revolution.30.name
+	desc = revolution.30.desc
+	picture = UNIVERSITY_eventPicture
+	goto = university_town
+	
+	trigger = {
+		has_dlc = "Emperor"
+		NOT = { has_country_flag = revolutionary_philosopher }
+		OR = {
+			has_disaster = revolution
+			has_disaster = french_revolution
+			any_owned_province = {
+				has_revolution_in_province = yes
+			}
+		}
+		any_owned_province = {
+			OR = {
+				same_continent = event_target:revolution_center
+				region_for_scope_province = {
+					has_revolution_in_province = yes
+				}
+			}
+			has_building = university
+			has_revolution_in_province = no
+			NOT = { has_province_modifier = no_revolution_here_dummy }
+		}
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_country_flag = revolutionary_philosopher
+			set_saved_name = {
+				key = philosopher_dude
+				type = advisor
+			}
+			if = {
+				limit = {
+					any_owned_province = {
+						OR = {
+							same_continent = event_target:revolution_center
+							region_for_scope_province = {
+								has_revolution_in_province = yes
+							}
+						}
+						has_building = university
+						has_revolution_in_province = no
+						highest_supply_limit_in_area = yes
+						NOT = { has_province_modifier = no_revolution_here_dummy }
+					}
+				}
+				random_owned_province = {
+					limit = {
+						OR = {
+							same_continent = event_target:revolution_center
+							region_for_scope_province = {
+								has_revolution_in_province = yes
+							}
+						}
+						has_building = university
+						has_revolution_in_province = no
+						highest_supply_limit_in_area = yes
+						NOT = { has_province_modifier = no_revolution_here_dummy }
+					}
+					save_event_target_as = university_town
+				}
+			}
+			else = {
+				random_owned_province = {
+					limit = {
+						OR = {
+							same_continent = event_target:revolution_center
+							region_for_scope_province = {
+								has_revolution_in_province = yes
+							}
+						}
+						has_building = university
+						has_revolution_in_province = no
+						NOT = { has_province_modifier = no_revolution_here_dummy }
+					}
+					save_event_target_as = university_town
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = revolution.30.A			# Tolerate him
+		ai_chance = { factor = 60 }
+		
+		event_target:university_town = {
+			if = {
+				limit = {
+					root = { num_of_cities = 12 }
+				}
+				area = {
+					limit = {
+						owned_by = root
+						NOT = { has_province_modifier = no_revolution_here_dummy }
+					}
+					if = {
+						limit = {
+							has_dlc = "Emperor"
+						}
+						set_revolution_in_province = yes
+					}
+					else = {
+						add_unrest = 6
+					}
+				}
+			}
+			else = {
+				if = {
+					limit = {
+						has_dlc = "Emperor"
+					}
+					set_revolution_in_province = yes
+				}
+				else = {
+					add_unrest = 6
+				}
+			}
+		}
+	}
+	option = {
+		name = revolution.30.B		#Suppress him
+		ai_chance = { factor = 40 }
+
+		event_target:university_town = {
+			spawn_rebels = {
+				size = 1.5
+				type = revolutionary_rebels
+			}
+		}
+	}
+	after = {
+		clear_saved_name = philosopher_dude
+	}
+}
+
+
+# William Jones (the poet) event
+country_event = {
+	id = center_of_revolution.2
+	title = center_of_revolution.2.name
+	desc = center_of_revolution.2.desc
+	picture = SHIP_SAILING_eventPicture
+	goto = william_jones_province
+	
+	trigger = {
+		has_dlc = "Emperor"
+		NOT = { has_country_flag = william_jones_event }
+		
+		revolution_target_exists = yes
+		any_owned_province = {
+			has_revolution_in_province = yes
+		}
+		any_owned_province = {
+			OR = {
+				same_continent = event_target:revolution_center
+				region_for_scope_province = {
+					has_revolution_in_province = yes
+				}
+			}
+			NOT = { culture = root }
+			is_core = root
+			is_capital = no
+			development = 10
+			base_tax = 2
+			base_production = 2
+			base_manpower = 2
+			has_port = yes
+			OR = {
+				unrest = 1
+				local_autonomy = 15
+				has_owner_accepted_culture = no
+			}
+			NOT = { has_province_modifier = no_revolution_here_dummy }
+			has_revolution_in_province = no
+		}
+		any_country = {
+			OR = {
+				is_colonial_nation_of = root
+				is_former_colonial_nation = yes
+			}
+		}
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_country_flag = william_jones_event
+			random_list = {
+				2 = {
+					random_owned_province = {
+						limit = {
+							OR = {
+								same_continent = event_target:revolution_center
+								region_for_scope_province = {
+									has_revolution_in_province = yes
+								}
+							}
+							NOT = { culture = root }
+							is_core = root
+							is_capital = no
+							development = 10
+							base_tax = 2
+							base_production = 2
+							base_manpower = 2
+							has_port = yes
+							OR = {
+								unrest = 1
+								local_autonomy = 15
+								has_owner_accepted_culture = no
+							}
+							has_revolution_in_province = no
+							NOT = { has_province_modifier = no_revolution_here_dummy }
+						}
+						save_event_target_as = william_jones_province
+					}
+				}
+				3 = {
+					trigger = {
+						any_owned_province = {
+							OR = {
+								same_continent = event_target:revolution_center
+								region_for_scope_province = {
+									has_revolution_in_province = yes
+								}
+							}
+							NOT = { culture = root }
+							is_core = root
+							is_capital = no
+							development = 15
+							base_tax = 2
+							base_production = 2
+							base_manpower = 2
+							has_port = yes
+							OR = {
+								unrest = 1
+								local_autonomy = 15
+								has_owner_accepted_culture = no
+							}
+							has_revolution_in_province = no
+							NOT = { has_province_modifier = no_revolution_here_dummy }
+						}
+					}
+					random_owned_province = {
+						limit = {
+							OR = {
+								same_continent = event_target:revolution_center
+								region_for_scope_province = {
+									has_revolution_in_province = yes
+								}
+							}
+							NOT = { culture = root }
+							is_core = root
+							is_capital = no
+							development = 15
+							base_tax = 2
+							base_production = 2
+							base_manpower = 2
+							has_port = yes
+							OR = {
+								unrest = 1
+								local_autonomy = 15
+								has_owner_accepted_culture = no
+							}
+							has_revolution_in_province = no
+							NOT = { has_province_modifier = no_revolution_here_dummy }
+						}
+						save_event_target_as = william_jones_province
+					}
+				}
+				4 = {
+					trigger = {
+						any_owned_province = {
+							OR = {
+								same_continent = event_target:revolution_center
+								region_for_scope_province = {
+									has_revolution_in_province = yes
+								}
+							}
+							NOT = { culture = root }
+							is_core = root
+							is_capital = no
+							development = 20
+							base_tax = 2
+							base_production = 2
+							base_manpower = 2
+							has_port = yes
+							OR = {
+								unrest = 1
+								local_autonomy = 15
+								has_owner_accepted_culture = no
+							}
+							has_revolution_in_province = no
+							NOT = { has_province_modifier = no_revolution_here_dummy }
+						}
+					}
+					random_owned_province = {
+						limit = {
+							OR = {
+								same_continent = event_target:revolution_center
+								region_for_scope_province = {
+									has_revolution_in_province = yes
+								}
+							}
+							NOT = { culture = root }
+							is_core = root
+							is_capital = no
+							development = 20
+							base_tax = 2
+							base_production = 2
+							base_manpower = 2
+							has_port = yes
+							OR = {
+								unrest = 1
+								local_autonomy = 15
+								has_owner_accepted_culture = no
+							}
+							has_revolution_in_province = no
+							NOT = { has_province_modifier = no_revolution_here_dummy }
+						}
+						save_event_target_as = william_jones_province
+					}
+				}
+			}
+			event_target:william_jones_province = {
+				root = {
+					set_saved_name = {
+						key = william_jones
+						type = advisor
+						scope = prev
+					}
+				}
+			}
+			random_country = {
+				limit = {
+					OR = {
+						is_colonial_nation_of = root
+						is_former_colonial_nation = yes
+					}
+				}
+				save_event_target_as = destination_country
+			}
+			revolution_target = {
+				save_event_target_as = revolution_target
+			}
+		}
+	}
+	
+	option = {
+		name = center_of_revolution.2.A			# Let them go
+		ai_chance = { factor = 60 }
+		
+		event_target:william_jones_province = {
+			add_base_tax = -1
+			add_base_production = -1
+			add_base_manpower = -1
+		}
+		event_target:destination_country = {
+			capital_scope = {
+				add_base_tax = 1
+				add_base_production = 1
+				add_base_manpower = 1
+			}
+			if = {
+				limit = {
+					is_colonial_nation_of = root
+				}
+				add_liberty_desire = 20
+			}
+			else = {
+				add_opinion = {
+					who = root
+					modifier = opinion_hostile_expats
+				}
+			}
+		}
+	}
+	option = {
+		name = center_of_revolution.2.B		# Suppress him
+		ai_chance = { factor = 40 }
+		
+		event_target:william_jones_province = {
+			random_list = {
+				1 = {
+					if = {
+						limit = {
+							root = { num_of_cities = 12 }
+						}
+						area = {
+							limit = {
+								owned_by = root
+								NOT = { has_province_modifier = no_revolution_here_dummy }
+							}
+							set_revolution_in_province = yes
+						}
+					}
+					else = {
+						set_revolution_in_province = yes
+					}
+				}
+				1 = {
+					if = {
+						limit = {
+							root = { num_of_cities = 12 }
+						}
+						area = {
+							limit = { owned_by = root }
+							add_unrest = 6
+						}
+					}
+					else = {
+						add_unrest = 6
+					}
+				}
+			}
+		}
+	}
+	after = {
+		clear_saved_name = william_jones
+	}
+}
+
+
+
+# Revolution spreading to colonies
+country_event = {
+	id = center_of_revolution.3
+	title = center_of_revolution.3.name
+	desc = center_of_revolution.3.desc
+	picture = ELECTION_REPUBLICAN_eventPicture
+	
+	trigger = {
+		has_dlc = "Emperor"
+		has_global_flag = colonies_inspired_by_revolution
+		revolution_target_exists = yes
+		any_subject_country = {
+			is_colonial_nation = yes
+			NOT = { has_country_flag = revolution_spreading_to_colony_event_flag }
+			liberty_desire = 30
+		}
+		OR = {
+			capital_scope = {
+				has_revolution_in_province = yes
+			}
+			AND = {
+				NOT = { num_of_cities = 10 }
+				num_of_owned_provinces_with = {
+					value = 3
+					has_revolution_in_province = yes
+				}
+			}
+			AND = {
+				NOT = { num_of_cities = 20 }
+				num_of_owned_provinces_with = {
+					value = 6
+					has_revolution_in_province = yes
+				}
+			}
+			num_of_owned_provinces_with = {
+				value = 10
+				has_revolution_in_province = yes
+			}
+		}
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_subject_country = {
+				limit = {
+					is_colonial_nation = yes
+					NOT = { has_country_flag = revolution_spreading_to_colony_event_flag }
+					liberty_desire = 30
+				}
+				save_event_target_as = colonial_country
+			}
+			random_subject_country = {
+				limit = {
+					is_colonial_nation = yes
+					NOT = { has_country_flag = revolution_spreading_to_colony_event_flag }
+					liberty_desire = 40
+				}
+				save_event_target_as = colonial_country
+			}
+			random_subject_country = {
+				limit = {
+					is_colonial_nation = yes
+					NOT = { has_country_flag = revolution_spreading_to_colony_event_flag }
+					liberty_desire = 50
+				}
+				save_event_target_as = colonial_country
+			}
+			event_target:colonial_country = {
+				set_country_flag = revolution_spreading_to_colony_event_flag
+			}
+			revolution_target = {
+				save_event_target_as = revolution_target
+			}
+		}
+	}
+	
+	option = {
+		name = center_of_revolution.3.A			# This could be trouble
+		
+		event_target:colonial_country = {
+			add_liberty_desire = 20
+		}
+	}
+}
+
+
+# Revolution spreading to colonies as RT
+country_event = {
+	id = center_of_revolution.4
+	title = center_of_revolution.4.name
+	desc = {
+		trigger = { is_supporting_independence_of = event_target:colonial_country }
+		desc = center_of_revolution.4.desc.already_supporting
+	}
+	desc = {
+		trigger = { NOT = { is_supporting_independence_of = event_target:colonial_country } }
+		desc = center_of_revolution.4.desc
+	}
+	picture = DIPLOMACY_eventPicture
+	
+	trigger = {
+		has_dlc = "Emperor"
+		is_revolutionary = yes
+		any_rival_country = {
+			is_revolutionary = no
+			any_subject_country = {
+				is_colonial_nation = yes
+				liberty_desire = 30
+				NOT = { has_country_flag = revolution_spreading_to_colony_from_rt_event_flag }
+			}
+		}
+		any_owned_province = {
+			has_port = yes
+		}
+		is_bankrupt = no
+		OR = {
+			treasury = 500
+			AND = {
+				adm_power = 100
+				dip_power = 100
+				mil_power = 100
+			}
+		}
+		NOT = { has_country_modifier = recent_rt_spread_revolution_to_colonies_event_timer }
+	}
+
+	mean_time_to_happen = {
+		days = 3650
+		modifier = {
+			factor = 0.5
+			treasury = 1000
+			NOT = { num_of_loans = 1 }
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			add_country_modifier = {
+				name = recent_rt_spread_revolution_to_colonies_event_timer
+				duration = 3650
+				hidden = yes
+			}
+			random_rival_country = {
+				limit = {
+					is_revolutionary = no
+					any_subject_country = {
+						is_colonial_nation = yes
+						liberty_desire = 30
+						NOT = { has_country_flag = revolution_spreading_to_colony_from_rt_event_flag }
+					}
+				}
+				save_event_target_as = rival_country
+				random_subject_country = {
+					limit = {
+						is_colonial_nation = yes
+						NOT = { has_country_flag = revolution_spreading_to_colony_from_rt_event_flag }
+						liberty_desire = 30
+					}
+					save_event_target_as = colonial_country
+				}
+				random_subject_country = {
+					limit = {
+						is_colonial_nation = yes
+						NOT = { has_country_flag = revolution_spreading_to_colony_from_rt_event_flag }
+						liberty_desire = 40
+					}
+					save_event_target_as = colonial_country
+				}
+				random_subject_country = {
+					limit = {
+						is_colonial_nation = yes
+						NOT = { has_country_flag = revolution_spreading_to_colony_from_rt_event_flag }
+						liberty_desire = 50
+					}
+					save_event_target_as = colonial_country
+				}
+			}
+			random_rival_country = {
+				limit = {
+					any_subject_country = {
+						is_colonial_nation = yes
+						ROOT = { is_supporting_independence_of = prev }
+						NOT = { has_country_flag = revolution_spreading_to_colony_from_rt_event_flag }
+					}
+				}
+				save_event_target_as = rival_country
+				random_subject_country = {
+					limit = {
+						is_colonial_nation = yes
+						ROOT = { is_supporting_independence_of = prev }
+						NOT = { has_country_flag = revolution_spreading_to_colony_from_rt_event_flag }
+					}
+					save_event_target_as = colonial_country
+				}
+			}
+			event_target:colonial_country = {
+				set_country_flag = revolution_spreading_to_colony_from_rt_event_flag
+			}
+		}
+	}
+	
+	option = {
+		name = center_of_revolution.4.A			# Send them monetary aid
+		
+		add_treasury = -500
+		event_target:colonial_country = {
+			set_country_flag = financial_aid
+		}
+		event_target:rival_country = {
+			country_event = { id = center_of_revolution.6 }
+		}
+		event_target:colonial_country = {
+			tooltip = {
+				add_treasury = 500
+				add_liberty_desire = 50
+			}
+			add_opinion = {
+				who = root
+				modifier = opinion_funded_independence_war
+			}
+			hidden_effect = {
+				country_event = { id = center_of_revolution.5 days = 1 }
+			}
+		}
+		add_revolutionary_zeal = 5
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { treasury = 500 }
+			}
+			modifier = {
+				factor = 0
+				is_at_war = yes
+				NOT = { war_with = event_target:rival_country }
+			}
+		}
+	}
+	option = {
+		name = center_of_revolution.4.B			# Send them other aid
+		
+		add_adm_power = -100
+		add_dip_power = -100
+		add_mil_power = -100
+		event_target:colonial_country = {
+			set_country_flag = mana_aid
+		}
+		event_target:rival_country = {
+			country_event = { id = center_of_revolution.6 }
+		}
+		event_target:colonial_country = {
+			tooltip = {
+				add_adm_power = 100
+				add_dip_power = 100
+				add_mil_power = 100
+				add_liberty_desire = 50
+			}
+			add_opinion = {
+				who = root
+				modifier = opinion_funded_independence_war
+			}
+			hidden_effect = {
+				country_event = { id = center_of_revolution.5 days = 1 }
+			}
+		}
+		add_revolutionary_zeal = 5
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				OR = {
+					NOT = { adm_power = 100 }
+					NOT = { dip_power = 100 }
+					NOT = { mil_power = 100 }
+				}
+			}
+			modifier = {
+				factor = 0
+				is_at_war = yes
+				NOT = { war_with = event_target:rival_country }
+			}
+		}
+	}
+
+	option = {
+		name = center_of_revolution.4.C		#We are better off focusing our energies elsewhere
+
+		add_adm_power = 35
+		add_dip_power = 35
+		add_mil_power = 35
+
+		event_target:colonial_country = {
+			add_opinion = {
+				who = root
+				modifier = opinion_refused_to_fund_independence_war
+			}
+		}
+		ai_chance = {
+			factor = 2
+		}
+	}
+}
+
+# Revolution spreading to colonies as RT - notification for colony
+country_event = {
+	id = center_of_revolution.5
+	title = center_of_revolution.5.name
+	desc = center_of_revolution.5.desc
+	picture = REFORM_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = center_of_revolution.5.A
+		add_liberty_desire = 50
+		trigger_switch = {
+			on_trigger = has_country_flag
+			financial_aid = {
+				add_treasury = 500
+				clr_country_flag = financial_aid
+			}
+			mana_aid = {
+				add_adm_power = 100
+				add_dip_power = 100
+				add_mil_power = 100
+				clr_country_flag = mana_aid
+			}
+		}
+	}
+}
+
+# Revolution spreading to colonies as RT - notification for colony's overlord
+country_event = {
+	id = center_of_revolution.6
+	title = center_of_revolution.6.name
+	desc = center_of_revolution.6.desc
+	picture = REFORM_eventPicture
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			add_opinion = {
+				who = from
+				modifier = opinion_funding_our_colonies_for_independence
+			}
+		}
+	}
+
+	option = {
+		name = center_of_revolution.6.A
+		event_target:colonial_country = {
+			tooltip = {
+				add_liberty_desire = 50
+				trigger_switch = {
+					on_trigger = has_country_flag
+					financial_aid = {
+						add_treasury = 500
+					}
+					mana_aid = {
+						add_adm_power = 100
+						add_dip_power = 100
+						add_mil_power = 100
+					}
+				}
+			}
+		}
+	}
+}
+
+#Revolution fades from province with no revolutionary target
+country_event = {
+	id = center_of_revolution.7
+	title = center_of_revolution.7.name
+	desc = {
+		trigger = {
+			has_country_flag = last_revolutionary_country
+		}
+		desc = center_of_revolution.7.desc.is_former_target
+	}
+	desc = {
+		trigger = {
+			NOT = { has_country_flag = last_revolutionary_country }
+			any_country = {
+				has_country_flag = last_revolutionary_country
+			}
+		}
+		desc = center_of_revolution.7.desc.former_target_exists
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				any_country = {
+					has_country_flag = last_revolutionary_country
+				}
+			}
+		}
+		desc = center_of_revolution.7.desc.no_former_target
+	}
+	picture = DEBATE_REPUBLICAN_eventPicture #FAILED_REVOLUTION_eventPicture
+	goto = revolutionary_province
+	
+	trigger = {
+		has_dlc = "Emperor"
+		any_owned_province = {
+			has_revolution_in_province = yes
+			is_center_of_revolution = no
+		}
+		revolution_target_exists = no
+		NOT = {
+			had_global_flag = {
+				flag = first_revolution_center_spawned
+				days = 9125
+			}
+		}
+		is_revolutionary = no
+		NOT = { any_province = { is_center_of_revolution = yes } }
+	}
+	mean_time_to_happen = {
+		years = 4
+		modifier = {
+			factor = 0.5
+			NOT = { any_country = { has_country_flag = last_revolutionary_country } }
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = { has_country_flag = last_revolutionary_country }
+					any_country = {
+						has_country_flag = last_revolutionary_country
+					}
+				}
+				random_country = {
+					limit = { has_country_flag = last_revolutionary_country }
+					save_event_target_as = former_revolutionary_country
+				}
+			}
+			random_owned_province = {
+				limit = {
+					has_revolution_in_province = yes
+					is_center_of_revolution = no
+				}
+				save_event_target_as = revolutionary_province
+			}
+		}
+	}
+
+	option = {
+		name = center_of_revolution.7.A
+		event_target:revolutionary_province = {
+			area = {
+				limit = {
+					owned_by = root
+					is_center_of_revolution = no
+				}
+				remove_revolution_from_province_effect = yes
+			}
+		}
+	}
+}
+
+#Reactionary Coup in <province>
+country_event = {
+	id = center_of_revolution.8
+	title = center_of_revolution.8.name
+	desc = center_of_revolution.8.desc
+	picture = CONSPIRACY_eventPicture
+	goto = revolutionary_province
+	
+	trigger = {
+		has_dlc = "Emperor"
+		revolution_target_exists = yes
+		any_owned_province = {
+			has_revolution_in_province = yes
+			is_center_of_revolution = no
+		}
+		is_revolutionary = no
+	}
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = { is_revolution_target = yes }
+				save_event_target_as = revolution_target
+			}
+			random_owned_province = {
+				limit = {
+					has_revolution_in_province = yes
+					is_center_of_revolution = no
+				}
+				save_event_target_as = revolutionary_province
+			}
+		}
+	}
+
+	option = {
+		name = center_of_revolution.8.A
+		event_target:revolutionary_province = {
+			area = {
+				limit = {
+					owned_by = root
+					is_center_of_revolution = no
+				}
+				remove_revolution_from_province_effect = yes
+				add_named_unrest = {
+					name = revolutionary_sentiment
+					value = 10
+				}
+			}
+			random = {
+				chance = 30
+				revolutionary_rebels = 1
+			}
+		}
+		ai_chance = {
+			factor = 3
+		}
+	}
+	option = {
+		name = center_of_revolution.8.B
+		add_stability = -1
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#Reactionaries in <province> discovered
+country_event = {
+	id = center_of_revolution.9
+	title = center_of_revolution.9.name
+	desc = center_of_revolution.9.desc
+	picture = CONSPIRACY_eventPicture
+	is_triggered_only = yes
+	goto = reactionary_province
+
+	trigger = {
+		has_dlc = "Emperor"
+		is_revolutionary = yes
+		any_owned_province = {
+			has_revolution_in_province = yes
+			is_capital = no
+			controlled_by = root
+			is_center_of_revolution = no
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+		modifier = {
+			factor = 2
+			has_country_modifier = the_reign_of_terror
+		}
+		modifier = {
+			factor = 0.5
+			all_owned_province = {
+				has_revolution_in_province = yes
+			}
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_revolution_in_province = yes
+					is_capital = no
+					controlled_by = root
+					is_center_of_revolution = no
+				}
+				save_event_target_as = reactionary_province
+			}
+		}
+	}
+
+	option = {
+		name = center_of_revolution.9.A
+		event_target:reactionary_province = {
+			spawn_rebels = {
+				size = 1.5
+				type = pretender_rebels
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				OR = {
+					num_of_rebel_armies = 5
+					num_of_rebel_controlled_provinces = 5
+				}
+			}
+		}
+	}
+
+	option = {
+		name = center_of_revolution.9.B
+		event_target:reactionary_province = {
+			remove_revolution_from_province_effect = yes
+		}
+		add_revolutionary_zeal = -5
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#Spread the Revolution to someone else's provinces with a coup
+country_event = {
+	id = center_of_revolution.10
+	title = center_of_revolution.10.name
+	desc = center_of_revolution.10.desc
+	picture = CONSPIRACY_eventPicture
+	goto = province_to_revolution
+	
+	trigger = {
+		has_dlc = "Emperor"
+		is_revolutionary = yes
+		any_neighbor_country = {
+			NOT = { war_with = root }
+			any_owned_province = {
+				has_revolution_in_province = no
+				NOT = { has_province_modifier = no_revolution_here_dummy }
+				any_neighbor_province = {
+					owned_by = root
+					has_revolution_in_province = yes
+				}
+			}
+		}
+	}
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			random_neighbor_country = {
+				limit = {
+					NOT = { war_with = root }
+					any_owned_province = {
+						has_revolution_in_province = no
+						NOT = { has_province_modifier = no_revolution_here_dummy }
+						any_neighbor_province = {
+							owned_by = root
+							has_revolution_in_province = yes
+						}
+					}
+				}
+				save_event_target_as = neighbour_country
+				random_owned_province = {
+					limit = {
+						has_revolution_in_province = no
+						NOT = { has_province_modifier = no_revolution_here_dummy }
+						any_neighbor_province = {
+							owned_by = root
+							has_revolution_in_province = yes
+						}
+					}
+					save_event_target_as = province_to_revolution
+					random_neighbor_province = {
+						limit = {
+							owned_by = root
+							has_revolution_in_province = yes
+						}
+						save_event_target_as = own_revolutionary_province
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = center_of_revolution.10.A
+		add_revolutionary_zeal = 5
+		add_mil_power = -50
+		tooltip = {
+			event_target:province_to_revolution = {
+				set_revolution_in_province = yes
+			}
+		}
+		event_target:neighbour_country = {
+			tooltip = {
+				add_opinion = {
+					who = root
+					modifier = opinion_revolutionary_coup_in_our_province
+				}
+			}
+			country_event = { id = center_of_revolution.11 }
+		}
+	}
+	option = {
+		name = center_of_revolution.10.B
+		add_revolutionary_zeal = -5
+		event_target:neighbour_country = {
+			add_opinion = {
+				who = root
+				modifier = opinion_non_intervention
+			}
+		}
+	}
+}
+
+#Spread the Revolution to someone else's provinces with a coup (notification for them)
+country_event = {
+	id = center_of_revolution.11
+	title = center_of_revolution.11.name
+	desc = center_of_revolution.11.desc
+	picture = ACCUSATION_eventPicture
+	goto = province_to_revolution
+	
+	is_triggered_only = yes
+
+	option = {
+		name = center_of_revolution.11.A
+		event_target:province_to_revolution = {
+			set_revolution_in_province = yes
+		}
+		add_opinion = {
+			who = from
+			modifier = opinion_revolutionary_coup_in_our_province
+		}
+	}
+}
+
+#Reactionaries from the RT come to you
+country_event = {
+	id = center_of_revolution.12
+	title = center_of_revolution.12.name
+	desc = center_of_revolution.12.desc
+	picture = COURT_eventPicture
+	
+	trigger = {
+		has_dlc = "Emperor"
+		is_revolutionary = no
+		revolution_target_exists = yes
+		any_neighbor_country = {
+			is_revolutionary = yes
+			NOT = {
+				had_country_flag = {
+					flag = revolutionary_republic_flag
+					days = 2920
+				}
+			}
+			NOT = { war_with = root }
+			NOT = { alliance_with = root }
+		}
+		any_owned_province = {
+			is_in_capital_area = yes
+			has_revolution_in_province = no
+		}
+		any_owned_province = {
+			has_revolution_in_province = yes
+			is_in_capital_area = yes
+			is_center_of_revolution = no
+		}
+		is_subject = no
+		absolutism = 60
+		num_of_cities = 15
+	}
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			random_neighbor_country = {
+				limit = {
+					is_revolutionary = yes
+					NOT = {
+						had_country_flag = {
+							flag = revolutionary_republic_flag
+							days = 2920
+						}
+					}
+					NOT = { war_with = root }
+					NOT = { alliance_with = root }
+				}
+				save_event_target_as = revolution_target #not really
+			}
+			random_owned_province = {
+				limit = {
+					has_revolution_in_province = yes
+					is_in_capital_area = yes
+					is_center_of_revolution = no
+				}
+				save_event_target_as = revolutionary_province
+			}
+		}
+	}
+
+	option = {
+		name = center_of_revolution.12.A
+		goto = revolutionary_province
+		add_spy_network_in = {
+			who = event_target:revolution_target
+			value = 25
+		}
+		event_target:revolutionary_province = {
+			remove_revolution_from_province_effect = yes
+		}
+		event_target:revolution_target = {
+			add_opinion = {
+				who = root
+				modifier = opinion_hosting_exiles
+			}
+		}
+	}
+}
+
+# Colonial nations inspired by revolution
+country_event = {
+	id = center_of_revolution.13
+	title = center_of_revolution.13.t
+	desc = center_of_revolution.13.d
+	picture = COURT_eventPicture
+	
+	fire_only_once = yes
+	major = yes
+	
+	trigger = {
+		revolution_target_exists = yes
+		is_revolutionary = no
+		any_subject_country = {
+			is_colonial_nation = yes
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_global_flag = colonies_inspired_by_revolution
+			revolution_target = {
+				save_event_target_as = revolution_target
+			}
+		}
+	}
+	
+	option = {
+		name = center_of_revolution.13.a
+		every_country = {
+			limit = {
+				is_colonial_nation = yes
+				overlord = {
+						is_revolutionary = no
+				}
+			}
+			add_country_modifier = { # add 30 liberty desire
+				name = "colony_inspired_by_revolution"
+				duration = -1
+			}
+		}
+	}
+}
+
+# The revolution is defeated, colonial movements die down
+country_event = {
+	id = center_of_revolution.14
+	title = center_of_revolution.14.t
+	desc = center_of_revolution.14.d
+	picture = COURT_eventPicture
+	
+	fire_only_once = yes
+	major = yes
+	
+	trigger = {
+		has_global_flag = colonies_inspired_by_revolution
+		revolution_target_exists = no
+		any_subject_country = {
+			is_colonial_nation = yes
+			capital_scope = {
+				OR = {
+					continent = new_world
+					continent = north_america
+					continent = south_america
+					continent = oceania
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 6
+	}
+
+	immediate = {
+		hidden_effect = {
+			clr_global_flag = colonies_inspired_by_revolution
+		}
+	}
+	
+	option = {
+		name = center_of_revolution.14.a
+		every_country = {
+			limit = {
+				has_country_modifier = colony_inspired_by_revolution
+			}
+			remove_country_modifier = colony_inspired_by_revolution
+		}
+	}
+}

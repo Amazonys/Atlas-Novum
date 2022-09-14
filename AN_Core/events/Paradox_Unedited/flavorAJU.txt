@@ -1,0 +1,494 @@
+#########################################
+# Events for the Ajuuran
+#
+# scripted by Ogulcan Yildirim
+# Localization written by Roger Corominas
+#########################################
+
+namespace = flavor_aju
+normal_or_historical_nations = yes
+	
+#Trade deal with Ajuuran
+country_event = {
+	id = flavor_aju.1
+	title = flavor_aju.1.t
+	desc = flavor_aju.1.d
+	picture = TRADEGOODS_eventPicture	
+	is_triggered_only = yes
+	
+	
+	option = {
+		name = flavor_aju.1.a #We make a deal with our ally
+		add_country_modifier = {
+			name = aju_gold_trade_deal_ally
+			duration = 9125
+		}
+		FROM = {
+			country_event = {
+				id = flavor_aju.2
+			}
+		}
+		ai_chance = { factor = 1 }
+	}
+	option = {
+		name = flavor_aju.1.b #Not worth our time
+		add_mercantilism = 5
+		add_country_modifier = {
+			name = aju_gold_trade_deal_refused
+			duration = 9125
+		}
+		FROM = {
+			country_event = {
+				id = flavor_aju.3
+			}
+		}
+		ai_chance = { factor = 0 }
+	}
+}
+
+#They accept the deal!
+country_event = {
+	id = flavor_aju.2
+	title = flavor_aju.2.t
+	desc = flavor_aju.2.d
+	picture = TRADEGOODS_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.2.a #Nice
+		add_years_of_income = 0.5
+		add_country_modifier = {
+			name = aju_gold_trade_deal_ajuuraan
+			duration = 9125
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+	
+#They decline the deal!
+country_event = {
+	id = flavor_aju.3
+	title = flavor_aju.3.t
+	desc = flavor_aju.3.d
+	picture = ACCUSATION_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.3.a #Not so nice
+		add_mercantilism = 3
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Currency minting
+country_event = {
+	id = flavor_aju.4
+	title = flavor_aju.4.t
+	desc = flavor_aju.4.d
+	picture = ECONOMY_eventPicture	
+	is_triggered_only = yes	
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { gold = 1 }
+				random_owned_province = {
+					limit = {
+						trade_goods = gold
+					}
+					set_province_flag = aju_major_gold_source
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = flavor_aju.4.a #Nice
+		if = {
+			limit = { gold = 1 }
+			add_years_of_owned_provinces_production_income = {
+				years = 4
+				trigger = {
+					trade_goods = gold
+					has_province_flag = aju_major_gold_source
+				}
+				custom_tooltip = MONOPOLY_INCOME_GOLD_DESC
+			}
+		}
+		else_if = {
+			limit = {
+				any_subject_country = {
+					gold = 1
+				}
+			}
+			custom_tooltip = flavor_aju.4.a.tt
+			hidden_effect = {
+				random_subject_country = {
+					limit = {
+						gold = 1
+					}
+					export_to_variable = {
+						which = aju_old_subject_money
+						value = treasury
+					}
+					random_owned_province = {
+						limit = {
+							trade_goods = gold
+						}
+						set_province_flag = aju_major_gold_source
+					}
+					add_years_of_owned_provinces_production_income = {
+						years = 4
+						trigger = {
+							trade_goods = gold
+							has_province_flag = aju_major_gold_source
+						}
+						custom_tooltip = MONOPOLY_INCOME_GOLD_DESC
+					}
+					export_to_variable = {
+						which = aju_new_subject_money
+						value = treasury
+					}
+					subtract_variable = {
+						which = aju_new_subject_money
+						which = aju_old_subject_money
+					}
+					transfer_treasury = {
+						giver = THIS
+						taker = ROOT
+						variable = aju_new_subject_money
+					}
+				}
+			}
+		}
+		ai_chance = { factor = 1 }
+	}
+
+	after = {
+		hidden_effect = {
+			every_province = {
+				limit = { has_province_flag = aju_major_gold_source }
+				clr_province_flag = aju_major_gold_source
+			}
+		}
+	}
+}
+
+#Trade with Ajuuran
+country_event = {
+	id = flavor_aju.5
+	title = flavor_aju.5.t
+	desc = flavor_aju.5.d
+	picture = MERCHANTS_TALKING_eventPicture	
+	is_triggered_only = yes
+	
+	option = {	#Good idea
+		name = flavor_aju.5.a
+		add_country_modifier = {
+			name = aju_mogadishu_currency
+			duration = 9125
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				OR = {
+					ai_attitude = {
+						who = FROM
+						attitude = attitude_hostile
+					}
+					ai_attitude = {
+						who = FROM
+						attitude = attitude_outraged
+					}
+					ai_attitude = {
+						who = FROM
+						attitude = attitude_rivalry
+					}
+				}
+			}
+		}
+	}
+	
+	option = {	#Nah
+		name = flavor_aju.5.b
+		add_mercantilism = 2
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					ai_attitude = {
+						who = FROM
+						attitude = attitude_hostile
+					}
+				}
+				NOT = {
+					ai_attitude = {
+						who = FROM
+						attitude = attitude_outraged
+					}
+				}
+				NOT = {
+					ai_attitude = {
+						who = FROM
+						attitude = attitude_rivalry
+					}
+				}
+			}
+		}
+	}
+}
+
+#A giraffe for a Son of Heaven
+country_event = {
+	id = flavor_aju.6
+	title = flavor_aju.6.t
+	desc = flavor_aju.6.d
+	picture = AN_EMPIRE_FOR_A_GIRAFFE_eventPicture	
+	is_triggered_only = yes
+	
+	option = {	#It is... It is ... BEAUTIFUL!
+		name = flavor_aju.6.a
+		capital_scope = {
+			add_permanent_province_modifier = {
+				name = aju_exotic_zoo
+				duration = 9125
+			}
+		}
+		hidden_effect = {
+			FROM = {
+				country_event = {
+					id = flavor_aju.7
+				}
+				export_to_variable = {
+					which = chinese_years_of_income
+					value = years_of_income
+					who = ROOT
+				}
+				multiply_variable = {
+					which = chinese_years_of_income
+					value = 0.25
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = {	#Thanks, but we don't really need giraffes
+		name = flavor_aju.6.b
+		FROM = {
+			country_event = {
+				id = flavor_aju.8
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#The Emperor loves the giraffe
+country_event = {
+	id = flavor_aju.7
+	title = flavor_aju.7.t
+	desc = flavor_aju.7.d
+	picture = AN_EMPIRE_FOR_A_GIRAFFE_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.7.a #Glad to see him liking it
+		add_prestige = 30
+		ai_chance = { factor = 1 }
+	}
+}
+	
+#They said it was meh...
+country_event = {
+	id = flavor_aju.8
+	title = flavor_aju.8.t
+	desc = flavor_aju.8.d
+	picture = ACCUSATION_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.8.a #You are meh too...
+		add_casus_belli = {
+			type = cb_insult
+			target = FROM
+			months = 60
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+	
+#United dynasties
+country_event = {
+	id = flavor_aju.9
+	title = flavor_aju.9.t
+	desc = flavor_aju.9.d
+	picture = DIPLOMACY_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.9.a #Glad to be back
+		overlord = {
+			tooltip = {
+				inherit = ROOT
+			}
+			hidden_effect = {
+				country_event = {
+					id = flavor_aju.10
+				}
+			}
+		}
+		ai_chance = { factor = 1 }
+	}
+	
+	option = {
+		name = flavor_aju.9.b #We might be vassals, but we will not subdue to Ajuuran!
+		overlord = {
+			tooltip = {
+				add_core = 1248
+			}
+			hidden_effect = {
+				country_event = {
+					id = flavor_aju.11
+				}
+			}
+		}
+		ai_chance = { factor = 0 }
+	}
+}
+	
+#United dynasties - they accept!
+country_event = {
+	id = flavor_aju.10
+	title = flavor_aju.10.t
+	desc = flavor_aju.10.d
+	picture = GOOD_WITH_MONARCH_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.10.a #Glad to be back
+		inherit = FROM
+		ai_chance = { factor = 1 }
+	}
+}
+	
+#United dynasties - they refuse!
+country_event = {
+	id = flavor_aju.11
+	title = flavor_aju.11.t
+	desc = flavor_aju.11.d
+	picture = BAD_WITH_MONARCH_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.11.a #Their land belongs to us one way or another!
+		add_core = 1248
+		ai_chance = { factor = 1 }
+	}
+}
+	
+#Ajuuran merchants in Dai Viet
+country_event = {
+	id = flavor_aju.12
+	title = flavor_aju.12.t
+	desc = flavor_aju.12.d
+	picture = MERCHANTS_TALKING_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.12.a #Nice
+		613 = {
+			if = {
+				limit = {
+					NOT = { province_has_center_of_trade_of_level = 2 }
+				}
+				add_center_of_trade_level = 1
+			}
+			add_base_tax = 2
+			add_base_production = 2
+			add_prosperity = 5
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+	
+#Ajuuran merchants in Java
+country_event = {
+	id = flavor_aju.13
+	title = flavor_aju.13.t
+	desc = flavor_aju.13.d
+	picture = MERCHANTS_TALKING_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.13.a
+		custom_tooltip = flavor_aju.13.a.tt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					OR = {
+						area = banten_area
+						area = west_java_area
+						area = central_java_area
+						area = surabaya_area
+					}
+				}
+				add_province_modifier = {
+					name = aju_ajuuran_influence_in_java
+					duration = 9125
+				}
+			}
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Modernization of the army
+country_event = {
+	id = flavor_aju.14
+	title = flavor_aju.14.t
+	desc = flavor_aju.14.d
+	picture = LAND_MILITARY_eventPicture	
+	is_triggered_only = yes	
+	
+	option = {
+		name = flavor_aju.14.a #Nice
+		add_treasury = -3000
+		add_mil_power = -200
+		add_army_professionalism = 0.05
+		add_army_tradition = 25
+		add_country_modifier = {
+			name = aju_completely_modernized_army
+			duration = 9125
+		}
+		ai_chance = { factor = 1 }
+	}
+	
+	option = {
+		name = flavor_aju.14.b #Nice
+		add_treasury = -1500
+		add_mil_power = -100
+		add_army_professionalism = 0.025
+		add_army_tradition = 15
+		add_country_modifier = {
+			name = aju_bought_new_guns
+			duration = 9125
+		}
+		ai_chance = { factor = 0 }
+	}
+	
+	option = {
+		name = flavor_aju.14.c #Not really worth it
+		add_country_modifier = {
+			name = aju_keep_the_ways
+			duration = 9125
+		}
+		ai_chance = { factor = 0 }
+	}
+}

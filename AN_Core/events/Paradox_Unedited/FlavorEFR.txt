@@ -1,0 +1,238 @@
+########################################
+# Major Flavor Events                  #
+########################################
+
+namespace = flavor_efr
+normal_or_historical_nations = yes
+
+# East Frisia asks to join HRE
+country_event = {
+	id = flavor_efr.1
+	title = "flavor_efr.EVTNAME1"
+	desc = "flavor_efr.EVTDESC1"
+	picture = HRE_eventPicture
+
+
+	fire_only_once = yes
+	
+
+	trigger = {
+		tag = EFR
+		is_part_of_hre = no
+		1931 = {
+			owned_by = EFR
+		}
+		exists = HOL
+	}
+	
+	immediate = {
+		hidden_effect = {
+			HOL = { save_global_event_target_as = dutch_east_frisia_claimant }
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+
+	option = {	# Request to join the Empire
+		name = "flavor_efr.EVTOPTA1"
+		ai_chance = { factor = 90 }
+		emperor = {
+			country_event = {
+				id = flavor_efr.2
+				days = 10
+			}
+		}
+	}
+	option = {		# Keep statues quo
+		name = "flavor_efr.EVTOPTB1"
+		ai_chance = { factor = 10 }
+		if = {
+			limit = {
+				event_target:dutch_east_frisia_claimant = {
+					exists = yes
+					is_part_of_hre = yes
+				}
+			}
+			1931 = {
+				add_claim = event_target:dutch_east_frisia_claimant
+			}
+		}
+	}
+}
+
+# Emperor recieves East Frisia's offer to join the HRE
+country_event = {
+	id = flavor_efr.2
+	title = "flavor_efr.EVTNAME2"
+	desc = "flavor_efr.EVTDESC2"
+	picture = HRE_eventPicture
+
+
+	is_triggered_only = yes
+	
+
+	option = {		# Accept East Frisia into the Empire
+		name = "flavor_efr.EVTOPTA2"
+		ai_chance = { factor = 100 }
+		EFR = {
+			country_event = {
+				id = flavor_efr.3
+			}
+		}
+	}
+	option = {		# Restore province to Holland
+		name = "flavor_efr.EVTOPTB2"
+		ai_chance = { factor = 0 }
+		hidden_effect = { #East Frisia and claimant are informed of the Emperor's decision.
+			EFR = {
+				set_country_flag = east_frisia_unrecognised
+				country_event = {
+					id = flavor_efr.3
+					days = 10
+				}
+			}
+			if = {
+				limit = {
+					event_target:dutch_east_frisia_claimant = {
+						exists = yes
+					}
+				}
+				event_target:dutch_east_frisia_claimant = {
+					country_event = {
+						id = flavor_efr.3
+						days = 10
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				event_target:dutch_east_frisia_claimant = {
+					exists = yes
+				}
+			}
+			1931 = {
+				add_core = event_target:dutch_east_frisia_claimant
+			}
+		} else = { #if a valid title claimant does not exist, the Emperor gains the claim.
+			1931 = {
+				add_core = ROOT
+			}
+		}
+	}
+}
+
+# East Frisia joins the HRE
+country_event = {
+	id = flavor_efr.3
+	title = "flavor_efr.EVTNAME3"
+	desc = {
+		trigger = {
+			tag = EFR
+			NOT = {
+				has_country_flag = east_frisia_unrecognised
+			}
+		}
+		desc = "flavor_efr.EVTDESC3.1"
+	}
+	desc = {
+		trigger = {
+			tag = EFR
+			has_country_flag = east_frisia_unrecognised
+		}
+		desc = "flavor_efr.EVTDESC3.2"
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				tag = EFR
+			}
+			EFR = {
+				has_country_flag = east_frisia_unrecognised
+			}
+		}
+		desc = "flavor_efr.EVTDESC3.3"
+	}
+	picture = HRE_eventPicture
+
+
+	is_triggered_only = yes
+	
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					tag = EFR
+					NOT = {
+						has_country_flag = east_frisia_unrecognised
+					}
+				}
+				set_in_empire = yes
+				change_government_to_monarchy = yes
+				#set_legacy_government = despotic_monarchy
+			}
+		}
+	}
+	
+
+	option = {		# East Frisia is brought into HRE and recognised as a Duchy
+		name = "flavor_efr.EVTOPTA3"
+		ai_chance = { factor = 100 }
+		trigger = {
+			tag = EFR
+			NOT = {
+				has_country_flag = east_frisia_unrecognised
+			}
+		}
+		custom_tooltip = east_frisia_empire_tt
+		if = {
+			limit = {
+				has_ruler = "Enno Edzardisna"
+			}
+			define_heir = {
+				name = "Ulrich"
+				dynasty = "Cirksena"
+				birth_date = 1408.1.1
+				adm = 2
+				dip = 3
+				mil = 3
+				claim = 100
+				male = yes
+			}
+		}
+		else = {
+			define_heir = {
+			dynasty = "Cirksena"
+			claim = 95
+			}
+		}
+	}
+	
+	option = {		# East Frisia remains unrecognised
+		name = "flavor_efr.EVTOPTB3"
+		ai_chance = { factor = 100 }
+		trigger = {
+			tag = EFR
+			has_country_flag = east_frisia_unrecognised
+		}
+		add_prestige = -25
+	}
+	
+	option = {		# Claimant is informed of their claim
+		name = "flavor_efr.EVTOPTC3"
+		ai_chance = { factor = 100 }
+		trigger = {
+			NOT = {
+				tag = EFR
+			}
+			EFR = {
+				has_country_flag = east_frisia_unrecognised
+			}
+		}
+		add_legitimacy = 5
+		add_prestige = 5
+	}
+}

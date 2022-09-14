@@ -1,0 +1,1546 @@
+###########################################################
+# Events for the Cossack Estate
+#
+# written by Henrik Lohmander
+###########################################################
+
+namespace = cossack_estate_events
+
+#Colonisation of the Steppes
+#Cossacks vs Nobles
+country_event = {
+	id = cossack_estate_events.1
+	title = cossack_estate_events.1.t
+	desc = cossack_estate_events.1.d
+	picture = COSSACK_ESTATE_eventPicture
+	
+	trigger = {
+		has_estate = estate_cossacks
+		any_owned_province = {
+			has_terrain = steppe
+		}
+		estate_influence = {
+			estate = estate_nobles
+			influence = 50
+		}
+		estate_influence = {
+			estate = estate_cossacks
+			influence = 25
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_SERFS_HUNTED
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_SERFS_TO_COSSACKS
+			}
+		}
+		any_owned_province = {
+			base_production = 2
+			OR = {
+				has_terrain = steppe
+				any_neighbor_province = {
+					owned_by = ROOT
+					has_terrain = steppe
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = colonization_of_the_steppes_flag
+			random_owned_province = {
+				limit = {
+					OR = {
+						has_terrain = steppe
+						any_neighbor_province = {
+							owned_by = ROOT
+							has_terrain = steppe
+						}
+					}
+					is_city = yes
+				}
+				set_province_flag = serfs_are_fleeing
+			}
+			random_owned_province = {
+				limit = {
+					has_terrain = steppe
+				}
+				set_province_flag = serfs_are_arriving
+			}
+		}
+	}
+	
+	option = {
+		name = cossack_estate_events.1.a #These Serfs must be brought back.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_nobles
+					influence = 60
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_SERFS_HUNTED
+			influence = -10
+			duration = 3650
+		}
+		add_estate_influence_modifier = {
+			estate = estate_nobles
+			desc = EST_VAL_SERFS_BROUGHT_BACK
+			influence = 10
+			duration = 3650
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = serfs_are_fleeing
+			}
+			add_base_production = 1
+			clr_province_flag = serfs_are_fleeing
+		}
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_province_flag = serfs_are_arriving
+				}
+				clr_province_flag = serfs_are_arriving
+			}
+		}
+	}
+	option = {
+		name = cossack_estate_events.1.b #We cannot afford to anger the Cossacks.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.2
+				NOT = {
+					estate_loyalty = {
+						estate = estate_nobles
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_nobles
+					influence = 60
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_SERFS_TO_COSSACKS
+			influence = 10
+			duration = 3650
+		}
+		add_estate_influence_modifier = {
+			estate = estate_nobles
+			desc = EST_VAL_SERFS_DEFECTING
+			influence = -10
+			duration = 3650
+		}
+		random_owned_province = {
+			limit = {
+				has_province_flag = serfs_are_arriving
+			}
+			add_base_manpower = 1
+			clr_province_flag = serfs_are_arriving
+		}
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_province_flag = serfs_are_fleeing
+				}
+				clr_province_flag = serfs_are_fleeing
+			}
+		}
+	}
+}
+
+#Cossack Aggression
+#This event will periodically lower development in the Steppe border zone.
+country_event = {
+	id = cossack_estate_events.2
+	title = cossack_estate_events.2.t
+	desc = {
+		trigger = { 
+			has_estate = estate_burghers
+			has_estate = estate_nobles
+		}
+		desc = cossack_estate_events.2.d
+	}
+	desc = {
+		trigger = {
+			has_estate = estate_nomadic_tribes
+		}
+		desc = cossack_estate_events.2.d.tribes
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				OR = {
+					AND = {
+						has_estate = estate_burghers
+						has_estate = estate_nobles
+					}
+					has_estate = estate_nomadic_tribes
+				}
+			}
+		}
+		desc = cossack_estate_events.2.d.fallback
+	}
+	picture = COSSACK_ESTATE_RAIDERS_eventPicture
+	
+	trigger = {
+		has_dlc = "The Cossacks"
+		num_of_cities = 6
+		NOT = { has_reform = cossacks_reform }
+		OR = {
+			AND = {
+				has_estate = estate_burghers
+				has_estate = estate_nobles
+			}
+			has_estate = estate_nomadic_tribes
+		}
+		any_owned_province = {
+			base_tax = 2
+			NOT = { region = scandinavia_region }
+			NOT = { region = baltic_region }
+			NOT = { region = east_siberia_region }
+			NOT = { region = west_siberia_region }
+			NOT = { superregion = europe_superregion }
+			has_terrain = steppe
+			any_neighbor_province = {
+				NOT = { owned_by = ROOT }
+				is_city = yes
+				owner = {
+					NOT = { war_with = ROOT }
+					estate_influence = {
+						estate = estate_cossacks
+						influence = 15
+					}
+					OR = {
+						is_rival = root
+						ai_attitude = {
+							who = root
+							attitude = attitude_disloyal
+						}
+						ai_attitude = {
+							who = root
+							attitude = attitude_outraged
+						}
+						ai_attitude = {
+							who = root
+							attitude = attitude_rebellious
+						}
+						ai_attitude = {
+							who = root
+							attitude = attitude_hostile
+						}
+					}
+					NOT = {
+						has_estate_influence_modifier = {
+							estate = estate_cossacks
+							modifier = EST_VAL_COSSACK_AGGRESSIONS
+						}
+					}
+					NOT = {
+						has_estate_influence_modifier = {
+							estate = estate_cossacks
+							modifier = EST_VAL_STOPPED_COSSACK_AGGRESSIONS
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 500
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					base_tax = 2
+					NOT = { region = scandinavia_region }
+					NOT = { region = baltic_region }
+					NOT = { region = east_siberia_region }
+					NOT = { region = west_siberia_region }
+					NOT = { superregion = europe_superregion }
+					has_terrain = steppe
+					any_neighbor_province = {
+						NOT = { owned_by = ROOT }
+						is_city = yes
+						owner = {
+							NOT = { war_with = ROOT }
+							estate_influence = {
+								estate = estate_cossacks
+								influence = 15
+							}
+							OR = {
+								is_rival = root
+								ai_attitude = {
+									who = root
+									attitude = attitude_disloyal
+								}
+								ai_attitude = {
+									who = root
+									attitude = attitude_outraged
+								}
+								ai_attitude = {
+									who = root
+									attitude = attitude_rebellious
+								}
+								ai_attitude = {
+									who = root
+									attitude = attitude_hostile
+								}
+							}
+							NOT = {
+								has_estate_influence_modifier = {
+									estate = estate_cossacks
+									modifier = EST_VAL_COSSACK_AGGRESSIONS
+								}
+							}
+							NOT = {
+								has_estate_influence_modifier = {
+									estate = estate_cossacks
+									modifier = EST_VAL_STOPPED_COSSACK_AGGRESSIONS
+								}
+							}
+						}
+					}
+				}
+				random_neighbor_province = {
+					limit = {
+						NOT = { owned_by = ROOT }
+						is_city = yes
+						owner = {
+							NOT = { war_with = ROOT }
+							estate_influence = {
+								estate = estate_cossacks
+								influence = 15
+							}
+							OR = {
+								is_rival = root
+								ai_attitude = {
+									who = root
+									attitude = attitude_disloyal
+								}
+								ai_attitude = {
+									who = root
+									attitude = attitude_outraged
+								}
+								ai_attitude = {
+									who = root
+									attitude = attitude_rebellious
+								}
+								ai_attitude = {
+									who = root
+									attitude = attitude_hostile
+								}
+							}
+							NOT = {
+								has_estate_influence_modifier = {
+									estate = estate_cossacks
+									modifier = EST_VAL_COSSACK_AGGRESSIONS
+								}
+							}
+							NOT = {
+								has_estate_influence_modifier = {
+									estate = estate_cossacks
+									modifier = EST_VAL_STOPPED_COSSACK_AGGRESSIONS
+								}
+							}
+						}
+					}
+					owner = { set_country_flag = cossack_raids_started_here }
+					owner = { save_event_target_as = cossacks_here_target }
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = cossack_estate_events.2.a #Demand that the $ESTATE_COSSACKS$ be brought to Justice!
+		ai_chance = {
+			factor = 100
+		}
+		random_neighbor_country = {
+			limit = { has_country_flag = cossack_raids_started_here }
+			country_event  = { id = cossack_estate_events.3 }
+		}
+	}
+	option = {
+		name = cossack_estate_events.2.b #We will just have to let this slide.
+		ai_chance = {
+			factor = 0
+		}
+		if = {
+			limit = { has_estate = estate_burghers }
+			add_estate_loyalty = {
+				estate = estate_burghers
+				loyalty = -10
+			}
+		}
+		if = {
+			limit = { has_estate = estate_nobles }
+			add_estate_loyalty = {
+				estate = estate_nobles
+				loyalty = -10
+			}
+		}
+		if = {
+			limit = { has_estate = estate_nomadic_tribes }
+			add_estate_loyalty = {
+				estate = estate_nomadic_tribes
+				loyalty = -10
+			}
+		}
+		random_owned_province = {
+			limit = {
+				base_tax = 2
+				any_neighbor_province = {
+					owner = {
+						has_country_flag = cossack_raids_started_here
+					}
+				}
+			}
+			add_base_tax = -1
+			owner = {
+				clr_country_flag = cossack_raids_started_here
+			}
+			if = {
+				limit = {
+					owner = {
+						NOT = {
+							OR = {
+								AND = {
+									has_estate = estate_burghers
+									has_estate = estate_nobles
+								}
+								has_estate = estate_nomadic_tribes
+							}
+						}
+					}
+				}
+				add_unrest = 5
+			}
+		}
+	}
+}
+
+#Cossack Aggressor
+country_event = {
+	id = cossack_estate_events.3
+	title = cossack_estate_events.3.t
+	desc = cossack_estate_events.3.d
+	picture = COSSACK_ESTATE_RAIDERS_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = cossack_estate_events.3.a #This matter is beyond our control!
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				is_subject_of = from
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_COSSACK_AGGRESSIONS
+			influence = 10
+			duration = 5475
+		}
+		FROM = {
+			country_event  = { id = cossack_estate_events.4 }
+		}
+		add_opinion = { who = FROM modifier = cossack_raids_opinion }
+		tooltip = {
+			FROM = {
+				add_casus_belli = {
+				    target = ROOT
+				    type = cb_border_war
+				    months = 120
+				}
+			}
+		}
+	}
+	option = {
+		name = cossack_estate_events.3.b #Bring them to Justice!
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 2.0
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_STOPPED_COSSACK_AGGRESSIONS
+			influence = -10
+			duration = 5475
+		}
+		FROM  = {
+			country_event  = { id = cossack_estate_events.5 }
+		}
+	}
+}
+
+#The [From.GetAdjective] Response
+country_event = {
+	id = cossack_estate_events.4
+	title = cossack_estate_events.4.t
+	desc = cossack_estate_events.4.d
+	picture = COSSACK_ESTATE_RAIDERS_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = cossack_estate_events.4.a #We care little for such excuses.
+		add_opinion = { who = FROM modifier = cossack_raids_opinion }
+		random_owned_province = {
+			limit = {
+				base_tax = 2
+				any_neighbor_province = {
+					owned_by = FROM
+				}
+			}
+			add_base_tax = -1
+		}
+		add_casus_belli = {
+		   target = FROM
+		   type = cb_border_war
+		   months = 120
+		}
+		FROM = {
+			clr_country_flag = cossack_raids_started_here
+		}
+	}
+}
+
+#The [From.GetAdjective] Response
+country_event = {
+	id = cossack_estate_events.5
+	title = cossack_estate_events.5.t
+	desc = cossack_estate_events.5.d
+	picture = COSSACK_ESTATE_RAIDERS_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = cossack_estate_events.5.a #If we could only believe that.
+		add_prestige = 5
+		FROM = {
+			clr_country_flag = cossack_raids_started_here
+		}
+	}
+}
+
+#Advancement of the Cossacks
+country_event = {
+	id = cossack_estate_events.6
+	title = cossack_estate_events.6.t
+	desc = cossack_estate_events.6.d
+	picture = COSSACK_ESTATE_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_estate = estate_cossacks
+		any_owned_province = {
+			has_terrain = steppe
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACKS_ADVANCES
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACKS_ADVANCES_20
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACKS_DECLINES
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+
+	option = {
+		name = cossack_estate_events.6.a #Ok
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_COSSACKS_ADVANCES
+			influence = 10
+			duration = 5475
+		}
+	}
+}
+
+#Decline of Cossack Power
+country_event = {
+	id = cossack_estate_events.7
+	title = cossack_estate_events.7.t
+	desc = cossack_estate_events.7.d
+	picture = COSSACK_ESTATE_eventPicture
+	
+	trigger = {
+		has_estate = estate_cossacks
+		any_owned_province = {
+			has_terrain = steppe
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACKS_ADVANCES
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACKS_ADVANCES_20
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACKS_DECLINES
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = cossack_estate_events.7.a #Ok
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_COSSACKS_DECLINES
+			influence = -10
+			duration = 5475
+		}
+	}
+}
+
+#Petition for Recognition/Privileges
+#More Registered Cossacks
+country_event = {
+	id = cossack_estate_events.8
+	title = cossack_estate_events.8.t
+	desc = cossack_estate_events.8.d
+	picture = COSSACK_ESTATE_eventPicture
+	
+	trigger = {
+		has_estate = estate_cossacks
+		any_owned_province = {
+			has_terrain = steppe
+			is_territory = no
+		}
+		estate_territory = { 
+			estate = estate_cossacks
+			territory = 1
+		}
+		NOT = { manpower_percentage = 0.95 }
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACK_PRIVILEGES
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_DENIED_COSSACK_PRIVILEGES
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = cossack_estate_events.8.a #We need more registered Cossacks!
+		add_yearly_manpower = 1
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_COSSACK_PRIVILEGES
+			influence = 10
+			duration = 5475
+		}
+	}
+	option = {
+		name = cossack_estate_events.8.b #Let them tend to their Steppes.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_DENIED_COSSACK_PRIVILEGES
+			influence = -10
+			duration = 5475
+		}
+	}
+}
+
+#Greater Integration of Cossack Units
+country_event = {
+	id = cossack_estate_events.9
+	title = cossack_estate_events.9.t
+	desc = cossack_estate_events.9.d
+	picture = COSSACK_ESTATE_eventPicture
+	
+	trigger = {
+		has_estate = estate_cossacks
+		any_owned_province = {
+			has_terrain = steppe
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_SUPPLIED_COSSACKS
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACKS_FENDING_FOR_THEMSELVES
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = cossack_estate_events.9.a #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+		}
+		add_years_of_income = -0.25
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_SUPPLIED_COSSACKS
+			influence = 10
+			duration = 5475
+		}
+	}
+	option = {
+		name = cossack_estate_events.9.b #
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_COSSACKS_FENDING_FOR_THEMSELVES
+			influence = -10
+			duration = 5475
+		}
+	}
+}
+
+#Cossack Raiders
+country_event = {
+	id = cossack_estate_events.10
+	title = cossack_estate_events.10.t
+	desc = cossack_estate_events.10.d
+	picture = COSSACK_ESTATE_RAIDERS_eventPicture
+	
+	trigger = {
+		has_estate = estate_cossacks
+		has_estate = estate_burghers
+		any_owned_province = {
+			has_terrain = steppe
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_SUPPORTED_COSSACKS
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_SUPPORTED_BURGHERS_VS_COSSACKS
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = cossack_estate_events.10.a #Support the $ESTATE_COSSACKS$.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_burghers
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = 15
+		}
+		add_estate_loyalty = {
+			estate = estate_burghers
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_SUPPORTED_COSSACKS
+			influence = 10
+			duration = 5475
+		}
+		add_estate_influence_modifier = {
+			estate = estate_burghers
+			desc = EST_VAL_SUPPORTED_COSSACKS
+			influence = -10
+			duration = 5475
+		}
+	}
+	option = {
+		name = cossack_estate_events.10.b #Supports the $ESTATE_BURGHERS$.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_burghers
+					influence = 60
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = -15
+		}
+		add_estate_loyalty = {
+			estate = estate_burghers
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_SUPPORTED_BURGHERS_VS_COSSACKS
+			influence = -10
+			duration = 5475
+		}
+		add_estate_influence_modifier = {
+			estate = estate_burghers
+			desc = EST_VAL_SUPPORTED_BURGHERS_VS_COSSACKS
+			influence = 10
+			duration = 5475
+		}
+	}
+}
+
+#The Settling of Siberia
+country_event = {
+	id = cossack_estate_events.11
+	title = cossack_estate_events.11.t
+	desc = cossack_estate_events.11.d
+	picture = COSSACK_ESTATE_eventPicture
+	
+	trigger = {
+		has_estate = estate_cossacks
+		num_of_colonists = 1
+		any_owned_province = {
+			OR = {
+				region = central_asia_region
+				region = west_siberia_region
+				region = east_siberia_region
+			}
+			has_terrain = steppe
+			is_territory = no
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACK_SETTLERS
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_NO_COSSACK_SETTLERS
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_terrain = steppe
+					OR = {
+						region = west_siberia_region
+						region = east_siberia_region
+						region = central_asia_region
+					}
+					is_territory = no
+				}
+				save_event_target_as = cossack_settlers_province
+			}
+		}
+	}
+	
+	option = {
+		name = cossack_estate_events.11.a #Enlist $ESTATE_COSSACKS$ Settlers.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+		}
+		add_country_modifier = {
+			name = "cossack_settlers"
+			duration = 5475
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = 15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_COSSACK_SETTLERS
+			influence = 10
+			duration = 5475
+		}
+	}
+	option = {
+		name = cossack_estate_events.11.b #We cannot trust the $ESTATE_COSSACKS$.
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0.5
+				NOT = {
+					estate_loyalty = {
+						estate = estate_cossacks
+						loyalty = 40
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = -15
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_NO_COSSACK_SETTLERS
+			influence = -10
+			duration = 5475
+		}
+	}
+}
+
+#Disloyal Cossacks
+country_event = {
+	id = cossack_estate_events.12
+	title = cossack_estate_events.12.t
+	desc = cossack_estate_events.12.d
+	picture = COSSACK_ESTATE_UPSET_eventPicture
+	
+	trigger = {
+		has_estate = estate_cossacks
+		any_owned_province = {
+			has_terrain = steppe
+			is_territory = no
+			is_capital = no
+			is_city = yes
+		}
+		estate_territory = { 
+			estate = estate_cossacks
+			territory = 1
+		}
+		NOT = {
+			estate_loyalty = {
+				estate = estate_cossacks
+				loyalty = 30
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACK_INDEPENDENCE
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_COSSACK_UPRISING
+			}
+		}
+		estate_territory = { 
+			estate = estate_cossacks
+			territory = 10
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			while = {
+				limit = {
+					NOT = { 
+						development_in_provinces = {
+							has_province_flag = cossack_revolt
+							value = estate
+							estate = estate_cossacks
+						}
+					}
+					any_owned_province = {
+						has_terrain = steppe
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = cossack_revolt }
+					}
+					check_reducing_estate_revolt_size_trigger = {
+						FLAG = cossack_revolt
+					}
+				}
+				random_owned_province = {
+					limit = {
+						has_terrain = steppe
+						is_capital = no
+						is_city = yes
+						NOT = { has_province_flag = cossack_revolt }
+					}
+					set_province_flag = cossack_revolt
+				}
+			}
+		}
+	}
+	after = {
+		every_owned_province = {
+			limit = {
+				has_province_flag = cossack_revolt
+			}
+			clr_province_flag = cossack_revolt
+		}
+	}
+
+	option = {
+		name = cossack_estate_events.12.a #
+		ai_chance = {
+			factor = 75
+			modifier = {
+				factor = 0.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 60
+				}
+			}
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_COSSACK_INDEPENDENCE
+			influence = 10
+			duration = 7300
+		}
+		if = {
+			limit = {
+				NOT = {
+					estate_territory = { 
+						estate = estate_cossacks
+						territory = 10
+					}
+				}
+			}
+			custom_tooltip = every_steppe_province_gains_10_autonomy
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						has_terrain = steppe
+					}
+					add_local_autonomy = 10
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				estate_territory = { 
+					estate = estate_cossacks
+					territory = 10
+				}
+				NOT = {
+					estate_territory = { 
+						estate = estate_cossacks
+						territory = 20
+					}
+				}
+			}
+			custom_tooltip = every_steppe_province_gains_20_autonomy
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						has_terrain = steppe
+					}
+					add_local_autonomy = 20
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				estate_territory = { 
+					estate = estate_cossacks
+					territory = 20
+				}
+			}
+			custom_tooltip = every_steppe_province_gains_33_autonomy
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						has_terrain = steppe
+					}
+					add_local_autonomy = 33
+				}
+			}
+		}
+	}
+	option = {
+		name = cossack_estate_events.12.b #
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 1.5
+				estate_influence = {
+					estate = estate_cossacks
+					influence = 70
+				}
+			}
+			modifier = {
+				factor = 0
+				NOT = { manpower_percentage = 0.8 }
+			}
+			modifier = {
+				factor = 0
+				is_at_war = yes
+			}
+			modifier = {
+				factor = 0
+				war_exhaustion = 1
+			}
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_COSSACK_UPRISING
+			influence = -15
+			duration = 7300
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = cossack_revolt
+			}
+			spawn_rebels = {
+				type = anti_tax_rebels
+				size = 1
+			}
+		}
+	}
+}
+
+#Expansion of Cossack Influence
+country_event = {
+	id = cossack_estate_events.13
+	title = cossack_estate_events.13.t
+	desc = cossack_estate_events.13.d
+	picture = COSSACK_ESTATE_eventPicture
+	
+	trigger = {
+		has_estate = estate_cossacks
+		any_owned_province = {
+			has_terrain = steppe
+			is_capital = no
+			is_overseas = no
+			is_territory = no
+			is_city = yes
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_terrain = steppe
+					is_capital = no
+					is_overseas = no
+					is_territory = no
+					is_city = yes
+				}
+				save_event_target_as = growing_cossack_communities
+			}
+		}
+	}
+	
+	option = {
+		name = cossack_estate_events.13.a #
+		event_target:growing_cossack_communities = {
+			add_base_manpower = 1
+		}
+		give_estate_land_share_small = { estate = estate_cossacks }
+	}
+	option = {
+		name = cossack_estate_events.13.b #
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = -15
+		}
+		event_target:growing_cossack_communities = {
+			random_list =  {
+				25 = {
+					spawn_rebels = {
+						size = 1
+						type = anti_tax_rebels
+					}
+				}
+				75 = { }
+			}
+		}
+	}
+}
+
+#Extend Cossack Privileges
+#Demands at high influence
+country_event = {
+	id = cossack_estate_events.14
+	title = cossack_estate_events.14.t
+	desc = cossack_estate_events.14.d
+	picture = COSSACK_ESTATE_UPSET_eventPicture
+	
+	trigger = {
+		has_estate = estate_cossacks
+		any_owned_province = {
+			has_terrain = steppe
+		}
+		estate_influence = {
+			estate = estate_cossacks
+			influence = 70
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_EXTENDED_COSSACK_PRIVILEGES
+			}
+		}
+		NOT = {
+			has_estate_influence_modifier = {
+				estate = estate_cossacks
+				modifier = EST_VAL_NO_EXTENDED_COSSACK_PRIVILEGES
+			}
+		}
+	}
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	option = {
+		name = cossack_estate_events.14.a #Preposterous.
+		ai_chance = {
+			factor = 1
+		}
+		add_estate_loyalty = {
+			estate = estate_cossacks
+			loyalty = -25
+		}
+		add_stability = -1
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_NO_EXTENDED_COSSACK_PRIVILEGES
+			influence = -10
+			duration = 3650
+		}
+	}
+	option = {
+		name = cossack_estate_events.14.b #Give in to their demands.
+		ai_chance = {
+			factor = 0
+		}
+		add_estate_influence_modifier = {
+			estate = estate_cossacks
+			desc = EST_VAL_EXTENDED_COSSACK_PRIVILEGES
+			influence = 10
+			duration = 7300
+		}
+		add_estate_loyalty = {
+			estate = estate_burghers
+			loyalty = -20
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = -20
+		}
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -20
+		}
+	}
+}
+
+#Local Revolt
+province_event = {
+	id = cossack_estate_events.15
+	title = cossack_estate_events.15.t
+	desc = cossack_estate_events.15.d
+	picture = COSSACK_ESTATE_UPSET_eventPicture
+	
+	is_triggered_only = yes
+
+	option = {
+		name = cossack_estate_events.15.a #Ok.
+		
+	}
+}

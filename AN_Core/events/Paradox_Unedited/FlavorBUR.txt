@@ -1,0 +1,1138 @@
+#1559.5.12 - New bishoprics in the Lowlands create an outrage
+#1565.1.1 - Letters of Segovia, Philip I orders the harsh persecution of Calvinists
+#1566.4.5 - 'Eedverbond der Edelen', Margaretha of Parma promises leniency
+#1567.9.10 - Counts of Egmont & Hoorne arrested
+#1569.1.1 - The Duke of Alba reforms the taxation system ('tiende penning')
+#1570.1.1 - The Duke of Alba reforms the penal system, 'Blood Council' (Bloedraad) established
+
+
+namespace = flavor_bur
+normal_or_historical_nations = yes
+
+
+
+### Dutch Revolt ###
+
+# This is now the on_start event for dutch revolt disaster
+# PROVINCENAME Revolts!
+country_event = { # changed from province to country event
+	id = flavor_bur.8
+	title = "flavor_bur.EVTNAME8"
+	desc = "flavor_bur.EVTDESC8"
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+
+	immediate = {
+		set_global_flag = dutch_revolt
+		set_country_flag = dutch_revolt_target # used in incident
+	}
+	
+	option = {
+		name = "flavor_bur.EVTOPTA8"
+		
+		add_stability = -2
+		random_owned_province = {
+			limit = {
+				region = low_countries_region
+				OR = {
+					culture = dutch
+					culture = frisian
+					culture = flemish
+				}
+			}
+			spawn_rebels = {
+				type = nationalist_rebels
+				size = 3
+				friend = NED
+			}
+			set_province_flag = ned_rebels_start_flag
+		}
+		random_owned_province = {
+			limit = {
+				NOT = { has_province_flag = ned_rebels_start_flag }
+				region = low_countries_region
+				OR = {
+					culture = dutch
+					culture = frisian
+					culture = flemish
+				}
+			}
+			spawn_rebels = {
+				type = nationalist_rebels
+				size = 3
+				friend = NED
+			}
+			set_province_flag = ned_rebels_start_flag
+			set_province_flag = dutch_revolt
+		}
+		custom_tooltip = dutch_revolt_tt
+		hidden_effect = {
+			low_countries_region = {
+				limit = {
+					owned_by = ROOT
+					OR = {
+						culture = dutch
+						culture = frisian
+						culture = flemish
+						NOT = { religion = ROOT }
+					}
+				}
+				add_province_modifier = {
+					name = "dutch_revolt_modifier"
+					duration = -1 # removed via the on_end event
+				}
+			}
+		}
+	}
+}
+
+# Random rebels event for disaster
+# PROVINCENAME Revolts!
+country_event = {
+	id = flavor_bur.9
+	title = "flavor_bur.EVTNAME9"
+	desc = "flavor_bur.EVTDESC9"
+	picture = ANGRY_MOB_eventPicture
+	
+	is_triggered_only = yes
+
+	trigger = {
+		any_owned_province = {
+			region = low_countries_region
+			NOT = { controlled_by = REB }
+			NOT = { has_province_flag = dutch_revolt }
+			NOT = { has_province_flag = no_dutch_revolt }
+			OR = {
+				culture = frisian
+				culture = dutch
+				culture = flemish
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					region = low_countries_region
+					NOT = { controlled_by = REB }
+					NOT = { has_province_flag = dutch_revolt }
+					NOT = { has_province_flag = no_dutch_revolt }
+					OR = {
+						culture = frisian
+						culture = dutch
+						culture = flemish
+					}
+				}
+				save_event_target_as = dutch_rebels_target
+			}
+		}
+	}
+
+	option = {
+		name = "flavor_bur.EVTOPTA9"
+		ai_chance = { factor = 100 }
+		event_target:dutch_rebels_target = {
+			set_province_flag = dutch_revolt
+			spawn_rebels = {
+				type = nationalist_rebels
+				size = 1
+				friend = NED
+			}
+		}
+	}
+	option = {
+		name = "flavor_bur.EVTOPTB9"
+		ai_chance = { factor = 0 }
+		event_target:dutch_rebels_target = {
+			add_local_autonomy = 100
+			set_province_flag = no_dutch_revolt
+		}
+	}
+}
+
+# Netherlands Declare Independence!
+# ends the disaster by virtue of NED existing
+country_event = {
+	id = flavor_bur.10
+	title = "flavor_bur.EVTNAME10"
+	desc = "flavor_bur.EVTDESC10"
+	picture = ANGRY_MOB_eventPicture
+
+	major = yes
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	trigger = {
+		NOT = { exists = NED }
+		is_free_or_tributary_trigger = yes
+		num_of_owned_provinces_with = {
+			value = 5
+			OR = {
+				controlled_by = REB
+				local_autonomy = 90
+			}
+			OR = {
+				culture = dutch
+				culture = flemish
+				culture = frisian
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					region = low_countries_region
+					OR = {
+						culture = dutch
+						culture = flemish
+						culture = frisian
+						is_core = NED
+					}
+					is_capital = no
+				}
+				discover_country = NED
+				add_core = NED
+				clear_rebels = yes
+			}
+			release = NED
+			NED = {
+				change_government = republic
+				add_government_reform = dutch_republic
+			}
+			every_owned_province = {
+				limit = {
+					region = low_countries_region
+				}
+				add_claim = NED
+			}
+		}
+	}
+	
+	option = {
+		name = "flavor_bur.EVTOPTA10"
+		NED = {
+			declare_war_with_cb = {
+				who = ROOT
+				casus_belli = cb_independence_war
+			}
+		}
+		hidden_effect = {
+			NED = {
+				country_event = { id = flavor_bur.11 days = 1 }
+			}
+			every_country = {
+				limit = {
+					NOT = { tag = ROOT }
+					NOT = { tag = NED }
+					any_owned_province = {
+						region = low_countries_region
+					}
+				}
+				country_event = { id = flavor_bur.12 days = 10 }
+			}
+			# Send messages to rivals allowing them to join
+			if = {
+				limit = {
+					NED = { is_part_of_hre = yes }
+					has_dlc = "Emperor"
+				}
+				every_enemy_country = {
+					limit = {
+						is_emperor = no
+					}
+					country_event = { id = flavor_bur.20 days = 1 }
+				}
+			}
+			else = {
+				every_enemy_country = {
+					country_event = { id = flavor_bur.20 days = 1 }
+				}
+			}
+			# Begin incident
+			if = {
+				limit = {
+					is_emperor = no
+					NED = {
+						is_part_of_hre = yes
+					}
+					has_dlc = "Emperor"
+				}
+				set_imperial_incident = incident_dutch_revolt
+			}
+		}
+	}
+	
+	option = {
+		name = "flavor_bur.EVTOPTB10"
+		trigger = {
+			ai = no
+		}
+		NED = {
+			declare_war_with_cb = {
+				who = ROOT
+				casus_belli = cb_independence_war
+			}
+		}
+		hidden_effect = {
+			NED = {
+				country_event = { id = flavor_bur.11 days = 1 }
+				set_country_flag = swapped_to_dutch_republic
+			}
+			every_country = {
+				limit = {
+					NOT = { tag = ROOT }
+					NOT = { tag = NED }
+					any_owned_province = {
+						region = low_countries_region
+					}
+				}
+				country_event = { id = flavor_bur.12 days = 10 }
+			}
+			# Send messages to rivals allowing them to join
+			if = {
+				limit = {
+					NED = { is_part_of_hre = yes }
+					has_dlc = "Emperor"
+				}
+				every_enemy_country = {
+					limit = {
+						is_emperor = no
+					}
+					country_event = { id = flavor_bur.20 days = 1 }
+				}
+			}
+			else = {
+				every_enemy_country = {
+					country_event = { id = flavor_bur.20 days = 1 }
+				}
+			}
+			# Begin incident
+			if = {
+				limit = {
+					is_emperor = no
+					NED = {
+						is_part_of_hre = yes
+					}
+					has_dlc = "Emperor"
+				}
+				set_imperial_incident = incident_dutch_revolt
+			}
+		}
+		switch_tag = NED
+	}
+}
+
+# Dutch Mobilization
+country_event = {
+	id = flavor_bur.11
+	title = "flavor_bur.EVTNAME11"
+	desc = "flavor_bur.EVTDESC11"
+	picture = MILITARY_CAMP_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "EXCELLENT"
+		NED = {
+			capital_scope = {
+				build_to_forcelimit = {
+					infantry = 0.6
+					cavalry = 0.3
+					artillery = 0.1
+				}
+			}
+			random_owned_province = {
+				limit = {
+					has_port = yes
+				}
+				build_to_forcelimit = {
+					heavy_ship = 0.3
+					light_ship = 0.3
+					transport = 0.2
+				}
+			}
+			add_treasury = 500
+			create_general = {
+				tradition = 80
+			}
+		}
+	}
+}
+
+# Dutch Claims
+country_event = {
+	id = flavor_bur.12
+	title = "flavor_bur.EVTNAME12"
+	desc = "flavor_bur.EVTDESC12"
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "flavor_bur.EVTOPTA12"
+		every_owned_province = {
+			limit = {
+				region = low_countries_region
+			}
+			add_claim = NED
+		}
+	}
+}
+
+# Dutch state joins the Netherlands
+country_event = {
+	id = flavor_bur.16
+	title = "flavor_bur.EVTNAME16"
+	desc = "flavor_bur.EVTDESC16"
+	picture = DIPLOMACY_eventPicture
+	
+	major = yes
+	
+	trigger = {
+		ai = yes
+		was_player = no
+		NOT = { tag = NED }
+		NED = {
+			exists = yes
+			OR = {
+				AND = {
+					ai = yes
+					was_player = no
+				}
+				has_country_flag = swapped_to_dutch_republic
+			}
+			NOT = { truce_with = ROOT }
+			is_subject = no
+		}
+		is_free_or_tributary_trigger = yes
+		is_at_war = no
+		NOT = { num_of_cities = 5 }
+		any_owned_province = {
+			region = low_countries_region
+		}
+		OR = {
+			primary_culture = dutch
+			primary_culture = flemish
+			primary_culture = frisian
+		}
+		NOT = {
+			has_country_flag = state_joined_netherlands
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+	}
+	
+	option = {
+		name = "flavor_bur.EVTOPTA16"
+		NED = {
+			country_event = { id = flavor_bur.17 days = 1 }
+		}
+		set_country_flag = state_joined_netherlands
+	}
+}
+
+# Incorporated into the Netherlands
+country_event = {
+	id = flavor_bur.17
+	title = "flavor_bur.EVTNAME17"
+	desc = "flavor_bur.EVTDESC17"
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "flavor_bur.EVTOPTA17"
+		FROM = {
+			every_owned_province = {
+				add_core = NED
+			}
+		}
+		inherit = FROM
+		add_years_of_income = 3
+		add_yearly_manpower = 3
+		add_yearly_sailors = 3
+	}
+}
+
+# Dutch Nobility demands General Estates
+# This event will stop Burgundy from getting the disaster dependin on its choice
+country_event = {
+	id = flavor_bur.13
+	title = "flavor_bur.EVTNAME13"
+	desc = "flavor_bur.EVTDESC13"
+	picture = DIPLOMACY_eventPicture
+	
+	fire_only_once = yes
+	major = yes
+	
+	trigger = {
+		OR = {
+			tag = BUR
+			tag = LOT
+		}
+		is_at_war = no
+		NOT = { exists = NED }
+		current_age = age_of_reformation
+		NOT = { 
+			OR = {
+				primary_culture = dutch 
+				primary_culture = frisian 
+				primary_culture = flemish
+			}
+		}
+		NOT = { has_global_flag = dutch_revolt }
+		num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+			value = 5
+			owner = {
+				OR = {
+					primary_culture = dutch 
+					primary_culture = frisian 
+					primary_culture = flemish
+				}
+			}
+		}	
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	immediate = {	
+		hidden_effect = {
+			if = {
+				limit = {
+					any_country = {
+						ai = no
+						OR = {
+							primary_culture = dutch 
+							primary_culture = frisian 
+							primary_culture = flemish
+						}
+						is_subject_of = ROOT
+					}
+				}
+				random_country = {
+					limit = {
+						ai = no
+						OR = {
+							primary_culture = dutch 
+							primary_culture = frisian 
+							primary_culture = flemish
+						}
+						is_subject_of = ROOT
+					}
+					save_event_target_as = dutch_unification_country
+				}
+			}
+			else = {
+				random_country = {
+					limit = {
+						OR = {
+							primary_culture = dutch 
+							primary_culture = frisian 
+							primary_culture = flemish
+						}
+						is_subject_of = ROOT
+					}
+					save_event_target_as = dutch_unification_country
+				}
+			}
+		}
+	}
+	
+	option = {		# No Concessions
+		name = "flavor_bur.EVTOPTA13"
+		ai_chance = {
+			factor = 25
+		}
+		low_countries_region = {
+			limit = {
+				owned_by = ROOT
+			}
+			add_unrest = 10
+		}
+		every_country = {
+			limit = {
+				OR = {
+					primary_culture = dutch 
+					primary_culture = frisian 
+					primary_culture = flemish
+				}
+				is_subject_of = ROOT
+			}
+			add_liberty_desire = 15
+		}
+		set_country_flag = harsh_dutch
+	}
+	option = { # Allow them to consolidate
+		name = "flavor_bur.EVTOPTB13"
+		ai_chance = {
+			factor = 75
+		}
+		set_country_flag = bur_dutch_integration
+		custom_tooltip = dutch_unification_tt
+		hidden_effect = {
+			low_countries_region = {
+				limit = {
+					owner = {
+						is_subject_of = ROOT
+						OR = {
+							primary_culture = dutch 
+							primary_culture = frisian 
+							primary_culture = flemish
+						}
+					}
+				}
+				cede_province = event_target:dutch_unification_country
+				add_core = NED
+			}
+		}
+		event_target:dutch_unification_country = {
+			change_tag = NED
+			hidden_effect = {
+				swap_non_generic_missions = yes
+				if = {
+					limit = {
+						has_custom_ideas = no
+						NOT = { has_idea_group = NED_ideas }
+					}
+					country_event = { id = ideagroups.1 } #Swap Ideas
+				}
+			}
+		}
+	}
+}
+
+# The Count of Charolais and the Edict of Blood
+country_event = {
+	id = flavor_bur.14
+	title = "flavor_bur.EVTNAME14"
+	desc = "flavor_bur.EVTDESC14"
+	picture = ANGRY_MOB_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = BUR
+		NOT = { exists = NED }
+		has_country_flag = harsh_dutch
+		owns = 1744
+		owns = 97		
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+	
+	option = {		# No Concessions
+		name = "flavor_bur.EVTOPTA14"
+		low_countries_region = {
+			limit = {
+				owned_by = BUR
+			}
+			add_unrest = 5
+		}		
+	}
+	option = {		# Don't introduce that Consumption Tax
+		name = "flavor_bur.EVTOPTB14"
+		add_legitimacy = -50
+		add_prestige = -100
+	}
+}
+
+# The Count of Maçon and the Union of Arras
+country_event = {
+	id = flavor_bur.15
+	title = "flavor_bur.EVTNAME15"
+	desc = "flavor_bur.EVTDESC15"
+	picture = DIPLOMACY_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = BUR
+		religion = catholic
+		has_country_flag = harsh_dutch
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+	
+	option = {		# Sign the Union of Arras
+		name = "flavor_bur.EVTOPTA15"
+		low_countries_region = { 
+			limit = {
+				owned_by = BUR
+				NOT= { religion = catholic }
+			}
+			add_unrest = 2
+			add_local_autonomy = 10
+		}
+		add_legitimacy = -50
+		add_prestige = -50
+	}
+	option = {		# No Concessions
+		name = "flavor_bur.EVTOPTB15"
+		low_countries_region = {
+			limit = {
+				owned_by = BUR
+				NOT= { religion = catholic }
+			}		
+			add_unrest = 10
+		}		
+	}
+}
+
+# Netherland revolters call on the rivals of their enemy
+country_event = {
+	id = flavor_bur.20
+	title = "flavor_bur.EVTNAME20"
+	desc = "flavor_bur.EVTDESC20"
+	picture = BATTLE_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "flavor_bur.EVTOPTA20"
+		create_alliance = NED
+		join_all_offensive_wars_of = NED
+		set_ai_attitude = {
+			who = NED
+			attitude = attitude_friendly
+		}
+		NED = {
+			add_opinion = {
+				who = ROOT
+				modifier = supported_independence
+			}
+		}
+	}
+	option = {
+		name = "flavor_bur.EVTOPTB20"
+		add_prestige = -10
+	}
+}
+
+#BUR retains independence 
+country_event = {
+	id = flavor_bur.21
+	title = flavor_bur.21.t
+	desc = flavor_bur.21.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						has_female_heir = no
+						has_regency = yes
+					}
+				}
+				define_ruler = {
+					name = "Marie"
+					dynasty = "de Bourgogne"
+					culture = burgundian
+					age = 20
+					claim = 95
+					female = yes
+				}
+				if = {
+					limit = {
+						has_states_general_mechanic = yes
+					}
+					change_statists_vs_orangists = 1
+				}
+				if = {
+					limit = {
+						has_dlc = "Rights of Man" 
+					}
+					hidden_effect = { add_ruler_personality_ancestor = { key = kind_hearted } }
+				}
+			}
+		}
+	}
+
+	option = {
+		name = flavor_bur.21.a
+		ai_chance = {
+			factor = 100
+		}
+		every_subject_country = {
+			limit = {
+				capital_scope = {
+					OR = {
+						region = france_region 
+						culture_group = french
+						culture = dutch
+						culture = flemish
+						is_part_of_hre = yes
+					}
+				}
+			}
+			add_liberty_desire = 25
+		}
+	}
+
+	option = {
+		name = flavor_bur.21.b
+		ai_chance = {
+			factor = 0
+		}
+		every_subject_country = {
+			limit = {
+				ai = yes
+				capital_scope = {
+					OR = {
+						region = france_region 
+						culture_group = french
+						culture = dutch
+						culture = flemish
+						is_part_of_hre = yes
+					}
+				}
+			}
+			BUR = { free_vassal = PREV }
+			if = {
+				limit = {
+					government = monarchy
+					NOT = { has_reform = celestial_empire }
+				}
+				random = {
+					chance = 20
+					change_government = republic
+					add_government_reform = merchants_reform
+				}
+			}
+			if = {
+				limit = {
+					government = monarchy
+					NOT = { has_reform = celestial_empire }
+				}
+				random = {
+					chance = 20
+					change_government = republic
+					#set_legacy_government = administrative_republic
+				}
+			}
+		}
+	}
+}
+
+
+
+#################################################################
+### New Burgundy events by Pierre du Plessis                  ###
+#################################################################
+
+#new start in a more civilised tongue
+namespace = new_flavour_bur
+
+#The Feast of the Pheasant
+country_event = {
+	id = new_flavour_bur.1
+	title = new_flavour_bur.1.name
+	desc = new_flavour_bur.1.desc
+	picture = FEAST_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = new_flavour_bur.1.A
+
+		if = {
+			limit = {
+				NOT = {
+					has_casus_belli = {
+						type = cb_crusade
+						target = TUR
+					}
+				}
+			}
+			add_casus_belli = {
+				type = cb_crusade_pheasants
+				target = TUR
+				months = 60
+			}
+		}
+	}
+}
+
+#The Feast of the Pheasant (Burgundy version)
+country_event = {
+	id = new_flavour_bur.2
+	title = new_flavour_bur.1.name
+	desc = new_flavour_bur.1.desc
+	picture = FEAST_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = new_flavour_bur.2.A
+		custom_tooltip = emp_bur_feast_of_pheasants_event_effect_tooltip
+		
+		if = {
+			limit = {
+				NOT = {
+					has_casus_belli = {
+						type = cb_crusade
+						target = TUR
+					}
+				}
+			}
+			add_casus_belli = {
+				type = cb_crusade_pheasants
+				target = TUR
+				months = 60
+			}
+		}
+	}
+}
+
+#The Feast of the Pheasant (Ottoman version)
+country_event = {
+	id = new_flavour_bur.3
+	title = new_flavour_bur.3.name
+	desc = new_flavour_bur.3.desc
+	picture = FEAST_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = new_flavour_bur.3.A
+		custom_tooltip = emp_bur_feast_of_pheasants_event_effect_tooltip
+	}
+}
+
+#Lothair's Legacy
+country_event = {
+	id = new_flavour_bur.4
+	title = new_flavour_bur.4.name
+	desc = {
+		trigger = {
+			religion = catholic
+			is_excommunicated = no
+			exists = PAP
+			PAP = {
+				has_opinion = {
+					who = ROOT
+					value = -10
+				}
+			}
+		}
+		desc = new_flavour_bur.4.desc.pope
+	}
+	desc = {
+		trigger = {
+			OR = {
+				NOT = { religion = catholic }
+				is_excommunicated = yes
+				NOT = { exists = PAP }
+				NOT = {
+					PAP = {
+						has_opinion = {
+							who = ROOT
+							value = -10
+						}
+					}
+				}
+			}
+		}
+		desc = new_flavour_bur.4.desc.nopope
+	}
+	picture = GOOD_WITH_MONARCH_eventPicture
+	is_triggered_only = yes
+
+	major = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						NOT = { religion = catholic }
+						is_excommunicated = yes
+						NOT = { exists = PAP }
+						NOT = {
+							PAP = {
+								has_opinion = {
+									who = ROOT
+									value = -10
+								}
+							}
+						}
+					}
+				}
+				set_saved_name = {
+					key = bur_bishop_name
+					type = advisor
+				}
+			}
+		}
+	}
+
+	option = {
+		name = new_flavour_bur.4.A
+		change_tag = LOT
+		if = {
+			limit = {
+				NOT = {
+					government_rank = 2
+				}
+			}
+			set_government_rank = 2
+		}
+		add_prestige = 20
+		if = {
+			limit = {
+				has_custom_ideas = no
+			}
+			country_event = { id = ideagroups.1 } #Swap Ideas
+		}
+		swap_non_generic_missions = yes
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = { #nah
+		name = new_flavour_bur.4.B
+		add_prestige = 20
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	after = {
+		hidden_effect = { clear_saved_name = bur_bishop_name }
+	}
+}
+
+#The Court of [Ruler Name]
+country_event = {
+	id = new_flavour_bur.5
+	title = new_flavour_bur.5.name
+	desc = new_flavour_bur.5.desc
+	picture = FEAST_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = new_flavour_bur.5.A
+
+		add_country_modifier = {
+			name = bur_prestigious_duchy_mod
+			duration = -1
+		}
+	}
+}
+
+
+#The League of the Public Weal
+country_event = {
+	id = new_flavour_bur.6
+	title = new_flavour_bur.6.name
+	desc = new_flavour_bur.6.desc
+	picture = COURT_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = new_flavour_bur.6.A
+
+		tooltip = {
+			ile_de_france_area = {
+				limit = {
+					NOT = { is_core = from }
+					NOT = { is_permanent_claim = from }
+				}
+				add_permanent_claim = from
+			}
+			champagne_area = {
+				limit = {
+					NOT = { is_core = from }
+					NOT = { is_permanent_claim = from }
+				}
+				add_permanent_claim = from
+			}
+			orleans_area = {
+				limit = {
+					NOT = { is_core = from }
+					NOT = { is_permanent_claim = from }
+				}
+				add_permanent_claim = from
+			}
+			every_subject_country = {
+				limit = { capital_scope = { region = france_region } }
+				add_liberty_desire = 50
+			}
+		}
+
+		add_opinion = {
+			who = from
+			modifier = opinion_bur_rebellious_burgundy
+		}
+	}
+}
+
+
+
+#Burgundy is King of the Franks (tell France and the world)
+country_event = {
+	id = new_flavour_bur.7
+	title = new_flavour_bur.7.name
+	desc = new_flavour_bur.7.desc
+	picture = GOOD_WITH_MONARCH_eventPicture
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	major = yes
+
+	option = {
+		name = new_flavour_bur.7.A
+
+		from = { custom_tooltip = emp_bur_league_of_public_weal_effect_tooltip }
+
+		every_subject_country = {
+			limit = {
+				capital_scope = {
+					region = france_region
+				}
+			}
+			set_country_flag = FRA_vassal_to_be_given_to_BUR
+			custom_tooltip = THIS_vassalised_by_FROM
+		}
+		every_country = {
+			limit = { has_country_flag = FRA_vassal_to_be_given_to_BUR }
+			hidden_effect = {
+				clr_country_flag = FRA_vassal_to_be_given_to_BUR
+				ROOT = { free_vassal = prev }
+				FROM = { vassalize = prev }
+			}
+		}
+
+		hidden_effect = {
+			if = {
+				limit = {
+					has_opinion_modifier = {
+						who = from
+						modifier = opinion_bur_rebellious_burgundy
+					}
+				}
+				remove_opinion = {
+					who = from
+					modifier = opinion_bur_rebellious_burgundy
+				}
+			}
+		}
+		add_opinion = {
+			who = from
+			modifier = opinion_bur_usurpers_of_france
+		}
+	}
+}

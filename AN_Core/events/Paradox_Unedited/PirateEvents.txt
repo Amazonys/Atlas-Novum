@@ -1,0 +1,1349 @@
+# Pirate events by Daniel Tolman
+
+namespace = pirates
+
+# Pirate elections
+country_event = {
+	id = pirates.1
+	title = "pirates.1.t"
+	picture = BUCCANEERS_eventPicture
+	desc = {
+		trigger = {
+			NOT = { has_country_flag = pirate_death_election }
+			NOT = { has_country_flag = pirate_mutineer_council }
+		}
+		desc = "pirates.1.desc"
+	}
+	desc = {
+		trigger = {
+			has_country_flag = pirate_death_election
+		}
+		desc = "pirates.1.desc2"
+	}
+	desc = {
+		trigger = {
+			has_country_flag = pirate_mutineer_council
+		}
+		desc = "pirates.1.desc3"
+	}
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_government_attribute = is_pirate_republic_reform
+		if = {
+			limit = {
+				has_country_flag = pirate_mutineer_council
+			}
+			republican_tradition = 50
+		}
+	}
+	option = { # Current ruler
+		name = "pirates.1.keep"
+		trigger = {
+			has_regency = no
+			NOT = { has_country_flag = pirate_death_election }
+		}
+		ai_chance = { 
+			factor = 60
+			modifier = {
+				factor = 0
+				NOT = { republican_tradition = 25 }
+			}	
+			modifier = {
+				factor = 0.5
+				NOT = { republican_tradition = 50 }
+			}				
+			modifier = {
+				factor = 0.5
+				NOT = { republican_tradition = 75 }
+			}	
+			modifier = {
+				factor = 2.0
+				republican_tradition = 90
+			}		
+		}
+		custom_tooltip = remains_ruler
+		if = {
+			limit = {
+				OR = {
+					ruler_has_personality = legendary_pirate_personality
+					has_ruler_flag = historical_pirate
+				}
+			}
+			custom_tooltip = historical_pirate_tooltip
+		}
+		if = {
+			limit = { has_government_attribute = reelection_increases_absolutism }
+			tooltip = {
+				add_absolutism = 10
+			}
+			custom_tooltip = ADD_ABSOLUTISM_BASED_ON_ELECTION_TERM
+			hidden_effect = {
+				for_variable_amount = {
+					variable = election_term
+					effect = "
+						add_absolutism = 10
+					"
+				}
+			}
+			hidden_effect = {
+				change_variable = {
+					which = election_term
+					value = 1
+				}
+			}
+		}
+		change_adm = 1
+		change_dip = 1
+		change_mil = 1
+		if = {
+			limit = {
+				NOT = { has_ruler_flag = historical_pirate }
+				NOT = { ruler_has_personality = legendary_pirate_personality }
+			}
+			if = {
+				limit = {
+					has_country_flag = increased_election_cost
+				}
+				add_scaled_republican_tradition = -15
+				clr_country_flag = increased_election_cost
+			}
+			else = {
+				add_scaled_republican_tradition = -10
+			}
+		}
+		if = {
+			limit = {
+				faction_in_power = pr_buccaneers 
+			}
+			add_faction_influence = {
+				faction = pr_buccaneers
+				influence = -10
+			}	
+		}
+		random_list = {
+			10 = {
+				add_adm_power = 50
+			}
+			10 = {
+				add_dip_power = 50
+			}
+			10 = {
+				add_mil_power = 50
+			}
+		}
+		add_karma = -5
+	}
+	option = { # Buccaneer candidate
+		name = "pirates.1.a"
+		ai_chance = { factor = 20 }
+		if = {
+			limit = { has_active_policy = mandatory_service }
+			define_ruler = {
+				mil = 1
+				adm = 4
+				dip = 1
+				random_gender = yes # Allows random gender for republics
+			}
+		}
+		else = {
+			define_ruler = {
+				mil = 1
+				adm = 4
+				dip = 1					
+			}
+		}
+		if = {
+			limit = { has_government_attribute = elections_increase_factions_influence }
+			add_influence_to_adm_faction = {
+				influence = 20
+			}
+		}
+		add_karma = 10
+	}
+	option = { # Smugglers candidate
+		name = "pirates.1.b"
+		ai_chance = { factor = 20 }
+		if = {
+			limit = { has_active_policy = mandatory_service }
+			define_ruler = {
+				dip = 4
+				adm = 1
+				mil = 1					
+				random_gender = yes # Allows random gender for republics
+			}
+		}
+		else = {
+			define_ruler = {
+				dip = 4
+				adm = 1
+				mil = 1					
+			}
+		}
+		if = {
+			limit = { has_government_attribute = elections_increase_factions_influence }
+			add_influence_to_dip_faction = {
+				influence = 20
+			}
+		}
+		add_karma = 10
+	}
+	option = { # Captains candidate
+		name = "pirates.1.c"
+		ai_chance = { factor = 20 }
+		if = {
+			limit = { has_active_policy = mandatory_service }
+			define_ruler = {
+				mil = 4
+				adm = 1
+				dip = 1					
+				random_gender = yes # Allows random gender for republics
+			}
+		}
+		else = {
+			define_ruler = {
+				mil = 4
+				adm = 1
+				dip = 1					
+			}
+		}
+		if = {
+			limit = { has_government_attribute = elections_increase_factions_influence }
+			add_influence_to_mil_faction = {
+				influence = 20
+			}
+		}
+		add_karma = 10
+	}
+	option = { # Blackbeard!
+		name = "pirates.1.d"
+		ai_chance = { factor = 1000 }
+		trigger = {
+			NOT = { has_global_flag = blackbeard_flag }
+			is_year = 1700
+			NOT = { is_year = 1720 }
+			capital_scope = {
+				region = carribeans_region
+			}
+		}
+		define_ruler = {
+			name = "Edward 'Blackbeard' Teach"
+			adm = 3
+			dip = 3
+			mil = 6
+			culture = english
+		}
+		if = {
+			limit = {
+				has_or_building_flagship = no
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_flagship = {	
+					name = "Queen Anne's Revenge"
+					type = heavy_ship
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_named_ship = {
+					name = "Queen Anne's Revenge"
+					type = heavy_ship
+				}
+			}
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = blackbeard_flag
+	}
+	option = { # Calico Jack
+		name = "pirates.1.e"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = calico_jack }
+			is_year = 1702
+			NOT = { is_year = 1720 }
+			capital_scope = {
+				region = carribeans_region
+			}
+		}
+		define_ruler = {
+			name = "'Calico' Jack Rackham"
+			adm = 2
+			dip = 4
+			mil = 4
+			culture = english
+		}
+		if = {
+			limit = {
+				has_or_building_flagship = no
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_flagship = {	
+					name = "Kingston"
+					type = heavy_ship
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_named_ship = {
+					name = "Kingston"
+					type = heavy_ship
+				}
+			}
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = calico_jack
+	}
+	option = { # Anne Bonny
+		name = "pirates.1.f"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = anne_bonny }
+			is_year = 1716
+			NOT = { is_year = 1782 }
+			capital_scope = {
+				region = carribeans_region
+			}
+		}
+		define_ruler = {
+			name = "Anne Bonny"
+			adm = 4
+			dip = 2
+			mil = 5
+			culture = irish
+			female = yes
+		}
+		if = {
+			limit = {
+				has_or_building_flagship = no
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_flagship = {	
+					name = "William"
+					type = heavy_ship
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_named_ship = {
+					name = "William"
+					type = heavy_ship
+				}
+			}
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = anne_bonny
+	}
+	option = { # Mary Read
+		name = "pirates.1.g"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = mary_read }
+			is_year = 1703
+			NOT = { is_year = 1721 }
+			capital_scope = {
+				region = carribeans_region
+			}
+		}
+		define_ruler = {
+			name = "Mary Read"
+			adm = 3
+			dip = 3
+			mil = 5
+			culture = english
+			female = yes
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = mary_read
+	}
+	option = { # Charles Vane
+		name = "pirates.1.h"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = charles_vane }
+			is_year = 1702
+			NOT = { is_year = 1720 }
+			capital_scope = {
+				region = carribeans_region
+			}
+		}
+		define_ruler = {
+			name = "Charles Vane"
+			adm = 2
+			dip = 3
+			mil = 5
+			culture = english
+		}
+		if = {
+			limit = {
+				has_or_building_flagship = no
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_flagship = {	
+					name = "Ranger"
+					type = heavy_ship
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_named_ship = {
+					name = "Ranger"
+					type = heavy_ship
+				}
+			}
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = charles_vane
+	}
+	option = { # Black Caesar
+		name = "pirates.1.i"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = black_caesar }
+			is_year = 1702
+			NOT = { is_year = 1720 }
+			capital_scope = {
+				region = carribeans_region
+			}
+		}
+		define_ruler = {
+			name = "Black Caesar"
+			adm = 4
+			dip = 3
+			mil = 5
+			culture = yorumba
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = black_caesar
+	}
+	option = { # Ching Shih
+		name = "pirates.1.j"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = ching_shih }
+			is_year = 1795
+			capital_scope = {
+				OR = {
+					superregion = east_indies_superregion
+					superregion = china_superregion
+					superregion = far_east_superregion
+				}
+			}
+		}
+		define_ruler = {
+			name = "Ching Shih"
+			adm = 5
+			dip = 5
+			mil = 6
+			culture = cantonese
+			female = yes
+		}
+		if = {
+			limit = {
+				has_or_building_flagship = no
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_flagship = {	
+					name = "Red Flag"
+					type = heavy_ship
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_named_ship = {
+					name = "Red Flag"
+					type = heavy_ship
+				}
+			}
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = ching_shih
+	}
+	option = { # Jack Ward
+		name = "pirates.1.k"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = jack_ward }
+			is_year = 1605
+			NOT = { is_year = 1610 }
+			capital_scope = {
+				region = maghreb_region
+			}
+		}
+		define_ruler = {
+			name = "Jack Ward"
+			adm = 3
+			dip = 3
+			mil = 5
+			culture = english
+		}
+		if = {
+			limit = {
+				has_or_building_flagship = no
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_flagship = {	
+					name = "Gift"
+					type = heavy_ship
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_named_ship = {
+					name = "Gift"
+					type = heavy_ship
+				}
+			}
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = jack_ward
+	}
+	option = { # Laurens de Graaf
+		name = "pirates.1.l"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = laurens_de_graaf }
+			is_year = 1682
+			NOT = { is_year = 1704 }
+			capital_scope = {
+				region = carribeans_region
+			}
+		}
+		define_ruler = {
+			name = "Laurens de Graaf"
+			adm = 2
+			dip = 4
+			mil = 5
+			culture = dutch
+		}
+		if = {
+			limit = {
+				has_or_building_flagship = no
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_flagship = {	
+					name = "Tigre"
+					type = heavy_ship
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_named_ship = {
+					name = "Tigre"
+					type = heavy_ship
+				}
+			}
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = laurens_de_graaf
+	}
+	option = { # Michel de Grammont
+		name = "pirates.1.m"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = michel_de_gramont }
+			is_year = 1670
+			NOT = { is_year = 1686 }
+			capital_scope = {
+				region = carribeans_region
+			}
+		}
+		define_ruler = {
+			name = "Michel de Grammont"
+			adm = 3
+			dip = 3
+			mil = 5
+			culture = cosmopolitan_french
+		}
+		if = {
+			limit = {
+				has_or_building_flagship = no
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_flagship = {	
+					name = "Hardi"
+					type = heavy_ship
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_named_ship = {
+					name = "Hardi"
+					type = heavy_ship
+				}
+			}
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = michel_de_gramont
+	}
+	option = { # Pieter Pietersen Heyn
+		name = "pirates.1.n"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = piet_hein }
+			is_year = 1607
+			NOT = { is_year = 1629 }
+			primary_culture = dutch
+		}
+		define_ruler = {
+			name = "Piet Heyn"
+			adm = 3
+			dip = 4
+			mil = 5
+			culture = dutch
+		}
+		if = {
+			limit = {
+				has_or_building_flagship = no
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_flagship = {	
+					name = "Hollandia"
+					type = heavy_ship
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				create_named_ship = {
+					name = "Hollandia"
+					type = heavy_ship
+				}
+			}
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = piet_hein
+	}
+	option = { # Grace O'Malley
+		name = "pirates.1.o"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = grace_omalley_flag }
+			NOT = { has_global_flag = wih_grainnenimhaille_flag }
+			is_year = 1530
+			NOT = { is_year = 1605 }
+			primary_culture = irish
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = grace_omalley_flag
+		country_event = { id = women_history_events.22 }
+	}
+	option = { # François l'Olonnais
+		name = "pirates.1.p"
+		ai_chance = { factor = 500 }
+		trigger = {
+			NOT = { has_global_flag = francois_olonnais }
+			is_year = 1650
+			NOT = { is_year = 1669 }
+			capital_scope = {
+				region = carribeans_region
+			}
+		}
+		define_ruler = {
+			name = "François l'Olonnais"
+			adm = 3
+			dip = 1
+			mil = 5
+			culture = cosmopolitan_french
+		}
+		custom_tooltip = historical_pirate_tooltip
+		set_ruler_flag = historical_pirate
+		add_ruler_personality = legendary_pirate_personality
+		set_global_flag = francois_olonnais
+	}
+	after = {
+		clr_country_flag = pirate_death_election
+		clr_country_flag = pirate_mutineer_council
+	}
+}
+
+###### Faction events ######
+
+# Sunken Treasure
+country_event = {
+	id = pirates.10
+	title = "pirates.10.t"
+	picture = FLAGSHIP_SUNK_eventPicture
+	desc = "pirates.10.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+		capital_scope = {
+			region = carribeans_region
+		}
+		if = {
+			limit = {
+				has_dlc = "El Dorado"
+			}
+			carribeans_region = {
+				recent_treasure_ship_passage = yes
+			}
+		}
+		any_country = {
+			capital_scope = {
+				continent = europe
+			}
+			any_subject_country = { # potosi or mexico
+				OR = {
+					owns_core_province = 852
+					owns_core_province = 795
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					capital_scope = {
+						continent = europe
+					}
+					any_subject_country = { # potosi or mexico
+						OR = {
+							owns_core_province = 852
+							owns_core_province = 795
+						}
+					}
+				}
+				save_event_target_as = sunken_ship_country
+			}
+		}
+	}
+	
+	option = {
+		name = "pirates.10.a"
+		add_faction_influence = {
+			faction = pr_captains
+			influence = 10
+		}
+	}
+	
+	option = {
+		name = "pirates.10.b"
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = 10
+		}
+		add_yearly_sailors = -5
+		random_list = {
+			10 = {
+				add_years_of_income = 2
+			}
+			90 = {
+				# nothing happens
+			}
+		}
+	}
+}
+		
+# Tyrant Captain
+country_event = {
+	id = pirates.11
+	title = "pirates.11.t"
+	picture = PIRATE_CAPTAINS_eventPicture
+	desc = "pirates.11.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = captain_name
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	option = { # mutiny!
+		name = "pirates.11.a"
+		add_stability = -1
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = 10
+			perform_readjustment = no #will be balanced by the below line
+		}
+		add_faction_influence = {
+			faction = pr_captains
+			influence = -10
+			perform_readjustment = no
+		}
+	}
+	option = { # the captain's word is law
+		name = "pirates.11.b"
+		add_scaled_republican_tradition = -10
+		add_faction_influence = {
+			faction = pr_captains
+			influence = 10
+			perform_readjustment = no #will be balanced by the below line
+		}
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = -10
+			perform_readjustment = no
+		}
+	}
+}
+
+# Division of Plunder
+country_event = {
+	id = pirates.12
+	title = "pirates.12.t"
+	picture = BUCCANEERS_eventPicture
+	desc = "pirates.12.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+		has_privateers = yes
+	}
+	
+	option = {
+		name = "pirates.12.a"
+		add_adm_power = 50
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = 10
+		}
+	}
+	option = {
+		name = "pirates.12.b"
+		add_dip_power = 50
+		add_faction_influence = {
+			faction = pr_smugglers
+			influence = 10
+			perform_readjustment = no #will be balanced by the below line
+		}
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = -5
+		}
+	}
+	option = {
+		name = "pirates.12.c"
+		add_mil_power = 50
+		add_faction_influence = {
+			faction = pr_captains
+			influence = 10
+			perform_readjustment = no #will be balanced by the below line
+		}
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = -5
+		}
+	}
+}
+
+# Smuggler acquires forged licenses
+country_event = {
+	id = pirates.13
+	title = "pirates.13.t"
+	picture = SMUGGLERS_eventPicture
+	desc = "pirates.13.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = skilled_forger
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	option = {
+		name = "pirates.13.a"
+		add_faction_influence = {
+			faction = pr_smugglers
+			influence = 10
+		}
+		define_advisor = {
+			type = trader
+			skill = 2
+			name = skilled_forger
+			cost_multiplier = 0.5
+		}
+		hidden_effect = {
+			clear_saved_name = skilled_forger
+		}
+	}
+}
+
+# Privateer turns pirate
+country_event = {
+	id = pirates.14
+	title = "pirates.14.t"
+	picture = PIRATE_CAPTAINS_eventPicture
+	desc = "pirates.14.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+		any_country = {
+			num_of_heavy_ship = 3
+			any_trade_node = {
+				privateer_power = { country = prev share = 1 }
+			}
+			capital_scope = {
+				has_discovered = ROOT
+			}
+		}
+		any_owned_province = {
+			has_port = yes
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_country = {
+				limit = {
+					num_of_heavy_ship = 3
+					any_trade_node = {
+						privateer_power = { country = prev share = 1 }
+					}
+					capital_scope = {
+						has_discovered = ROOT
+					}
+				}
+				save_event_target_as = privateer_origin_country
+			}
+		}
+		hidden_effect = {
+			set_saved_name = {
+				key = defecting_privateer
+				type = advisor
+				scope = event_target:privateer_origin_country
+			}
+		}
+	}
+	
+	option = {
+		name = "pirates.14.a"
+		add_faction_influence = {
+			faction = pr_captains
+			influence = 10
+		}
+		create_admiral = {
+			tradition = 50
+			name = defecting_privateer
+		}
+		if = {
+			limit = {
+				capital_scope = {
+					has_port = yes
+				}
+			}
+			capital_scope = {
+				heavy_ship = ROOT
+			}
+		}
+		else = {
+			random_owned_province = {
+				limit = {
+					has_port = yes
+				}
+				heavy_ship = ROOT
+			}
+		}
+		reverse_add_opinion = {
+			who = event_target:privateer_origin_country
+			modifier = opinion_defected_privateer
+		}
+	}
+}
+
+# Capture of a slaver ship
+country_event = {
+	id = pirates.15
+	title = "pirates.15.t"
+	picture = BUCCANEERS_eventPicture
+	desc = "pirates.15.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+		has_privateers = yes
+		any_active_trade_node = {
+			any_trade_node_member_province = {
+				OR = {
+					trade_goods = slaves
+					trade_goods = sugar
+					trade_goods = cotton
+					trade_goods = tobacco
+					trade_goods = cocoa
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = "pirates.15.a"
+		add_yearly_manpower = 1
+		add_yearly_sailors = 2
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = 10
+		}
+	}
+	option = {
+		name = "pirates.15.b"
+		trigger = {
+			NOT = { has_reform = war_against_the_world_doctrine_reform }
+		}
+		add_years_of_income = 0.5
+		add_faction_influence = {
+			faction = pr_smugglers
+			influence = 10
+			perform_readjustment = no #will be balanced by the below line
+		}
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = -10
+			perform_readjustment = no
+		}
+	}
+}
+
+# Careening
+country_event = {
+	id = pirates.16
+	title = "pirates.16.t"
+	picture = PIRATE_CAPTAINS_eventPicture
+	desc = "pirates.16.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {	
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+		navy_size = 5
+		NOT = { has_country_modifier = thorough_careening }
+		NOT = { has_country_modifier = relaxed_careening }
+	}
+	
+	option = {
+		name = "pirates.16.a"
+		add_faction_influence = {
+			faction = pr_captains
+			influence = 10
+		}
+		add_country_modifier = { # ship durability
+			name = "thorough_careening"
+			duration = 3650
+		}
+	}
+	option = {
+		name = "pirates.16.b"
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = 10
+		}
+		add_country_modifier = { # naval morale
+			name = "relaxed_careening"
+			duration = 3650
+		}
+	}
+}
+
+# Fences Struggling
+country_event = {
+	id = pirates.17
+	title = "pirates.17.t"
+	picture = SMUGGLERS_eventPicture
+	desc = "pirates.17.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+		NOT = { has_country_modifier = smugglers_struggling }
+	}
+	
+	option = {
+		name = "pirates.17.a"
+		add_faction_influence = {
+			faction = pr_smugglers
+			influence = -10
+		}
+		add_country_modifier = {
+			name = "smugglers_struggling"
+			duration = 3650
+		}
+	}
+}
+
+# Electing a new quartermaster
+country_event = {
+	id = pirates.18
+	title = "pirates.18.t"
+	picture = BUCCANEERS_eventPicture
+	desc = "pirates.18.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+		has_flagship = yes
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = crew_representative
+				type = advisor
+				scope = ROOT
+			}
+			set_saved_name = {
+				key = captains_puppet
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	option = { # A spokesman for the crew
+		name = "pirates.18.a"
+		define_advisor = {
+			type = quartermaster
+			skill = 2
+			name = crew_representative
+			cost_multiplier = 0.5
+		}
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = 10
+			perform_readjustment = no #will be balanced by the below line
+		}
+		add_faction_influence = {
+			faction = pr_captains
+			influence = -10
+			perform_readjustment = no
+		}
+	}
+	
+	option = { # The captain's puppet
+		name = "pirates.18.b"
+		define_advisor = {
+			type = naval_reformer
+			skill = 2
+			name = captains_puppet
+			cost_multiplier = 0.5
+		}
+		add_faction_influence = {
+			faction = pr_captains
+			influence = 10
+			perform_readjustment = no #will be balanced by the below line
+		}
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = -10
+			perform_readjustment = no
+		}
+	}
+}
+
+# Crew Blacklisted
+country_event = {
+	id = pirates.19
+	title = "pirates.19.t"
+	picture = SMUGGLERS_eventPicture
+	desc = "pirates.19.d"
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		OR = {
+			has_dlc = "Golden Century"
+			has_dlc = "Lions of the North"
+		}
+		has_government_attribute = is_pirate_republic_reform
+	}
+	
+	option = {
+		name = "pirates.19.a"
+		add_country_modifier = {
+			name = "blacklisted_crew"
+			duration = 3650
+		}
+		add_faction_influence = {
+			faction = pr_smugglers
+			influence = 10
+			perform_readjustment = no #will be balanced by the below line
+		}
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = -10
+			perform_readjustment = no
+		}
+	}
+	
+	option = {
+		name = "pirates.19.b"
+		add_prestige = -10
+		add_faction_influence = {
+			faction = pr_buccaneers
+			influence = 10
+			perform_readjustment = no #will be balanced by the below line
+		}
+		add_faction_influence = {
+			faction = pr_smugglers
+			influence = -10
+			perform_readjustment = no
+		}
+	}
+}

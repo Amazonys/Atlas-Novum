@@ -1,0 +1,498 @@
+########################################
+# Events for Mossi
+#
+# scripted by Ogulcan Yildirim
+# Localization written by Álvaro Sanz
+########################################
+
+namespace = flavor_msi
+normal_or_historical_nations = yes
+
+#The federal Mossi Kingdom
+country_event = {
+	id = flavor_msi.1
+	title = flavor_msi.1.t
+	desc = flavor_msi.1.d
+	picture = MALI_DECLINE_eventPicture
+	
+	trigger = {
+		NOT = { has_country_flag = msi_mossi_kingdom_event }
+		NOT = { has_reform = mossi_federal_kingdom }
+		tag = MSI
+	}
+
+	mean_time_to_happen = {
+		months = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_country_flag = msi_mossi_kingdom_event
+		}
+	}
+	
+	option = {	#
+		name = flavor_msi.1.a
+		if = {
+			limit = {
+				NOT = { government = monarchy }
+			}
+			change_government = monarchy
+		}
+		add_government_reform = mossi_federal_kingdom
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Manpower from the other kingdoms
+country_event = {
+	id = flavor_msi.2
+	title = flavor_msi.2.t
+	desc = flavor_msi.2.d
+	picture = AFRICAN_DISCIPLINE_eventPicture
+	
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = collecting_manpower_from_kingdoms
+			set_variable = {
+				which = federal_manpower_gain
+				value = 0
+			}
+			export_to_variable = {
+				which = manpower_modifier_var
+				value = modifier:global_manpower_modifier
+			}
+			change_variable = {
+				which = manpower_modifier_var
+				value = 1
+			}
+			while = {
+				limit = {
+					any_owned_province = {
+						has_province_modifier = gathers_soldiers_for_the_ruler
+						controlled_by = ROOT	#A province which is occupied by the enemy should not be able to send any kind of manpower
+					}
+				}
+				random_owned_province = {
+					limit = {
+						has_province_modifier = gathers_soldiers_for_the_ruler
+						controlled_by = ROOT
+					}
+					remove_province_modifier = gathers_soldiers_for_the_ruler
+					ROOT = {
+						export_to_variable = {
+							which = province_manpower
+							value = trigger_value:base_manpower
+							who = PREV
+						}
+						change_variable = {
+							which = federal_manpower_gain
+							which = province_manpower
+						}
+					}
+				}
+			}
+			multiply_variable = {
+				which = federal_manpower_gain
+				which = manpower_modifier_var
+			}
+			set_variable = {
+				which = federal_manpower_gain_tooltip
+				which = federal_manpower_gain
+			}
+			multiply_variable = {
+				which = federal_manpower_gain_tooltip
+				value = 1000
+			}
+			hidden_effect = {
+				every_owned_province = {	#Clean up
+					limit = {
+						has_province_modifier = gathers_soldiers_for_the_ruler
+					}
+					remove_province_modifier = gathers_soldiers_for_the_ruler
+				}
+			}
+		}
+	}
+	
+	option = {	#
+		name = flavor_msi.2.a
+		#add_years_of_owned_provinces_manpower = {
+		#	years = 1
+		#	trigger = {
+		#		has_province_modifier = gathers_soldiers_for_the_ruler
+		#	}
+		#	custom_tooltip = flavor_msi.2.a.tt
+		#}
+
+		custom_tooltip = flavor_msi.2.a.tt
+		hidden_effect = {
+			while = {
+				limit = {
+					check_variable = {
+						which = federal_manpower_gain
+						value = 1
+					}
+				}
+				add_manpower = 1
+				subtract_variable = {
+					which = federal_manpower_gain
+					value = 1
+				}
+			}
+			multiply_variable = {
+				which = federal_manpower_gain
+				value = 1000
+			}
+			while = {
+				limit = {
+					check_variable = {
+						which = federal_manpower_gain
+						value = 1
+					}
+				}
+				add_manpower = 0.001
+				subtract_variable = {
+					which = federal_manpower_gain
+					value = 1
+				}
+			}
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Internal marriage
+country_event = {
+	id = flavor_msi.3
+	title = flavor_msi.3.t
+	desc = flavor_msi.3.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	goto = origin_of_queens_family
+	trigger = {
+		has_government_attribute = has_federal_kingdoms
+		had_country_flag = {
+			flag = fed_kingdom_prepares_marriage
+			days = 180
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = fed_kingdom_prepares_marriage
+			random_owned_province = {
+				limit = { 
+					is_capital = no
+					culture = ROOT
+					is_city = yes
+				}
+				save_event_target_as = origin_of_queens_family
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					culture = ROOT
+					continent = ROOT
+				}
+				save_event_target_as = origin_of_queens_family
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					OR = {
+						is_state = yes
+						is_in_capital_area = yes 
+					}
+				}
+				save_event_target_as = origin_of_queens_family
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					culture = ROOT
+					OR = {
+						is_state = yes
+						is_in_capital_area = yes 
+					}
+					development = 15
+				}
+				save_event_target_as = origin_of_queens_family
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					culture = ROOT
+					OR = {
+						is_state = yes
+						is_in_capital_area = yes 
+					}
+					development = 20
+				}
+				save_event_target_as = origin_of_queens_family
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = no
+					culture = ROOT
+					OR = {
+						is_state = yes
+						is_in_capital_area = yes 
+					}
+					development = 25
+				}
+				save_event_target_as = origin_of_queens_family
+			}
+		}
+	}
+	
+	option = {	#
+		name = flavor_msi.3.a
+		event_target:origin_of_queens_family = {
+			add_local_autonomy = 35
+			add_province_modifier = {
+				name = "domain_of_spouses_family"
+				duration = -1
+			}
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man"
+				has_consort = no
+			}
+			tooltip = {
+				define_consort = {
+					country_of_origin = ROOT
+					hide_skills = yes
+					culture = ROOT
+					religion = ROOT
+				}
+			}
+			hidden_effect = {	#Semi random skills
+				random_list = {
+					1 = {
+						define_consort = {
+							country_of_origin = ROOT
+							adm = 3
+							dip = 3
+							mil = 3
+							hide_skills = yes
+							culture = ROOT
+							religion = ROOT
+						}
+					}
+					1 = {
+						define_consort = {
+							country_of_origin = ROOT
+							adm = 2
+							dip = 3
+							mil = 5
+							hide_skills = yes
+							culture = ROOT
+							religion = ROOT
+						}
+					}
+					1 = {
+						define_consort = {
+							country_of_origin = ROOT
+							adm = 1
+							dip = 4
+							mil = 3
+							hide_skills = yes
+							culture = ROOT
+							religion = ROOT
+						}
+					}
+					1 = {
+						define_consort = {
+							country_of_origin = ROOT
+							adm = 3
+							dip = 1
+							mil = 2
+							hide_skills = yes
+							culture = ROOT
+							religion = ROOT
+						}
+					}
+					1 = {
+						define_consort = {
+							country_of_origin = ROOT
+							adm = 5
+							dip = 2
+							mil = 1
+							hide_skills = yes
+							culture = ROOT
+							religion = ROOT
+						}
+					}
+					1 = {
+						define_consort = {
+							country_of_origin = ROOT
+							adm = 1
+							dip = 2
+							mil = 1
+							hide_skills = yes
+							culture = ROOT
+							religion = ROOT
+						}
+					}
+					1 = {
+						define_consort = {
+							country_of_origin = ROOT
+							adm = 3
+							dip = 3
+							mil = 3
+							hide_skills = yes
+							culture = ROOT
+							religion = ROOT
+						}
+					}
+				}
+			}
+		}
+		add_ruler_modifier = {
+			name = internal_marriage
+			duration = 7300
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Ritual celebration
+country_event = {
+	id = flavor_msi.4
+	title = flavor_msi.4.t
+	desc = flavor_msi.4.d
+	picture = FETISHIST_FIRE_eventPicture
+	
+	trigger = {
+		has_government_attribute = has_federal_kingdoms
+		had_country_flag = {
+			flag = fed_kingdom_celebrating
+			days = 180
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = fed_kingdom_celebrating
+		}
+	}
+	
+	option = {	#
+		name = flavor_msi.4.a
+		add_stability = 1
+		increase_religious_currency_effect = yes
+		add_piety = 0.05
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Tribal allegiance
+country_event = {
+	id = flavor_msi.5
+	title = flavor_msi.5.t
+	desc = flavor_msi.5.d
+	picture = AFRICAN_BATTLE_eventPicture
+	
+	trigger = {
+		has_government_attribute = has_federal_kingdoms
+		had_country_flag = {
+			flag = fed_kingdom_allegience_support
+			days = 180
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = fed_kingdom_allegience_support
+			set_variable = {
+				which = allegience_tooltip
+				value = 0
+			}
+			every_owned_province = {
+				limit = {
+					culture = ROOT
+					NOT = { is_capital_of = ROOT }
+				}
+				ROOT = {
+					change_variable = {
+						which = allegience_tooltip
+						value = 3
+					}
+				}
+			}
+		}
+	}
+	
+	option = {	#
+		name = flavor_msi.5.a
+		custom_tooltip = flavor_msi.5.a.tt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					culture = ROOT
+					NOT = { is_capital_of = ROOT }
+				}
+				ROOT = { add_tribal_allegiance = 3 }
+				add_local_autonomy = 5
+			}
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Pick mission reward
+country_event = {
+	id = flavor_msi.6
+	title = flavor_msi.6.t
+	desc = flavor_msi.6.d
+	picture = SONGHAI_RULER_eventPicture
+	
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			set_country_flag = msi_unlocked_perma_reward
+		}
+	}
+	
+	option = {	#Keep the federal reform
+		name = flavor_msi.6.a
+		add_stability = 1
+		add_absolutism = -25
+		add_tribal_allegiance = 30
+		add_country_modifier = {
+			name = msi_federal_kingdom_focus
+			duration = -1
+			desc = msi_federal_kingdom_focus_desc
+		}
+		ai_chance = { factor = 1 }
+	}
+	
+	option = {	#Centralize the state
+		name = flavor_msi.6.b
+		add_government_reform = autocracy_reform
+		add_stability = -1
+		add_absolutism = 25
+		add_country_modifier = {
+			name = msi_centralization_focus
+			duration = -1
+			desc = msi_centralization_focus_desc
+		}
+		ai_chance = { factor = 1 }
+	}
+}

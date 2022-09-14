@@ -1,0 +1,676 @@
+namespace = dotf
+
+# Small faith decides whether to evangelize internally or externally
+country_event = {
+	id = dotf.1
+	title = dotf.1.t
+	desc = dotf.1.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes # on pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		is_defender_of_faith = yes
+		NOT = { is_defender_of_faith_of_tier = 3 }
+		NOT = {
+			OR = {
+				has_country_modifier = evangelism_in_one_country
+				has_country_modifier = international_evangelism
+			}
+		}
+		NOT = {
+			num_of_owned_provinces_with = {
+				value = 50
+				religion = ROOT
+			}
+		}
+	}
+	
+	option = {
+		name = dotf.1.a
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0
+				NOT = {
+					any_owned_province = {
+						NOT = { 
+							religion = ROOT
+						}
+					}
+				}
+			}
+		}
+		add_country_modifier = { # missionary strength and missionary cost
+			name = evangelism_in_one_country
+			duration = 7300
+		}
+	}
+	
+	option = {
+		name = dotf.1.b
+		ai_chance = {
+			factor = 10
+		}
+		add_country_modifier = { # warscore cost against other religion
+			name = international_evangelism
+			duration = 7300
+		}
+	}
+}
+
+# Jihad
+country_event = {
+	id = dotf.2
+	title = dotf.2.t
+	desc = dotf.2.d
+	picture = RELIGION_eventPicture
+	
+	major = yes
+	
+	trigger = {
+		has_dlc = "Emperor"
+		religion_group = muslim
+		is_defender_of_faith = yes
+		is_defender_of_faith_of_tier = 3
+		OR = {
+			379 = { # Jerusalem
+				has_discovered = ROOT
+				owner = {
+					NOT = {
+						religion_group = muslim
+					}
+					any_neighbor_country = {
+						religion = ROOT
+					}
+				}
+			}
+			384 = { # Medina
+				has_discovered = ROOT
+				owner = {
+					NOT = {
+						religion_group = muslim
+					}
+					any_neighbor_country = {
+						religion = ROOT
+					}
+				}
+			}
+			385 = { # Mecca
+				has_discovered = ROOT
+				owner = {
+					NOT = {
+						religion_group = muslim
+					}
+					any_neighbor_country = {
+						religion = ROOT
+					}
+				}
+			}
+		}
+		NOT = { has_global_flag = active_jihad }
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = jihad_caller
+			set_global_flag = active_jihad
+			if = {
+				limit = {
+					379 = { # Jerusalem
+						has_discovered = ROOT
+						owner = {
+							NOT = {
+								religion_group = muslim
+							}
+							any_neighbor_country = {
+								religion = ROOT
+							}
+						}
+					}
+				}
+				379 = {
+					save_event_target_as = jihad_target_province
+					set_province_flag = jihad_target_province_flag
+					owner = {
+						save_event_target_as = jihad_target_country
+						set_country_flag = jihad_target_country_flag
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					384 = { # Medina
+						has_discovered = ROOT
+						owner = {
+							NOT = {
+								religion_group = muslim
+							}
+							any_neighbor_country = {
+								religion = ROOT
+							}
+						}
+					}
+				}
+				384 = {
+					save_event_target_as = jihad_target_province
+					set_province_flag = jihad_target_province_flag
+					owner = {
+						save_event_target_as = jihad_target_country
+						set_country_flag = jihad_target_country_flag
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					385 = { # Mecca
+						has_discovered = ROOT
+						owner = {
+							NOT = {
+								religion_group = muslim
+							}
+							any_neighbor_country = {
+								religion = ROOT
+							}
+						}
+					}
+				}
+				385 = {
+					save_event_target_as = jihad_target_province
+					set_province_flag = jihad_target_province_flag
+					owner = {
+						save_event_target_as = jihad_target_country
+						set_country_flag = jihad_target_country_flag
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = dotf.2.a
+		custom_tooltip = jihad_tt
+	}
+}
+
+# successful Jihad
+country_event = {
+	id = dotf.3
+	title = dotf.3.t
+	desc = dotf.3.d
+	picture = PRAYING_eventPicture
+	
+	major = yes
+	
+	trigger = {
+		has_dlc = "Emperor"
+		has_global_flag = active_jihad
+		religion_group = muslim
+		any_owned_province = {
+			has_province_flag = jihad_target_province_flag
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 3
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_province_flag = jihad_target_province_flag
+				}
+				save_event_target_as = successful_jihad_province
+			}
+		}
+	}
+	
+	option = {
+		name = dotf.3.a
+		add_prestige = 50
+		custom_tooltip = end_of_jihad_tt
+		every_neighbor_country = {
+			limit = {
+				religion = ROOT
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_reconquered_holy_city
+			}
+		}
+		hidden_effect = {
+			every_country = {
+				clr_country_flag = jihad_caller
+			}
+			every_owned_province = {
+				clr_province_flag = jihad_target_province_flag
+			}
+			clr_global_flag = active_jihad
+		}
+	}
+}
+
+# The Universal Church
+country_event = {
+	id = dotf.4
+	title = dotf.4.t
+	desc = dotf.4.d
+	picture = COUNCIL_TRENT_eventPicture
+
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		is_defender_of_faith = yes
+		is_defender_of_faith_of_tier = 4
+		religion = catholic
+		any_rival_country = {
+			religion = catholic
+			NOT = { war_with = ROOT }
+		}
+		NOT = {
+			any_country = {
+				has_opinion_modifier = {
+					who = ROOT
+					modifier = opinion_benevolent_dotf
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_rival_country = {
+				limit = {
+					religion = catholic
+					NOT = { war_with = ROOT }
+				}
+				save_event_target_as = catholic_rival
+			}
+			set_saved_name = {
+				key = humanist_thinker_name
+				type = advisor
+				scope = ROOT
+			}
+		}
+	}
+	
+	option = { # let's give peace a chance
+		name = dotf.4.a
+		ai_chance = {
+			factor = 60
+		}
+		force_remove_rival = event_target:catholic_rival
+		event_target:catholic_rival = {
+			country_event = { id = dotf.5 days = 3 }
+		}
+		every_country = {
+			limit = {
+				capital_scope = {
+					has_discovered = ROOT
+				}
+				religion = catholic
+				total_development = 200
+				NOT = {
+					tag = event_target:catholic_rival
+				}
+			}
+			add_opinion = {	
+				who = ROOT
+				modifier = opinion_benevolent_dotf
+			}
+		}
+	}
+	
+	option = { # send a scathing insult instead
+		name = dotf.4.b
+		ai_chance = {
+			factor = 40
+		}
+		add_prestige = 15
+		event_target:catholic_rival = {
+			add_opinion = {
+				who = ROOT
+				modifier = insulted
+			}
+		}
+	}
+	
+	after = {
+		clear_saved_name = humanist_thinker_name
+	}
+}
+
+# Catholic rival reacts to display of benevolence
+country_event = {
+	id = dotf.5
+	title = dotf.5.t
+	desc = dotf.5.d
+	picture = COUNCIL_TRENT_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # reciprocate and repair relations
+		name = dotf.5.a
+		ai_chance = {
+			factor = 25
+		}
+		force_remove_rival = FROM
+		add_opinion = {
+			who = FROM
+			modifier = opinion_benevolent_dotf
+		}
+		FROM = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_repaired_relations
+			}
+		}
+	}
+	option = { # this must be a trick
+		name = dotf.5.b
+		ai_chance = {
+			factor = 75
+		}
+		add_prestige = 5
+		FROM = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_not_recripocated
+			}
+		}
+	}
+}
+
+
+# Early reformers have a council
+country_event = {
+	id = dotf.6
+	title = dotf.6.t
+	desc = dotf.6.d
+	picture = LUTHER_eventPicture
+
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		OR = {
+			religion = protestant
+			religion = reformed
+		}
+		current_age = age_of_reformation
+		is_defender_of_faith = yes
+		is_defender_of_faith_of_tier = 2
+		NOT = {
+			has_country_modifier = held_protestant_council
+		}
+		capital_scope = {
+			continent = europe
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					continent = europe
+				}
+				save_event_target_as = protestant_council_province
+			}
+			random_country = {
+				limit = {
+					religion = ROOT
+				}
+				save_event_target_as = first_council_member
+				set_country_flag = attending_protestant_council
+			}
+			random_country = {
+				limit = {
+					religion = ROOT
+					NOT = { has_country_flag = attending_protestant_council }
+				}
+				save_event_target_as = second_council_member
+				set_country_flag = attending_protestant_council
+			}
+			random_country = {
+				limit = {
+					religion = ROOT
+					NOT = { has_country_flag = attending_protestant_council }
+				}
+				save_event_target_as = third_council_member
+				set_country_flag = attending_protestant_council
+			}
+			random_country = {
+				limit = {
+					religion = ROOT
+					NOT = { has_country_flag = attending_protestant_council }
+				}
+				set_country_flag = attending_protestant_council
+			}
+			random_country = {
+				limit = {
+					religion = ROOT
+					NOT = { has_country_flag = attending_protestant_council }
+				}
+				set_country_flag = attending_protestant_council
+			}
+		}
+	}
+	
+	option = {
+		name = dotf.6.a
+		add_country_modifier = {
+			name = held_protestant_council
+			duration = 7300
+		}
+		every_country = {
+			limit = {
+				has_country_flag = attending_protestant_council
+			}
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_held_protestant_council
+			}
+		}
+	}
+	
+	after = {
+		every_country = {
+			clr_country_flag = attending_protestant_council
+		}
+	}
+}
+
+# Bastion of Catholicism during the Reformation
+country_event = {
+	id = dotf.7
+	title = dotf.7.t
+	desc = dotf.7.d
+	picture = COUNCIL_TRENT_eventPicture
+	
+	is_triggered_only = yes # pulse
+	
+	trigger = {
+		has_dlc = "Emperor"
+		is_defender_of_faith = yes
+		is_defender_of_faith_of_tier = 4
+		religion = catholic
+		current_age = age_of_reformation
+		capital_scope = { continent = europe }
+		NOT = {
+			any_owned_province = {
+				has_province_modifier = bastion_of_the_church
+			}
+		}
+		NOT = {
+			has_idea_group = humanist_ideas
+		}
+	}
+	
+	option = {
+		name = dotf.7.a
+		custom_tooltip = bastion_of_the_church_tt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					religion = catholic
+					continent = europe
+					culture = ROOT
+				}
+				add_province_modifier = {
+					name = "bastion_of_the_church"
+					duration = 7300
+				}
+			}
+		}
+	}
+}
+
+# Dominance of the Protestant/Reformed/Anglican Faith
+country_event = {
+	id = dotf.8
+	title = dotf.8.t
+	desc = dotf.8.d
+	picture = LUTHER_eventPicture
+	
+	fire_only_once = yes
+	major = yes
+	
+	trigger = {
+		has_dlc = "Emperor"
+		is_defender_of_faith = yes
+		OR = {
+			is_defender_of_faith_of_tier = 5
+			AND = {
+				is_defender_of_faith_of_tier = 4
+				NOT = {
+					any_country = {
+						religion = catholic
+						is_defender_of_faith_of_tier = 4
+					}
+				}
+			}
+		}
+		OR = {
+			religion = protestant
+			religion = reformed
+			religion = anglican
+			religion = hussite
+		}
+		NOT = {
+			has_country_modifier = victory_for_the_reformation
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	option = {
+		name = dotf.8.a
+		add_prestige = 20
+		add_country_modifier = {
+			name = victory_for_the_reformation
+			duration = 18250
+		}
+	}	
+}
+
+# Rise of the Shia/Ibadi Faith
+country_event = {
+	id = dotf.9
+	title = dotf.9.t
+	desc = dotf.9.d
+	picture = PRAYING_eventPicture
+	
+	fire_only_once = yes
+	major = yes
+	
+	trigger = {
+		has_dlc = "Emperor"
+		is_defender_of_faith = yes
+		is_defender_of_faith_of_tier = 4
+		NOT = {
+			any_country = {
+				religion = sunni
+				is_defender_of_faith_of_tier = 5
+			}
+		}
+		OR = {
+			religion = ibadi
+			religion = shiite
+		}
+		NOT = {
+			has_country_modifier = new_era_for_islam
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+	}
+	
+	option = {
+		name = dotf.9.a
+		add_country_modifier = {
+			name = "new_era_for_islam"
+			duration = -1
+		}
+		every_country = {
+			limit = {
+				same_continent = ROOT
+				religion_group = ROOT
+				NOT = { religion = ROOT }
+				NOT = {
+					total_development = 150
+				}
+			}
+			country_event = { id = dotf.10 days = 3 }
+		}
+	}
+}
+
+# Small Muslims convert to new dominant faith
+country_event = {
+	id = dotf.10
+	title = dotf.10.t
+	desc = dotf.10.d
+	picture = PRAYING_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = dotf.10.a
+		ai_chance = { factor = 10 }
+		change_religion = FROM
+		capital_scope = {
+			change_religion = FROM
+			add_permanent_province_modifier = {
+				name = "religious_zeal_at_conv"
+				duration = 9000
+			}
+		}
+		add_country_modifier = {
+			name = "convert_to_new_sect_muslim"
+			duration = 7300
+		}
+	}
+	
+	option = {
+		name = dotf.10.b
+		ai_chance = { factor = 0 }
+		FROM = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_muslim_will_not_convert
+			}
+		}
+	}
+}

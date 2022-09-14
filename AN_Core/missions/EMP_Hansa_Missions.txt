@@ -4,7 +4,10 @@ hanseatic_expansion_tree = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 	}
@@ -31,6 +34,21 @@ hanseatic_expansion_tree = {
 				}
 				add_permanent_claim = ROOT
 			}
+			weser_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			if =  {
+				limit = { 
+					has_dlc = "Rights of Man"
+					NOT = { num_of_ruler_traits = { amount = 3 } }
+				}
+				add_ruler_personality = inspiring_leader_personality
+			} 
+			else = { add_army_tradition = 10 } 
 		}
 	}
 	
@@ -75,6 +93,11 @@ hanseatic_expansion_tree = {
 					key = hsa_lubeck_ascendant
 				}
 			}
+			define_advisor = { 
+				type = trader 
+				skill = 1 
+				cost_multiplier = 0.25 
+			}
 		}
 	}
 }
@@ -84,7 +107,10 @@ hanseatic_return_visby_tree = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 	}
@@ -97,43 +123,59 @@ hanseatic_return_visby_tree = {
 		icon = return_visby_to_the_league
 		required_missions = { hsa_hanseatic_mecklenburg_mission }
 		position = 3
-
 		provinces_to_highlight = {
 			province_id = 25 # Gotland
 		}
 
 		trigger = {
-			OR = {
-				if = {
-					limit = {
-						has_dlc = "Res Publica"
-					}
-					owns_core_province = 25
-					25 = { has_province_modifier = trade_post_modifier }
+			if = {
+				limit = {
+					has_dlc = "Res Publica"
 				}
-				else = {
-					owns_core_province = 25
-					25 = { development = 20 }
-				}
-				if = {
-					limit = {
-						has_dlc = "Mare Nostrum"
+				25 = {
+					OR = {
+						num_of_times_improved = 4 
+						has_province_modifier = trade_post_modifier 
 					}
+				}
+			}
+			else = {
+				25 = { country_or_non_sovereign_subject_holds = ROOT }
+				25 = { development = 20 }
+			}
+			if = {
+				limit = {
+					has_dlc = "Mare Nostrum"
+				}
+				OR = { 
 					25 = {
 						owner = {
-							is_in_trade_league_with = HSA
+							is_in_trade_league_with = ROOT 
 						}
 					}
+					25 = { country_or_non_sovereign_subject_holds = ROOT }
 				}
-				else = {
-					25 = {
-						country_or_non_sovereign_subject_holds = root
-					}
+			}
+			else = {
+				25 = {
+					country_or_non_sovereign_subject_holds = root
 				}
 			}
 		}
 
 		effect = {
+			if = { 
+				limit = { has_dlc = "Leviathan" }
+				25 = { 
+					add_great_project_tier = {
+						type = visby_city
+						tier = 1 
+					}
+				}
+			}
+			else = { 
+				25 = { add_base_tax = 2 add_base_production = 2 add_base_manpower = 2 }
+			}
 			add_mercantilism = 5
 			310 = { # Novgorod
 				if = {
@@ -164,36 +206,35 @@ hanseatic_return_visby_tree = {
 		}
 
 		trigger = {
-			OR = {
-				if = {
-					limit = {
-						has_dlc = "Res Publica"
-					}
-					owns_core_province = 310
-					310 = { has_province_modifier = trade_post_modifier }
+			if = {
+				limit = {
+					has_dlc = "Res Publica"
+					has_dlc = "Mare Nostrum"
 				}
-				else = {
-					owns_core_province = 310
-					310 = { development = 20 }
-				}
-				if = {
-					limit = {
-						has_dlc = "Mare Nostrum"
+				310 = { 
+					if = {
+						limit = { country_or_non_sovereign_subject_holds = ROOT }
+						num_of_times_improved = 4 
 					}
-					310 = {
-						owner = {
-							is_in_trade_league_with = HSA
+					OR = {
+						has_province_modifier = trade_post_modifier 
+						country_or_non_sovereign_subject_holds = ROOT
+						owner = { is_in_trade_league_with = ROOT }
+					}
+				}
+			}
+			else = {
+				310 = { 
+					OR = {
+						owner = { is_in_trade_league_with = ROOT }
+						AND = {
+							num_of_times_improved = 4
+							country_or_non_sovereign_subject_holds = ROOT 
 						}
-					}
-				}
-				else = {
-					310 = {
-						country_or_non_sovereign_subject_holds = root
 					}
 				}
 			}
 		}
-
 		effect = {
 			add_mercantilism = 5
 			310 = {
@@ -204,6 +245,10 @@ hanseatic_return_visby_tree = {
 					key = hsa_hansa_in_novgorod
 				}
 			}
+			add_legitimacy = 10 
+			add_republican_tradition = 5 
+			add_devotion = 10 
+			add_horde_unity = 10 
 		}
 	}
 }
@@ -213,7 +258,10 @@ lubeck_misc_tree = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 	}
@@ -239,6 +287,14 @@ lubeck_misc_tree = {
 				name = hanseatic_bookkeeping_modifier
 				duration = 7300
 			}
+			if = { 
+				limit = { has_estate = estate_burghers }
+				add_estate_loyalty = {
+					estate = estate_burghers 
+					loyalty = 20 
+				}
+			}
+			else = { add_dip_power = 50 } 
 		}
 	}
 }
@@ -249,7 +305,10 @@ hanseatic_united_tree = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 	}
@@ -269,15 +328,11 @@ hanseatic_united_tree = {
 		}
 
 		effect = {
-			45 = {
+			capital_scope = {
 				add_province_triggered_modifier = krantor_crane
-			}
-			tooltip = {
-				45 = {
-					add_province_modifier = {
-						name = krantor_crane
-						duration = -1
-					}
+				add_province_modifier = { 
+					name = capital_expansion_modifier
+					duration = 3650 
 				}
 			}
 		}
@@ -287,21 +342,26 @@ hanseatic_united_tree = {
 		icon = mission_heart_of_the_hansa
 		required_missions = { hsa_build_lubeck_krantor_mission hsa_adler_von_lubeck_mission }
 		position = 4
-		
-		provinces_to_highlight = {
-			province_id = 45
-		}
-		
+		provinces_to_highlight = { is_capital_of = ROOT } 
 		trigger = {
-			owns_core_province = 45
-			45 = {
+			capital_scope = {
 				development = 30
 				if = {
 					limit = { has_dlc = "Dharma" }
-					province_has_center_of_trade_of_level = 3
+					OR = { 
+						province_has_center_of_trade_of_level = 3
+						AND = { 
+							has_manufactory_trigger = yes 
+							has_trade_building_trigger = yes
+							province_trade_power = 35 
+						}
+					}
 				}
 				else = {
 					num_of_buildings_in_province = 5
+					has_manufactory_trigger = yes 
+					has_trade_building_trigger = yes
+					province_trade_power = 25
 				}
 			}
 		}
@@ -318,11 +378,13 @@ hanseatic_united_tree = {
 		icon = mission_african_gold
 		required_missions = { hsa_queen_of_the_league_mission hsa_return_novgorod_mission }
 		position = 5
-		
+		provinces_to_highlight = { 
+			province_id = 45
+		}
 		trigger = {
-			home_trade_node = {
+			45 = {
 				trade_share = {
-					country = root
+					country = ROOT
 					share = 70
 				}
 			}
@@ -356,7 +418,10 @@ hanseatic_london_tree = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 	}
@@ -410,7 +475,10 @@ hanseatic_sound_toll_tree = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 	}
@@ -421,7 +489,7 @@ hanseatic_sound_toll_tree = {
 
 	hsa_baltic_trade_mission = {
 		icon = mission_develop_nevas_port
-		required_missions = { end_sound_toll }
+		required_missions = { hsa_hanseatic_army_mission }
 		position = 2
 	
 		provinces_to_highlight = {
@@ -432,7 +500,7 @@ hanseatic_sound_toll_tree = {
 			1926 = {
 				trade_share = {
 					country = ROOT
-					share = 30
+					share = 25
 				}
 			}
 		}
@@ -491,6 +559,7 @@ hanseatic_sound_toll_tree = {
 				add_casus_belli = {
 					target = NOR
 					type = cb_vassalize_mission
+					months = 120
 				}
 			}
 			else = {
@@ -516,6 +585,18 @@ hanseatic_sound_toll_tree = {
 					add_permanent_claim = ROOT
 				}
 			}
+			if = {
+				limit = {
+					exists = SWE
+					NOT = { SWE = { is_subject = yes } }
+				}
+				add_casus_belli = {
+					target = SWE
+					type = cb_vassalize_mission
+					months = 120
+				}
+			}
+			add_mil_power = 50 
 		}
 	}
 
@@ -588,9 +669,13 @@ hanseatic_sound_toll_tree = {
 				add_mil_power = 100
 			}
 			else = {
-				every_owned_province = {
-					limit = { culture = norwegian }
-					add_nationalism = -5
+				custom_tooltip = bre_ham_nat_prod_nor_prov_tt
+				hidden_effect = { 
+					every_owned_province = {
+						limit = { culture = norwegian }
+						add_nationalism = -5
+						add_base_production = 1 
+					}
 				}
 			}
 
@@ -610,7 +695,10 @@ hanseatic_britain_tree = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 	}
@@ -714,6 +802,7 @@ hanseatic_britain_tree = {
 					add_permanent_claim = root
 				}
 			}
+			add_navy_tradition = 15
 		}
 	}
 
@@ -769,16 +858,21 @@ hanseatic_britain_tree = {
 				add_casus_belli = {
 					target = SCO
 					type = cb_vassalize_mission
+					months = 120
 				}
 			}
-			every_owned_province = {
-				limit = { 
-					OR = {
-						culture = norwegian
-						culture = scottish
+			custom_tooltip = bre_ham_sep_prod_scot_tt
+			hidden_effect = {
+				every_owned_province = {
+					limit = { 
+						OR = {
+							culture = highland_scottish
+							culture = scottish
+						}
 					}
+					add_nationalism = -5
+					add_base_production = 1 
 				}
-				add_nationalism = -5
 			}
 		}
 	}
@@ -802,7 +896,7 @@ hanseatic_britain_tree = {
 				duration = 7300
 			}
 			create_explorer = {
-				tradition = 30
+				tradition = 60
 			}
 		}
 	}
@@ -813,7 +907,10 @@ hanseatic_colonisation_tree = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 		is_random_new_world = no
@@ -842,8 +939,8 @@ hanseatic_colonisation_tree = {
 		}
 		
 		effect = {
-			newfoundland_area = { add_base_production = 1 }
-			980 = { center_of_trade = 1 }
+			newfoundland_area = { add_base_production = 2 }
+			add_mercantilism = 5
 		}
 	}
 
@@ -900,11 +997,9 @@ hanseatic_colonisation_tree = {
 				duration = 7300	
 			}
 			965 = {
-				change_province_name = "Neulübeck"
-				rename_capital = "Neulübeck"
-				add_base_tax = 1
-				add_base_production = 1
-				add_base_manpower = 1
+				add_base_tax = 2
+				add_base_production = 2
+				add_base_manpower = 2
 			}
 		}
 	}
@@ -915,7 +1010,10 @@ hanseatic_shipwright_tree = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 	}
@@ -930,14 +1028,22 @@ hanseatic_shipwright_tree = {
 		position = 1
 
 		trigger = {
-			num_of_light_ship = 20
+			num_of_light_ship = 15
 		}
 
 		effect = {
 			add_country_modifier = {
 				name = hanseatic_merchant_navy_modifier
-				duration = 7300			
+				duration = 9125			
 			}
+			if =  {
+				limit = { 
+					has_dlc = "Rights of Man"
+					NOT = { num_of_ruler_traits = { amount = 3 } }
+				}
+				add_ruler_personality = entrepreneur_personality
+			} 
+			else = { add_navy_tradition = 10 } 
 		}
 	}
 
@@ -949,7 +1055,7 @@ hanseatic_shipwright_tree = {
 		provinces_to_highlight = {
 			OR = {
 				AND = {
-					province_id = 45
+					is_capital_of = ROOT
 					OR = {
 						NOT = { owned_by = root }
 						has_shipyard_building_trigger = no
@@ -975,8 +1081,7 @@ hanseatic_shipwright_tree = {
 		}
 
 		trigger = {
-			45 = {
-				owned_by = root
+			capital_scope = { 
 				OR = {
 					has_building = shipyard
 					has_building = grand_shipyard
@@ -992,7 +1097,7 @@ hanseatic_shipwright_tree = {
 		}
 
 		effect = {
-			45 = { # Lubeck
+			capital_scope = { 
 				add_province_modifier = {
 					name = "hanseatic_shipwrights_modifier"
 					duration = -1
@@ -1023,11 +1128,18 @@ hanseatic_shipwright_tree = {
 		}
 
 		trigger = {
-			custom_trigger_tooltip = {
-				tooltip = adler_von_lubeck.tooltip
-				has_country_flag = adler_built
+			if = { 
+				limit = { has_dlc = "Golden Century" } 
+				OR = { 
+					has_flagship = yes 
+					custom_trigger_tooltip = {
+						tooltip = adler_von_lubeck.tooltip
+						has_country_flag = adler_built
+					}
+				}
+				num_of_heavy_ship = 10 
 			}
-			num_of_heavy_ship = 10
+			else = { num_of_heavy_ship = 10 }
 			custom_trigger_tooltip = {
 				tooltip = adler_von_lubeck_supreme.tooltip
 				NOT = {
@@ -1044,6 +1156,7 @@ hanseatic_shipwright_tree = {
 					}
 				}
 			}
+			navy_size_percentage = 0.95
 		}
 
 		effect = {
@@ -1060,7 +1173,10 @@ hanseatic_united_tree_2 = {
 	generic = no
 	ai = yes
 	potential = {
-		tag = HSA
+		OR = { 
+			tag = HAM 
+			tag = BRE 
+		}
 		NOT = { map_setup = map_setup_random }
 		has_dlc = "Emperor"
 	}

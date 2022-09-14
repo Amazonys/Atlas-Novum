@@ -1,0 +1,462 @@
+########################################
+# Events for Religious Leagues
+#
+# written by Martin Anward
+########################################
+
+namespace = religious_leagues
+
+# The Emperor Triumphant (Catholic)
+country_event = {
+	id = religious_leagues.1
+	title = "religious_leagues.1.t"
+	desc = "religious_leagues.1.d"
+	picture = RELIGIOUS_WARS_eventPicture
+	major = yes
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Art of War"
+		hre_religion = catholic
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_hre_religion_locked = yes
+		}
+	}
+
+	option = {
+		name = "religious_leagues.1.a"
+		tooltip = { 
+			set_hre_religion_locked = yes 
+		}
+	}
+}
+
+# Victory of the Protestant League
+country_event = {
+	id = religious_leagues.2
+	title = "religious_leagues.2.t"
+	desc = "religious_leagues.2.d"
+	picture = RELIGIOUS_WARS_eventPicture
+	major = yes
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Art of War"
+		hre_religion = catholic
+		OR = {
+			NOT = { has_country_flag = hre_religion_changed }
+			had_country_flag = { flag = hre_religion_changed days = 30 }
+		}
+	}
+	
+	immediate = {
+		set_country_flag = hre_religion_changed
+		hidden_effect = {
+			#set to treaty first so we can set everything else without elections being called at the wrong time
+			set_hre_religion_treaty = yes
+			set_hre_heretic_religion = catholic
+			set_hre_religion = protestant
+			#now set it to locked once we've completed the tasks
+			set_hre_religion_locked = yes
+			
+			#Check whether Dissensions among the Reformers incident should happen
+			#Needs 2/3 of the Empire to be owned by Reformed princes
+			while = {
+				limit = {
+					any_province = {
+						is_part_of_hre = yes
+						owner = {
+							is_part_of_hre = yes
+							religion = reformed
+						}
+						NOT = { has_province_flag = hre_post_leaguewar_reformed_owned }
+					}
+				}
+				1 = { #Stockholm is the global variable substitute
+					change_variable = {
+						which = reformed_hre_member_provinces
+						value = 1
+					}
+				}
+				random_province = {
+					limit = {
+						is_part_of_hre = yes
+						owner = {
+							is_part_of_hre = yes
+							religion = reformed
+						}
+						NOT = { has_province_flag = hre_post_leaguewar_reformed_owned }
+					}
+					set_province_flag = hre_post_leaguewar_reformed_owned
+				}
+			}
+			while = {
+				limit = {
+					any_province = {
+						is_part_of_hre = yes
+						owner = {
+							is_part_of_hre = yes
+							NOT = { religion = reformed }
+						}
+						NOT = { has_province_flag = hre_post_leaguewar_non_reformed_owned }
+					}
+				}
+				1 = {
+					change_variable = {
+						which = non_reformed_hre_member_provinces
+						value = 1
+					}
+				}
+				random_province = {
+					limit = {
+						is_part_of_hre = yes
+						owner = {
+							is_part_of_hre = yes
+							NOT = { religion = reformed }
+						}
+						NOT = { has_province_flag = hre_post_leaguewar_non_reformed_owned }
+					}
+					set_province_flag = hre_post_leaguewar_non_reformed_owned
+				}
+			}
+			every_province = {
+				limit = {
+					is_part_of_hre = yes
+				}
+				clr_province_flag = hre_post_leaguewar_non_reformed_owned
+				clr_province_flag = hre_post_leaguewar_reformed_owned
+			}
+			1 = {
+				set_variable = {
+					which = reformed_others_member_provinces_ratio
+					which = reformed_hre_member_provinces
+				}
+				divide_variable = {
+					which = reformed_others_member_provinces_ratio
+					which = non_reformed_hre_member_provinces
+				}
+				if = {
+					limit = {
+						check_variable = {
+							which = reformed_others_member_provinces_ratio
+							value = 0.8
+						}
+					}
+					set_global_flag = incident_reformer_dissension_can_happen
+				}
+				if = {
+					limit = {
+						check_variable = {
+							which = reformed_others_member_provinces_ratio
+							value = 1
+						}
+					}
+					set_global_flag = incident_reformer_dissension_high_chance
+				}
+			}
+		}
+	}
+
+	option = {
+		name = "religious_leagues.2.a"
+		tooltip = { 
+			set_hre_heretic_religion = catholic
+			set_hre_religion = protestant	
+			set_hre_religion_locked = yes			
+		}
+		if = {
+			limit = {
+				has_dlc = "Emperor"
+				has_global_flag = incident_reformer_dissension_can_happen
+			}
+			custom_tooltip = incident_reformer_dissension_can_happen_tt
+			set_imperial_incident = incident_reformer_dissension
+		}
+		# this should elect a new emperor
+		set_hre_religion = protestant
+	}
+
+	after = {
+		1 = {
+			set_variable = {
+				which = non_reformed_hre_member_provinces
+				value = 0
+			}
+			set_variable = {
+				which = reformed_hre_member_provinces
+				value = 0
+			}
+			set_variable = {
+				which = reformed_others_member_provinces_ratio
+				value = 0
+			}
+		}
+	}
+}
+
+# Victory of the Catholic League
+country_event = {
+	id = religious_leagues.3
+	title = "religious_leagues.3.t"
+	desc = "religious_leagues.3.d"
+	picture = RELIGIOUS_WARS_eventPicture
+	major = yes
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Art of War"
+		hre_religion = protestant
+		OR = {
+			NOT = { has_country_flag = hre_religion_changed }
+			had_country_flag = { flag = hre_religion_changed days = 30 }
+		}
+	}
+	
+	immediate = {
+		set_country_flag = hre_religion_changed
+		hidden_effect = {
+			set_hre_heretic_religion = protestant
+			set_hre_religion = catholic
+			set_hre_religion_locked = yes			
+		}
+	}
+
+	option = {
+		name = "religious_leagues.3.a"
+		tooltip = { 
+			set_hre_heretic_religion = protestant	
+			set_hre_religion = catholic
+			set_hre_religion_locked = yes
+		}
+	}
+}
+
+# Peace of Westphalia
+country_event = {
+	id = religious_leagues.4
+	title = "religious_leagues.4.t"
+	desc = "religious_leagues.4.d"
+	picture = RELIGIOUS_WARS_eventPicture
+	major = yes
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Art of War"
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_hre_religion_treaty = yes
+		}
+	}
+
+	option = {
+		name = "religious_leagues.4.a"
+		tooltip = { 
+			set_hre_religion_treaty = yes
+		}
+	}
+}
+
+# The Evangelical Union
+country_event = {
+	id = religious_leagues.5
+	title = "religious_leagues.5.t"
+	desc = "religious_leagues.5.d"
+	picture = RELIGIOUS_WARS_eventPicture
+	major = yes
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "Art of War"
+		NOT = { has_global_flag = evangelical_union_happened }
+		hre_leagues_enabled = no
+		hre_religion_locked = no
+		hre_religion_treaty = no
+		is_emperor = yes		
+		is_year = 1550
+		religion = catholic
+		has_global_flag = counter_reformation
+		any_known_country = {
+			is_elector = yes
+			OR = {
+				religion = protestant
+				religion = reformed
+				religion = anglican
+				religion = hussite
+			}
+			is_free_or_tributary_trigger = yes
+		}
+		NOT = { hre_reform_passed = erbkaisertum }
+		NOT = { has_global_flag = great_peasants_war_flag }
+	}
+	
+	mean_time_to_happen = {
+		months = 120
+		modifier = {
+			factor = 0.5
+			is_year = 1575
+		}
+		modifier = {
+			factor = 0.1
+			is_year = 1600
+		}		
+	}
+
+	option = {
+		name = "religious_leagues.5.a"
+		enable_hre_leagues = yes
+		set_global_flag = evangelical_union_happened
+	}
+}
+
+# The Imperial Diet (Catholic)
+country_event = {
+	id = religious_leagues.6
+	title = "religious_leagues.6.t"
+	desc = "religious_leagues.6.d"
+	picture = RELIGIOUS_WARS_eventPicture
+	major = yes
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "Art of War"
+		is_emperor = yes
+		is_at_war = no
+		NOT = {
+			any_known_country = {
+				is_in_league_war = yes
+			}
+		}		
+		has_regency = no	
+		hre_religion_locked = no
+		hre_religion_treaty = no
+		religion = catholic
+		OR = {
+			AND = {
+				hre_leagues_enabled = yes
+				had_global_flag = {
+					flag = evangelical_union_happened
+					days = 10950
+				}		
+				NOT = {
+					any_known_country = {
+						is_elector = yes
+						OR = {
+							religion = protestant
+							religion = reformed
+							religion = anglican
+							religion = hussite
+						}
+						is_league_enemy = ROOT
+						truce_with = ROOT
+					}		
+				}
+			}
+			AND = {
+				NOT = { has_global_flag = evangelical_union_happened }
+				is_year = 1625
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+
+	option = {
+		name = "religious_leagues.6.a"
+		set_hre_religion_locked = yes
+	}
+}
+
+# The Imperial Diet (Protestant)
+country_event = {
+	id = religious_leagues.7
+	title = "religious_leagues.7.t"
+	desc = "religious_leagues.7.d"
+	picture = RELIGIOUS_WARS_eventPicture
+	major = yes
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "Art of War"
+		is_emperor = yes
+		is_at_war = no
+		NOT = {
+			any_known_country = {
+				is_in_league_war = yes
+			}
+		}		
+		has_regency = no	
+		hre_religion_locked = no
+		hre_religion_treaty = no
+		religion = protestant
+		OR = {
+			AND = {
+				hre_leagues_enabled = yes
+				had_global_flag = {
+					flag = evangelical_union_happened
+					days = 10950
+				}		
+				NOT = {
+					any_known_country = {
+						is_elector = yes
+						religion = catholic
+						is_league_enemy = ROOT
+						truce_with = ROOT
+					}		
+				}
+			}
+			AND = {
+				NOT = { has_global_flag = evangelical_union_happened }
+				is_year = 1625
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 60
+	}
+
+	option = {
+		name = "religious_leagues.7.a"
+		set_hre_religion_locked = yes
+	}
+}
+
+# The Emperor Triumphant (Protestant)
+country_event = {
+	id = religious_leagues.8
+	title = "religious_leagues.8.t"
+	desc = "religious_leagues.8.d"
+	picture = RELIGIOUS_WARS_eventPicture
+	major = yes
+
+	is_triggered_only = yes
+	
+	trigger = {
+		has_dlc = "Art of War"
+		hre_religion = protestant
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_hre_religion_locked = yes
+		}
+	}
+
+	option = {
+		name = "religious_leagues.8.a"
+		tooltip = { 
+			set_hre_religion_locked = yes 
+		}
+	}
+}

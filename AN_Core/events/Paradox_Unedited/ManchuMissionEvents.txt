@@ -1,0 +1,347 @@
+# Manchu mission events by Daniel Tolman
+
+namespace = mch_missions
+
+# Treachery at the Great Wall
+country_event = {
+	id = mch_missions.1
+	title = "mch_missions.1.t"
+	desc = {	
+		trigger = {
+			726 = { owned_by = MNG }
+		}
+		desc = "mch_missions.1.d"
+	}
+	desc = {
+		trigger = {
+			726 = {
+				NOT = { owned_by = MNG }
+			}
+		}
+		desc = mch_missions.1.d2
+	}
+	picture = MONGOL_BANNERS_eventPicture
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = {
+		name = "mch_missions.1.a"
+		define_general = {
+			name = "Wu Sangui"
+			fire = 2
+			shock = 3
+			manuever = 3
+			siege = 1
+		}
+		if = {
+			limit = {
+				726 = {
+					owner = {
+						controls = 726
+					}
+				}
+			}
+			726 = { change_controller = ROOT }
+		}
+		else = {
+			726 = {
+				add_province_modifier = {
+					name = "mch_treason_modifier"
+					duration = 1825
+				}
+			}
+		}
+		if = {
+			limit = {
+				1816 = {
+					owner = {
+						war_with = ROOT
+					}
+				}
+			}
+			1816 = {
+				add_province_modifier = {
+					name = "mch_treason_modifier"
+					duration = 1825
+				}
+			}
+		}
+	}
+}
+
+# The Green Standard Army
+country_event = {
+	id = mch_missions.3
+	title = "mch_missions.3.t"
+	desc = "mch_missions.3.d"
+	picture = MILITARY_CAMP_eventPicture
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = {
+		name = "mch_missions.3.a"
+		if = {
+			limit = {
+				war_with = MNG
+			}
+			MNG = {
+				add_stability = -1
+				add_manpower = -20
+			}
+			reverse_add_opinion = { who = MNG modifier = opinion_green_standard }
+			hidden_effect = {
+				MNG = {
+					country_event = { id = mch_missions.4 }
+				}
+			}
+		}
+		add_manpower = 20
+		if = {
+			limit = {
+				has_dlc = "Mandate of Heaven"
+			}
+			add_mandate = 10			
+		}
+	}
+}
+
+# Green Standard Army
+# Notification for Ming
+country_event = {
+	id = mch_missions.4
+	title = "mch_missions.3.t"
+	desc = "mch_missions.4.d"
+	picture = MILITARY_CAMP_eventPicture
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = {
+		name = "mch_missions.4.a"
+		tooltip = {
+			add_stability = -1
+			add_manpower = -20
+		}
+	}
+}
+
+# Koxinga Flees to Taiwan
+country_event = {
+	id = mch_missions.5
+	title = "mch_missions.5.t"
+	desc = "mch_missions.5.d"
+	picture = NAVAL_MILITARY_eventPicture
+	
+	fire_only_once = yes
+	major = yes
+	
+	trigger = {
+		tag = MNG
+		NOT = {
+			total_development = 600
+		}
+		any_province = {
+			area = taiwan_area
+			is_empty = yes
+		}
+	}
+	mean_time_to_happen = {
+		months = 120
+	}
+	immediate = {
+		hidden_effect = {
+			taiwan_area = {
+				limit = {
+					is_empty = yes
+				}
+				add_core = FRM
+				cede_province = FRM
+				change_culture = chimin
+			}
+			FRM = {
+				define_ruler = {
+					name = "Koxinga"
+					dynasty = "Zheng"
+				}
+				add_accepted_culture = polynesian
+				add_harmonized_religion = animism
+				change_government = monarchy
+				add_government_reform = chinese_warlord
+				capital_scope = {
+					build_to_forcelimit = {
+						infantry = 0.6
+						cavalry = 0.3
+						artillery = 0.1
+					}
+				}
+				random_owned_province = {
+					limit = {
+						has_port = yes
+					}
+					build_to_forcelimit = {
+						heavy_ship = 0.3
+						light_ship = 0.3
+						transport = 0.2
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = "mch_missions.5.a"
+		if = {
+			limit = {
+				is_emperor_of_china = yes
+			}
+			add_mandate = -10
+		}
+		else = {
+			add_prestige = -10
+		}
+	}
+	option = {
+		name = "mch_missions.5.b"
+		trigger = {
+			ai = no
+		}
+		if = {
+			limit = {
+				is_emperor_of_china = yes
+			}
+			add_mandate = -10
+		}
+		else = {
+			add_prestige = -10
+		}
+		switch_tag = FRM
+	}
+}
+
+# Agreement with the Dalai Lama
+country_event = {
+	id = mch_missions.6
+	title = "mch_missions.6.t"
+	desc = "mch_missions.6.d"
+	picture = RELIGION_eventPicture
+	
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	option = { # Accept cooperation and conversion
+		name = "mch_missions.6.a"
+		if = {
+			limit = {
+				NOT = {
+					religion = vajrayana
+				}
+			}
+			change_religion = vajrayana
+		}
+		add_ruler_modifier = {
+			name = "genghis_khan_reborn"
+			duration = -1
+		}
+		add_country_modifier = {
+			name = "tibetan_missionaries"
+			duration = 18250
+		}
+	}
+	option = { # Rule Tibet by force
+		name = "mch_missions.6.b"
+		custom_tooltip = mongol_tibetan_rulership_tt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					region = tibet_region
+					religion = vajrayana
+				}
+				add_province_modifier = {
+					name = "mongol_rule_tibet"
+					duration = 7300
+				}
+			}
+		}
+	}
+}
+
+# Uniting the Mongols
+country_event = {
+	id = mch_missions.7
+	title = "mch_missions.7.t"
+	desc = "mch_missions.7.d"
+	picture = MONGOL_BANNERS_eventPicture
+	
+	fire_only_once = yes
+	
+	is_triggered_only = yes
+	
+	option = { # unite the tribes
+		name = "mch_missions.7.a"
+		if = {
+			limit = {
+				NOT = {
+					primary_culture = mongol
+				}
+			}
+			change_primary_culture = mongol
+			set_ruler_culture = mongol
+			if = {
+				limit = {
+					has_heir = yes
+				}
+				set_heir_culture = mongol
+			}
+		}
+		custom_tooltip = unite_mongol_culture_tt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					OR = {
+						culture = chahar
+						culture = khalkha
+						culture = oirats
+					}
+				}
+				change_culture = mongol
+			}
+		}
+	}
+	option = { # reorganize the tribes
+		name = "mch_missions.7.b"
+		if = {
+			limit = {
+				NOT = { accepted_culture = mongol }
+				NOT = { primary_culture = mongol }
+			}
+			add_accepted_culture = mongol
+		}
+		if = {
+			limit = {
+				NOT = { accepted_culture = chahar }
+				NOT = { primary_culture = chahar }
+			}
+			add_accepted_culture = chahar
+		}
+		if = {
+			limit = {
+				NOT = { accepted_culture = khalkha }
+				NOT = { primary_culture = khalkha }
+			}
+			add_accepted_culture = khalkha
+		}
+		if = {
+			limit = {
+				NOT = { accepted_culture = oirats }
+				NOT = { primary_culture = oirats }
+			}
+			add_accepted_culture = oirats
+		}
+		add_country_modifier = {
+			name = "reorganized_mongols"
+			duration = -1
+		}
+	}
+}

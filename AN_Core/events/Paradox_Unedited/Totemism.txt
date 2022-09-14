@@ -1,0 +1,1035 @@
+##############################
+# Totemism Flavor Events     #
+#                            #
+# Written by Veronica Pazos  #
+##############################
+
+namespace = totemism_flavor
+
+#Missing Consort! :o (Orpheus Quest start)
+country_event = {
+	id = totemism_flavor.1
+	title = totemism_flavor.1.t
+	desc = totemism_flavor.1.d
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		is_female = no
+		has_consort = yes
+		NOT = { has_country_flag = orpheus_quest }
+		NOT = { has_country_flag = adventurous_ruler }
+	}
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	mean_time_to_happen = {
+		days = 1
+		
+		modifier = {
+			factor = 0.75
+			OR = {
+				consort_has_personality_ancestor = { key = secretive }
+				consort_has_personality = secretive_personality
+			}
+		}
+	}
+	
+	option = {
+		name = totemism_flavor.1.a # Send people to find her
+		ai_chance = { factor = 50 }
+		add_manpower = -1
+		set_country_flag = orpheus_quest
+	}
+	
+	option = {
+		name = totemism_flavor.1.b # Hire people to find her
+		ai_chance = { factor = 25 }
+		add_treasury = -15
+		set_country_flag = orpheus_quest
+	}
+	
+	option = {
+		name = totemism_flavor.1.c # Send ruler
+		ai_chance = { factor = 10 }
+		capital_scope = {
+			add_unrest = 1
+		}
+		set_country_flag = orpheus_quest
+		set_country_flag = adventurous_ruler
+	}
+
+	option = {
+		name = totemism_flavor.1.e # We'll find a new consort
+		ai_chance = { factor = 15 }
+		divorce_consort_effect = yes
+	}
+}
+
+# Consort Sighted! (Orpheus Quest 2)
+country_event = {
+	id = totemism_flavor.2
+	title = totemism_flavor.2.t
+	desc = totemism_flavor.2.d
+	picture = EXPLORERS_eventPicture
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		any_owned_province = {
+			is_capital = no
+			religion = totemism
+			num_of_units_in_province = {
+				who = ROOT
+				amount = 0.1
+			}
+		}
+		has_country_flag = orpheus_quest
+	}
+	
+	immediate = {
+		clr_country_flag = orpheus_quest
+		hidden_effect = {
+			clr_country_flag = orpheus_quest
+			random_owned_province = {
+				limit = {
+					religion = totemism
+					is_capital = no
+				}
+				save_event_target_as = orpheus_province
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 2
+	}
+	
+	option = { # She demands to see the ruler
+		name = totemism_flavor.2.a
+		trigger = {
+			NOT = { has_country_flag = adventurous_ruler }
+		}
+		country_event = {
+			id = totemism_flavor.3 
+			days = 10
+		}
+	}
+	
+	option = { # Take her by force
+		name = totemism_flavor.2.e
+		trigger = {
+			event_target:orpheus_province = {
+				num_of_units_in_province = {
+					who = ROOT
+					amount = 2
+				}
+			}
+		}
+		event_target:orpheus_province = {
+			add_unrest = -1
+		}
+		hidden_effect = {
+			country_event = {
+				id = totemism_flavor.5
+			}
+		}
+		set_country_flag = taken_by_force
+	}
+	
+	option = { # Let her go
+		name = totemism_flavor.2.b
+		divorce_consort_effect = yes
+	}
+	
+	option = { # Ruler finds her!
+		name = totemism_flavor.2.c
+		trigger = {
+			has_country_flag = adventurous_ruler
+		}
+		hidden_effect = {
+			random_list = {
+				90 = { # Gods let her come back
+					country_event = {
+						id = totemism_flavor.3
+					}
+				}
+				10 = { # She runs away
+					country_event = {
+						id = totemism_flavor.5
+					}
+					divorce_consort_effect = yes
+				}
+			}
+		}
+	}
+}
+
+# A Strange Behavior (Orpheus Quest 3)
+country_event = {
+	id = totemism_flavor.3
+	title = totemism_flavor.3.t
+	desc = totemism_flavor.3.d
+	picture = COURT_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # Follow her
+		name = totemism_flavor.3.a
+		country_event = {
+			id = totemism_flavor.4
+		}
+	}
+	option = { # Let her go
+		name = totemism_flavor.3.b
+		divorce_consort_effect = yes
+	}
+}
+
+# The Test (Orpheus Quest 4)
+country_event = {
+	id = totemism_flavor.4
+	title = totemism_flavor.4.t
+	desc = totemism_flavor.4.d
+	picture = SHIP_SAILING_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # Don't look
+		name = totemism_flavor.4.a
+		hidden_effect = {
+			country_event = {
+				id = totemism_flavor.6
+			}
+		}
+	}
+	
+	option = { # Look back
+		name = totemism_flavor.4.b
+		hidden_effect = {
+			country_event = {
+				id = totemism_flavor.5
+			}
+		}
+		set_country_flag = looked_back
+	}
+}
+
+# Consort Doesn't Come Back (Orpheus Quest bad ending)
+country_event = {
+	id = totemism_flavor.5
+	title = totemism_flavor.5.t
+	desc = {
+		trigger = {
+			NOT = { has_country_flag = looked_back }
+			NOT = { has_country_flag = taken_by_force }
+		}
+		desc = totemism_flavor.5.d
+	}
+	desc = {
+		trigger = {
+			has_country_flag = looked_back
+		}
+		desc = totemism_flavor.5.d2
+	}
+	desc = {
+		trigger = {
+			has_country_flag = taken_by_force
+		}
+		desc = totemism_flavor.5.d3
+	}
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # Love of my life... :(
+		name = totemism_flavor.5.a
+		add_stability = -1
+		divorce_consort_effect = yes
+	}
+}
+
+# Reunited at Last (Orpheus Quest good ending)
+country_event = {
+	id = totemism_flavor.6
+	title = totemism_flavor.6.t
+	desc = totemism_flavor.6.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # Love of my life... :)
+		name = totemism_flavor.6.a
+		add_stability = 1
+		add_ruler_modifier = {
+			name = "tot_didnt_look_back"
+		}
+		set_ruler_flag = didnt_look_back
+	}
+}
+
+# Ruler Loses Their Voice
+country_event = {
+	id = totemism_flavor.7
+	title = totemism_flavor.7.t
+	desc = totemism_flavor.7.d
+	picture = KING_SICK_IN_BED_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		has_regency = no
+		OR = {
+			is_month = 0
+			is_month = 1
+			is_month = 11
+		}
+		NOT = { has_ruler_flag = hoarse_ruler }
+	}
+	
+	option = {
+		name = totemism_flavor.7.a
+		add_ruler_modifier = {
+			name = tot_hoarse_ruler
+			duration = 30
+		}
+		set_ruler_flag = hoarse_ruler
+	}
+}
+
+# Discovery of a Legendary Location (cave)
+country_event = {
+	id = totemism_flavor.8
+	title = totemism_flavor.8.t
+	desc = totemism_flavor.8.d
+	picture = EXPLORERS_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			capital_scope = {
+				random_neighbor_province = {
+					limit = {
+						area = PREV
+						owned_by = ROOT
+					}
+					save_event_target_as = legendary_location
+				}
+			}
+		}
+	}
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		NOT = { has_country_flag = legendary_location_discovered }
+		capital_scope = {
+			any_neighbor_province = {
+				area = PREV
+				owned_by = ROOT
+				NOT = { has_province_modifier = tot_legendary_location }
+				is_capital = no
+			}
+		}
+	}
+	
+	option = { # Send explorers
+		name = totemism_flavor.8.a
+		custom_tooltip = totemism_flavor.8.a.tt
+		set_country_flag = legendary_location_discovered
+		hidden_effect = {
+			country_event = {
+				id = totemism_flavor.9
+				days = 60
+			}
+		}
+		add_treasury = -5
+		add_manpower = -0.2
+		event_target:legendary_location = {	
+			add_province_modifier = {
+				name = tot_legendary_location
+				duration = -1
+			}
+		}
+	}
+	
+	option = { # Do nothing
+		name = totemism_flavor.8.b
+		set_country_flag = legendary_location_ignored
+	}
+}
+
+# Exploration of Legendary Location (finding figurines etc)
+country_event = {
+	id = totemism_flavor.9
+	title = totemism_flavor.9.t
+	desc = totemism_flavor.9.d
+	picture = ARTWORK_eventPicture
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			capital_scope = {
+				random_neighbor_province = {
+					limit = {
+						has_province_modifier = tot_legendary_location
+					}
+					save_event_target_as = legendary_location
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = totemism_flavor.9.a
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_reform = native_becomes_monarchy_reform
+					has_reform = native_becomes_republic_reform
+					has_reform = native_becomes_theocracy_reform
+					has_reform = native_becomes_horde_reform
+				}
+				event_target:legendary_location = {	
+					NOT = { has_building = temple }
+				}
+			}
+			event_target:legendary_location = {	
+				add_building = temple
+			}
+		}
+		else_if = {
+			limit = {
+				event_target:legendary_location = {	
+					NOT = { has_building = native_ceremonial_fire_pit }
+				}
+				government = native
+			}
+			event_target:legendary_location = {	
+				add_building = native_ceremonial_fire_pit
+			}
+		}
+		else_if = {
+			limit = {
+				government = native
+				event_target:legendary_location = {	
+					NOT = { has_building = native_longhouse }
+				}
+			}
+			event_target:legendary_location = {	
+				add_building = native_longhouse
+			}
+		}
+		else = {
+			add_prestige = 10
+		}
+		set_country_flag = legendary_location_explored
+	}
+}
+
+# Maintenance of Legendary Location
+country_event = {
+	id = totemism_flavor.10
+	title = totemism_flavor.10.t
+	desc = totemism_flavor.10.d
+	picture = EXPLORERS_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		has_country_flag = legendary_location_explored
+		NOT = {
+			any_owned_province = {
+				has_province_modifier = tot_legendary_location_maintained
+			}
+		}
+		capital_scope = {
+			any_neighbor_province = {
+				has_province_modifier = tot_legendary_location
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			capital_scope = {
+				random_neighbor_province = {
+					limit = {
+						has_province_modifier = tot_legendary_location
+					}
+					save_event_target_as = legendary_location
+				}
+			}
+		}
+	}
+	
+	option = { 	# appoint advisor to take care of it
+		name = totemism_flavor.10.a
+		trigger = {
+			OR = {
+				has_adm_advisor = yes
+				has_dip_advisor = yes
+			}
+		}
+		if = {
+			limit = {
+				has_adm_advisor = yes
+			}
+			remove_advisor_by_category = ADM
+		}
+		else_if = {
+			limit = {
+				has_dip_advisor = yes
+			}
+			remove_advisor_by_category = DIP 
+		}
+		event_target:legendary_location = {
+			add_province_modifier = {
+				name = tot_legendary_location_maintained
+				duration = 1825
+			}
+		}
+	}
+	
+	option = { # appoint heir 
+		name = totemism_flavor.10.b
+		trigger = {
+			has_heir = yes
+		}
+		random_list = {
+			50 = { }
+			50 = { change_heir_adm = 1 }
+		}
+		if = {
+			limit = {
+				OR = {
+					heir_has_good_adm_personality = yes
+					heir_has_personality_ancestor = { key = pious }
+				}
+			}
+			add_heir_personality = pious_personality
+		}
+		event_target:legendary_location = {
+			add_province_modifier = {
+				name = tot_legendary_location_maintained
+				duration = 1825
+			}
+		}
+		hidden_effect = { country_event = { id = totemism_flavor.12 days = 5474 } }
+	}
+	
+	option = { # donate some money
+		name = totemism_flavor.10.c
+		add_treasury = -10
+		event_target:legendary_location = {
+			add_province_modifier = {
+				name = tot_legendary_location_maintained
+				duration = 1825
+			}
+		}
+	}
+	
+	option = { # it will be fine like this
+		name = totemism_flavor.10.e
+	}
+}
+
+# Abandoning the Legendary Location
+
+country_event = {
+	id = totemism_flavor.11
+	title = totemism_flavor.11.t
+	desc = totemism_flavor.11.d
+	picture = REFORM_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = { 
+					OR = {
+						has_province_modifier = tot_legendary_location
+						has_province_modifier = tot_legendary_location_maintained
+					}
+				}
+				save_event_target_as = legendary_province
+			}
+		}
+	}
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		has_country_flag = legendary_location_discovered
+		NOT = { has_country_flag = legendary_location_abandoned }
+		NOT = { has_country_flag = legendary_location_ignored }
+		NOT = { religion = totemism }
+	}
+	
+	option = { # We leave
+		name = totemism_flavor.11.a
+		custom_tooltip = totemism_flavor.11.a.tt
+		
+		event_target:legendary_province = {
+			remove_province_modifier = tot_legendary_location
+			remove_province_modifier = tot_legendary_location_maintained
+		}
+		add_prestige = -10
+		add_country_modifier = {
+			name = tot_legend_abandoned
+			duration = 3650
+		}
+	}
+}
+
+# Assassination Attempt in Legendary Location (heir)
+
+country_event = {
+	id = totemism_flavor.12
+	title = totemism_flavor.12.t
+	desc = totemism_flavor.12.d
+	picture = DEATH_OF_HEIR_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = { # oh no
+		name = totemism_flavor.12.a
+		#custom_tooltip = totemism_flavor.12.a.tt
+		
+		random_list = {
+			30 = {
+				kill_heir = {}
+			}
+			70 = {
+			}
+		}
+	}
+}
+
+# Why Is the Food Gone!?
+
+country_event = {
+	id = totemism_flavor.13
+	title = totemism_flavor.13.t
+	desc = totemism_flavor.13.d
+	picture = FEAST_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		is_at_war = no
+		any_known_country = {
+			religion = totemism
+			has_opinion = {
+				who = ROOT
+				value = 50
+			}
+		}
+		capital_scope = {
+			base_production = 5
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					religion = totemism
+					has_opinion = {
+						who = ROOT
+						value = 50
+					}
+				}
+				save_event_target_as = totemic_neighbor
+			}
+		}
+	}
+	
+	option = { #buy more
+		name = totemism_flavor.13.a
+		if = { 
+			limit = { monthly_income = 5 }
+			add_years_of_income = -0.1
+		}
+		else = {
+			add_treasury = -5
+		}
+		event_target:totemic_neighbor = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_great_feast
+			}
+		}
+	}
+	
+	option = { #take it from our people
+		name = totemism_flavor.13.b
+		capital_scope = {
+			add_unrest = 1
+		}
+		event_target:totemic_neighbor = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_great_feast
+			}
+		}
+	}
+	
+	option = { #we'll work with what we have
+		name = totemism_flavor.13.c
+		event_target:totemic_neighbor = {
+			add_opinion = {
+				who = ROOT
+				modifier = opinion_disappointing_feast
+			}
+		}
+	}
+}
+
+# Kids Stole the Ceremonial Pipe
+
+country_event = {
+	id = totemism_flavor.14
+	title = totemism_flavor.14.t
+	desc = totemism_flavor.14.d
+	picture = CITY_VIEW_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		NOT = { has_country_flag = tot_stolen_pipe }
+		has_mil_advisor = yes
+	}
+	
+	option = { #scold them
+		name = totemism_flavor.14.a
+		set_country_flag = tot_stolen_pipe
+		random_owned_province = {
+			add_unrest = 1
+		}
+		add_mil_power = 50
+	}
+	
+	option = { #they're just children
+		name = totemism_flavor.14.b
+		add_adm_power = 50
+		set_country_flag = tot_stolen_pipe
+	}
+}
+
+# Ancient Religious Ceramics
+
+country_event = {
+	id = totemism_flavor.15
+	title = totemism_flavor.15.t
+	desc = totemism_flavor.15.d
+	picture = EXPLORERS_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		is_at_war = no
+		NOT = { has_country_flag = tot_ceramics_discovered }
+		OR = {
+			has_country_flag = legendary_location_discovered
+			has_country_flag = legendary_location_ignored
+		}
+	}
+	
+	option = { #let's safely store them
+		name = totemism_flavor.15.a
+		set_country_flag = tot_ceramics_discovered
+		add_prestige = 5
+		add_country_modifier = {
+			name = tot_ceramics_discovered
+			duration = 3650
+		}
+	}
+}
+
+# Treacherous Allies
+
+country_event = {
+	id = totemism_flavor.16
+	title = totemism_flavor.16.t
+	desc = totemism_flavor.16.d
+	picture = ASSASSINATION_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		is_at_war = no
+		any_known_country = {
+			religion = totemism
+			government = native
+			OR = {
+				has_opinion = {
+					who = ROOT
+					value = 100
+				}
+				alliance_with = ROOT
+			}
+		}
+		NOT = { has_country_flag = treacherous_allies }
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_known_country = {
+				limit = {
+					religion = totemism
+					government = native
+					OR = {
+						has_opinion = {
+							who = ROOT
+							value = 100
+						}
+						alliance_with = ROOT
+					}
+				}
+				save_event_target_as = betrayer_ally
+			}
+		}
+	}
+	
+	option = {
+		name = totemism_flavor.16.a
+		ROOT = {
+			add_opinion = {
+				who = event_target:betrayer_ally
+				modifier = opinion_betrayal
+			}
+		}
+		if = {
+			limit = {
+				alliance_with = event_target:betrayer_ally
+			}
+			capital_scope = {
+				add_unrest = 1
+			}
+		}
+		add_dip_power = 50
+		add_prestige = 5
+		set_country_flag = treacherous_allies
+	}
+}
+
+# Ruler Asks for Spiritual Tutelage
+
+country_event = {
+	id = totemism_flavor.17
+	title = totemism_flavor.17.t
+	desc = totemism_flavor.17.d
+	picture = PRAYING_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		has_regency = no
+		is_at_war = no
+	}
+	
+	option = { #amazing
+		name = totemism_flavor.17.a
+		trigger = {
+			OR = {
+				ruler_has_personality = pious_personality
+				ruler_has_personality = kind_hearted_personality
+				has_ruler_modifier = tot_didnt_look_back
+			}
+		}
+		add_ruler_modifier = {
+			name = tot_dedicated_ruler
+		}
+	}
+	
+	option = { #doesn't sound very good
+		name = totemism_flavor.17.b
+		trigger = {
+			OR = {
+				ruler_has_personality = sinner_personality
+				ruler_has_personality = cruel_personality
+				ruler_has_personality = malevolent_personality
+			}
+		}
+		add_ruler_modifier = {
+			name = tot_shameful_ruler
+		}
+	}
+	
+	option = { #maybe
+		name = totemism_flavor.17.c
+		trigger = {
+			NOT = {
+				OR = {
+					ruler_has_personality = pious_personality
+					ruler_has_personality = kind_hearted_personality
+					has_ruler_modifier = tot_didnt_look_back
+					ruler_has_personality = sinner_personality
+					ruler_has_personality = cruel_personality
+					ruler_has_personality = malevolent_personality
+				}
+			}
+		}
+		random_list = {
+			50 = { 
+				add_ruler_modifier = {
+					name = tot_dedicated_ruler
+				}
+			}
+			50 = {
+				add_ruler_modifier = {
+					name = tot_shameful_ruler
+				}
+			}
+		}
+	}
+}
+
+# Famine After War
+
+country_event = {
+	id = totemism_flavor.18
+	title = totemism_flavor.18.t
+	desc = totemism_flavor.18.d
+	picture = FAMINE_eventPicture
+	
+	is_triggered_only = yes
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	trigger = {
+		has_dlc = "Leviathan"
+		religion = totemism
+		OR = {
+			had_recent_war = 3
+			is_at_war = yes
+		}
+	}
+	
+	option = { # blame your advisors
+		name = totemism_flavor.18.a
+		trigger = {
+			OR = {
+				has_adm_advisor = yes
+				has_dip_advisor = yes
+				has_mil_advisor = yes
+			}
+		}
+		capital_scope = {
+			area = {
+				add_province_modifier = {
+					name = tot_great_famine
+					duration = 1825
+				}
+			}
+			add_unrest = -1
+		}
+		if = {
+			limit = {
+				has_adm_advisor = yes
+			}
+			remove_advisor_by_category = ADM
+		}
+		else_if = {
+			limit = {
+				has_dip_advisor = yes
+			}
+			remove_advisor_by_category = DIP 
+		}
+		else = {
+			remove_advisor_by_category = MIL
+		}
+	}
+	
+	option = { # appease the gods
+		name = totemism_flavor.18.b
+		capital_scope = {
+			area = {
+				limit = {
+					owned_by = ROOT
+				}
+				add_province_modifier = {
+					name = tot_great_famine
+					duration = 1825
+				}
+			}
+			add_unrest = -1
+		}
+		if = {
+			limit = {
+				has_estate = estate_church
+			}
+			add_estate_loyalty = {
+				estate = estate_church
+				loyalty = 10
+			}
+		}
+		add_years_of_income = -0.1
+	}
+}

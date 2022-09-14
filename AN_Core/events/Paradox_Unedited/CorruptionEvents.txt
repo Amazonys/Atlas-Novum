@@ -1,0 +1,667 @@
+########################################
+# Events about Corruption
+#
+# written by Rufus Tronde
+########################################
+
+namespace = corruption_event
+
+### No Corruption, Positive Events
+
+# The Honest Merchants of [Root.GetName]
+country_event = {
+	id = corruption_event.1
+	title = "corruption_event.1.t"
+	desc = "corruption_event.1.d"
+	picture = MERCHANTS_TALKING_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { corruption = 1 }
+		NOT = { yearly_corruption_increase = 0.001 }
+		NOT = { has_country_modifier = trusted_merchants }
+		stability = 3
+	}
+	
+	option = {
+		name = "corruption_event.1.a"
+		add_country_modifier = {
+			name = "trusted_merchants"
+			duration = 3650
+		}
+	}
+}
+
+# Trust Your Neighbor
+country_event = {
+	id = corruption_event.2
+	title = "corruption_event.2.t"
+	desc = "corruption_event.2.d"
+	picture = DIPLOMACY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { corruption = 1 }
+		NOT = { yearly_corruption_increase = 0.001 }
+		NOT = { has_country_modifier = honest_administrators }
+		stability = 3
+	}
+	
+	option = {
+		name = "corruption_event.2.a"
+		add_country_modifier = {
+			name = "honest_administrators"
+			duration = 3650
+		}
+	}
+}
+
+# Rigorous Researchers
+country_event = {
+	id = corruption_event.3
+	title = "corruption_event.3.t"
+	desc = "corruption_event.3.d"
+	picture = INVENTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		stability = 3
+		NOT = { corruption = 1 }
+		NOT = { yearly_corruption_increase = 0.001 }
+	}
+	
+	option = {
+		name = "corruption_event.3.a"
+		add_adm_power = 40
+		add_dip_power = 40
+		add_mil_power = 40
+	}
+}
+
+# An Honorable People
+country_event = {
+	id = corruption_event.4
+	title = "corruption_event.4.t"
+	desc = "corruption_event.4.d"
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { corruption = 1 }
+		NOT = { yearly_corruption_increase = 0.001 }
+		stability = 3
+	}
+	
+	option = {
+		name = "corruption_event.4.a"
+		add_prestige_or_monarch_power = {
+			amount = 20
+		}
+	}
+}
+
+# Incorruptible
+country_event = {
+	id = corruption_event.5
+	title = "corruption_event.5.t"
+	desc = "corruption_event.5.d"
+	picture = ADVISOR_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { corruption = 1 }
+		NOT = { yearly_corruption_increase = 0.001 }
+		stability = 3
+		any_known_country = {
+			has_spy_network_in = {
+				who = ROOT
+				value = 25
+			}
+		}
+		
+	}
+	
+	option = {
+		name = "corruption_event.5.a"
+		
+		random_known_country = {
+			limit = {
+				has_spy_network_in = {
+					who = ROOT
+					value = 25
+				}
+			}
+			add_spy_network_in = {
+				who = ROOT
+				value = -25
+			}
+		}
+	}
+}
+
+### Some Corruption, Dilemma Events
+
+# Corrupt Taxmen
+country_event = {
+	id = corruption_event.6
+	title = "corruption_event.6.t"
+	desc = "corruption_event.6.d"
+	picture = CORRUPTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		corruption = 2
+		NOT = { corruption = 10 }
+	}
+	
+	# Launch an investigation
+	option = {
+		name = "corruption_event.6.a"
+		add_adm_power = -40
+	}
+
+	# Take the loss
+	option = {
+		name = "corruption_event.6.b"
+		add_years_of_income = -0.25
+	}
+}
+
+# Corrupt Advisor
+country_event = {
+	id = corruption_event.7
+	title = "corruption_event.7.t"
+	desc = "corruption_event.7.d"
+	picture = CORRUPTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		corruption = 2
+		NOT = { corruption = 10 }
+		has_advisor = yes
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_list = {
+				1 = {
+					trigger = {
+						employed_advisor = {
+							category = ADM
+						}
+					}
+					set_country_flag = advisor_events_adm
+				}
+				1 = {
+					trigger = {
+						employed_advisor = {
+							category = DIP
+						}
+					}
+					set_country_flag = advisor_events_dip
+				}
+				1 = {
+					trigger = {
+						employed_advisor = {
+							category = MIL
+						}
+					}
+					set_country_flag = advisor_events_mil
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = "corruption_event.7.a"
+		reduce_meritocracy_effect = yes
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = { kill_advisor_by_category_effect = { ADM = yes } }
+			advisor_events_dip = { kill_advisor_by_category_effect = { DIP = yes } }
+			advisor_events_mil = { kill_advisor_by_category_effect = { MIL = yes } }
+		}
+		add_prestige = -10
+	}
+
+	option = {
+		name = "corruption_event.7.b"
+		reduce_meritocracy_effect = yes
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				remove_advisor_by_category = ADM
+				add_adm_power = -50
+			}
+			advisor_events_dip = {
+				remove_advisor_by_category = DIP
+				add_dip_power = -50
+			}
+			advisor_events_mil = {
+				remove_advisor_by_category = MIL
+				add_mil_power = -50
+			}
+		}
+	}
+
+	option = {
+		name = "corruption_event.7.c"
+		reduce_meritocracy_effect = yes
+		trigger_switch = {
+			on_trigger = has_country_flag
+			advisor_events_adm = {
+				add_adm_power = -100
+			}
+			advisor_events_dip = {
+				add_dip_power = -100
+			}
+			advisor_events_mil = {
+				add_mil_power = -100
+			}
+		}
+	}
+	
+	after = {
+		hidden_effect = {
+			trigger_switch = {
+				on_trigger = has_country_flag
+				advisor_events_adm = { clr_country_flag = advisor_events_adm }
+				advisor_events_dip = { clr_country_flag = advisor_events_dip }
+				advisor_events_mil = { clr_country_flag = advisor_events_mil }
+			}
+		}
+	}
+}
+
+# Wily Smugglers
+country_event = {
+	id = corruption_event.8
+	title = "corruption_event.8.t"
+	desc = "corruption_event.8.d"
+	picture = SHIP_SAILING_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		corruption = 2
+		NOT = { corruption = 10 }
+		NOT = { has_country_modifier = recruited_smugglers }
+		NOT = { has_country_modifier = smugglers_dominating }
+	}
+	
+	option = {
+		name = "corruption_event.8.a"
+		add_dip_power = -30
+		add_years_of_income = -0.1
+	}
+
+	option = {
+		name = "corruption_event.8.b"
+		add_country_modifier = {
+			name = "recruited_smugglers"
+			duration = 3650
+		}
+		add_prestige = -10
+		add_years_of_income = -0.1
+	}
+
+	option = {
+		name = "corruption_event.8.c"
+		add_country_modifier = {
+			name = "smugglers_dominating"
+			duration = 3650
+		}
+	}
+}
+
+
+# [Root.Culture.GetName] Community Distrusts Us
+country_event = {
+	id = corruption_event.9
+	title = "corruption_event.9.t"
+	desc = "corruption_event.9.d"
+	picture = ACCUSATION_eventPicture
+	goto = culture_province
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_owner_culture = no
+				}
+				save_event_target_as = culture_province
+			}
+		}
+	}
+	
+	trigger = {
+		corruption = 10
+		any_known_country = {
+			primary_culture = ROOT
+			NOT = { corruption = 0.25 }
+		}
+		any_owned_province = {
+			has_owner_culture = no
+		}
+	}
+	
+	# Apologize, promise to improve
+	option = {
+		name = "corruption_event.9.a"
+		add_prestige = -10
+		event_target:culture_province = {
+			add_local_autonomy = 10
+		}
+	}
+
+	# Reject it as prejudice
+	option = {
+		name = "corruption_event.9.b"
+		event_target:culture_province = {
+			add_unrest = 4
+		}
+	}
+}
+
+# Corrupt Ambassador
+country_event = {
+	id = corruption_event.10
+	title = "corruption_event.10.t"
+	desc = "corruption_event.10.d"
+	picture = ACCUSATION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		corruption = 2
+		NOT = { corruption = 10 }
+		any_known_country = { alliance_with = ROOT }
+	}
+	
+	option = {
+		name = "corruption_event.10.a"
+		add_dip_power = -30
+	}
+
+	option = {
+		name = "corruption_event.10.b"
+		random_known_country = {
+			limit = { alliance_with = ROOT }
+			add_opinion = {
+				who = ROOT
+				modifier = corrupt_ambassador
+			}
+		}
+	}
+}
+
+### Severe Corruption, Bad Events
+
+# [Root.GetTradeGoodsName] "Disappearing"
+country_event = {
+	id = corruption_event.11
+	title = "corruption_event.11.t"
+	desc = "corruption_event.11.d"
+	picture = HARBOUR_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		corruption = 10
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = { NOT = { trade_goods = unknown } }
+				save_event_target_as = trade_goods_province
+			}
+		}
+	}
+	
+	option = {
+		name = "corruption_event.11.a"
+		every_owned_province = {
+			limit = { trade_goods = event_target:trade_goods_province }
+			add_province_modifier = {
+				name = "embezzled_goods"
+				duration = 3650
+			}
+		}
+	}
+}
+
+# Corrupt Officers
+country_event = {
+	id = corruption_event.12
+	title = "corruption_event.12.t"
+	desc = "corruption_event.12.d"
+	picture = CORRUPTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		corruption = 10
+	}
+	
+	option = {
+		name = "corruption_event.12.a"
+		add_army_tradition = -10
+	}
+}
+
+# Corrupt Admirals
+country_event = {
+	id = corruption_event.13
+	title = "corruption_event.13.t"
+	desc = "corruption_event.13.d"
+	picture = CORRUPTION_eventPicture
+
+	is_triggered_only = yes
+	
+	trigger = {
+		corruption = 10
+		any_owned_province = { has_port = yes }
+		navy_size = 1
+	}
+	
+	option = {
+		name = "corruption_event.13.a"
+		add_navy_tradition = -10
+	}
+}
+
+# Merchants Distrust Us
+country_event = {
+	id = corruption_event.14
+	title = "corruption_event.14.t"
+	desc = "corruption_event.14.d"
+	picture = CORRUPTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		corruption = 10
+		NOT = { has_country_modifier = distrusted_merchants }
+	}
+	
+	option = {
+		name = "corruption_event.14.a"
+		add_country_modifier = {
+			name = "distrusted_merchants"
+			duration = 3650
+		}
+	}
+}
+
+# Governmental Functions Breaking Down
+country_event = {
+	id = corruption_event.15
+	title = "corruption_event.15.t"
+	desc = "corruption_event.15.d"
+	picture = BANKRUPCY_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		corruption = 10
+	}
+	
+	option = {
+		name = "corruption_event.15.a"
+		add_stability = -1
+	}
+}
+
+### Corruption Increase
+
+# Mercenaris Extorting Locals
+country_event = {
+	id = corruption_event.16
+	title = "corruption_event.16.t"
+	desc = "corruption_event.16.d"
+	picture = BORDER_TENSION_eventPicture
+	goto = hired_mercs_victim_area
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		any_hired_mercenary_company = {
+			has_company_manpower = 0.2
+			location = {
+				owned_by = root
+				is_state_core = root
+			}
+		}
+		is_at_war = no
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_hired_mercenary_company = {
+				limit = {
+					has_company_manpower = 0.2
+					location = {
+						owned_by = root
+						is_state_core = root
+					}
+				}
+				save_event_target_as = hired_merc_band
+				location = {
+					save_event_target_as = hired_mercs_victim_area
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = "corruption_event.16.a"
+		add_mil_power = -50
+		event_target:hired_merc_band = {
+			add_company_manpower = -0.2
+		}
+	}
+
+	option = {
+		name = "corruption_event.16.b"
+		add_corruption = 1
+		event_target:hired_mercs_victim_area = {
+			area = {
+				limit = { owned_by = root }
+				add_devastation = 15
+			}
+		}
+	}
+}
+
+# Incompetent Administrator
+country_event = {
+	id = corruption_event.17
+	title = "corruption_event.17.t"
+	desc = "corruption_event.17.d"
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { adm = 2 }
+	}
+	
+	option = {
+		name = "corruption_event.17.a"
+		add_corruption = 0.5
+	}
+}
+
+# Overextension Exploited
+country_event = {
+	id = corruption_event.18
+	title = "corruption_event.18.t"
+	desc = "corruption_event.18.d"
+	picture = OVEREXTENSION_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		overextension_percentage = 0.75
+	}
+	
+	option = {
+		name = "corruption_event.18.a"
+		add_corruption = 1
+	}
+}
+
+# $TRADER$ has Corrupt Connections
+country_event = {
+	id = corruption_event.19
+	title = "corruption_event.19.t"
+	desc = "corruption_event.19.d"
+	picture = BAD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		advisor = trader
+	}
+	
+	option = {
+		name = "corruption_event.19.a"
+		remove_advisor = trader
+		reduce_meritocracy_effect = yes
+		add_country_modifier = {
+			name = "minor_trade_crisis"
+			duration = 3650
+		}
+	}
+
+	option = {
+		name = "corruption_event.19.b"
+		add_corruption = 0.5
+		reduce_meritocracy_effect = yes
+	}
+}
+
+# Bribes Growing More Accepted
+country_event = {
+	id = corruption_event.20
+	title = "corruption_event.20.t"
+	desc = "corruption_event.20.d"
+	picture = CORRUPTION_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "corruption_event.20.a"
+		add_corruption = 0.5
+	}
+}

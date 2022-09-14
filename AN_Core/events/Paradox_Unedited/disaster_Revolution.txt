@@ -1,0 +1,2053 @@
+namespace = revolution
+
+# Revolution
+country_event = {
+	id = revolution.1
+	title = "EVTNAME3011"
+	desc = "EVTDESC3011"
+	picture = REVOLUTION_eventPicture
+	
+	major = yes
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+
+	immediate = {
+		hidden_effect = { log = "[Root.GetName] has the Revolution Disaster." }
+		if = {
+			limit = {
+				any_owned_province = {
+					development = 20
+					highest_supply_limit_in_area = yes
+					is_in_capital_area = yes
+					fort_level = 1
+					is_capital = no
+				}
+			}
+			random_owned_province = { 
+				limit = {
+					development = 20
+					highest_supply_limit_in_area = yes
+					is_in_capital_area = yes
+					fort_level = 1
+					is_capital = no
+				}
+				if = {
+					limit = {
+						NOT = { has_dlc = "Emperor" }
+					}
+					spawn_rebels = {
+						type = revolutionary_rebels
+						size = 3		
+						win = yes
+						unrest = 10
+					}
+				}
+				else = {
+					set_province_flag = revolution_spawn_rebels_here
+				}
+			}
+		}
+		else = {
+			random_owned_province = { 
+				limit = {
+					highest_supply_limit_in_area = yes
+					is_capital = no
+				}
+				if = {
+					limit = {
+						NOT = { has_dlc = "Emperor" }
+					}
+					spawn_rebels = {
+						type = revolutionary_rebels
+						size = 3		
+						win = yes
+						unrest = 10
+					}
+				}
+				else = {
+					set_province_flag = revolution_spawn_rebels_here
+				}
+			}
+		}
+		if = {
+			limit = {
+				NOT = { has_dlc = "Emperor" }
+			}
+			random_owned_province = {
+				limit = {
+					is_capital = yes
+				}
+				spawn_rebels = {
+					type = revolutionary_rebels
+					size = 2
+				}
+			}
+		}
+		add_stability = -3
+	
+		set_country_flag = had_revolution
+		if = {
+			limit = {
+				is_bankrupt = yes
+			}
+			set_country_flag = no_revolution_bankruptcy_event
+		}
+	}
+	
+	option = {
+		name = "EVTOPTA3011"			# Dire times are ahead of us
+		trigger = { NOT = { has_dlc = "Emperor" } }
+		add_prestige = -10
+	}
+	option = {
+		name = revolution.1.A			# Crush them
+		trigger = { has_dlc = "Emperor" }
+		set_country_flag = revolution_disaster_reactionary
+		random_owned_province = {
+			limit = {
+				has_province_flag = revolution_spawn_rebels_here
+			}
+			clr_province_flag = revolution_spawn_rebels_here
+			spawn_rebels = {
+				type = revolutionary_rebels
+				size = 3		
+				win = yes
+				unrest = 10
+			}
+			if = {
+				limit = {
+					any_neighbor_province = {
+						owned_by = root
+					}
+				}
+				random_neighbor_province = {
+					limit = { owned_by = root }
+					spawn_rebels = {
+						type = revolutionary_rebels
+						size = 3
+						win = yes
+						unrest = 10
+					}
+				}
+			}
+			else = {
+				owner = {
+					random_owned_province = {
+						limit = {
+							is_capital = yes
+						}
+						spawn_rebels = {
+							type = revolutionary_rebels
+							size = 2
+						}
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 3
+		}
+	}
+	option = {
+		name = revolution.1.B			# Vive la Revolution!
+		trigger = { has_dlc = "Emperor" }
+		custom_tooltip = revolution_disaster_go_for_it_tooltip
+		random_owned_province = {
+			limit = {
+				has_province_flag = revolution_spawn_rebels_here
+			}
+			clr_province_flag = revolution_spawn_rebels_here
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 3		
+				win = yes
+				unrest = 10
+			}
+			if = {
+				limit = {
+					any_neighbor_province = {
+						owned_by = root
+					}
+				}
+				random_neighbor_province = {
+					limit = { owned_by = root }
+					spawn_rebels = {
+						type = pretender_rebels
+						size = 2
+						win = yes
+						unrest = 10
+					}
+				}
+			}
+		}
+		set_country_flag = revolution_disaster_revolutionary
+		set_country_flag = revolution_disaster_immediate_revolution
+		hidden_effect = { #The triggers for them mean only one will happen
+			country_event = { id = revolution.10 } #Generic
+			country_event = { id = revolution.15 } #France (non-monarchy)
+			country_event = { id = flavor_rus.2000 } #Russia
+			country_event = { id = revolution.31 } #Spain
+			country_event = { id = revolution.32 } #Scandinavia
+			country_event = { id = revolution.33 } #UK
+			country_event = { id = revolution.34 } #Ottomans
+			country_event = { id = revolution.37 } #Germans
+			country_event = { id = revolution.38 } #Austria and HRE
+			country_event = { id = revolution.39 } #Netherlands
+			country_event = { id = revolution.40 } #China
+			country_event = { id = revolution.41 } #Indians
+		}
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 2
+				revolution_target_exists = no
+			}
+			modifier = {
+				factor = 0
+				is_emperor = yes
+			}
+		}
+	}
+}
+
+
+# Religious intolerance
+country_event = {
+	id = revolution.2
+	title = "EVTNAME3012"
+	desc = "EVTDESC3012"
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		NOT = { has_country_flag = religious_revolution }
+		NOT = { religious_unity = 1.0 }
+		any_owned_province = {
+			NOT = { religion = root } #should be the case by default, but just in case there's funky modifiers
+		}
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	
+	immediate = {
+		set_country_flag = religious_revolution
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					NOT = { religion = root }
+				}
+				save_event_target_as = minority_religion_province
+			}
+		}
+	}
+	
+	option = {
+		name = "EVTOPTA3012"			# One nation, one belief
+		ai_chance = { factor = 75 }
+		set_country_flag = religious_revolution
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "religious_intolerance"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}
+	}
+	option = {
+		name = "EVTOPTB3012" # Tolerate all beliefs
+		ai_chance = { factor = 25 }
+		set_country_flag = religious_revolution
+		if = {
+			limit = {
+				religion = catholic
+			}
+			reverse_add_opinion = { who = PAP modifier = opinion_too_tolerate }
+		}
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "religious_tolerance"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}
+	}
+}
+
+# Serfdom
+country_event = {
+	id = revolution.3
+	title = "EVTNAME3013"
+	desc = "EVTDESC3013"
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		NOT = { has_country_flag = serfdom }
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		set_country_flag = serfdom
+		hidden_effect = {
+			random_owned_province = {
+				limit = { highest_supply_limit_in_area = yes }
+				save_event_target_as = rebel_spawn_province
+			}
+		}
+	}
+	
+	option = {
+		name = "EVTOPTA3013"			# Restrict serfdom
+		ai_chance = { factor = 30 }
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "restrict_serfdom"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}
+	}
+	option = {
+		name = "EVTOPTB3013"			# Keep the masses in chains
+		ai_chance = { factor = 70 }
+		goto = rebel_spawn_province
+		event_target:rebel_spawn_province = {
+			revolutionary_rebels = 1
+		}
+		increase_legitimacy_medium_effect = yes
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "enforce_serfdom"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}
+	}
+}
+
+# Social reform
+country_event = {
+	id = revolution.4
+	title = "EVTNAME3014"
+	desc = "EVTDESC3014"
+	picture = REFORM_eventPicture
+	
+	trigger = {
+		NOT = { has_country_flag = social_reform }
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	immediate = { 
+		set_country_flag = social_reform 
+		random_owned_province = {
+			limit = {
+				highest_supply_limit_in_area = yes
+				NOT = { has_province_flag = spawning_rebels }
+			}
+			set_province_flag = spawning_rebels
+		}
+		random_owned_province = {
+			limit = {
+				highest_supply_limit_in_area = yes
+				NOT = { has_province_flag = spawning_rebels }
+			}
+			set_province_flag = spawning_rebels
+		}
+	}
+	
+	option = {
+		name = "EVTOPTA3014"			# Suppress the free thinkers
+		ai_chance = { factor = 60 }
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "suppress_free_thinkers"
+				duration = -1
+				desc = "END_OF_REVOLUTION"			
+			}
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = spawning_rebels
+			}
+			clr_province_flag = spawning_rebels
+		}
+	}
+	option = {
+		name = "EVTOPTB3014"			# They hardly pose a threat
+		ai_chance = { factor = 40 }
+		every_owned_province = {
+			limit = {
+				has_province_flag = spawning_rebels
+			}
+			revolutionary_rebels = 1
+			clr_province_flag = spawning_rebels
+		}
+	}
+}
+
+# Royal Bureaucracy
+country_event = {
+	id = revolution.5
+	title = "EVTNAME3015"
+	desc = "EVTDESC3015"
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		NOT = { has_country_flag = royal_bureaucracy }
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	immediate = { 
+		set_country_flag = royal_bureaucracy 
+	}
+	
+	option = {
+		name = "EVTOPTA3015"			# Reduce the royal bureaucracy
+		ai_chance = { factor = 65 }
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "bureaucratic_reduction"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}		
+	}
+	option = {
+		name = "EVTOPTB3015"			# Expand the royal bureaucracy
+		ai_chance = { factor = 35 }
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "bureaucratic_expansion"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}
+		add_corruption = 0.5
+	}
+}
+
+# Deplorable reign
+country_event = {
+	id = revolution.6
+	title = "EVTNAME3016"
+	desc = "EVTDESC3016"
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		NOT = { has_country_flag = deplorable_reign }
+		OR = {
+			NOT = { mil = 2 }
+			NOT = { dip = 2 }
+			NOT = { adm = 2 }
+		}
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = { 
+		set_country_flag = deplorable_reign 
+		hidden_effect = {
+			random_owned_province = { save_event_target_as = rebel_spawn_province }
+		}
+	}	
+	
+	option = {
+		name = "EVTOPTA3016"			# Support
+		ai_chance = { factor = 60 }
+		add_adm_power = -35
+		add_dip_power = -35
+		add_mil_power = -35
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "support_monarch"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}
+	}
+	option = {
+		name = "EVTOPTB3016"			# Oppose
+		ai_chance = { factor = 40 }
+		goto = rebel_spawn_province
+		event_target:rebel_spawn_province = { revolutionary_rebels = 2 }
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "oppose_monarch"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}
+	}
+}
+
+# The road to bankruptcy
+country_event = {
+	id = revolution.7
+	title = "EVTNAME3017"
+	desc = "EVTDESC3017"
+	picture = BANKRUPTCY_eventPicture
+	
+	trigger = {
+		NOT = { has_country_flag = road_to_bankruptcy }
+		num_of_loans = 10
+		is_at_war = yes
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = { 
+		set_country_flag = road_to_bankruptcy 
+	}
+	
+	option = {
+		name = "EVTOPTA3017"			# Mint more money
+		ai_chance = { factor = 30 }
+		add_inflation = 3
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "mint_money"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}
+	}
+	option = {
+		name = "EVTOPTB3017"			# We must strengthen our currency
+		ai_chance = { factor = 70 }
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "fight_inflation"
+				duration = -1
+				desc = "END_OF_REVOLUTION"
+			}
+		}
+	}
+}
+
+# Financial Crisis
+country_event = {
+	id = revolution.8
+	title = "EVTNAME3018"
+	desc = "EVTDESC3018"
+	picture = ECONOMY_eventPicture
+	
+	trigger = {
+		NOT = { has_country_flag = financial_crisis }
+		OR = {
+			is_bankrupt = yes
+			num_of_loans = 20
+		}
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = { 
+		set_country_flag = financial_crisis 
+	}	
+	
+	option = {
+		name = "EVTOPTA3018"			# Cut back on war expenditures
+		ai_chance = { factor = 70 }
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "disarmament"
+				duration = -1
+				desc = "END_OF_REVOLUTION"			
+			}
+		}
+	}
+	option = {
+		name = "EVTOPTB3018"			# The war has its purpose
+		ai_chance = { factor = 30 }
+		if = {
+			limit = {
+				OR = {
+					has_disaster = revolution
+					has_disaster = french_revolution
+				}
+			}
+			add_country_modifier = {
+				name = "financial_disaster"
+				duration = -1
+				desc = "END_OF_REVOLUTION"			
+			}
+		}
+	}
+}
+
+# Stability returns
+country_event = {
+	id = revolution.9
+	title = "EVTNAME3019"
+	desc = {
+		desc = EVTDESC3019
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+	}
+	desc = {
+		desc = revolution.9.won_revolution
+		trigger = {
+			is_revolutionary = yes
+			has_country_flag = revolution_disaster_revolutionary
+		}
+	}
+	desc = {
+		desc = revolution.9.lost_revolution
+		trigger = {
+			is_revolutionary = no
+			has_country_flag = revolution_disaster_revolutionary
+		}
+	}
+	desc = {
+		desc = revolution.9.won_reactionary
+		trigger = {
+			is_revolutionary = no
+			has_country_flag = revolution_disaster_reactionary
+		}
+	}
+	desc = {
+		desc = revolution.9.lost_reactionary
+		trigger = {
+			is_revolutionary = yes
+			has_country_flag = revolution_disaster_reactionary
+		}
+	}
+	picture = {
+		trigger = {
+			has_dlc = "Emperor"
+			is_revolutionary = no
+		}
+		picture = FAILED_REVOLUTION_eventPicture
+	}
+	picture = {
+		trigger = {
+			NOT = { government = republic }
+			OR = {
+				is_revolutionary = yes
+				NOT = { has_dlc = "Emperor" }
+			}
+		}
+		picture = GOOD_WITH_MONARCH_eventPicture
+	}
+	picture = {
+		trigger = {
+			government = republic
+		}
+		picture = ELECTION_REPUBLICAN_eventPicture
+	}
+	
+	major = yes	
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					has_dlc = "Emperor"
+					is_revolutionary = no
+					has_country_flag = revolution_disaster_reactionary
+				}
+				add_country_modifier = {
+					name = no_revolution_here_country_dummy
+					duration = -1
+					hidden = yes
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							is_center_of_revolution = yes
+						}
+					}
+					remove_center_of_revolution = yes
+				}
+				custom_tooltip = remove_revolution_from_all_provinces
+				hidden_effect = {
+					every_owned_province = {
+						limit = { has_revolution_in_province = yes }
+						remove_revolution_from_province_effect = yes
+					}
+				}
+				increase_legitimacy_large_effect = yes
+				hidden_effect = { log = "[Root.GetName] won the Revolution as the Reactionaries." }
+			}
+		}
+	}
+	
+	option = {
+		name = "EVTOPTA3019"			# Restore order
+		trigger = {
+			NOT = { has_dlc = "Emperor" }
+		}
+		add_stability_or_adm_power = yes
+		increase_legitimacy_large_effect = yes
+		clear_standard_revolution_elements_effect = yes
+	}
+	option = {
+		name = revolution.9.B			# Ah well
+		trigger = {
+			has_dlc = "Emperor"
+			OR = {
+				AND = {
+					is_revolutionary = no
+					has_country_flag = revolution_disaster_revolutionary
+				}
+				AND = {
+					is_revolutionary = yes
+					has_country_flag = revolution_disaster_reactionary
+				}
+			}
+		}
+		add_stability_or_adm_power = yes
+		if = {
+			limit = {
+				is_revolutionary = no
+			}
+			capital_scope = {
+				region = {
+					limit = {
+						has_revolution_in_province = yes
+						owned_by = root
+						is_center_of_revolution = no
+					}
+					remove_revolution_from_province_effect = yes
+				}
+			}
+			hidden_effect = { log = "[Root.GetName] lost the Revolution as the Revolutionaries." }
+		}
+		else = {
+			hidden_effect = { log = "[Root.GetName] lost the Revolution as the Reactionaries." }
+		}
+		clear_standard_revolution_elements_effect = yes
+	}
+	option = {
+		name = revolution.9.A			# We won
+		trigger = {
+			has_dlc = "Emperor"
+			OR = {
+				AND = {
+					is_revolutionary = yes
+					has_country_flag = revolution_disaster_revolutionary
+				}
+				AND = {
+					is_revolutionary = no
+					has_country_flag = revolution_disaster_reactionary
+				}
+			}
+		}
+		add_stability_or_adm_power = yes
+		
+		if = {
+			limit = {
+				is_revolutionary = no
+			}
+			tooltip = {
+				add_country_modifier = {
+					name = no_revolution_here_country_dummy
+					duration = -1
+					hidden = yes
+				}
+				if = {
+					limit = {
+						any_owned_province = {
+							is_center_of_revolution = yes
+						}
+					}
+					remove_center_of_revolution = yes
+				}
+				custom_tooltip = remove_revolution_from_all_provinces
+				hidden_effect = {
+					every_owned_province = {
+						limit = { has_revolution_in_province = yes }
+						remove_revolution_from_province_effect = yes
+					}
+				}
+				increase_legitimacy_large_effect = yes
+				hidden_effect = { log = "[Root.GetName] won the Revolution as the Reactionaries." }
+			}
+		}
+		else = {
+			custom_tooltip = add_as_much_revolutionary_zeal_as_you_can_take
+			hidden_effect = {
+				add_revolutionary_zeal = 1000
+			}
+			hidden_effect = { log = "[Root.GetName] won the Revolution as the Revolutionaries." }
+		}
+		clear_standard_revolution_elements_effect = yes
+	}
+}
+
+
+#####Revolution Events######
+
+country_event = {
+	id = revolution.10
+	title = "EVTNAME6601"
+	desc = {
+		desc = "EVTDESC6601"
+		trigger = {
+			NOT = { religion = nahuatl }
+		}
+	}
+	desc = {
+		desc = revolution.10.desc.nahuatl
+		trigger = {
+			religion = nahuatl
+		}
+	}
+	picture = REVOLUTION_eventPicture
+	
+	major = yes
+	
+	trigger = {
+		revolution_event_can_happen_trigger = yes
+
+		#Alternative DLC versions
+		NOT = {
+			tag = RUS #flavor_rus.2000
+			tag = FRA #revolution.15
+			#revolution.31
+			tag = CAS
+			tag = ARA
+			tag = SPA
+			#revolution.32
+			tag = SWE
+			tag = DAN
+			tag = NOR
+			tag = SCA
+			#revolution.33
+			AND = {
+				owns_core_province = 236 #London
+				OR = {
+					tag = ENG
+					tag = GBR
+				}
+			}
+			#revolution.34
+			tag = TUR
+			#revolution.37
+			tag = GER
+			tag = PRU
+			tag = BAV
+			tag = SWA
+			tag = FKN
+			tag = HAN
+			tag = WES
+			tag = SAX
+			tag = POM
+			#revolution.38
+			tag = HAB
+			tag = HLR
+			#revolution.39
+			tag = NED
+			#revolution.41
+			tag = MUG
+			tag = HIN
+			tag = BHA
+		}
+		OR = {
+			NOT = { culture_group = east_asian }
+			is_emperor_of_china = no
+		}
+	}
+	
+	is_triggered_only = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = "EVTOPTA6601"
+		trigger = {
+			NOT = { religion = nahuatl }
+		}
+		enact_revolution_effect = yes
+
+		if = {
+			limit = {
+				tag = ITA
+			}
+			hidden_effect = {
+				country_event = { id = revolution.35 days = 365 random = 365 } #Napoleone di Buonaparte
+			}
+		}
+	}
+	option = {
+		name = "revolution.10.opt.nahuatl"
+		trigger = {
+			religion = nahuatl
+		}
+		enact_revolution_effect = yes
+
+		if = {
+			limit = {
+				tag = ITA
+			}
+			hidden_effect = {
+				country_event = { id = revolution.35 days = 365 random = 365 } #Napoleone di Buonaparte
+			}
+		}
+	}
+}
+
+
+country_event = {
+	id = revolution.13
+	title = "EVTNAME6604"
+	desc = "EVTDESC6604"
+	picture = REVOLUTION_eventPicture
+
+	trigger = {
+		is_revolution_target = yes
+		NOT = { has_dlc = "Art of War" }
+		NOT = { has_dlc = "Emperor" }
+		
+		capital_scope = {
+			NOT = {
+				controlled_by = ROOT
+				controlled_by = REB
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 1
+	}
+
+	option = {
+		name = "EVTOPTA6604"
+		add_prestige = -50
+		add_war_exhaustion = 3
+		if = {
+			limit = { NOT = { government = monarchy } }
+			change_government_to_monarchy = yes
+			#set_legacy_government = constitutional_monarchy
+		}
+		kill_ruler = yes
+		if = {
+			limit = {
+				has_country_flag = ruler_of_france_exiled
+				NOT = {
+					had_country_flag = {
+						flag = ruler_of_france_exiled
+						days = 7300
+					}
+				}
+			}
+			set_ruler = ruler_of_france
+		}
+		if = {
+			limit = {
+				has_country_flag = heir_of_france_exiled
+				NOT = {
+					had_country_flag = {
+						flag = heir_of_france_exiled
+						days = 10950
+					}
+				}
+			}
+			set_heir = heir_of_france
+		}
+		if = {
+			limit = { #you can't get rid of them that easily...
+				has_country_flag = habsburgs_exiled_flag
+			}
+			define_ruler = {
+				dynasty = "von Habsburg"
+			}
+		}
+		if = {
+			limit = {
+				has_country_modifier = the_reign_of_terror
+			}
+			remove_country_modifier = the_reign_of_terror
+		}
+		add_government_reform = parliamentary_reform
+		if = {
+			limit = { is_revolution_target = yes }
+			set_revolution_target = ---
+		}
+		set_country_flag = last_revolutionary_country
+		capital_scope = {
+			controller = {
+				country_event = { id = revolution.14 }
+			}
+		}
+	}
+}
+
+country_event = {
+	id = revolution.14
+	title = "EVTNAME6605"
+	desc = "EVTDESC6605"
+	picture = REVOLUTION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "EVTNAME6605"
+		add_stability = 6
+		add_prestige = 200
+	}
+}
+
+#French version if France does not have a monarchy
+country_event = {
+	id = revolution.15
+	title = "EVTNAME6606"
+	desc = "EVTDESC6606"
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		tag = FRA
+		OR = {
+			revolution_target_exists = no
+			has_dlc = "Emperor"
+		}
+		OR = {
+			capital_scope = { 
+#				continent = europe 
+				controlled_by = REB
+			}
+			has_country_modifier = just_lost_to_revolutionary_rebels
+			has_country_flag = revolution_disaster_immediate_revolution
+		}
+		num_of_cities = 10
+		NOT = { is_revolutionary_republic_trigger = yes }
+		NOT = { has_reform = revolutionary_empire_reform }
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+
+	option = {
+		name = "EVTOPTA6606"
+		enact_revolution_effect = yes
+	}
+}
+
+country_event = {
+	id = revolution.16
+	title = "EVTNAME6607"
+	desc = "EVTDESC6607"
+	picture = REVOLUTION_eventPicture
+
+	trigger = {
+		always = no #covered by revolution.13
+		tag = FRA
+		is_revolution_target = yes
+		NOT = { has_dlc = "Art of War" }
+		NOT = { has_dlc = "Emperor" }
+		capital_scope = {
+			NOT = {
+				controlled_by = ROOT
+				controlled_by = REB
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 1
+	}
+
+	option = {
+		name = "EVTOPTA6607"
+		add_prestige = -50
+		add_war_exhaustion = 3
+		if = {
+			limit = { NOT = { government = monarchy } }
+			change_government_to_monarchy = yes
+			#set_legacy_government = constitutional_monarchy
+		}
+		add_government_reform = parliamentary_reform
+		if = {
+			limit = { is_revolution_target = yes }
+			set_revolution_target = ---
+		}
+		set_country_flag = last_revolutionary_country
+		hidden_effect = {
+			FRA = {
+				country_event = { id = revolution.18 }
+			}
+		}
+		capital_scope = {	
+			controller = {
+				country_event = { id = revolution.14 }
+			}
+		}
+	}
+}
+
+#Unused since there is the French Revolution disaster
+country_event = {
+	id = revolution.17
+	title = "EVTNAME6608"
+	desc = "EVTDESC6608"
+	picture = REVOLUTION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "EVTOPTA6608"
+		kill_ruler = yes
+	}
+}
+
+country_event = {
+	id = revolution.18
+	title = "EVTNAME6609"
+	desc = "EVTDESC6609"
+	picture = REVOLUTION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = "EVTOPTA6609"
+		kill_ruler = yes
+	}
+}
+
+#I don't think this is used
+country_event = {
+	id = revolution.19
+	title = "EVTNAME6610"
+	desc = "EVTDESC6610"
+	picture = REVOLUTION_eventPicture
+
+	trigger = {
+		tag = FRA
+		is_revolution_target = yes
+		NOT = {
+			OR = {
+				is_revolutionary_republic_trigger = yes
+				has_reform = revolutionary_empire_reform
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		months = 36
+	}
+
+	option = {
+		name = "EVTOPTA6610"
+		if = {
+			limit = { NOT = { government = republic } }
+			change_government_to_republic = yes
+		}
+		add_government_reform = revolutionary_republic_reform
+		if = {
+			limit = { has_reform = parliamentary_reform }
+			remove_government_reform = parliamentary_reform
+		}
+		if = {
+			limit = { has_reform = states_general_reform }
+			remove_government_reform = states_general_reform
+		}
+		kill_ruler = yes
+		add_stability_or_adm_power = yes
+	}
+}
+
+#Unused now
+country_event = {
+	id = revolution.20
+	title = revolution.20.t
+	desc = revolution.20.d
+	picture = REVOLUTION_eventPicture
+
+	is_triggered_only = yes
+
+	option = {
+		name = revolution.20.a
+
+		clear_standard_revolution_elements_effect = yes
+	}
+}
+
+
+
+########################################
+# Additions for 1.30
+#
+# written by Pierre du Plessis
+########################################
+
+#Spanish version of the Revolution
+country_event = {
+	id = revolution.31
+	title = revolution.31.name
+	desc = revolution.31.desc
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		OR = {
+			tag = CAS
+			tag = ARA
+			tag = SPA
+		}
+		revolution_event_can_happen_trigger = yes
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = revolution.31.A
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_had_revolution_bringing_someone_to_power_timer
+				duration = 2
+				hidden = yes
+			}
+		}
+		enact_revolution_effect = yes
+
+		define_ruler = {
+			name = "Gaspar Melchor de Jovellanos"
+			adm = 5
+			dip = 2
+			mil = 2
+		}
+	}
+}
+
+#Swedish version of the Revolution
+country_event = {
+	id = revolution.32
+	title = revolution.32.name
+	desc = {
+		trigger = {
+			OR = {
+				tag = SWE
+				AND = {
+					tag = SCA
+					NOT = { was_tag = DAN }
+					NOT = { was_tag = NOR }
+				}
+			}
+		}
+		desc = revolution.32.desc.swedish
+	}
+	desc = {
+		trigger = {
+			OR = {
+				tag = DAN
+				AND = {
+					tag = SCA
+					was_tag = DAN
+				}
+			}
+		}
+		desc = revolution.32.desc.danish
+	}
+	desc = {
+		trigger = {
+			OR = {
+				tag = NOR
+				AND = {
+					tag = SCA
+					was_tag = NOR
+				}
+			}
+		}
+		desc = revolution.32.desc.norwegian
+	}
+	
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		OR = {
+			tag = SWE
+			tag = DAN
+			tag = NOR
+			tag = SCA
+		}
+		revolution_event_can_happen_trigger = yes
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = revolution.32.A.swedish
+		trigger = {
+			OR = {
+				tag = SWE
+				AND = {
+					tag = SCA
+					NOT = { was_tag = DAN }
+					NOT = { was_tag = NOR }
+				}
+			}
+		}
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_had_revolution_bringing_someone_to_power_timer
+				duration = 2
+				hidden = yes
+			}
+		}
+		enact_revolution_effect = yes
+
+		define_ruler = {
+			name = "Lars Johan Hierta"
+			adm = 5
+			dip = 3
+			mil = 0
+		}
+	}
+	option = {
+		name = revolution.32.A.norwegian
+		trigger = {
+			OR = {
+				tag = NOR
+				AND = {
+					tag = SCA
+					was_tag = NOR
+				}
+			}
+		}
+		enact_revolution_effect = yes
+	}
+	option = {
+		name = revolution.32.A.danish
+		trigger = {
+			OR = {
+				tag = DAN
+				AND = {
+					tag = SCA
+					was_tag = DAN
+				}
+			}
+		}
+		enact_revolution_effect = yes
+	}
+}
+
+
+#British version of the Revolution
+country_event = {
+	id = revolution.33
+	title = revolution.33.name
+	desc = revolution.33.desc
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		OR = {
+			tag = ENG
+			tag = GBR
+		}
+		owns_core_province = 236 #London
+		revolution_event_can_happen_trigger = yes
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = revolution.33.A
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_had_revolution_bringing_someone_to_power_timer
+				duration = 2
+				hidden = yes
+			}
+		}
+		enact_revolution_effect = yes
+
+		define_ruler = {
+			name = "John Wilkes"
+			adm = 5
+			dip = 3
+			mil = 1
+		}
+	}
+}
+
+
+#Ottoman version of the Revolution
+country_event = {
+	id = revolution.34
+	title = revolution.34.name
+	desc = {
+		trigger = {
+			OR = {
+				has_heir = no
+				NOT = { government = monarchy }
+			}
+		}
+		desc = revolution.34.desc
+	}
+	desc = {
+		trigger = {
+			has_heir = yes
+			government = monarchy
+		}
+		desc = revolution.34.desc.heir
+	}
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		tag = TUR
+		revolution_event_can_happen_trigger = yes
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = new_supreme_vizier
+				type = advisor
+			}
+		}
+	}
+
+	option = {
+		name = revolution.34.A
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_had_revolution_bringing_someone_to_power_timer
+				duration = 2
+				hidden = yes
+			}
+		}
+		if = {
+			limit = {
+				has_heir = yes
+				government = monarchy
+			}
+			random_owned_province = {
+				limit = {
+					continent = root
+					is_capital = no
+					highest_supply_limit_in_area = yes
+					development = 10
+				}
+				spawn_rebels = {
+					size = 3
+					type = pretender_rebels
+					use_heir_as_leader = yes
+				}
+			}
+		}
+		enact_revolution_effect = yes
+
+		define_ruler = { #Get a random ruler with +1 in each stat
+			name = new_supreme_vizier
+			change_adm = 1
+			change_dip = 1
+			change_mil = 1
+		}
+		override_country_name = REV_TURKEY_STRING
+		set_country_flag = is_revolutionary_turkey_flag
+	}
+
+	after = {
+		clear_saved_name = new_supreme_vizier
+	}
+}
+
+#Italian Revolution: Another Napoleon
+country_event = {
+	id = revolution.35
+	title = revolution.35.name
+	desc = revolution.35.desc
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		tag = ITA
+		NOT = { has_global_flag = napoleon_happened_flag }
+		is_revolution_target = yes
+		is_revolutionary_republic_trigger = yes
+	}
+	is_triggered_only = yes
+
+	immediate = {
+		set_global_flag = napoleon_happened_flag
+	}
+
+	option = {
+		name = flavor_fra.EVTOPTA3148
+
+		add_stability = -1
+
+		define_ruler = {
+			name = "Napoleone I"
+			dynasty = "di Buonaparte"
+			adm = 6
+			dip = 5
+			mil = 6
+		}
+		if = {
+			limit = {
+				has_dlc = "Rights of Man" 
+			}
+			hidden_effect = { add_ruler_personality_ancestor = { key = inspiring_leader } }
+		}
+		set_ruler_flag = bonaparte_flag
+		
+		hidden_effect = {
+			country_event = { id = revolution.36 days = 730 random = 730 }
+		}
+	}
+	option = {
+		name = flavor_fra.EVTOPTB3148
+		
+		add_stability_or_adm_power = yes
+
+		if = {
+			limit = {
+				any_owned_province = {
+					area = corsica_sardinia_area
+					is_core = root
+				}
+			}
+			if = {
+				limit = {
+					any_owned_province = {
+						area = corsica_sardinia_area
+						is_core = root
+						fort_level = 2
+					}
+				}
+				random_owned_province = {
+					limit = {
+						area = corsica_sardinia_area
+						is_core = root
+						fort_level = 2
+					}
+					spawn_rebels = {
+						size = 3
+						type = pretender_rebels
+						leader = "Napoleone"
+						leader_dynasty = "di Buonaparte"
+					}
+				}
+			}
+			else = {
+				random_owned_province = {
+					limit = {
+						area = corsica_sardinia_area
+						highest_supply_limit_in_area = yes
+					}
+					spawn_rebels = {
+						size = 3
+						type = pretender_rebels
+						leader = "Napoleone"
+						leader_dynasty = "di Buonaparte"
+						win = yes
+					}
+				}
+			}
+		}
+		else = {
+			random_owned_province = {
+				limit = {
+					continent = root
+					is_capital = no
+					highest_supply_limit_in_area = yes
+				}
+				spawn_rebels = {
+					size = 3
+					type = pretender_rebels
+					leader = "Napoleone"
+					leader_dynasty = "di Buonaparte"
+					win = yes
+				}
+			}
+		}
+	}
+}
+
+
+# Aspirations of an Empire
+country_event = {
+	id = revolution.36
+	title = "flavor_fra.EVTNAME101"
+	desc = revolution.36.desc
+	picture = IMPORTANT_STATUE_eventPicture
+	
+	is_triggered_only = yes
+
+	trigger = {
+		is_revolutionary_republic_trigger = yes
+		has_ruler_flag = bonaparte_flag
+	}
+
+	option = {		# Italy will be an empire!
+		name = revolution.36.A
+		add_stability = -2
+		if = {
+			limit = { NOT = { government = monarchy } }
+			change_government_to_monarchy = yes
+		}
+		add_government_reform = revolutionary_empire_reform
+		random_owned_province = {
+			limit = {
+				continent = root
+				is_core = ROOT
+				is_capital = no
+				highest_supply_limit_in_area = yes
+			}
+			spawn_rebels = {
+				type = revolutionary_rebels
+				size = 3
+			}
+		}
+	}
+	option = {		# The revolution must continue!
+		name = "flavor_fra.EVTOPTB101"
+		add_republican_tradition = 10
+	}
+}
+
+
+#German version of the Revolution
+country_event = {
+	id = revolution.37
+	title = revolution.37.name
+	desc = revolution.37.desc
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		OR = {
+			tag = GER
+			tag = PRU
+			tag = BAV
+			tag = SWA
+			tag = FKN
+			tag = HAN
+			tag = WES
+			tag = SAX
+			tag = POM
+		}
+		revolution_event_can_happen_trigger = yes
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = new_ruler
+				type = advisor
+			}
+			set_country_flag = use_french_disaster_exile_effect
+		}
+	}
+
+	option = {
+		name = revolution.37.A
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_had_revolution_bringing_someone_to_power_timer
+				duration = 2
+				hidden = yes
+			}
+		}
+		enact_revolution_effect = yes
+		define_ruler = { #Random ruler with +1 in each category
+			name = new_ruler
+			change_adm = 1
+			change_dip = 1
+			change_mil = 1
+		}
+	}
+
+	after = {
+		clear_saved_name = new_ruler
+		clr_country_flag = use_french_disaster_exile_effect
+	}
+}
+
+#Austrian version of the Revolution
+country_event = {
+	id = revolution.38
+	title = revolution.38.name
+	desc = revolution.38.desc
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		OR = {
+			tag = HAB
+			tag = HLR
+		}
+		revolution_event_can_happen_trigger = yes
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					dynasty = "von Habsburg"
+				}
+				set_country_flag = habsburgs_exiled_flag
+			}
+		}
+	}
+
+	option = {
+		name = revolution.38.A
+		enact_revolution_effect = yes
+	}
+}
+
+#Dutch version of the Revolution
+country_event = {
+	id = revolution.39
+	title = revolution.39.name
+	desc = revolution.39.desc
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		tag = NED
+		revolution_event_can_happen_trigger = yes
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					dynasty = "von Habsburg"
+				}
+				set_country_flag = habsburgs_exiled_flag
+			}
+		}
+	}
+
+	option = {
+		name = revolution.39.A
+		enact_revolution_effect = yes
+
+		create_general = {
+			tradition = 70
+			name = "Herman Willem Daendels"
+		}
+	}
+}
+
+
+#Chinese Revolution
+country_event = {
+	id = revolution.40
+	title = revolution.40.name
+	desc = revolution.40.desc
+	
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		culture_group = east_asian
+		is_emperor_of_china = yes
+		revolution_event_can_happen_trigger = yes
+
+		#Alternative DLC versions
+		NOT = {
+			tag = RUS #flavor_rus.2000
+			tag = FRA #revolution.15
+			#revolution.31
+			tag = CAS
+			tag = ARA
+			tag = SPA
+			#revolution.32
+			tag = SWE
+			tag = DAN
+			tag = NOR
+			tag = SCA
+			#revolution.33
+			AND = {
+				owns_core_province = 236 #London
+				OR = {
+					tag = ENG
+					tag = GBR
+				}
+			}
+			#revolution.34
+			tag = TUR
+			#revolution.37
+			tag = GER
+			tag = PRU
+			tag = BAV
+			tag = SWA
+			tag = FKN
+			tag = HAN
+			tag = WES
+			tag = SAX
+			tag = POM
+			#revolution.38
+			tag = HAB
+			tag = HLR
+			#revolution.39
+			tag = NED
+			#revolution.41
+			tag = MUG
+			tag = HIN
+			tag = BHA
+		}
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = new_ruler
+				type = advisor
+			}
+		}
+	}
+
+	option = {
+		name = revolution.40.A
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_had_revolution_bringing_someone_to_power_timer
+				duration = 2
+				hidden = yes
+			}
+		}
+		enact_revolution_effect = yes
+		
+		define_ruler = { #Random ruler with +1 in each category
+			name = new_ruler
+			change_adm = 1
+			change_dip = 1
+			change_mil = 1
+		}
+		override_country_name = REV_CHINA_STRING
+		set_country_flag = is_revolutionary_china_flag
+	}
+	after = {
+		clear_saved_name = new_ruler
+	}
+}
+
+#Indian Revolution
+country_event = {
+	id = revolution.41
+	title = revolution.41.name
+	desc = {
+		desc = revolution.41.desc
+		trigger = { NOT = { tag = MUG } }
+	}
+	desc = {
+		desc = revolution.41.desc2
+		trigger = { tag = MUG }
+	}
+	
+	picture = REVOLUTION_eventPicture
+	
+	trigger = {
+		revolution_event_can_happen_trigger = yes
+		OR = {
+			tag = MUG
+			tag = HIN
+			tag = BHA
+		}
+	}
+	is_triggered_only = yes
+	major = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	immediate = {
+		hidden_effect = {
+			set_saved_name = {
+				key = new_ruler
+				type = advisor
+			}
+			set_country_flag = use_french_disaster_exile_effect
+		}
+	}
+
+	option = {
+		name = revolution.41.A
+		hidden_effect = {
+			add_country_modifier = {
+				name = just_had_revolution_bringing_someone_to_power_timer
+				duration = 2
+				hidden = yes
+			}
+		}
+		enact_revolution_effect = yes
+		
+		define_ruler = { #Random ruler with +1 in each category
+			name = new_ruler
+			change_adm = 1
+			change_dip = 1
+			change_mil = 1
+		}
+		if = {
+			limit = { tag = MUG }
+			override_country_name = REV_GURKANI_EMPIRE_STRING
+			set_country_flag = is_revolutionary_gurkani_flag
+		}
+	}
+	after = {
+		clear_saved_name = new_ruler
+	}
+}

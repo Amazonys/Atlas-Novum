@@ -1,0 +1,203 @@
+##############################
+# Zulu Flavor Events
+#                            
+# Written by Ogulcan Yildirim
+##############################
+
+namespace = flavor_zul
+normal_or_historical_nations = yes
+
+	
+# The appearance of the Zulu
+country_event = {
+	id = flavor_zul.1
+	title = flavor_zul.1.t
+	desc = {
+		trigger = {
+			has_country_flag = zulu_attracted_flag
+		}
+		desc = flavor_zul.1.d.a
+	}
+	desc = {
+		trigger = {
+			NOT = { has_country_flag = zulu_attracted_flag }
+		}
+		desc = flavor_zul.1.d.b
+	}
+	picture = AFRICAN_CHIEFTAIN_eventPicture
+	fire_only_once = yes
+
+	trigger = {
+		num_of_cities = 3
+		789 = {
+			owned_by = ROOT
+			NOT = { is_capital_of = ROOT }	#The country should not get instantly killed when they are an OPM
+			culture = nguni
+		}
+		OR = {
+			is_year = 1750
+			has_country_flag = zulu_attracted_flag	#Mission / Decision "reward" to get the Zulu much faster at the expense of historical inaccuracy
+		}
+		NOT = { exists = ZUL }
+		NOT = { tag = ZIM }	#Has Decision / Mission instead to trigger the Zulu
+		NOT = { tag = GZI }
+	}
+
+	mean_time_to_happen = {
+		months = 240
+		modifier = {
+			factor = 0.5
+			is_year = 1800
+		}
+		modifier = {
+			factor = 0.01
+			is_year = 1816	#Actual date of their appearance
+		}
+		modifier = {
+			factor = 0.01
+			has_country_flag = zulu_attracted_flag	#Mission "reward" to get the Zulu much faster
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			789 = { add_core = ZUL cede_province = ZUL }
+			if = {
+				limit = { 1181 = { owned_by = ROOT NOT = { is_capital_of = ROOT } } }
+				1181 = { add_core = ZUL cede_province = ZUL }
+			}
+			else = {
+				1181 = { add_core = ZUL }
+			}
+			ZUL = {
+				if = {
+					limit = {
+						is_year = 1800
+					}
+					define_ruler = {
+						name = "Shaka"
+						dynasty = "Zulu"
+						adm = 5
+						dip = 3
+						mil = 6
+						age = 23
+						claim = 100
+					}
+					define_ruler_to_general = {
+						fire = 4
+						shock = 5
+						manuever = 4
+						siege = 2
+					}
+				}
+				else = {
+					define_ruler = {
+						adm = 3
+						dip = 3
+						mil = 5
+						age = 20
+						claim = 100
+					}
+				}
+				if = {
+					limit = {
+						has_dlc = "Rights of Man" 
+					}
+					hidden_effect = { add_ruler_personality_ancestor = { key = strict } }
+				}
+				change_government = tribal
+				add_government_reform = shaka_regime
+				set_capital = 789
+				capital_scope = {
+					change_province_name = "Bulawayo"
+					rename_capital = "Bulawayo"
+					add_base_tax = 3
+					add_base_production = 3
+					add_base_manpower = 2
+					build_to_forcelimit = {
+						infantry = 0.9
+						cavalry = 0.1
+					}
+				}
+				add_manpower = 15
+				add_treasury = 300
+				add_army_professionalism = 0.05
+				add_army_tradition = 20
+			}
+			limpopo_area = {
+				limit = {
+					NOT = { is_core = ZUL }
+					NOT = { is_permanent_claim = ZUL }
+				}
+				add_permanent_claim = ZUL
+			}
+		}
+	}
+	
+	option = {	#How dare taking our land!
+		name = flavor_zul.1.a
+		tooltip = {
+			789 = { add_core = ZUL cede_province = ZUL }
+			1181 = { add_core = ZUL cede_province = ZUL }
+		}
+		declare_war_with_cb = {
+			casus_belli = cb_imperial
+			who = ZUL
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {	#Is currently busy with another war
+				factor = 0
+				is_at_war = yes
+			}
+			modifier = {	#Doesn't really care
+				factor = 0
+				num_of_owned_provinces_with = {
+					region = south_africa_region
+					value = 3
+				}
+			}
+		}
+	}
+	
+	option = {	#Ehh ... whatever
+		name = flavor_zul.1.b
+		tooltip = {
+			789 = { add_core = ZUL cede_province = ZUL }
+			1181 = { add_core = ZUL cede_province = ZUL }
+		}
+		reverse_add_opinion = {
+			who = ZUL
+			modifier = zul_let_the_zulu_alone
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				is_at_war = no
+			}
+			modifier = {
+				factor = 0
+				NOT = {
+					num_of_owned_provinces_with = {
+						region = south_africa_region
+						value = 3
+					}
+				}
+			}
+		}
+	}
+	
+	option = {	#Screw my throne, I am a Zulu now!
+		name = flavor_zul.1.c
+		tooltip = {
+			789 = { add_core = ZUL cede_province = ZUL }
+			1181 = { add_core = ZUL cede_province = ZUL }
+		}
+		switch_tag = ZUL
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
