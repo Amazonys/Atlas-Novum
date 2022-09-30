@@ -610,154 +610,89 @@ AN_expel_minority_religion = {
 }
 
 AN_expel_religion = {
-	#CHECK FOR ASSOCIATE CULTURES
-		
+	#
 	if = {
-		limit = { 
-			NOT = { owner = { religion_group = christian } }
-			OR = { 
-				religion_group = christian 
-				minority_religion_group = { RELIGION_GROUP=christian } 
+		limit = {
+			OR = {
+				has_province_flag = AN_expel_maj
+				has_province_flag = AN_expel_min
+			}
+			OR = {
+				AN_linked_culture_religion_maj = yes
+				AN_linked_culture_religion_min = yes	
 			}
 		}
 		if = {
-			limit = {
+			limit = { 
+				AN_linked_culture_religion_maj = yes
 				OR = { 
-					culture_group = french
-					culture_group = occitan
-					culture_group = iberian
-					culture_group = byzantine_g
-					culture_group = armenian_group
+					culture_group = owner
+					has_owner_accepted_culture = yes
 				}
-				NOT = { culture_group = owner }
-				has_owner_accepted_culture = no
 			}
-			AN_culture_expel_effect = yes
-			#AN_culture_expel_culture = { CULTURE=melkite }
+			AN_reduce_pop_fifth = yes
+			#MIGRATION EFFECT
+		}
+		else_if = {
+			limit = { 
+				AN_linked_culture_religion_maj = yes
+				NOT = { culture_group = owner }
+				has_owner_accepted_culture = no 
+			}
+			if = { 
+				limit = { check_variable = { which = AN_minority_culture_size value = 3 } }
+				change_culture = variable:ROOT:AN_minority_culture
+				set_variable = { which = AN_minority_culture which = AN_province_culture }
+			}
+			else_if = { 
+				limit = { check_variable = { which = AN_minority_religion_size value = 1 } }
+				change_variable = { which = AN_minority_religion_size value = 1 }
+			}
+			else = {
+				owner = { 
+					12000 = { 
+						change_religion = PREV 
+						export_to_variable = {
+							variable_name = AN_minority_religion
+							value = religion
+						}
+					} 
+				}	
+				set_variable = { which = AN_minority_religion which = event_target:AN_DUMMY_PROV } 
+				set_variable = { which = AN_minority_religion_size value = 1 } 
+			}	
 			AN_check_culture_minorities = yes
+			AN_reduce_pop_fifth = yes
+			#MIGRATION EFFECT
 		}
 		else_if = {
 			limit = {
+				AN_linked_culture_religion_min = yes
 				OR = {
-					minority_culture_group = { CULTURE_GROUP=french } 
-					minority_culture_group = { CULTURE_GROUP=occitan } 
-					minority_culture_group = { CULTURE_GROUP=iberian } 
-					minority_culture_group = { CULTURE_GROUP=byzantine_g } 
-					minority_culture_group = { CULTURE_GROUP=armenian_group } 
-				}
-				NOT = {
-					OR = { 
-						has_province_modifier = AN_primary_minority_culture_1
-						has_province_modifier = AN_primary_minority_culture_2
-						has_province_modifier = AN_primary_minority_culture_3
-						has_province_modifier = AN_accepted_minority_culture_1
-						has_province_modifier = AN_accepted_minority_culture_2
-						has_province_modifier = AN_accepted_minority_culture_3
-						has_province_modifier = AN_coexisting_minority_culture_1
-						has_province_modifier = AN_coexisting_minority_culture_2
-						has_province_modifier = AN_coexisting_minority_culture_3
-					}
+					owner = { culture_group = variable:PREV:AN_minority_culture }
+					owner = { accepted_culture = variable:PREV:AN_minority_culture }
 				}
 			}
-			subtract_variable = { which = AN_minority_culture_size value = 1 }
-			AN_check_culture_minorities = yes	
-		}
-	}
-	
-	##### MUSLIM CHECKS #####
-	else_if = {
-		limit = { 
-			NOT = { owner = { religion_group = muslim } }
-			OR = { 
-				religion_group = muslim 
-				minority_religion_group = { RELIGION_GROUP=muslim } 
-			}
-		}
-		if = {
-			limit = {
-				OR = { 
-					culture_group = turko_semitic
-					culture_group = turkish_g
-					culture_group = berber_group
-				}
-				NOT = { culture_group = owner }
-				has_owner_accepted_culture = no
-			}
-			AN_culture_expel_culture = { CULTURE=morisco }
-			AN_check_culture_minorities = yes
+			AN_reduce_pop_fifth = yes
+			#MIGRATION EFFECT
 		}
 		else_if = {
 			limit = {
-				OR = {
-					minority_culture_group = { CULTURE_GROUP=turko_semitic } 
-					minority_culture_group = { CULTURE_GROUP=turkish_g } 
-					minority_culture_group = { CULTURE_GROUP=berber_group } 
-				}
+				AN_linked_culture_religion_min = yes
 				NOT = {
-					OR = { 
-						has_province_modifier = AN_primary_minority_culture_1
-						has_province_modifier = AN_primary_minority_culture_2
-						has_province_modifier = AN_primary_minority_culture_3
-						has_province_modifier = AN_accepted_minority_culture_1
-						has_province_modifier = AN_accepted_minority_culture_2
-						has_province_modifier = AN_accepted_minority_culture_3
-						has_province_modifier = AN_coexisting_minority_culture_1
-						has_province_modifier = AN_coexisting_minority_culture_2
-						has_province_modifier = AN_coexisting_minority_culture_3
+					OR = {
+						owner = { culture_group = variable:PREV:AN_minority_culture }
+						owner = { accepted_culture = variable:PREV:AN_minority_culture }
 					}
 				}
 			}
 			subtract_variable = { which = AN_minority_culture_size value = 1 }
 			AN_check_culture_minorities = yes	
+			AN_reduce_pop_fifth = yes
+			#MIGRATION EFFECT
 		}
-	}
+	}	
 	
-	##### JEWISH CHECKS #####
-	else_if = {
-		limit = { 
-			NOT = { owner = { religion_group = jewish_group } }
-			OR = { 
-				religion_group = jewish_group 
-				minority_religion_group = { RELIGION_GROUP=jewish_group } 
-			}
-		}
-		if = {
-			limit = {
-				culture_group = jewish_culture_group
-				NOT = { culture_group = owner }
-				has_owner_accepted_culture = no
-			}
-			AN_culture_expel_culture = { CULTURE=marrano }
-			AN_check_culture_minorities = yes
-		}
-		else_if = {
-			limit = {
-				#OR = {
-					minority_culture_group = { CULTURE_GROUP=jewish_culture_group } 
-				#	minority_culture_group = { CULTURE_GROUP=berber_group } 
-				#}
-				NOT = {
-					OR = { 
-						has_province_modifier = AN_primary_minority_culture_1
-						has_province_modifier = AN_primary_minority_culture_2
-						has_province_modifier = AN_primary_minority_culture_3
-						has_province_modifier = AN_accepted_minority_culture_1
-						has_province_modifier = AN_accepted_minority_culture_2
-						has_province_modifier = AN_accepted_minority_culture_3
-						has_province_modifier = AN_coexisting_minority_culture_1
-						has_province_modifier = AN_coexisting_minority_culture_2
-						has_province_modifier = AN_coexisting_minority_culture_3
-					}
-				}
-			}
-			subtract_variable = { which = AN_minority_culture_size value = 1 }
-			AN_check_culture_minorities = yes	
-		}
-		else = {
-			AN_culture_expel_effect = yes
-			AN_check_culture_minorities = yes
-		}
-	}
 	######################
 	######################
 	######################
@@ -787,10 +722,12 @@ AN_expel_religion = {
 			set_variable = { which = AN_minority_religion which = event_target:AN_DUMMY_PROV } 
 			set_variable = { which = AN_minority_religion_size value = 1 } 
 		}	
+		AN_reduce_wealth_fifth = yes
 		AN_check_religion_minorities = yes
 	}
 	else = {
 		subtract_variable = { which = AN_minority_religion_size value = 1 }
+		AN_reduce_wealth_fifth = yes
 		AN_check_religion_minorities = yes	
 	}
 	######################
@@ -982,7 +919,7 @@ AN_expel_religion = {
 	#}
 }
 
-AN_culture_expel_culture = {
+AN_owner_culture_minority = {
 	12000 = { 
 		change_culture = $CULTURE$ 
 		export_to_variable = {
@@ -1009,7 +946,7 @@ AN_culture_expel_culture = {
 	#AN_check_culture_minorities = yes	
 }
 
-AN_culture_expel_effect = {
+AN_target_culture_minority = {
 	owner = {
 		12000 = { 
 			change_culture = PREV 
