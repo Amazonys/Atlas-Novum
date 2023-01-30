@@ -1,0 +1,297 @@
+namespace = AN_migrate
+
+province_event = {
+	id = AN_migrate.1
+	title = "AN_migrate.1.t"
+	desc = "AN_migrate.1.desc"
+	picture = FAMINE_eventPicture
+	
+	is_triggered_only = yes
+	#fire_only_once = yes
+	#hidden = yes
+	
+	trigger = { 
+	}
+	
+	immediate = {
+		12000 = {
+			change_religion = PREV
+			export_to_variable = {
+				variable_name = AN_province_religion
+				value = religion
+			}
+			export_to_variable = {
+				variable_name = AN_minority_religion
+				value = religion
+			}
+		}
+	}
+	
+	option = { 
+		name = "AN_migrate.1.a" #neighboring province
+		ai_factor = {
+			factor = 200
+		}
+		trigger = {
+			any_neighbor_province = { 
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}
+			}
+		}
+		random_neighbor_province = {
+			limit = { 
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}			
+			}
+			save_event_target_as = AN_migrate_target
+		}	
+		event_target:AN_migrate_target = {
+			if = {
+				limit = { PREV = { has_province_flag = AN_expel_maj } }
+				if = {
+					limit = { is_variable_equal = { which = AN_province_religion which = PREV } }
+					#INSERT POP SHIFT
+				}	
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_religion which = PREV } } 
+					if = {
+						limit = { check_variable = { which = AN_minority_religion_size value = 3 } }
+						change_religion = variable:AN_minority_religion
+						set_variable = { which = AN_minority_religion which = AN_province_religion }
+					}
+					else_if = {
+						limit = { check_variable = { which = AN_minority_religion_size value = 1 } }
+						change_variable = { which = AN_minority_religion_size value = 1 }
+					}
+					#INSERT POP SHIFT
+				}
+				else = {
+					if = {
+						limit = { NOT = { check_variable = { which = AN_minority_religion_size value = 2 } } }
+						set_variable = { which = AN_minority_religion value = event_target:AN_DUMMY_PROV }
+						set_variable = { which = AN_minority_religion_size value = 1 }
+					}
+					#INSERT POP SHIFT
+				}
+			}
+			else = {
+				if = {
+					limit = { is_variable_equal = { which = AN_province_religion which = PREV } }
+					#INSERT POP SHIFT
+				}
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_religion which = PREV } } 
+					if = {
+						limit = { check_variable = { which = AN_minority_religion_size value = 3 } }
+						change_religion = variable:AN_minority_religion
+						set_variable = { which = AN_minority_religion which = AN_province_religion }
+					}
+					else_if = {
+						limit = { check_variable = { which = AN_minority_religion_size value = 1 } }
+						change_variable = { which = AN_minority_religion_size value = 1 }
+					}
+					#INSERT POP SHIFT
+				}
+				else = {
+					if = {
+						limit = { NOT = { check_variable = { which = AN_minority_religion_size value = 2 } } }
+						set_variable = { which = AN_minority_religion value = event_target:AN_DUMMY_PROV }
+						set_variable = { which = AN_minority_religion_size value = 1 }
+					}
+					#INSERT POP SHIFT
+				}
+			}
+		}
+	}
+	
+	
+	option = { 
+		name = "AN_migrate.1.b" #same area
+		ai_factor = {
+			factor = 100
+		}
+		trigger = {
+			area_for_scope_province = {
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}
+			}
+		}
+		random_province_in_state = {
+			limit = {
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}
+			}
+			save_event_target_as = AN_migrate_target
+		}
+	}
+	
+	
+	option = { 
+		name = "AN_migrate.1.c" #trade node
+		ai_factor = {
+			factor = 50
+		}
+		trigger = {
+			any_trade_node_member_province = {
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}
+			}
+		}
+		random_trade_node_member_province = {
+			limit = {
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}
+			}
+			save_event_target_as = AN_migrate_target
+		}
+	}
+	
+	
+	option = { 
+		name = "AN_migrate.1.d" # under 500
+		ai_factor = {
+			factor = 25
+		}
+		trigger = {
+			any_province = {
+				NOT = {
+					province_distance = {
+						who = PREV
+						distance = 500
+					}
+				}
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}
+			}
+		}
+		random_province = {
+			limit = {
+				NOT = {
+					province_distance = {
+						who = PREV
+						distance = 500
+					}
+				}
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}
+			}
+			save_event_target_as = AN_migrate_target
+		}
+	}
+	
+	
+	option = { 
+		name = "AN_migrate.1.e" # over 500
+		ai_factor = {
+			factor = 10
+		}
+		trigger = {
+			any_province = {
+				province_distance = {
+					who = PREV
+					distance = 500
+				}
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}
+			}
+		}
+		random_province = {
+			limit = {
+				province_distance = {
+					who = PREV
+					distance = 500
+				}
+				OR = {
+					AND = {
+						is_variable_equal = { which = AN_province_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_maj } 
+					}
+					AND = {
+						is_variable_equal = { which = AN_minority_religion which = PREV }
+						NOT = { has_province_flag = AN_expel_min } 
+					}
+				}
+			}
+			save_event_target_as = AN_migrate_target
+		}
+	}
+}
+
+
+
+	
+	
+	
+	
