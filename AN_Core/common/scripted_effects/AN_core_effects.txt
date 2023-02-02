@@ -234,8 +234,8 @@ AN_check_dev_variables = {
 		set_variable = { which = AN_prov_infrastructure_cap value = 0 }
 		set_variable = { which = AN_prov_wealth value = 0 }
 		set_variable = { which = AN_migration_factor value = 0 }
-		set_variable = { which = AN_migration_growth value = 0 }
-		set_variable = { which = AN_econ_stat value = 0 }
+		set_variable = { which = AN_migration_growth value = 1 }
+		set_variable = { which = AN_civ_stat value = 0 }
 		
 
 		#EXPORT DEV FOR CHECKS
@@ -265,10 +265,9 @@ AN_check_dev_variables = {
 			value = religion
 		}
 		###
-		set_variable = { which = AN_econ_stat which = AN_prov_infrastructure }
-		divide_variable = { which = AN_econ_stat value = 2 }
-		change_variable = { which = AN_econ_stat which = AN_prov_wealth }
-		divide_variable = { which = AN_econ_stat which = AN_prov_pop }
+		set_variable = { which = AN_civ_stat which = AN_prov_wealth }
+		divide_variable = { which = AN_civ_stat which = AN_prov_pop }
+		multiply_variable = { which = AN_civ_stat which = AN_prov_infrastructure }
 		###
 		if = { #-99.9% is the max negative consumption cost
 			limit = {
@@ -289,7 +288,7 @@ AN_check_dev_variables = {
 		###
 		change_variable = {
 			which = AN_wealth_production
-			which = AN_prov_wealth
+			which = AN_prov_infrastructure
 		}
 		multiply_variable = {
 			which = AN_wealth_production
@@ -570,22 +569,22 @@ AN_check_dev_variables = {
 			village = { 
 				change_variable = { which = AN_prov_infrastructure_cap  value = 4 }
 				change_variable = { which = AN_prov_pop_cap  value = 4 }
-			#	change_variable = { which = AN_migration_factor value = 1 }
+			#	change_variable = { which = AN_civ_stat value = 1 }
 			}
 			town = { 
 				change_variable = { which = AN_prov_infrastructure_cap  value = 8 }
 				change_variable = { which = AN_prov_pop_cap  value = 8 }
-			#	change_variable = { which = AN_migration_factor value = 2 }
+			#	change_variable = { which = AN_civ_stat value = 2 }
 			}
 			city = {
 				change_variable = { which = AN_prov_infrastructure_cap  value = 12 }
 				change_variable = { which = AN_prov_pop_cap  value = 12 }
-			#	change_variable = { which = AN_migration_factor value = 3 }
+			#	change_variable = { which = AN_civ_stat value = 3 }
 			} 
 			metropolis = { 
 				change_variable = { which = AN_prov_infrastructure_cap  value = 16 }
 				change_variable = { which = AN_prov_pop_cap  value = 16 }
-			#	change_variable = { which = AN_migration_factor value = 4 }
+			#	change_variable = { which = AN_civ_stat value = 4 }
 			}
 		}
 		
@@ -619,38 +618,18 @@ AN_check_dev_variables = {
 		trigger_switch = { 
 			on_trigger = has_building
 			village = { 
-			#	change_variable = { which = AN_prov_infrastructure_cap  value = 4 }
-			#	change_variable = { which = AN_prov_pop_cap  value = 4 }
 				change_variable = { which = AN_migration_factor value = 1 }
 			}
 			town = { 
-			#	change_variable = { which = AN_prov_infrastructure_cap  value = 8 }
-			#	change_variable = { which = AN_prov_pop_cap  value = 8 }
 				change_variable = { which = AN_migration_factor value = 2 }
 			}
 			city = {
-			#	change_variable = { which = AN_prov_infrastructure_cap  value = 12 }
-			#	change_variable = { which = AN_prov_pop_cap  value = 12 }
 				change_variable = { which = AN_migration_factor value = 3 }
 			} 
 			metropolis = { 
-			#	change_variable = { which = AN_prov_infrastructure_cap  value = 16 }
-			#	change_variable = { which = AN_prov_pop_cap  value = 16 }
 				change_variable = { which = AN_migration_factor value = 4 }
 			}
 		}
-		#multiply_variable = { #
-		#	which = AN_prov_wealth
-		#	value = 0.15
-		#}
-		#change_variable = { #export to migration factor
-		#	which = AN_migration_factor
-		#	which = AN_prov_wealth
-		#}
-		#divide_variable = { #RESET
-		#	which = AN_prov_wealth
-		#	value = 0.15
-		#}
 		
 		#Buildings
 		#Urban
@@ -662,10 +641,10 @@ AN_check_dev_variables = {
 			limit = { is_capital = yes }
 			change_variable = { which = AN_migration_factor value = 1 }
 		}
-		if = {
-			limit = { NOT = { base_manpower = 2 } }
-			change_variable = { which = AN_migration_factor value = 3 }
-		}
+		#if = {
+		#	limit = { NOT = { base_manpower = 2 } }
+		#	change_variable = { which = AN_migration_factor value = 1 }
+		#}
 		#Trade Goods
 		trigger_switch = {
 			on_trigger = trade_goods
@@ -797,132 +776,38 @@ AN_check_dev_variables = {
 		change_variable = {
 			which = AN_wealth_growth
 			which = AN_wealth_production
+		}
+		divide_variable = {
+			which = AN_wealth_growth
+			which = AN_civ_stat
 		}	
 		divide_variable = {
 			which = AN_wealth_growth
 			which = AN_logistics
-		}		
-		if = {
-			limit = { check_variable = { which = AN_econ_stat value = 0.15 } base_manpower = 2 }
-			if = { 
-				limit = { check_variable = { which = AN_econ_stat value = 0.66 } }
-				if = { 
-					limit = { check_variable = { which = AN_econ_stat value = 1.66 } }
-					if = { 
-						limit = { check_variable = { which = AN_econ_stat value = 2 } }
-						if = { 
-							limit = { check_variable = { which = AN_econ_stat value = 2.5 } }
-							#Opulent
-							divide_variable = { which = AN_wealth_growth value = 10 }
-						}
-						else = {
-							#Lavish
-							divide_variable = { which = AN_wealth_growth value = 5 }
-						}
-					}
-					else = {
-						#Rich
-						divide_variable = { which = AN_wealth_growth value = 4 }
-					}
-				}
-				else = {
-					if = { 
-						limit = { check_variable = { which = AN_econ_stat value = 1.33 } }
-						#Flourishing
-						divide_variable = { which = AN_wealth_growth value = 3 }
-					}
-					else = {
-						#Middling
-						divide_variable = { which = AN_wealth_growth value = 2 }
-					}
-				}
-			}
-			else = {
-				if = { 
-					limit = { check_variable = { which = AN_econ_stat value = 0.44 } }
-					#Struggling
-					divide_variable = { which = AN_wealth_growth value = 1.5 }
-				}
-				else = {
-					if = { 
-						limit = { check_variable = { which = AN_econ_stat value = 0.33 } }
-						#Poor
-						divide_variable = { which = AN_wealth_growth value = 1.33 }
-					}
-					else = {
-						#Impoverished
-						divide_variable = { which = AN_wealth_growth value = 1.11 }
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { NOT = { base_manpower = 2 } }
-			if = {
-				limit = { base_tax = 2 }
-				#Rich
-				divide_variable = { which = AN_wealth_growth value = 4 }
-			}
-			else = {
-				#Destitute / Base
-				divide_variable = { which = AN_wealth_growth value = 2 } 
-			}
-		}
+		}	
+			
 		if = { 
 			limit = { check_variable = { which = AN_pop_growth value = 0 } }
-			change_variable = {
+			divide_variable = {
+				which = AN_civ_stat
+				value = 100
+			}
+			subtract_variable = {
+				which = AN_migration_growth
+				which = AN_civ_stat
+			}
+			
+			multiply_variable = {
 				which = AN_migration_growth
 				which = AN_pop_growth
 			}
-			if = { limit = { OR = { has_building = farm_estate has_building = fishery has_building = plantations has_building = mills has_building = orchard has_building = pasture has_building = mine has_building = quarry has_building = lodge } }
-				multiply_variable = { which = AN_pop_growth value = 0.25 }
-				multiply_variable = { which = AN_migration_growth value = 0.75 }
+			multiply_variable = {
+				which = AN_pop_growth
+				which = AN_civ_stat
 			}
-			else_if = { limit = { has_building = village }
-				multiply_variable = {
-					which = AN_pop_growth
-					value = 0.75
-				}
-				multiply_variable = {
-					which = AN_migration_growth
-					value = 0.25
-				}
-			}
-			else_if = { limit = { has_building = town }
-				multiply_variable = {
-					which = AN_pop_growth
-					value = 0.8
-				}
-				multiply_variable = {
-					which = AN_migration_growth
-					value = 0.2
-				}
-			}
-			else_if = { limit = { has_building = city }
-				multiply_variable = {
-					which = AN_pop_growth
-					value = 0.9
-				}
-				multiply_variable = {
-					which = AN_migration_growth
-					value = 0.1
-				}
-			}
-			else_if = { limit = { has_building = metropolis }
-				multiply_variable = {
-					which = AN_migration_growth
-					value = 0
-				}
-			}
-			else = {
-				multiply_variable = {
-					which = AN_pop_growth
-					value = 0.5
-				}
-				multiply_variable = {
-					which = AN_migration_growth
-					value = 0.5
-				}
+			multiply_variable = {
+				which = AN_civ_stat
+				value = 100
 			}
 		}
 		else = {
