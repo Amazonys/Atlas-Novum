@@ -679,6 +679,7 @@ AN_check_dev_variables = {
 		set_variable = { which = AN_pop_growth which = AN_prov_pop }
 		subtract_variable = { which = AN_pop_growth which = AN_pop_production }
 		subtract_variable = { which = AN_pop_growth value = 1 }
+		multiply_variable = { which = AN_pop_growth value = 5 } #5 base growth - min/max 1 pop every 20 yrs
 		
 		
 		
@@ -724,17 +725,35 @@ AN_check_dev_variables = {
 				change_variable = { which = AN_migration_factor value = 4 }
 			}
 		}
-		
-		#Buildings
-		#Urban
 		if = {
 			limit = { NOT = { OR = { has_building = village has_building = town has_building = city has_building = metropolis } } }
-			subtract_variable = { which = AN_migration_factor value = 2 }
+			subtract_variable = { which = AN_migration_factor value = 3 }
 		}
 		if = {
 			limit = { is_capital = yes }
-			change_variable = { which = AN_migration_factor value = 1 }
+			change_variable = { which = AN_migration_factor value = 2 }
 		}
+		if = {
+			limit = { is_looted = yes }
+			change_variable = { which = AN_migration_factor value = 2 }
+		}
+		if = { 
+			limit = { has_siege = yes }
+			change_variable = { which = AN_migration_factor value = 30 }
+		}
+		if = {
+			limit = { NOT = { controlled_by = owner } }
+			change_variable = { which = AN_migration_factor value = 10 }
+		}
+		divide_variable = {
+			which = AN_civ_stat
+			value = 10
+		}
+		change_variable = {
+			which = AN_migration_factor
+			which = AN_civ_stat
+		}
+		
 		#Trade Goods
 		trigger_switch = {
 			on_trigger = trade_goods
@@ -863,7 +882,7 @@ AN_check_dev_variables = {
 			which = AN_wealth_growth
 			which = AN_wealth_production
 		}
-		divide_variable = {
+		multiply_variable = {
 			which = AN_wealth_growth
 			which = AN_civ_stat
 		}	
@@ -871,18 +890,17 @@ AN_check_dev_variables = {
 			which = AN_wealth_growth
 			which = AN_logistics
 		}	
+		divide_variable = {
+			which = AN_civ_stat
+			value = 10
+		}
 			
 		if = { 
 			limit = { check_variable = { which = AN_pop_growth value = 0 } }
-			divide_variable = {
-				which = AN_civ_stat
-				value = 100
-			}
 			subtract_variable = {
 				which = AN_migration_growth
 				which = AN_civ_stat
 			}
-			
 			multiply_variable = {
 				which = AN_migration_growth
 				which = AN_pop_growth
@@ -891,13 +909,15 @@ AN_check_dev_variables = {
 				which = AN_pop_growth
 				which = AN_civ_stat
 			}
-			multiply_variable = {
-				which = AN_civ_stat
-				value = 100
-			}
+			
 		}
 		else = {
 			set_variable = { which = AN_migration_growth value = -1 }
+		}
+		
+		multiply_variable = { #RESET Civ 
+			which = AN_civ_stat
+			value = 100
 		}
 	}
 }
@@ -1104,17 +1124,6 @@ AN_dev_calc = {
 		}
 		
 		
-		
-		#if = {
-		#	limit = { check_variable = { which = AN_prov_pop which = AN_prov_pop_cap } }
-		#	province_event = { id = famine.1 }
-		#}
-	
-		#Famine calc
-		#if = {
-		#	limit = { base_manpower = 2 } #WILL ONLY CHECK IF YOU HAVE POPULATION TO LOSE - OTHERWISE IS MOOT
-		#	IR_check_famine = yes
-		#}
 	}
 }
 
