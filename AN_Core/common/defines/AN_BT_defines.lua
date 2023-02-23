@@ -408,7 +408,7 @@ NDefines.NReligion.MAX_CARDINALS_PER_COUNTRY = 6							-- Max cardinals in a sin
 NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 30.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 600.0							-- WAS 200 -- When a cardinal is chosen the formula is diving a countrys development by this number.
 NDefines.NReligion.NUMBER_OF_POSSIBLE_CARDINALS = 5						-- Number of cardinals from said number of most successful provinces to be randomly picked from
-
+--NDefines.NReligion.REFORM_DESIRE_PER_YEAR = -0.012								-- Increase of reform desire for each year.
 
 ---- NGovernment
 NDefines.NGovernment.RUSSIAN_ABILITY_COST = 100
