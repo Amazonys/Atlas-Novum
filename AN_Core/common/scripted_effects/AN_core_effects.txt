@@ -928,6 +928,26 @@ AN_check_dev_variables = {
 			which = AN_civ_stat
 			value = 100
 		}
+		set_variable = { 
+			which = AN_pressure
+			which = AN_prov_pop
+		}
+		multiply_variable = {
+			which = AN_pressure
+			which = AN_civ_stat
+		}
+		#if = { 
+		#	limit = { check_variable = { which = AN_culture_minority_size value = 3 }  }
+		#	multiply_variable = { which = AN_pressure value = 0.8571 } # * 6/7
+		#}
+		#else_if = { 
+		#	limit = { check_variable = { which = AN_culture_minority_size value = 2 }  }
+		#	multiply_variable = { which = AN_pressure value = 0.7142 }  # * 5/7
+		#}
+		#else_if = { 
+		#	limit = { check_variable = { which = AN_culture_minority_size value = 1 }  }
+		#	multiply_variable = { which = AN_pressure value = 0.5714 }  # * 4/7
+		#}
 	}
 }
 
@@ -1132,207 +1152,316 @@ AN_dev_calc = {
 			}
 		}
 		
-		#RESETTLEMENT
+		
+		#CULTURE PRESSURE
+		
+		save_global_event_target_as = AN_mig_origin
+		owner = { save_global_event_target_as = AN_mig_tag }
+		
+		#EXPORT TO DUMMY
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_province_culture which = PREV }
+			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_target_culture which = PREV }
+			change_culture = variable:AN_province_culture
+		}
+		
 		if = {
 			limit = {
-				base_manpower = 5 
+				AN_linked_culture_religion_maj = yes
 			}
-			random_list = { 
-				4 = { 	#Neighbor
-					modifier = {
-						factor = 2
-						devastation = 10
-					}
-					modifier = {
-						factor = 2
-						devastation = 25
-					}
-					modifier = {
-						factor = 2
-						devastation = 50
-					}
-					modifier = {
-						factor = 2
-						devastation = 75
-					}
-					modifier = {
-						factor = 2
-						devastation = 90
-					}
-					save_global_event_target_as = AN_resettle_origin 
-					owner = { save_global_event_target_as = AN_resettle_owner }
-					
-					random_neighbor_province = { 
-						limit = { 
-							check_variable = { which = AN_migration_factor value = 0 }
-							OR = { 
-								check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
-								has_building = village
-								has_building = town
-								has_building = city
-								has_building = metropolis
-							}
-						}
-						save_global_event_target_as = AN_resettle_target
-					}
-					
-					trigger_switch = {
-						on_trigger = base_manpower
-						100 = { add_base_manpower = -10 add_base_tax = -10 event_target:AN_resettle_target = { add_base_manpower = 10 add_base_tax = 10 } }
-						90 = { add_base_manpower = -9 add_base_tax = -9 event_target:AN_resettle_target = { add_base_manpower = 9 add_base_tax = 9 } }
-						80 = { add_base_manpower = -8 add_base_tax = -8 event_target:AN_resettle_target = { add_base_manpower = 8 add_base_tax = 8 } }
-						70 = { add_base_manpower = -7 add_base_tax = -7 event_target:AN_resettle_target = { add_base_manpower = 7 add_base_tax = 7 } }
-						60 = { add_base_manpower = -6 add_base_tax = -6 event_target:AN_resettle_target = { add_base_manpower = 6 add_base_tax = 6 } }
-						50 = { add_base_manpower = -5 add_base_tax = -5 event_target:AN_resettle_target = { add_base_manpower = 5 add_base_tax = 5 } }
-						40 = { add_base_manpower = -4 add_base_tax = -4 event_target:AN_resettle_target = { add_base_manpower = 4 add_base_tax = 4 } }
-						30 = { add_base_manpower = -3 add_base_tax = -3 event_target:AN_resettle_target = { add_base_manpower = 3 add_base_tax = 3 } }
-						20 = { add_base_manpower = -2 add_base_tax = -2 event_target:AN_resettle_target = { add_base_manpower = 2 add_base_tax = 2 } }
-						10 = { add_base_manpower = -1 add_base_tax = -1 event_target:AN_resettle_target = { add_base_manpower = 1 add_base_tax = 1 } }
-					}
-					clear_global_event_target = AN_resettle_origin
-					clear_global_event_target = AN_resettle_target
-					clear_global_event_target = AN_resettle_owner
-				}
-				3 = { 	#Owned Port
-					trigger = {
-						has_port = yes
-					}
-					save_global_event_target_as = AN_resettle_origin 
-					owner = { save_global_event_target_as = AN_resettle_owner }
-					
-					owner = { 
-						random_owned_province = {  
-							limit = { 
-								check_variable = { which = AN_migration_factor value = 0 }
-								has_port = yes
-								OR = { 
-									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
-									has_building = village
-									has_building = town
-									has_building = city
-									has_building = metropolis
-								}
-							}
-							save_global_event_target_as = AN_resettle_target
-						}
-					}
-					
-					trigger_switch = {
-						on_trigger = base_manpower
-						100 = { add_base_manpower = -10 add_base_tax = -10 event_target:AN_resettle_target = { add_base_manpower = 10 add_base_tax = 10 } }
-						90 = { add_base_manpower = -9 add_base_tax = -9 event_target:AN_resettle_target = { add_base_manpower = 9 add_base_tax = 9 } }
-						80 = { add_base_manpower = -8 add_base_tax = -8 event_target:AN_resettle_target = { add_base_manpower = 8 add_base_tax = 8 } }
-						70 = { add_base_manpower = -7 add_base_tax = -7 event_target:AN_resettle_target = { add_base_manpower = 7 add_base_tax = 7 } }
-						60 = { add_base_manpower = -6 add_base_tax = -6 event_target:AN_resettle_target = { add_base_manpower = 6 add_base_tax = 6 } }
-						50 = { add_base_manpower = -5 add_base_tax = -5 event_target:AN_resettle_target = { add_base_manpower = 5 add_base_tax = 5 } }
-						40 = { add_base_manpower = -4 add_base_tax = -4 event_target:AN_resettle_target = { add_base_manpower = 4 add_base_tax = 4 } }
-						30 = { add_base_manpower = -3 add_base_tax = -3 event_target:AN_resettle_target = { add_base_manpower = 3 add_base_tax = 3 } }
-						20 = { add_base_manpower = -2 add_base_tax = -2 event_target:AN_resettle_target = { add_base_manpower = 2 add_base_tax = 2 } }
-						10 = { add_base_manpower = -1 add_base_tax = -1 event_target:AN_resettle_target = { add_base_manpower = 1 add_base_tax = 1 } }
-					}
-					clear_global_event_target = AN_resettle_origin
-					clear_global_event_target = AN_resettle_target
-					clear_global_event_target = AN_resettle_owner
-				}
-				1 = { 	#Colonial
-					trigger = {
-						is_state = yes
-						OR = { 
-							has_owner_culture = yes
-							has_owner_accepted_culture = yes
-						}
-						#is_overseas = no
-					}
-					modifier = { 
-						factor = 2
-						has_owner_culture = yes
-					}
-					save_global_event_target_as = AN_resettle_origin 
-					owner = { save_global_event_target_as = AN_resettle_owner }
-					
-					owner = { 
-						random_owned_province = { 
-							limit = {
-								check_variable = { which = AN_migration_factor value = 0 }
-								is_state = no
-								OR = { 
-									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
-									has_building = village
-									has_building = town
-									has_building = city
-									has_building = metropolis
-								}
-							}
-							save_global_event_target_as = AN_resettle_target
-						}
-					}
-					
-					trigger_switch = {
-						on_trigger = base_manpower
-						100 = { add_base_manpower = -10 add_base_tax = -10 event_target:AN_resettle_target = { add_base_manpower = 10 add_base_tax = 10 } }
-						90 = { add_base_manpower = -9 add_base_tax = -9 event_target:AN_resettle_target = { add_base_manpower = 9 add_base_tax = 9 } }
-						80 = { add_base_manpower = -8 add_base_tax = -8 event_target:AN_resettle_target = { add_base_manpower = 8 add_base_tax = 8 } }
-						70 = { add_base_manpower = -7 add_base_tax = -7 event_target:AN_resettle_target = { add_base_manpower = 7 add_base_tax = 7 } }
-						60 = { add_base_manpower = -6 add_base_tax = -6 event_target:AN_resettle_target = { add_base_manpower = 6 add_base_tax = 6 } }
-						50 = { add_base_manpower = -5 add_base_tax = -5 event_target:AN_resettle_target = { add_base_manpower = 5 add_base_tax = 5 } }
-						40 = { add_base_manpower = -4 add_base_tax = -4 event_target:AN_resettle_target = { add_base_manpower = 4 add_base_tax = 4 } }
-						30 = { add_base_manpower = -3 add_base_tax = -3 event_target:AN_resettle_target = { add_base_manpower = 3 add_base_tax = 3 } }
-						20 = { add_base_manpower = -2 add_base_tax = -2 event_target:AN_resettle_target = { add_base_manpower = 2 add_base_tax = 2 } }
-						10 = { add_base_manpower = -1 add_base_tax = -1 event_target:AN_resettle_target = { add_base_manpower = 1 add_base_tax = 1 } }
-					}
-					clear_global_event_target = AN_resettle_origin
-					clear_global_event_target = AN_resettle_target
-					clear_global_event_target = AN_resettle_owner
-				} 
-				2 = { 	#International
-					trigger = {
-						OR = { 
-							has_building = village
-							has_building = town
-							has_building = city
-							has_building = metropolis
-						}
-					}
-					save_global_event_target_as = AN_resettle_origin 
-					owner = { save_global_event_target_as = AN_resettle_owner }
-					
-					random_known_country = { 
-						random_owned_province = { 
-							limit = {
-								check_variable = { which = AN_migration_factor value = 0 }
-								OR = { 
-									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
-									has_building = village
-									has_building = town
-									has_building = city
-									has_building = metropolis
-								}
-							}
-							save_global_event_target_as = AN_resettle_target
-						}
-					}
-					trigger_switch = {
-						on_trigger = base_manpower
-						100 = { add_base_manpower = -10 add_base_tax = -10 event_target:AN_resettle_target = { add_base_manpower = 10 add_base_tax = 10 } }
-						90 = { add_base_manpower = -9 add_base_tax = -9 event_target:AN_resettle_target = { add_base_manpower = 9 add_base_tax = 9 } }
-						80 = { add_base_manpower = -8 add_base_tax = -8 event_target:AN_resettle_target = { add_base_manpower = 8 add_base_tax = 8 } }
-						70 = { add_base_manpower = -7 add_base_tax = -7 event_target:AN_resettle_target = { add_base_manpower = 7 add_base_tax = 7 } }
-						60 = { add_base_manpower = -6 add_base_tax = -6 event_target:AN_resettle_target = { add_base_manpower = 6 add_base_tax = 6 } }
-						50 = { add_base_manpower = -5 add_base_tax = -5 event_target:AN_resettle_target = { add_base_manpower = 5 add_base_tax = 5 } }
-						40 = { add_base_manpower = -4 add_base_tax = -4 event_target:AN_resettle_target = { add_base_manpower = 4 add_base_tax = 4 } }
-						30 = { add_base_manpower = -3 add_base_tax = -3 event_target:AN_resettle_target = { add_base_manpower = 3 add_base_tax = 3 } }
-						20 = { add_base_manpower = -2 add_base_tax = -2 event_target:AN_resettle_target = { add_base_manpower = 2 add_base_tax = 2 } }
-						10 = { add_base_manpower = -1 add_base_tax = -1 event_target:AN_resettle_target = { add_base_manpower = 1 add_base_tax = 1 } }
-					}
-					clear_global_event_target = AN_resettle_origin
-					clear_global_event_target = AN_resettle_target
-					clear_global_event_target = AN_resettle_owner
-				} 
-				390 = { #Do Nothing
-					
-				} 
-			}
+			set_variable = { which = AN_minority_religion which = PREV }
+			set_variable = { which = AN_province_religion which = AN_minority_religion }
+			change_religion = variable:AN_minority_religion
 		}
+		
+		#CHECK PRESSURE
+		every_neighbor_province = {
+			limit = { is_city = yes }
+			
+			if = {
+				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+				event_target:AN_mig_origin = { 
+					if = { 
+						limit = { check_variable = { which = AN_minority_culture_size value = 3 } }
+						multiply_variable = { which = AN_pressure value = 0.1428 }  # * 1/7
+					
+					}
+					else_if = { 
+						limit = { check_variable = { which = AN_minority_culture_size value = 2 } }
+						multiply_variable = { which = AN_pressure value = 0.4285 }  # * 3/7
+					}
+					else_if = { 
+						limit = { check_variable = { which = AN_minority_culture_size value = 1 } }
+						multiply_variable = { which = AN_pressure value = 0.7142 } # * 5/7
+					}
+					change_variable = { which = AN_pressure which = PREV } }
+				}
+				event_target:AN_DUMMY_PROV2 = { set_variable = { which = AN_province_culture which = PREV } set_variable = { which = AN_target_culture which = AN_province_culture } }
+				
+				
+			}
+			#Else if minority culture is same
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				event_target:AN_mig_origin = { 
+					if = { 
+						limit = { check_variable = { which = AN_minority_culture_size value = 3 } }
+						multiply_variable = { which = AN_pressure value = 0.1428 }  # * 1/7
+					
+					}
+					else_if = { 
+						limit = { check_variable = { which = AN_minority_culture_size value = 2 } }
+						multiply_variable = { which = AN_pressure value = 0.4285 }  # * 3/7
+					}
+					else_if = { 
+						limit = { check_variable = { which = AN_minority_culture_size value = 1 } }
+						multiply_variable = { which = AN_pressure value = 0.7142 } # * 5/7
+					}
+					subtract_variable = { which = AN_pressure which = PREV } }
+				}
+				event_target:AN_DUMMY_PROV2 = { set_variable = { which = AN_minority_culture which = PREV } set_variable = { which = AN_target_culture which = AN_minority_culture } }
+			}
+			
+			#Else
+			else = {
+				subtract_variable = { which = AN_pressure which = PREV } }
+				event_target:AN_DUMMY_PROV2 = { set_variable = { which = AN_province_culture which = PREV } set_variable = { which = AN_minority_culture which = PREV } set_variable = { which = AN_target_culture which = AN_province_culture } }
+			}
+			
+			
+			###### Recursive culture selector
+			if = { 
+				limit = { NOT = { check_variable = { which = AN_pressure value = 0 } is_variable_equal = { which = AN_target_culture which = event_target:AN_DUMMY_PROV2 } } }
+				set_variable = { which = AN_target_culture which = event_target:AN_DUMMY_PROV }
+			}
+			else = {
+				set_variable = { which = AN_target_culture value = 0 }
+			}
+			#####
+			
+			
+			
+		}
+		
+		if = {
+			limit = { NOT = { check_variable = { which = AN_pressure value = 0 } } }
+			multiply_variable = { which = AN_pressure value = -1 }
+		}
+		change_variable = { which = AN_minority_progress which = AN_pressure }
+		
+		
+		#RESET
+		
+		clear_global_event_target = AN_mig_origin
+		clear_global_event_target = AN_mig_tag
+		
+		
+		set_variable = { which = AN_pressure value = AN_prov_pop }
+		multiply_variable = { which = AN_pressure which = AN_civ_stat }
+		
+		
+		#RESETTLEMENT
+		#if = {
+		#	limit = {
+		#		base_manpower = 5 
+		#	}
+		#	random_list = { 
+		#		4 = { 	#Neighbor
+		#			modifier = {
+		#				factor = 2
+		#				devastation = 10
+		#			}
+		#			modifier = {
+		#				factor = 2
+		#				devastation = 25
+		#			}
+		#			modifier = {
+		#				factor = 2
+		#				devastation = 50
+		#			}
+		#			modifier = {
+		#				factor = 2
+		#				devastation = 75
+		#			}
+		#			modifier = {
+		#				factor = 2
+		#				devastation = 90
+		#			}
+		#			save_global_event_target_as = AN_resettle_origin 
+		#			owner = { save_global_event_target_as = AN_resettle_owner }
+		#			
+		#			random_neighbor_province = { 
+		#				limit = { 
+		#					check_variable = { which = AN_migration_factor value = 0 }
+		#					OR = { 
+		#						check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+		#						has_building = village
+		#						has_building = town
+		#						has_building = city
+		#						has_building = metropolis
+		#					}
+		#				}
+		#				save_global_event_target_as = AN_resettle_target
+		#			}
+		#			
+		#			trigger_switch = {
+		#				on_trigger = base_manpower
+		#				100 = { add_base_manpower = -10 add_base_tax = -10 event_target:AN_resettle_target = { add_base_manpower = 10 add_base_tax = 10 } }
+		#				90 = { add_base_manpower = -9 add_base_tax = -9 event_target:AN_resettle_target = { add_base_manpower = 9 add_base_tax = 9 } }
+		#				80 = { add_base_manpower = -8 add_base_tax = -8 event_target:AN_resettle_target = { add_base_manpower = 8 add_base_tax = 8 } }
+		#				70 = { add_base_manpower = -7 add_base_tax = -7 event_target:AN_resettle_target = { add_base_manpower = 7 add_base_tax = 7 } }
+		#				60 = { add_base_manpower = -6 add_base_tax = -6 event_target:AN_resettle_target = { add_base_manpower = 6 add_base_tax = 6 } }
+		#				50 = { add_base_manpower = -5 add_base_tax = -5 event_target:AN_resettle_target = { add_base_manpower = 5 add_base_tax = 5 } }
+		#				40 = { add_base_manpower = -4 add_base_tax = -4 event_target:AN_resettle_target = { add_base_manpower = 4 add_base_tax = 4 } }
+		#				30 = { add_base_manpower = -3 add_base_tax = -3 event_target:AN_resettle_target = { add_base_manpower = 3 add_base_tax = 3 } }
+		#				20 = { add_base_manpower = -2 add_base_tax = -2 event_target:AN_resettle_target = { add_base_manpower = 2 add_base_tax = 2 } }
+		#				10 = { add_base_manpower = -1 add_base_tax = -1 event_target:AN_resettle_target = { add_base_manpower = 1 add_base_tax = 1 } }
+		#			}
+		#			clear_global_event_target = AN_resettle_origin
+		#			clear_global_event_target = AN_resettle_target
+		#			clear_global_event_target = AN_resettle_owner
+		#		}
+		#		3 = { 	#Owned Port
+		#			trigger = {
+		#				has_port = yes
+		#			}
+		#			save_global_event_target_as = AN_resettle_origin 
+		#			owner = { save_global_event_target_as = AN_resettle_owner }
+		#			
+		#			owner = { 
+		#				random_owned_province = {  
+		#					limit = { 
+		#						check_variable = { which = AN_migration_factor value = 0 }
+		#						has_port = yes
+		#						OR = { 
+		#							check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+		#							has_building = village
+		#							has_building = town
+		#							has_building = city
+		#							has_building = metropolis
+		#						}
+		#					}
+		#					save_global_event_target_as = AN_resettle_target
+		#				}
+		#			}
+		#			
+		#			trigger_switch = {
+		#				on_trigger = base_manpower
+		#				100 = { add_base_manpower = -10 add_base_tax = -10 event_target:AN_resettle_target = { add_base_manpower = 10 add_base_tax = 10 } }
+		#				90 = { add_base_manpower = -9 add_base_tax = -9 event_target:AN_resettle_target = { add_base_manpower = 9 add_base_tax = 9 } }
+		#				80 = { add_base_manpower = -8 add_base_tax = -8 event_target:AN_resettle_target = { add_base_manpower = 8 add_base_tax = 8 } }
+		#				70 = { add_base_manpower = -7 add_base_tax = -7 event_target:AN_resettle_target = { add_base_manpower = 7 add_base_tax = 7 } }
+		#				60 = { add_base_manpower = -6 add_base_tax = -6 event_target:AN_resettle_target = { add_base_manpower = 6 add_base_tax = 6 } }
+		#				50 = { add_base_manpower = -5 add_base_tax = -5 event_target:AN_resettle_target = { add_base_manpower = 5 add_base_tax = 5 } }
+		#				40 = { add_base_manpower = -4 add_base_tax = -4 event_target:AN_resettle_target = { add_base_manpower = 4 add_base_tax = 4 } }
+		#				30 = { add_base_manpower = -3 add_base_tax = -3 event_target:AN_resettle_target = { add_base_manpower = 3 add_base_tax = 3 } }
+		#				20 = { add_base_manpower = -2 add_base_tax = -2 event_target:AN_resettle_target = { add_base_manpower = 2 add_base_tax = 2 } }
+		#				10 = { add_base_manpower = -1 add_base_tax = -1 event_target:AN_resettle_target = { add_base_manpower = 1 add_base_tax = 1 } }
+		#			}
+		#			clear_global_event_target = AN_resettle_origin
+		#			clear_global_event_target = AN_resettle_target
+		#			clear_global_event_target = AN_resettle_owner
+		#		}
+		#		1 = { 	#Colonial
+		#			trigger = {
+		#				is_state = yes
+		#				OR = { 
+		#					has_owner_culture = yes
+		#					has_owner_accepted_culture = yes
+		#				}
+		#				#is_overseas = no
+		#			}
+		#			modifier = { 
+		#				factor = 2
+		#				has_owner_culture = yes
+		#			}
+		#			save_global_event_target_as = AN_resettle_origin 
+		#			owner = { save_global_event_target_as = AN_resettle_owner }
+			#		
+			#		owner = { 
+			#			random_owned_province = { 
+			#				limit = {
+			#					check_variable = { which = AN_migration_factor value = 0 }
+			#					is_state = no
+			#					OR = { 
+			#						check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+			#						has_building = village
+			#						has_building = town
+			#						has_building = city
+			#						has_building = metropolis
+			#					}
+			#				}
+			#				save_global_event_target_as = AN_resettle_target
+			#			}
+			#		}
+			#		
+			#		trigger_switch = {
+			#			on_trigger = base_manpower
+			#			100 = { add_base_manpower = -10 add_base_tax = -10 event_target:AN_resettle_target = { add_base_manpower = 10 add_base_tax = 10 } }
+			#			90 = { add_base_manpower = -9 add_base_tax = -9 event_target:AN_resettle_target = { add_base_manpower = 9 add_base_tax = 9 } }
+			#			80 = { add_base_manpower = -8 add_base_tax = -8 event_target:AN_resettle_target = { add_base_manpower = 8 add_base_tax = 8 } }
+			#			70 = { add_base_manpower = -7 add_base_tax = -7 event_target:AN_resettle_target = { add_base_manpower = 7 add_base_tax = 7 } }
+			#			60 = { add_base_manpower = -6 add_base_tax = -6 event_target:AN_resettle_target = { add_base_manpower = 6 add_base_tax = 6 } }
+			#			50 = { add_base_manpower = -5 add_base_tax = -5 event_target:AN_resettle_target = { add_base_manpower = 5 add_base_tax = 5 } }
+			#			40 = { add_base_manpower = -4 add_base_tax = -4 event_target:AN_resettle_target = { add_base_manpower = 4 add_base_tax = 4 } }
+			#			30 = { add_base_manpower = -3 add_base_tax = -3 event_target:AN_resettle_target = { add_base_manpower = 3 add_base_tax = 3 } }
+			#			20 = { add_base_manpower = -2 add_base_tax = -2 event_target:AN_resettle_target = { add_base_manpower = 2 add_base_tax = 2 } }
+			#			10 = { add_base_manpower = -1 add_base_tax = -1 event_target:AN_resettle_target = { add_base_manpower = 1 add_base_tax = 1 } }
+			#		}
+			#		clear_global_event_target = AN_resettle_origin
+			#		clear_global_event_target = AN_resettle_target
+			#		clear_global_event_target = AN_resettle_owner
+			#	} 
+			#	2 = { 	#International
+			#		trigger = {
+			#			OR = { 
+			#				has_building = village
+			#				has_building = town
+			#				has_building = city
+			#				has_building = metropolis
+			#			}
+			#		}
+			#		save_global_event_target_as = AN_resettle_origin 
+			#		owner = { save_global_event_target_as = AN_resettle_owner }
+			#		
+			#		random_known_country = { 
+			#			random_owned_province = { 
+			#				limit = {
+			#					check_variable = { which = AN_migration_factor value = 0 }
+			#					OR = { 
+			#						check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+			#						has_building = village
+			#						has_building = town
+			#						has_building = city
+			#						has_building = metropolis
+			#					}
+			#				}
+			#				save_global_event_target_as = AN_resettle_target
+			#			}
+			#		}
+			#		trigger_switch = {
+			#			on_trigger = base_manpower
+			#			100 = { add_base_manpower = -10 add_base_tax = -10 event_target:AN_resettle_target = { add_base_manpower = 10 add_base_tax = 10 } }
+			#			90 = { add_base_manpower = -9 add_base_tax = -9 event_target:AN_resettle_target = { add_base_manpower = 9 add_base_tax = 9 } }
+			#			80 = { add_base_manpower = -8 add_base_tax = -8 event_target:AN_resettle_target = { add_base_manpower = 8 add_base_tax = 8 } }
+			#			70 = { add_base_manpower = -7 add_base_tax = -7 event_target:AN_resettle_target = { add_base_manpower = 7 add_base_tax = 7 } }
+			#			60 = { add_base_manpower = -6 add_base_tax = -6 event_target:AN_resettle_target = { add_base_manpower = 6 add_base_tax = 6 } }
+			#			50 = { add_base_manpower = -5 add_base_tax = -5 event_target:AN_resettle_target = { add_base_manpower = 5 add_base_tax = 5 } }
+			#			40 = { add_base_manpower = -4 add_base_tax = -4 event_target:AN_resettle_target = { add_base_manpower = 4 add_base_tax = 4 } }
+			#			30 = { add_base_manpower = -3 add_base_tax = -3 event_target:AN_resettle_target = { add_base_manpower = 3 add_base_tax = 3 } }
+			#			20 = { add_base_manpower = -2 add_base_tax = -2 event_target:AN_resettle_target = { add_base_manpower = 2 add_base_tax = 2 } }
+			#			10 = { add_base_manpower = -1 add_base_tax = -1 event_target:AN_resettle_target = { add_base_manpower = 1 add_base_tax = 1 } }
+			#		}
+			#		clear_global_event_target = AN_resettle_origin
+			#		clear_global_event_target = AN_resettle_target
+			#		clear_global_event_target = AN_resettle_owner
+			#	} 
+			#	390 = { #Do Nothing
+			#		
+			#	} 
+			#}
+		#}
 	}
 }
 
