@@ -136,7 +136,7 @@ NDefines.NCountry.RANDOM_LUCKY_DEVELOPMENT_WEIGHT = 0.2			-- from 0p4
 NDefines.NCountry.MIN_DEV_FOR_OLD_GREAT_POWER = 300			-- from 100
 NDefines.NCountry.PS_MAKE_PROVINCE_CORE = 5			-- from 10
 NDefines.NCountry.PS_MOVE_CAPITAL_EXTRA = 100			-- from 50
-NDefines.NCountry.PS_CHANGE_CULTURE = 50			-- from 10
+NDefines.NCountry.PS_CHANGE_CULTURE = 30			-- from 10
 NDefines.NCountry.PS_CHANGE_CULTURE_OVERSEAS_RELIGION_MOD = -0.25 --from -0.8,	-- Modifier how much cheaper it is to change culture in overseas province if same religion
 NDefines.NCountry.PS_IMPROVE_PROVINCE_BASE = 0			-- from 50 # ANSWER TO LIFE THE UNIVERSE AND EVERYTHING
 NDefines.NCountry.PS_IMPROVE_PROVINCE_CAPITAL_DISCOUNT = 0			-- from 0p05
@@ -156,7 +156,7 @@ NDefines.NCountry.MIN_POPULATION_FOR_TRADEGOOD_ASSIGNMENT = 1001
 
 --NDefines.NCountry.CULTURE_LOSS_THRESHOLD = 0.10 					-- _CDEF_CULTURE_LOSS_THRESHOLD = 10,
 --NDefines.NCountry.CULTURE_GAIN_THRESHOLD = 0.20 					-- _CDEF_CULTURE_GAIN_THRESHOLD = 10,
-NDefines.NCountry.CULTURE_COST_DIFF_ORIGINAL = -10				-- Difference in cost in percent to convert to original culture.
+NDefines.NCountry.CULTURE_COST_DIFF_ORIGINAL = -10			-- NOW MINORITY NOT ORIGINAL	-- Difference in cost in percent to convert to original culture.
 NDefines.NCountry.CULTURE_COST_DIFF_ADJACENT = -5				-- Difference in cost in percent to convert to adjacent culture.
 NDefines.NCountry.CULTURE_COST_DIFF_PRIMARY = 0				-- Difference in cost in percent to convert to primary culture.
 NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 99999		-- Minimum development required to promote the culture.
