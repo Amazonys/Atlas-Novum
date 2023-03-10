@@ -50,7 +50,7 @@ float3 RGBtoHSV( in float3 RGB )
     HSV.z = max( RGB.r, max( RGB.g, RGB.b ) );
     float M = min( RGB.r, min( RGB.g, RGB.b ) );
     float C = HSV.z - M;
-    
+
 	if ( C != 0.0f )
     {
         HSV.y = C / HSV.z;
@@ -129,12 +129,12 @@ float3 CalculateSpecular( float3 vPos, float3 vNormal, float3 vInIntensity )
 	return saturate( pow( saturate( dot( H, vNormal ) ), vSpecWidth ) * vSpecMultiplier ) * vInIntensity;
 }
 
-float3 ComposeSpecular( float3 vColor, float vSpecular ) 
+float3 ComposeSpecular( float3 vColor, float vSpecular )
 {
 	return saturate( vColor + vSpecular );// * STANDARD_HDR_RANGE + ( 1.0f - STANDARD_HDR_RANGE ) * vSpecular;
 }
 
-float3 ComposeSpecular( float3 vColor, float3 vSpecular ) 
+float3 ComposeSpecular( float3 vColor, float3 vSpecular )
 {
 	return saturate( vColor + vSpecular );
 }
@@ -149,9 +149,9 @@ float3 ApplyDistanceFog( float3 vColor, float3 vPos )
 	float vEnd = FOG_END;
 	vBegin *= vBegin;
 	vEnd *= vEnd;
-	
+
 	float vMaxFog = FOG_MAX;
-	
+
 	float vMin = min( ( vSqDistance - vBegin ) / ( vEnd - vBegin ), vMaxFog );
 
 	return lerp( vColor, FOG_COLOR, saturate( vMin ) * vFogFactor );
@@ -231,21 +231,21 @@ float3 ApplySnow( float3 vColor, float3 vPos, inout float3 vNormal, float4 vFoWC
 
 	float vNoise = tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 100.0f  ).r;
 	float vSnowTexture = tex2D( FoWDiffuse, ( vPos.xz + 0.5f ) / 10.0f  ).r;
-	
+
 	float vIsSnow = GetSnow( vFoWColor );
-	
+
 	//Increase snow on ridges
 	vNoise += saturate( vPos.y - SNOW_RIDGE_START_HEIGHT )*( saturate( (vNormal.y-0.9f) * 1000.0f )*vIsSnow );
 	vNoise = saturate( vNoise );
-	
+
 	float vSnow = saturate( saturate( vNoise - ( 1.0f - vIsSnow ) ) * 5.0f );
 	float vFrost = saturate( saturate( vNoise + 0.5f ) - ( 1.0f - vIsSnow ) );
-	
-	vColor = lerp( vColor, vSnowColor * ( 0.9f + 0.1f * vSnowTexture), saturate( vSnow + vFrost ) * vSnowFade * vNormalFade * ( saturate( vIsSnow*2.25f ) ) );	
-	
+
+	vColor = lerp( vColor, vSnowColor * ( 0.9f + 0.1f * vSnowTexture), saturate( vSnow + vFrost ) * vSnowFade * vNormalFade * ( saturate( vIsSnow*2.25f ) ) );
+
 	vNormal.y += 1.0f * saturate( vSnow + vFrost ) * vSnowFade * vNormalFade;
 	vNormal = normalize( vNormal );
-	
+
 	return vColor;
 }
 
