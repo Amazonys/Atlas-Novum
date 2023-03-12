@@ -6,7 +6,7 @@ NDefines.NGame.END_DATE = "1900.1.2" --from 1821.1.2
 NDefines.NGame.MAX_COLONIAL_NATIONS = 100 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
 NDefines.NGame.MAX_CLIENT_STATES = 50		-- Max is 100 -- Lower this to 75 after 1.18 (used to start at K75 for some reason)
 NDefines.NGame.MAX_ESTATE_COUNTRIES = 50		-- Max is 100
-NDefines.NGame.MAX_TRADING_CITIES = 10 -- 75	-- Max is 100
+NDefines.NGame.MAX_TRADING_CITIES = 50 -- 75	-- Max is 100
 NDefines.NGame.MAX_CUSTOM_COUNTRIES = 50 -- 75				-- Max is 100
 
   --NDiplomacy
@@ -137,7 +137,7 @@ NDefines.NCountry.MIN_DEV_FOR_OLD_GREAT_POWER = 300			-- from 100
 NDefines.NCountry.PS_MAKE_PROVINCE_CORE = 5			-- from 10
 NDefines.NCountry.PS_MOVE_CAPITAL_EXTRA = 100			-- from 50
 NDefines.NCountry.PS_CHANGE_CULTURE = 30			-- from 10
-NDefines.NCountry.PS_CHANGE_CULTURE_OVERSEAS_RELIGION_MOD = -0.25 --from -0.8,	-- Modifier how much cheaper it is to change culture in overseas province if same religion
+NDefines.NCountry.PS_CHANGE_CULTURE_OVERSEAS_RELIGION_MOD = -0.1 --from -0.8,	-- Modifier how much cheaper it is to change culture in overseas province if same religion
 NDefines.NCountry.PS_IMPROVE_PROVINCE_BASE = 0			-- from 50 # ANSWER TO LIFE THE UNIVERSE AND EVERYTHING
 NDefines.NCountry.PS_IMPROVE_PROVINCE_CAPITAL_DISCOUNT = 0			-- from 0p05
 NDefines.NCountry.ESTATE_CROWNLAND_FROM_DEV = 0			-- was 0.2 --How much crownland you gain from developing a province.
@@ -154,16 +154,16 @@ NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 NDefines.NCountry.CROWN_LANDS_ALERT_THRESHOLD = 35
 NDefines.NCountry.MIN_POPULATION_FOR_TRADEGOOD_ASSIGNMENT = 1001
 
---NDefines.NCountry.CULTURE_LOSS_THRESHOLD = 0.10 					-- _CDEF_CULTURE_LOSS_THRESHOLD = 10,
---NDefines.NCountry.CULTURE_GAIN_THRESHOLD = 0.20 					-- _CDEF_CULTURE_GAIN_THRESHOLD = 10,
+NDefines.NCountry.CULTURE_LOSS_THRESHOLD = 0.05 					-- _CDEF_CULTURE_LOSS_THRESHOLD = 10,
+NDefines.NCountry.CULTURE_GAIN_THRESHOLD = 0.10 					-- _CDEF_CULTURE_GAIN_THRESHOLD = 10,
 NDefines.NCountry.CULTURE_COST_DIFF_ORIGINAL = -10			-- NOW MINORITY NOT ORIGINAL	-- Difference in cost in percent to convert to original culture.
 NDefines.NCountry.CULTURE_COST_DIFF_ADJACENT = -5				-- Difference in cost in percent to convert to adjacent culture.
 NDefines.NCountry.CULTURE_COST_DIFF_PRIMARY = 0				-- Difference in cost in percent to convert to primary culture.
-NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 99999		-- Minimum development required to promote the culture.
-NDefines.NCountry.PS_SET_PRIMARY_CULTURE = 200
-NDefines.NCountry.PS_ADD_ACCEPTED_CULTURE = 99999
-NDefines.NCountry.PS_REMOVE_ACCEPTED_CULTURE = 100
-NDefines.NCountry.PS_REMOVE_ACCEPTED_CULTURE_UNREST_DURATION = 10
+NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 30		-- Minimum development required to promote the culture.
+NDefines.NCountry.PS_SET_PRIMARY_CULTURE = 400
+NDefines.NCountry.PS_ADD_ACCEPTED_CULTURE = 200
+NDefines.NCountry.PS_REMOVE_ACCEPTED_CULTURE = 200
+NDefines.NCountry.PS_REMOVE_ACCEPTED_CULTURE_UNREST_DURATION = 25
 
 
 NDefines.NCountry.PILLAGE_CAPITAL_DEVELOPMENT_DECREASE = 0.1 -- from 0.2
