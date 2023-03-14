@@ -366,6 +366,73 @@ AN_check_dev_variables = {
 			stock_exchange = { change_variable = { which = AN_civ_stat value = 5 } }
 		}
 		
+		#Institutions
+		if = {
+			limit = { owner = { has_institution = writing } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = bureaucracy } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = feudalism } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = scholasticism } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = commercialism } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = finance } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = renaissance } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = printing_press } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = new_world_i } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = empiricism } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = global_trade } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = state_sovereignty } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = enlightenment } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = manufactories } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = nationalism_i } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+		if = {
+			limit = { owner = { has_institution = industrialization } }
+			change_variable = { which = AN_civ_stat value = 1 } 
+		}
+
+		
 		if = { 
 			limit = { base_manpower = 5 } 
 			multiply_variable = { which = AN_civ_stat which = AN_prov_wealth }
@@ -1152,42 +1219,50 @@ AN_dev_calc = {
 			}
 		}
 		
+		#CULTURE
 		
-		#CULTURE PRESSURE
-		
-		save_global_event_target_as = AN_mig_origin
-		#owner = { save_global_event_target_as = AN_mig_tag }
-		
-		#EXPORT TO DUMMY
-		event_target:AN_DUMMY_PROV = {
-			set_variable = { which = AN_province_culture which = PREV }
-			set_variable = { which = AN_minority_culture which = AN_province_culture }
-			set_variable = { which = AN_target_culture which = PREV }
-			#change_culture = variable:AN_province_culture
-		}
+		set_variable = { which = AN_target_culture value = 0 }
+		AN_check_culture_process = yes		
 		
 		if = {
 			limit = {
-				AN_linked_culture_religion_maj = yes
+				is_variable_equal = { which = AN_target_culture value = 0 }
 			}
+			
+		
+			#CULTURE PRESSURE
+		
+			save_global_event_target_as = AN_mig_origin
+			#owner = { save_global_event_target_as = AN_mig_tag }
+		
+			#EXPORT TO DUMMY
 			event_target:AN_DUMMY_PROV = {
-				set_variable = { which = AN_minority_religion which = PREV }
-				set_variable = { which = AN_province_religion which = AN_minority_religion }
-				#change_religion = variable:AN_minority_religion
+				set_variable = { which = AN_province_culture which = PREV }
+				set_variable = { which = AN_minority_culture which = AN_province_culture }
+				set_variable = { which = AN_target_culture which = PREV }
+				#change_culture = variable:AN_province_culture
 			}
-		}
 		
-		#CHECK PRESSURE
-		every_neighbor_province = {
-			limit = { is_city = yes }
-			
 			if = {
-				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
-				event_target:AN_mig_origin = { 
+				limit = {
+					AN_linked_culture_religion_maj = yes
+				}
+				event_target:AN_DUMMY_PROV = {
+					set_variable = { which = AN_minority_religion which = PREV }
+					set_variable = { which = AN_province_religion which = AN_minority_religion }
+					#change_religion = variable:AN_minority_religion
+				}
+			}
+		
+			#CHECK PRESSURE
+			every_neighbor_province = {
+				limit = { is_city = yes }
+			
+				if = { # IF MAJ CULTURE MATCHES, ADD PRESSURE
+					limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
 					if = { 
 						limit = { check_variable = { which = AN_minority_culture_size value = 3 } }
 						multiply_variable = { which = AN_pressure value = 0.1428 }  # * 1/7
-					
 					}
 					else_if = { 
 						limit = { check_variable = { which = AN_minority_culture_size value = 2 } }
@@ -1197,18 +1272,17 @@ AN_dev_calc = {
 						limit = { check_variable = { which = AN_minority_culture_size value = 1 } }
 						multiply_variable = { which = AN_pressure value = 0.7142 } # * 5/7
 					}
-					change_variable = { which = AN_pressure which = PREV } 
+					event_target:AN_mig_origin = { 
+						change_variable = { which = AN_pressure which = PREV } 
+					}
+					event_target:AN_DUMMY_PROV2 = { set_variable = { which = AN_province_culture which = PREV } set_variable = { which = AN_target_culture which = AN_province_culture } }
 				}
-				event_target:AN_DUMMY_PROV2 = { set_variable = { which = AN_province_culture which = PREV } set_variable = { which = AN_target_culture which = AN_province_culture } }
-			}
-			#Else if minority culture is same
-			else_if = {
-				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
-				event_target:AN_mig_origin = { 
+			
+				else_if = { #IF MIN CULTURE MATCHES, SUBT PRESSURE
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 					if = { 
 						limit = { check_variable = { which = AN_minority_culture_size value = 3 } }
 						multiply_variable = { which = AN_pressure value = 0.1428 }  # * 1/7
-					
 					}
 					else_if = { 
 						limit = { check_variable = { which = AN_minority_culture_size value = 2 } }
@@ -1218,48 +1292,58 @@ AN_dev_calc = {
 						limit = { check_variable = { which = AN_minority_culture_size value = 1 } }
 						multiply_variable = { which = AN_pressure value = 0.7142 } # * 5/7
 					}
-					subtract_variable = { which = AN_pressure which = PREV } 
+					event_target:AN_mig_origin = { 
+						subtract_variable = { which = AN_pressure which = PREV } 
+					}
+					event_target:AN_DUMMY_PROV2 = { set_variable = { which = AN_minority_culture which = PREV } set_variable = { which = AN_province_culture which = AN_minority_culture } set_variable = { which = AN_target_culture which = AN_minority_culture } }
 				}
-				event_target:AN_DUMMY_PROV2 = { set_variable = { which = AN_minority_culture which = PREV } set_variable = { which = AN_target_culture which = AN_minority_culture } }
+			
+			
+				else = { #IF NEITHER MATCHES, SUBT PRESSURE
+					event_target:AN_mig_origin = { 
+						subtract_variable = { which = AN_pressure which = PREV } 
+					}
+					set_variable = { which = AN_province_culture which = PREV } set_variable = { which = AN_target_culture which = AN_province_culture } 
+					#event_target:AN_DUMMY_PROV2 = { 
+					#	random_list = {
+					#		4 = { set_variable = { which = AN_province_culture which = PREV } set_variable = { which = AN_target_culture which = AN_province_culture } }
+					#		3 = { set_variable = { which = AN_minority_culture which = PREV } set_variable = { which = AN_target_culture which = AN_minority_culture } }
+					#	}
+					#}
+				}
+			
+			
+				###### Recursive culture selector
+				if = { 
+					limit = { NOT = { event_target:AN_mig_origin = { check_variable = { which = AN_pressure value = 0 } OR = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV2 } is_variable_equal = { which = AN_target_culture which = event_target:AN_DUMMY_PROV2 } } } } }
+					event_target:AN_mig_origin = { set_variable = { which = AN_target_culture which = event_target:AN_DUMMY_PROV2 } }
+				}
+				else = {
+					event_target:AN_mig_origin = { set_variable = { which = AN_target_culture value = 0 } }
+				}
+				#####
+			
+			
+			
 			}
-			
-			#Else
-			else = {
-				subtract_variable = { which = AN_pressure which = PREV } 
-				event_target:AN_DUMMY_PROV2 = { set_variable = { which = AN_province_culture which = PREV } set_variable = { which = AN_minority_culture which = PREV } set_variable = { which = AN_target_culture which = AN_province_culture } }
+		
+		
+			if = {
+				limit = { NOT = { check_variable = { which = AN_pressure value = 0 } is_variable_equal = { which = AN_target_culture value = 0 } } }
+				multiply_variable = { which = AN_pressure value = -1 }
+				divide_variable = { which = AN_pressure which = AN_logistics }
 			}
-			
-			
-			###### Recursive culture selector
-			if = { 
-				limit = { NOT = { event_target:AN_mig_origin = { check_variable = { which = AN_pressure value = 0 } is_variable_equal = { which = AN_target_culture which = event_target:AN_DUMMY_PROV2 } } } }
-				event_target:AN_mig_origin = { set_variable = { which = AN_target_culture which = event_target:AN_DUMMY_PROV2 } }
-			}
-			else = {
-				event_target:AN_mig_origin = { set_variable = { which = AN_target_culture value = 0 } }
-			}
-			#####
-			
-			
-			
+			change_variable = { which = AN_minority_progress which = AN_pressure }
+		
+			#RESET
+		
+			clear_global_event_target = AN_mig_origin
+			#clear_global_event_target = AN_mig_tag
+		
+		
+			set_variable = { which = AN_pressure value = AN_prov_pop }
+			multiply_variable = { which = AN_pressure which = AN_civ_stat }
 		}
-		
-		
-		#if = {
-		#	limit = { NOT = { check_variable = { which = AN_pressure value = 0 } is_variable_equal = { which = AN_target_culture value = 0 } } }
-		#	multiply_variable = { which = AN_pressure value = -1 }
-		#}
-		#change_variable = { which = AN_minority_progress which = AN_pressure }
-		
-		#RESET
-		
-		clear_global_event_target = AN_mig_origin
-		#clear_global_event_target = AN_mig_tag
-		
-		
-		set_variable = { which = AN_pressure value = AN_prov_pop }
-		multiply_variable = { which = AN_pressure which = AN_civ_stat }
-		
 		
 		#RESETTLEMENT 
 		#if = {
