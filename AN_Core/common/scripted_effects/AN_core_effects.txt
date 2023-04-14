@@ -1576,7 +1576,6 @@ AN_dev_calc = {
 					}
 				}
 				NOT = { OR = { has_province_modifier = AN_sent_migrants has_province_modifier = AN_received_migrants } }
-				#NOT = { check_variable = { which = AN_migration_factor = 0 } } #Needs replacing
 			}
 			
 			#SELECT MAJ/MIN ORIGIN
@@ -2007,7 +2006,7 @@ AN_dev_calc = {
 					modifier = {
 						factor = 0.5
 						base_manpower = 2
-						NOT = { base_manpower = 4 }
+						NOT = { base_manpower = 3 }
 					}
 					modifier = {
 						factor = 0.75
@@ -2234,7 +2233,7 @@ AN_dev_calc = {
 					modifier = {
 						factor = 0.5
 						base_manpower = 2
-						NOT = { base_manpower = 4 }
+						NOT = { base_manpower = 3 }
 					}
 					modifier = {
 						factor = 0.75
@@ -2489,7 +2488,7 @@ AN_dev_calc = {
 					modifier = {
 						factor = 0.5
 						base_manpower = 2
-						NOT = { base_manpower = 4 }
+						NOT = { base_manpower = 3 }
 					}
 					modifier = {
 						factor = 0.75
@@ -2609,14 +2608,8 @@ AN_dev_calc = {
 							any_owned_province = {
 								check_variable = { which = AN_migration_factor value = 0 }
 								NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
-								is_state = no
-								OR = { 
-									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
-									has_building = village
-									has_building = town
-									has_building = city
-									has_building = metropolis
-								}
+								OR = { is_state = no is_overseas = yes }
+								check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
 								OR = {
 									AND = {
 										is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
@@ -2640,8 +2633,10 @@ AN_dev_calc = {
 										}
 									}
 									NOT = { 
-										is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-										check_variable = { which = AN_minority_culture_size value = 1 } 
+										OR = {
+											is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
+											check_variable = { which = AN_minority_culture_size value = 1 } 
+										}
 									}
 								}
 							}
@@ -2680,7 +2675,7 @@ AN_dev_calc = {
 					modifier = {
 						factor = 0.5
 						base_manpower = 2
-						NOT = { base_manpower = 4 }
+						NOT = { base_manpower = 3 }
 					}
 					modifier = {
 						factor = 0.75
@@ -2723,31 +2718,14 @@ AN_dev_calc = {
 									is_overseas = yes
 								}
 								check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
-								OR = {
-									AND = {
-										is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-										check_variable = { which = AN_minority_culture_size value = 1 }
-										NOT = {
-											OR = {
-												has_province_modifier = AN_primary_minority_culture_1
-												has_province_modifier = AN_primary_minority_culture_2
-												has_province_modifier = AN_primary_minority_culture_3
-											}
-										}
-									}
-									AND = {
-										is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
-										event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
-										NOT = {
-											OR = {
-												has_province_modifier = AN_primary_majority_culture_1
-												has_province_modifier = AN_unified_majority_culture_1
-											}
-										}
-									}
-									NOT = { 
-										is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-										check_variable = { which = AN_minority_culture_size value = 1 } 
+								
+								is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
+								check_variable = { which = AN_minority_culture_size value = 1 }
+								NOT = {
+									OR = {
+										has_province_modifier = AN_primary_minority_culture_1
+										has_province_modifier = AN_primary_minority_culture_2
+										has_province_modifier = AN_primary_minority_culture_3
 									}
 								}
 							}
@@ -2761,35 +2739,31 @@ AN_dev_calc = {
 									is_state = no
 									is_overseas = yes
 								}
-								OR = { 
-									has_building = village
-									has_building = town
-									has_building = city
-									has_building = metropolis
+								check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+								
+								is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
+								event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
+								NOT = {
+									OR = {
+										has_province_modifier = AN_primary_majority_culture_1
+										has_province_modifier = AN_unified_majority_culture_1
+									}
 								}
+							}
+							save_global_event_target_as = AN_resettle_target
+						}
+						random_owned_province = { 
+							limit = {
+								check_variable = { which = AN_migration_factor value = 0 }
+								NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
 								OR = {
-									AND = {
-										is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-										check_variable = { which = AN_minority_culture_size value = 1 }
-										NOT = {
-											OR = {
-												has_province_modifier = AN_primary_minority_culture_1
-												has_province_modifier = AN_primary_minority_culture_2
-												has_province_modifier = AN_primary_minority_culture_3
-											}
-										}
-									}
-									AND = {
-										is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
-										event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
-										NOT = {
-											OR = {
-												has_province_modifier = AN_primary_majority_culture_1
-												has_province_modifier = AN_unified_majority_culture_1
-											}
-										}
-									}
-									NOT = { 
+									is_state = no
+									is_overseas = yes
+								}
+								check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+								
+								NOT = { 
+									OR = {
 										is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
 										check_variable = { which = AN_minority_culture_size value = 1 } 
 									}
@@ -2797,6 +2771,7 @@ AN_dev_calc = {
 							}
 							save_global_event_target_as = AN_resettle_target
 						}
+						
 						random_owned_province = { 
 							limit = {
 								check_variable = { which = AN_migration_factor value = 0 }
@@ -2812,29 +2787,66 @@ AN_dev_calc = {
 									has_building = city
 									has_building = metropolis
 								}
+								
+								is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
+								check_variable = { which = AN_minority_culture_size value = 1 }
+								NOT = {
+									OR = {
+										has_province_modifier = AN_primary_minority_culture_1
+										has_province_modifier = AN_primary_minority_culture_2
+										has_province_modifier = AN_primary_minority_culture_3
+									}
+								}
+							}
+							save_global_event_target_as = AN_resettle_target
+						}
+						
+						random_owned_province = { 
+							limit = {
+								check_variable = { which = AN_migration_factor value = 0 }
+								NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
 								OR = {
-									AND = {
-										is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-										check_variable = { which = AN_minority_culture_size value = 1 }
-										NOT = {
-											OR = {
-												has_province_modifier = AN_primary_minority_culture_1
-												has_province_modifier = AN_primary_minority_culture_2
-												has_province_modifier = AN_primary_minority_culture_3
-											}
-										}
+									is_state = no
+									is_overseas = yes
+								}
+								check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+								OR = { 
+									has_building = village
+									has_building = town
+									has_building = city
+									has_building = metropolis
+								}
+								
+								is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
+								event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
+								NOT = {
+									OR = {
+										has_province_modifier = AN_primary_majority_culture_1
+										has_province_modifier = AN_unified_majority_culture_1
 									}
-									AND = {
-										is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
-										event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
-										NOT = {
-											OR = {
-												has_province_modifier = AN_primary_majority_culture_1
-												has_province_modifier = AN_unified_majority_culture_1
-											}
-										}
-									}
-									NOT = { 
+								}
+							}
+							save_global_event_target_as = AN_resettle_target
+						}
+						
+						random_owned_province = { 
+							limit = {
+								check_variable = { which = AN_migration_factor value = 0 }
+								NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
+								OR = {
+									is_state = no
+									is_overseas = yes
+								}
+								check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+								OR = { 
+									has_building = village
+									has_building = town
+									has_building = city
+									has_building = metropolis
+								}
+								
+								NOT = { 
+									OR = {
 										is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
 										check_variable = { which = AN_minority_culture_size value = 1 } 
 									}
@@ -2862,13 +2874,7 @@ AN_dev_calc = {
 									check_variable = { which = AN_migration_factor value = 0 }
 									NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
 									has_port = yes
-									OR = { 
-										check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
-										has_building = village
-										has_building = town
-										has_building = city
-										has_building = metropolis
-									}
+									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
 									OR = {
 										AND = {
 											is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
@@ -2933,7 +2939,7 @@ AN_dev_calc = {
 					modifier = {
 						factor = 0.5
 						base_manpower = 2
-						NOT = { base_manpower = 4 }
+						NOT = { base_manpower = 3 }
 					}
 					modifier = {
 						factor = 0.75
@@ -2974,47 +2980,6 @@ AN_dev_calc = {
 								any_owned_province = {
 									check_variable = { which = AN_migration_factor value = 0 }
 									NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
-									OR = { 
-										check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
-										has_building = village
-										has_building = town
-										has_building = city
-										has_building = metropolis
-									}
-									OR = {
-										AND = {
-											is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-											check_variable = { which = AN_minority_culture_size value = 1 }
-											NOT = {
-												OR = {
-													has_province_modifier = AN_primary_minority_culture_1
-													has_province_modifier = AN_primary_minority_culture_2
-													has_province_modifier = AN_primary_minority_culture_3
-												}
-											}
-										}
-										AND = {
-											is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
-											event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
-											NOT = {
-												OR = {
-													has_province_modifier = AN_primary_majority_culture_1
-													has_province_modifier = AN_unified_majority_culture_1
-												}
-											}
-										}
-										NOT = { 
-											is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-											check_variable = { which = AN_minority_culture_size value = 1 } 
-										}
-									}
-								}
-							}
-							random_owned_province = { 
-								limit = {
-									has_port = yes
-									check_variable = { which = AN_migration_factor value = 0 }
-									NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
 									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
 									OR = {
 										AND = {
@@ -3039,47 +3004,62 @@ AN_dev_calc = {
 											}
 										}
 										NOT = { 
-											is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-											check_variable = { which = AN_minority_culture_size value = 1 } 
+											OR = {
+												is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
+												check_variable = { which = AN_minority_culture_size value = 1 } 
+											}
 										}
 									}
 								}
-								save_global_event_target_as = AN_resettle_target
 							}
 							random_owned_province = { 
 								limit = {
 									has_port = yes
 									check_variable = { which = AN_migration_factor value = 0 }
 									NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
-									OR = { 
-										has_building = village
-										has_building = town
-										has_building = city
-										has_building = metropolis
+									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+									
+									is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
+									check_variable = { which = AN_minority_culture_size value = 1 }
+									NOT = {
+										OR = {
+											has_province_modifier = AN_primary_minority_culture_1
+											has_province_modifier = AN_primary_minority_culture_2
+											has_province_modifier = AN_primary_minority_culture_3
+										}
 									}
-									OR = {
-										AND = {
-											is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-											check_variable = { which = AN_minority_culture_size value = 1 }
-											NOT = {
-												OR = {
-													has_province_modifier = AN_primary_minority_culture_1
-													has_province_modifier = AN_primary_minority_culture_2
-													has_province_modifier = AN_primary_minority_culture_3
-												}
-											}
+								}
+								save_global_event_target_as = AN_resettle_target
+							}
+							
+							random_owned_province = { 
+								limit = {
+									has_port = yes
+									check_variable = { which = AN_migration_factor value = 0 }
+									NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
+									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+									
+									is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
+									event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
+									NOT = {
+										OR = {
+											has_province_modifier = AN_primary_majority_culture_1
+											has_province_modifier = AN_unified_majority_culture_1
 										}
-										AND = {
-											is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
-											event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
-											NOT = {
-												OR = {
-													has_province_modifier = AN_primary_majority_culture_1
-													has_province_modifier = AN_unified_majority_culture_1
-												}
-											}
-										}
-										NOT = { 
+									}
+								}
+								save_global_event_target_as = AN_resettle_target
+							}
+							
+							random_owned_province = { 
+								limit = {
+									has_port = yes
+									check_variable = { which = AN_migration_factor value = 0 }
+									NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
+									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+									
+									NOT = { 
+										OR = {
 											is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
 											check_variable = { which = AN_minority_culture_size value = 1 } 
 										}
@@ -3087,6 +3067,7 @@ AN_dev_calc = {
 								}
 								save_global_event_target_as = AN_resettle_target
 							}
+							
 							random_owned_province = { 
 								limit = {
 									has_port = yes
@@ -3099,29 +3080,60 @@ AN_dev_calc = {
 										has_building = city
 										has_building = metropolis
 									}
-									OR = {
-										AND = {
-											is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
-											check_variable = { which = AN_minority_culture_size value = 1 }
-											NOT = {
-												OR = {
-													has_province_modifier = AN_primary_minority_culture_1
-													has_province_modifier = AN_primary_minority_culture_2
-													has_province_modifier = AN_primary_minority_culture_3
-												}
-											}
+									
+									is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
+									check_variable = { which = AN_minority_culture_size value = 1 }
+									NOT = {
+										OR = {
+											has_province_modifier = AN_primary_minority_culture_1
+											has_province_modifier = AN_primary_minority_culture_2
+											has_province_modifier = AN_primary_minority_culture_3
 										}
-										AND = {
-											is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
-											event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
-											NOT = {
-												OR = {
-													has_province_modifier = AN_primary_majority_culture_1
-													has_province_modifier = AN_unified_majority_culture_1
-												}
-											}
+									}
+								}
+								save_global_event_target_as = AN_resettle_target
+							}
+							
+							random_owned_province = { 
+								limit = {
+									has_port = yes
+									check_variable = { which = AN_migration_factor value = 0 }
+									NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
+									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+									OR = { 
+										has_building = village
+										has_building = town
+										has_building = city
+										has_building = metropolis
+									}
+									
+									is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV }
+									event_target:AN_DUMMY_PROV = { check_variable = { which = AN_minority_culture value = 1 } }
+									NOT = {
+										OR = {
+											has_province_modifier = AN_primary_majority_culture_1
+											has_province_modifier = AN_unified_majority_culture_1
 										}
-										NOT = { 
+									}
+								}
+								save_global_event_target_as = AN_resettle_target
+							}
+							
+							random_owned_province = { 
+								limit = {
+									has_port = yes
+									check_variable = { which = AN_migration_factor value = 0 }
+									NOT = { OR = { has_province_modifier = AN_received_migrants has_province_modifier = AN_sent_migrants } }
+									check_variable = { which = AN_prov_pop_cap which = AN_prov_pop }
+									OR = { 
+										has_building = village
+										has_building = town
+										has_building = city
+										has_building = metropolis
+									}
+									
+									NOT = {
+										OR = { 
 											is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } 
 											check_variable = { which = AN_minority_culture_size value = 1 } 
 										}
