@@ -46,7 +46,7 @@ NDiplomacy = {
 	ESTATE_DISLIKE_ALLIANCE_ON_VC = -0.1,
 	HEGEMONY_LOST_DAYS = 7300,
 	HEGEMONY_MONTHLY_PROGRESS = 0.5,
-	CHANGE_RIVAL_YEARS = 25,
+	CHANGE_RIVAL_YEARS = 5,
 	CONDOTTIERI_MIN_DURATION = 18,					-- Minimum duration for Condottieri agreements that must be paid for in advance and that cannot be cancelled.
 	UNCONDITIONAL_SURRENDER_MONTHS = 2,				-- Months before unconditional surrender starts having an effect on Call for Peace. Set to negative values to disable feature.
 	SHAREMAP_PRESTIGE_TRANSFER_LOSE = -15,				-- Prestige transferred for the Request to Share Maps diplomatic action.
@@ -132,7 +132,7 @@ NDiplomacy = {
 	JOIN_HRE_DEVELOPMENT_CAP_VASSAL = 200,			-- Max cap of development of vassals to join the empire
 	IMPERIAL_REFORM_COST = 50,						-- Minium Cost of enacting a new reform.
 	IMPERIAL_REFORM_AUTHORITY_ACCEPTANCE = 1,		-- How much acceptance for each authority above IMPERIAL_REFORM_COST
-	CELESTIAL_EMPIRE_REFORM_COST = 70,				-- Mandate cost of enacting a new reform for the Emperor of China.
+	CELESTIAL_EMPIRE_REFORM_COST = 80,				-- Mandate cost of enacting a new reform for the Emperor of China.
 	CELESTIAL_EMPIRE_REFORM_STABILITY_COST = 1,		-- Stability cost of enacting a new reform for the Emperor of China
 	CELESTIAL_EMPIRE_REFORM_MIN_VALUE = 80,		-- Minimum value of Mandate above which new reforms can be enacted.
 	DEFENDER_OF_FAITH_COST = 500, 					-- _DDEF_DEFENDER_OF_FAITH_COST_
@@ -181,6 +181,8 @@ NDiplomacy = {
 	HRE_VOTE_ALLIANCE = 30,
 	HRE_VOTE_ROYAL_MARRIAGE = 10,
 	HRE_VOTE_CORE_CLAIM = -50,
+
+	IMPERIAL_AUTHORITY_MODIFIER_THRESHOLD = 50,
 
 	COUNTERESPIONAGE_DISCOVER_CHANCE = 0.33,
 	COUNTERESPIONAGE_NETWORK_IMPACT = -0.50,
@@ -369,15 +371,15 @@ NDiplomacy = {
 	SPY_DISCOVERY_COOLDOWN_MONTHS = 12,				-- Can't make another spy action against a certain country within this many months of failing with another one.
 	DIPLOANNEX_LIBERTY_THRESHOLD = 50,				-- If a vassal has >= this much liberty desire, there will be zero diploannexation progress.
 
-	CELESTIAL_EMPIRE_DEFAULT_INFLUENCE = 60,		-- Starting value for Mandate value of a new Chinese Emperor
+	CELESTIAL_EMPIRE_DEFAULT_INFLUENCE = 80,		-- Starting value for Mandate value of a new Chinese Emperor
 	CELESTIAL_EMPIRE_MODIFIER_THRESHOLD = 50,		-- Value of Mandate above which the positive Mandate Modifier is used instead of the negative one
-	CELESTIAL_EMPIRE_MANDATE_PER_STABILITY = 0.24,	-- Yearly change of Mandate for each point of positive stability
-	CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.03,	-- Yearly change of Mandate for each State with prosperity.
-	CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_DEVASTATION = -10.0,	-- Yearly change of Mandate for each hundred devastated development (scaled to devastation).
+	CELESTIAL_EMPIRE_MANDATE_PER_STABILITY = 0.4,	-- Yearly change of Mandate for each point of positive stability
+	CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.04,	-- Yearly change of Mandate for each State with prosperity.
+	CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_DEVASTATION = -12.0,	-- Yearly change of Mandate for each hundred devastated development (scaled to devastation).
 	CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_TRIBUTARY_DEV = 0.15,	-- Yearly change of Mandate for each hundred development tributary state.
 	CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_NONTRIBUTARY_DEV = 0.0,	-- Yearly change of Mandate for each hundred development of neighbouring states that are not the Emperor's tributaries
 	CELESTIAL_EMPIRE_MANDATE_FROM_DEFENDING = 5,	-- How much Mandate is gained when successfully defending the Emperor title.
-	CELESTIAL_EMPIRE_MANDATE_PER_5_LOANS = -0.36,	-- Yearly change of Mandate for every 5 loans.
+	CELESTIAL_EMPIRE_MANDATE_PER_5_LOANS = -0.60,	-- Yearly change of Mandate for every 5 loans.
 
 	REMOVE_ELECTORATE_INFLUENCE_COST = 10,			-- The amount of IA Remove Electorate costs.
 	GRANT_ELECTORATE_INFLUENCE = 0,					-- The amount of AI Grant Electorate gives.
@@ -520,6 +522,9 @@ NCountry = {
 	DISINHERIT_PRESTIGE_HIT = -50,
 	DISINHERIT_PRESTIGE_THRESHOLD = 0,
 	
+	ADVISOR_MIN_DEFAULT_AGE = 18, 				--Default value used for defining new advisors in script
+	ADVISOR_MAX_DEFAULT_AGE = 60,				--Default value used for defining new advisors in script
+
 	NEW_HEIR_PRESTIGE_HIT = -20,
 	NEW_HEIR_PRESTIGE_THRESHOLD = 0,
 	NEW_HEIR_LEGITIMACY_HIT = -20,
@@ -564,7 +569,7 @@ NCountry = {
 	COUNTRY_DEVELOPMENT_SCALE = 600,
 	OVERSEAS_CLIENT_STATES = 0,					-- Allow overseas client states?
 
-	ESTATE_DROP_LOYALTY_IF_LOST_PRIVILEDGE = -20,
+	ESTATE_DROP_LOYALTY_IF_LOST_PRIVILEDGE = -0.2,
 	ESTATE_ANGRY_THRESHOLD = 30,
 	ESTATE_HAPPY_THRESHOLD = 60,
 	ESTATE_LOYALTY_DECAY_BASE_MIN = 2.0,		-- Loyalty change per year at middle level.
@@ -619,11 +624,12 @@ NCountry = {
 
 
 	PARLIAMENT_BACKING_PERCENTAGE = 25,			-- average percent of seats backing an issue (0-100)
-	PARLIAMENT_ISSUE_DURATION = 10,				-- in years
+	PARLIAMENT_EFFECT_DURATION = 10,				-- in years
 	PARLIAMENT_DEBATE_DURATION = 5,				-- in years
 	NUM_PARLIAMENT_ISSUES = 5,
 	PARLIAMENT_PRESTIGE_HIT = -20,				-- penalty if failed debate.
 	PARLIAMENT_CHANCE_OF_DECISION = 10,			-- % Chance debate is ended after PARLIAMENT_DEBATE_DURATION
+	PARLIAMENT_RESET_COOLDOWN = 20,				-- how long before you can use reset again for parliament decisions
 
 	ALLOW_FEMALE_GENERALS = 0,
 	FEMALE_ADVISOR_CHANCE = 2,						-- If Women in History is enabled, chance of an advisor (or general if permitted) spawning as female
@@ -656,6 +662,11 @@ NCountry = {
 	POLICY_COST = 1,								-- Monthly cost per policy
 	BASE_POSSIBLE_POLICIES = 3,						-- How many policies in a category a nation can have as a base
 	BASE_FREE_POLICIES = 1,							-- How many policies in a category a nation get for free
+	SEIZE_COURT_RESOURCES_SUBJECT_LOSS_MULTIPLIER = 0.5, --when seizing court resources through interaction, how much does the subject lose as a proportion of what the overlord gains
+	MONTHS_OF_MANPOWER_FOR_SEIZE_COURT_RESOURCES = 12,
+	REQUEST_EXTRA_LEVIES_SUBJECT_LOSS_MULTIPLIER = 0.5, --when requesting extra levies through interaction, how much does the subject lose as a proportion of what the overlord gains
+	MONTHS_OF_MANPOWER_FOR_REQUEST_EXTRA_LEVIES = 12,
+	GRANT_ADMINISTRATIVE_AUTONOMY_REFORM_PROGRESS_COST = 20,
 
 	MIN_FEDERAL_AUTHORITY = -100,					-- federal authority cannot go lower than -100
 	MAX_WAR_EXHAUSTION = 20,
@@ -681,9 +692,9 @@ NCountry = {
 	LAND_FORCELIMIT_EXTRA_COST_FACTOR = 2,			-- extra expense for being above forcelimit
 	NAVAL_FORCELIMIT_EXTRA_COST_FACTOR = 2,			-- extra expense for being above forcelimit
 	REPUBLICAN_TRADITION_YEARLY_INCREASE = 1,		-- how much it increases each year.
-	PIETY_PERCENTAGE_AT_NEW_RULER = 0.25,			-- percentage of piety kept at new ruler.
-	PIETY_INCREASE_AT_GOOD_WAR = 0.25,
-	PIETY_DECREASE_AT_BAD_WAR = -0.33,
+	PIETY_PERCENTAGE_AT_NEW_RULER = 0.0,			-- percentage of piety kept at new ruler.
+	PIETY_INCREASE_AT_GOOD_WAR = 0.0,
+	PIETY_DECREASE_AT_BAD_WAR = -0.0,
 	ADVISOR_COST_INCREASE_PER_YEAR = 0.005,			-- yearly increase in price in percent,
 	SCRIPTED_ADVISOR_DISCOUNT = 0.5,				-- Multiplier on cost for advisors scripted with discount=yes
 	MINIMUM_ADVISOR_DURATION = 10, 					-- _CDEF_MINIMUM_ADVISOR_DURATION_
@@ -710,7 +721,7 @@ NCountry = {
 	NAT_FOCUS_YEARS = 25,							-- years before you can change focus again
 	NAT_FOCUS_YEARS_RANK = 5,						-- how many years are removed from nat focus cooldown per gov rank above 1
 	POWER_MAX = 999,								-- how much power can be stored at maximum.
-	DISMANTLE_HRE_PRESTIGE = 100,					-- Prestige gain on dismantling HRE
+	DISMANTLE_HRE_PRESTIGE = 0,						-- Prestige gain on dismantling HRE
 	CROWN_LANDS_ALERT_THRESHOLD = 30,
 	FREE_IDEA_GROUP_COST  = 3,						-- modifier on cheapness of "free" idea group
 	CONVERSION_COOLDOWN = 120,						-- months before you can convert again.
@@ -773,7 +784,6 @@ NCountry = {
 	PS_REMOVE_ACCEPTED_CULTURE = 10,
 	PS_REMOVE_ACCEPTED_CULTURE_UNREST_DURATION = 5,
 	PS_STRENGTHEN_GOVERNMENT = 100,
-	PS_BOOST_MILITARIZATION = 50,
 	PS_ESTABLISH_SIBERIAN_FRONTIER = 20,
 
 
@@ -783,14 +793,12 @@ NCountry = {
 	STRENGTHEN_GOVERNMENT_DEVOTION = 10,
 	STRENGTHEN_GOVERNMENT_MERITOCRACY = 10,
 
-	MIL_SOCIETY_BOOST_SIZE = 10,
-
 	CORE_COLONY = 0.5,								-- Multiplied with development, colonized by country or overseas
 	CORE_OVERSEAS = 0.5,							-- Multiplied with development, colonized by country or overseas
 	CORE_SAME_REGION = 0.25,						-- Multiplied with development, for colonial nations
 	CORE_SAME_CONTINENT = 0.75,						-- Multiplied with development, for colonial nations
 	CORE_HAD_CLAIM = 0.1,							-- Impacts MODIFIER_CORE_CREATION
-	CORE_HAD_PERMANENT_CLAIM = 0.25,						-- Impacts MODIFIER_CORE_CREATION
+	CORE_HAD_PERMANENT_CLAIM = 0.25,				-- Impacts MODIFIER_CORE_CREATION
 
 	FACTION_BOOST_SIZE = 10,
 	WAREXHAUSTION_REDUCTION = 2,
@@ -881,7 +889,7 @@ NCountry = {
 	REBEL_ARTILLERY_INCREASE_LEVEL_1_SIZE = 0.1,	-- The increase in artillery as fraction of total troops given to rebels
 	REBEL_ARTILLERY_INCREASE_LEVEL_2_TECH = 16,		-- Tech level at which REBEL_ARTILLERY_INCREASE_LEVEL_2_SIZE is applied
 	REBEL_ARTILLERY_INCREASE_LEVEL_2_SIZE = 0.15,	-- The increase in artillery as fraction of total troops given to rebels (does not stack with level 1)
-	MIGRATION_DEPLETION_TIME = 7200,				-- How many days a province needs to recover from migrants
+	MIGRATION_DEPLETION_TIME = 7300,				-- How many days a province needs to recover from migrants
 	BASE_TARIFF = 0.10,								-- Basic part of colonies income that goes to tariffs
 	TARIFF_INCREASE_STEP = 0.05,					-- Increase on each boost
 	TARIFF_LIBERTY_INCREASE = 1.0,					-- Liberty increase for each % tariffs
@@ -1218,11 +1226,13 @@ NEconomy = {
 },
 
 NMilitary = {
-	SLACKEN_AP_DROP = 0.05,
-	SLACKEN_MANPOWER_INCREASE = 1.0,
+	SLACKEN_AP_DROP = 0.01,							--Defines how much AP is lost when activating slacken toggle.
+
+    SLACKEN_MIN_AP = 0,    							--Defines how much AP is at least needed to keep the Slacken Modifier active. Put a -1 here if you want the toggle to not turn off automatically
+	SLACKEN_MAX_MP_PERCENTAGE = 0.95,   			--Defines how much manpower percentage of your whole manpower pool you can have before the toggle turns off automatically. "1" would mean "100% of your manpower pool". Put a -1 here if you don't want this toggle to turn off from having manpower
 
 	DEVELOPMENT_FOR_BLOCKADE_COST = 0.5,
-	
+	COAST_RAID_RANGE = 2,							-- default coastal raid range
 
 	ARMY_DRILL_YEARLY_DECAY = -1.0,					-- Loss from not Drilling
 	ARMY_DRILL_YEARLY_GAIN = 10.0,					-- Gain from Drilling
@@ -1234,10 +1244,12 @@ NMilitary = {
 	SAILOR_MAINTAINANCE = 0.02,		-- of build cost.
 	BANNER_AGE_MULTIPLIER = 0.50,
 	BANNER_STARTING_STRENGTH = 0.1,					-- Starting strength of a banner regiment, 1.0 being full strength
-	CAWA_STARTING_STRENGTH = 0.1,					-- Starting strength of a cawa regiment, 1.0 being full strength
-	CAWA_STARTING_MORALE = 0.5,						-- Starting morale of a cawa regiment, 1.0 being full strength
+	CAWA_STARTING_STRENGTH = 0.5,					-- Starting strength of a cawa regiment, 1.0 being full strength
+	CAWA_STARTING_MORALE = 0.1,						-- Starting morale of a cawa regiment, 1.0 being full strength
 	CAROLEAN_STARTING_STRENGTH = 1.0,
 	CAROLEAN_STARTING_MORALE = 0.1,
+	JANISSARIES_STARTING_STRENGTH = 0.1,
+	JANISSARIES_STARTING_MORALE = 0.1,
 	FORT_DEVASTATION_IMPACT = -10,					-- multiplied by fortlevel/max fortlevel in area per year.
 	REVANCHISM_DEVASTATION_IMPACT = -0.02,			-- 100 revanschism is -2 a year.
 	SURRENDER_DEVASTATION_IMPACT = -3.4,
@@ -1421,8 +1433,8 @@ NMilitary = {
 	SUPPLY_DEPOT_MIL_COST = 20,						-- Mil power cost to build a supply depot in an area.
 	BATTLE_DAILY_MORALE_DAMAGE = 0.01,				-- Deployed troops take this fraction of their maximum morale as damage
 	RESERVE_DAILY_MORALE_DAMAGE = 0.02,				-- Reserve troops take this fraction of their maximum morale as damage (modified by reserves_organisation)
-	CREATE_JANISSARIES_MIL_COST = 10,				-- Cost to create janissaries (per unit)
-	CREATE_CAWA_MIL_COST = 5,						-- Cost to create Cawa (per unit)
+	CREATE_JANISSARIES_MIL_COST = 3,				-- Cost to create janissaries (per unit)
+	CREATE_CAWA_MIL_COST = 2,						-- Cost to create Cawa (per unit)
 	CREATE_HUSSARS_MIL_COST = 0;					-- Cost to create Hussars (per unit)
 	COSSACKS_MAXIMUM_RATIO = 1.0,					-- Maximum number of Cossacks regiments, relative to force limit
 	REVOLUTIONARY_GUARD_MAXIMUM_RATIO = 1.0,			-- Maximum number of Revolutionary Guard regiments, relative to force limit
@@ -1437,12 +1449,81 @@ NMilitary = {
 	HUSSARS_STARTING_STRENGTH = 1.0,
 	HUSSARS_STARTING_MORALE = 0.1, 
 
+	TERCIO_USES_CONSTRUCTION = 1,
+	TERCIO_BASE_COST_MODIFIER = 1.0,
+	TERCIO_MANPOWER_COST_MODIFIER = 1.0,
+	TERCIO_ARMY_TRADITION_COST = 0,
+	TERCIO_STARTING_STRENGTH = 1.0,
+	TERCIO_STARTING_MORALE = 0.1, 
+
+	MUSKETEER_USES_CONSTRUCTION = 1,
+	MUSKETEER_BASE_COST_MODIFIER = 1.0,
+	MUSKETEER_MANPOWER_COST_MODIFIER = 1.0,
+	MUSKETEER_PRESTIGE_COST = 0,
+	MUSKETEER_ABSOLUTISM_COST = 0,
+	MUSKETEER_STARTING_STRENGTH = 1.0,
+	MUSKETEER_STARTING_MORALE = 0.1, 
+
+	SAMURAI_USES_CONSTRUCTION = 1,
+	SAMURAI_BASE_COST_MODIFIER = 1.0,
+	SAMURAI_MANPOWER_COST_MODIFIER = 1.0,
+	SAMURAI_LEGITIMACY_COST = 0,
+	SAMURAI_STARTING_STRENGTH = 1.0,
+	SAMURAI_STARTING_MORALE = 0.1, 
+
+	GEOBUKSEON_USES_CONSTRUCTION = 1,
+	GEOBUKSEON_BASE_COST_MODIFIER = 1.0,
+	GEOBUKSEON_SAILORS_COST_MODIFIER = 1.0,
+	GEOBUKSEON_STARTING_STRENGTH = 1.0,
+	GEOBUKSEON_STARTING_MORALE = 1, 
+
+	MAN_OF_WAR_USES_CONSTRUCTION = 1,
+	MAN_OF_WAR_BASE_COST_MODIFIER = 1.0,
+	MAN_OF_WAR_SAILORS_COST_MODIFIER = 1.0,
+	MAN_OF_WAR_STARTING_STRENGTH = 1.0,
+	MAN_OF_WAR_STARTING_MORALE = 1, 
+
+	GALLEON_USES_CONSTRUCTION = 1,
+	GALLEON_BASE_COST_MODIFIER = 1.0,
+	GALLEON_SAILORS_COST_MODIFIER = 1.0,
+	GALLEON_STARTING_STRENGTH = 1.0,
+	GALLEON_STARTING_MORALE = 1, 
+
+	GALLEASS_USES_CONSTRUCTION = 1,
+	GALLEASS_BASE_COST_MODIFIER = 1.0,
+	GALLEASS_SAILORS_COST_MODIFIER = 1.0,
+	GALLEASS_STARTING_STRENGTH = 1.0,
+	GALLEASS_STARTING_MORALE = 1, 
+
+	CARAVEL_USES_CONSTRUCTION = 1,
+	CARAVEL_BASE_COST_MODIFIER = 1.0,
+	CARAVEL_SAILORS_COST_MODIFIER = 1.0,
+	CARAVEL_STARTING_STRENGTH = 1.0,
+	CARAVEL_STARTING_MORALE = 1, 
+
+	VOC_INDIAMEN_USES_CONSTRUCTION = 1,
+	VOC_INDIAMEN_BASE_COST_MODIFIER = 1.0,
+	VOC_INDIAMEN_SAILORS_COST_MODIFIER = 1.0,
+	VOC_INDIAMEN_STARTING_STRENGTH = 1.0,
+	VOC_INDIAMEN_STARTING_MORALE = 1, 
+
+	STRELSKY_STARTING_STRENGTH = 1.0,
+	COSSACKS_STARTING_STRENGTH = 1.0,
+	MARINES_STARTING_STRENGTH = 1.0,
+	RAJPUT_STARTING_STRENGTH = 1.0,
+	REVOLUTIONARY_GUARD_STARTING_STRENGTH = 1.0,
+	
 	SPECIAL_REGIMENT_ESTATE_LOYALTY_COST = 0.0,		-- Estate loyalty cost of recruiting thei related special troops
 	NAVAL_DOCTRINE_SAILORS_COST = 0.1,				-- Cost for switching naval doctrine (Share of sailors)
 	NAVAL_DOCTRINE_MIN_FORCE_LIMIT = 20,			-- Minimum naval force limit to be able to select a naval doctrine
 	LEAGUE_LEADER_CHANGE_SCORE_THRESHOLD = 1.5,		-- Score * factor needed for leader change (Compared to current leader)
-	MAX_DRILL_DECAY = 0.9,							-- Drill can never Decay with more than this value.
+	MAX_DRILL_DECAY = -0.9,							-- Drill can never Decay with more than this value. 
+	MIN_DRILL_DECAY = 0,							-- Drill can never Decay with less than this value.
 	AREA_REBEL_SUPPRESSION_MULTIPLIER = 5.0,		-- Armies suppressing rebels in areas adds this/<number of suppressed provinces> to rebel suppression in affected provinces.
+
+	STRELTSY_BASE_COST_MODIFIER = 1.0,
+	STRELTSY_MANPOWER_COST_MODIFIER = 1.0,
+	STRELTSY_STARTING_MORALE = 1, 
 
 	BANNER_USES_CONSTRUCTION = 0,
 	STRELTSY_USES_CONSTRUCTION = 1,
@@ -1615,7 +1696,7 @@ NAI = {
 	DEFICIT_SPENDING_MIN_MONTHS = 6, -- AI must have at least this many monthly deficits of savings to be willing to deficit spend
 	DEFICIT_SPENDING_MIN_MONTHS_PEACETIME = 48, -- Same as DEFICIT_SPENDING_MIN_MONTHS, but during peacetime, no rebels and no war exhaustion
 	BIGSHIP_FRACTION = 0.4,	-- The proportion of big ships in an AI navy of light ships and big ships (for coastal sea countries, this fraction is mostly galleys)
-	ARTILLERY_FRACTION = 0.35, 	-- Ratio of artillery to infantry AI will build
+	ARTILLERY_FRACTION = 0.25, 	-- Ratio of artillery to infantry AI will build (doubles after FORCE_COMPOSITION_CHANGE_TECH_LEVEL) (reduced when on tight budget)
 	FORCE_COMPOSITION_CHANGE_TECH_LEVEL = 11, -- Tech level at which AI will double its artillery fraction
 	TRANSPORT_FRACTION = 0.5, -- Max fraction of naval forcelimit that should be transports
 	INCOME_SAVINGS_FRACTION = 0.25, -- AI will reserve this amount of their surplus for long-term savings
@@ -2309,6 +2390,20 @@ NGui = {
 	AUTO_SELECT_EVENT_MONTHS = 4,
 	LEDGER_GUI_OBJECT_OFFSET = -5,
 	LEDGER_RIGHT_ALIGNED_COLUMN_PADDING = 20,
+	CELESTIAL_EMPIRE_VIEW_MAX_LINES = 4,
+	DECISION_COLOR_R = 60,
+	DECISION_COLOR_G = 117,
+	DECISION_COLOR_B = 165,
+	MAJOR_DECISION_COLOR_R = 146,
+	MAJOR_DECISION_COLOR_G = 174,
+	MAJOR_DECISION_COLOR_B = 114,
+	PARLIAMENT_SEAT_COLOR_R = 60,
+	PARLIAMENT_SEAT_COLOR_G = 117,
+	PARLIAMENT_SEAT_COLOR_B = 165,
+	PARLIAMENT_DEBATE_COLOR_R = 60,
+	PARLIAMENT_DEBATE_COLOR_G = 117,
+	PARLIAMENT_DEBATE_COLOR_B = 165,
+	MAX_WAR_PARTICIPANTS_IN_TOOLTIPS = 40,
 },
 
 NEngine = {
@@ -2493,7 +2588,7 @@ NReligion = {
 	YEARLY_HARMONY_INCREASE_WHEN_HARMONIZING = -3.25,
 	YEARLY_HARMONIZATION_PROGRESS = 0.03, 			-- 3%
 
-	INITIAL_ISOLATIONISM = 1,						-- Level of isolationism for a newly shintoed country.
+	INITIAL_ISOLATIONISM = 2,						-- Level of isolationism for a newly shintoed country.
 
 	NOT_SAME_MUSLIM_SCHOOL_ALLIANCE_ACCEPTANCE = 15,		-- Alliance acceptance value (positive and negative) for different religious schools
 	NOT_SAME_MUSLIM_SCHOOL_ROYAL_MARRIAGE_ACCEPTANCE = 15,	-- Royal marriage acceptance (positive and negative) for different religious schools
@@ -2586,39 +2681,8 @@ NNationDesigner = {
 
 NGovernment = {
 	SELECT_HEIR_FROM_HAREM_AT_MONARCH_AGE = 30, -- The age in years when an heir is selected if the government "has_harem" flag is set.
-	RUSSIAN_ABILITY_COST = 100,
-	RUSSIAN_ABILITY_POOL_SIZE = 150,
-	RUSSIAN_ABILITY_BASE_GAIN = 3,
-	RUSSIAN_ABILITY_SUDEBNIK_MIN_AUTONOMY = 10,
-	RUSSIAN_ABILITY_SUDEBNIK_AUTONOMY_CHANGE = -10,
-	RUSSIAN_ABILITY_OPRICHNINA_THRESHOLD = 0.3,
-	RUSSIAN_ABILITY_OPRICHNINA_AI_THRESHOLD = 0.85, -- AI will use ability when revolt risk is 90%, or when they have full power
-	RUSSIAN_ABILITY_OPRICHNINA_CHANGE = -0.3,
-	RUSSIAN_ABILITY_STRELTSY_WE_CHANGE = -2,
-	RUSSIAN_ABILITY_STRELTSY_SPAWN_SIZE = 0.2,
 
-	IQTA_POLICY_COOLDOWN_YEARS = 20,
-	EFFICIENT_FARMING_DUCAT_MULTIPLIER = 2,
-	LAND_AQUISITION_MANPOWER_MULTIPLIER = 0.05,
-	SEIZE_CLERICAL_HOLDINGS_COST = 50,
-	INVITE_MINORITIES_COST = 50,
-	SANCTION_HOLY_WAR_COST = 50,
-	FEUDAL_THEOCRACY_INTERACTION_COOLDOWN_YEARS = 5,
-	MAMLUK_ABILITY_POOL_SIZE = 150,
-	MAMLUK_ABILITY_COST = 100,
-	MAMLUK_RECRUIT_MANPOWER_MULTIPLIER = 50,
-	MAMLUK_SELL_SLAVES_DUCATS_MULTIPLIER = 2,
-	PROMOTE_MAMLUK_CULTURE_DURATION_YEARS = 1,
-	TRAIN_HORSEMANSHIP_DURATION_YEARS = 10,
-	CONSCRIPT_FROM_TRIBES_AMOUNT = 6,
-	CONSCRIPT_FROM_TRIBES_TIME = 0.25,
-	TRIBAL_ALLEGIANCE_MAX = 100,
-	YEARLY_TRIBAL_ALLEGIANCE_MAX = -3.0,
 	TRIBAL_ALLEGIANCE_HUMILIATE = 30.0, -- TA gained from doing Humiliate or Show Strength in a war.
-	TRIBAL_FEDERATION_ABILITY_COST = 30,
-	ENLIST_GENERAL_TRADITION = 40,
-	SANCTION_HOLY_WAR_LIST_SIZE = 7,
-	INVITE_MINORITIES_GAIN = 1,
 	GOVERNMENT_REFORM_BASE_COST = 100.0,
 	GOVERNMENT_REFORM_COST_INCREASE = 40.0,
 	GOVERNMENT_REFORM_YEARLY_BASE_PROGRESS = 10.0,
@@ -2633,11 +2697,6 @@ NGovernment = {
 	DICTATORSHIP_TO_MONARCHY_REFORM_PENALTY = 4,
 	NATIVE_REFORM_REFORM_PENALTY = 2,
 	EXPAND_ADMIN_COST = 20.0,
-	RECEIVE_SERFS_DEVELOPMENT = 1,
-	RECEIVE_SERFS_MODIFIER_ON_RIVAL_DURATION_DAYS = 3650,
-	COSSACKS_ABILITY_COSSACKS_SPAWN_SIZE = 0.2,
-	COSSACKS_ABILITY_COSSACKS_WE_CHANGE = -2,
-	RAIDING_PARTIES_MODIFIER_DURATION = 10,
 	LEGACY_NATIVES_REFORM_REPUBLIC_SPONSOR = "oligarchic_republic",
 	LEGACY_NATIVES_REFORM_MONARCHY_SPONSOR = "despotic_monarchy",
 	LEGACY_NATIVES_REFORM_THEOCRACY_SPONSOR = "theocratic_government",

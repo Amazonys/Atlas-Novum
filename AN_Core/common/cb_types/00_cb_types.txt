@@ -13,6 +13,21 @@
 # TRIGGERED - Triggered from within the code or by event effects
 # --------------------------------------------------------------
 
+cb_war_on_empire = {
+	valid_for_subject = no
+
+	prerequisites_self = {
+		has_country_flag = fra_enable_war_on_the_empire_cb_flag
+	}
+
+	prerequisites = {
+		FROM = { is_part_of_hre = yes } 
+	}
+
+	war_goal = war_empire_cb_wgt
+}
+
+
 # Restoration of recently broken PU
 cb_restore_personal_union = {
 	valid_for_subject = no
@@ -20,12 +35,15 @@ cb_restore_personal_union = {
 	is_triggered_only = yes
 	months = 240
 
-	prerequisites = {
+	prerequisites_self = {
 		OR = {
 			government = monarchy
-			has_reform = dutch_republic
+			has_government_attribute = has_dutch_election
 		}
 		is_revolutionary = no
+	}
+
+	prerequisites = {
 		FROM = {
 			OR = {
 				government = monarchy
@@ -47,12 +65,15 @@ cb_hundred_years_war = {
 	is_triggered_only = yes
 	months = 240
 
-	prerequisites = {
+	prerequisites_self = {
 		OR = {
 			government = monarchy
-			has_reform = dutch_republic
+			has_government_attribute = has_dutch_election
 		}
 		is_revolutionary = no
+	}
+
+	prerequisites = {
 		FROM = {
 			OR = {
 				government = monarchy
@@ -251,8 +272,11 @@ cb_trade_conflict_triggered = {
 cb_trade_league_conflict = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_trade_league_leader = yes
+	}
+
+	prerequisites = {
 		can_justify_trade_conflict = FROM
 	}
 	months = 24
@@ -299,7 +323,7 @@ cb_change_government = {
 cb_change_government_great_peasants_war = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		OR = {
 			has_global_flag = condemned_peasant_republics
 			AND = {
@@ -308,16 +332,19 @@ cb_change_government_great_peasants_war = {
 			}
 		}
 		is_part_of_hre = yes
-		NOT = { has_reform = peasants_republic }
-		FROM = {
-			has_reform = peasants_republic
-			is_part_of_hre = yes
-		}
+		NOT = { has_government_attribute = is_peasants_republic }
 		OR = {
 			is_emperor = yes
 			is_neighbor_of = FROM
 		}
 		NOT = { government = republic }
+	}
+
+	prerequisites = {
+		FROM = {
+			has_government_attribute = is_peasants_republic
+			is_part_of_hre = yes
+		}
 	}
 
 	war_goal = war_goal_change_government
@@ -326,18 +353,21 @@ cb_change_government_great_peasants_war = {
 cb_peasants_war_for_peasants = {
 	valid_for_subject = no
 	
-	prerequisites = {
+	prerequisites_self = {
 		OR = {
 			has_global_flag = great_peasants_war_flag
 			has_global_flag = gpw_peasants_win_major
 		}
 		is_part_of_hre = yes
+		has_government_attribute = is_peasants_republic
+	}
+
+	prerequisites = {
 		FROM = {
 			NOT = { government = republic }
 			is_part_of_hre = yes
 		}
 		is_neighbor_of = FROM
-		has_reform = peasants_republic
 	}
 	
 	war_goal = war_goal_peasants_change_government	
@@ -347,9 +377,13 @@ cb_peasants_war_for_peasants = {
 cb_humiliate = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "Conquest of Paradise"
 		government = native
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		NOT = {
 			truce_with = FROM
 			num_of_cities = 2
@@ -358,7 +392,6 @@ cb_humiliate = {
 			}
 		}
 		is_neighbor_of = FROM
-		is_revolutionary = no
 	}
 
 	attacker_disabled_po = {
@@ -396,11 +429,14 @@ cb_independence_war = {
 	exclusive = yes
 	independence = yes
 
-	prerequisites = {
+	prerequisites_self = {
 		is_subject_other_than_tributary_trigger = yes
+		NOT = { has_country_flag = burgundy_during_imperial_incident }
+	}
+
+	prerequisites = {
 		is_subject_of = FROM
 		NOT = { is_colonial_nation_of = FROM }
-		NOT = { has_country_flag = burgundy_during_imperial_incident }
 		OR = {
 			AND = {
 				NOT = { has_reform = daimyo }
@@ -411,14 +447,7 @@ cb_independence_war = {
 					}
 				}
 				NOT = {
-					AND = {
-						has_country_flag = ikko_ikki_peasants_flag
-						OR = {
-							has_reform = leading_clergy_reform
-							has_reform = monastic_order_reform
-							has_reform = peasants_republic
-						}
-					}
+					has_country_flag = ikko_ikki_peasants_flag
 				}
 			}
 			NOT = { from = { has_reform = shogunate } }
@@ -428,15 +457,28 @@ cb_independence_war = {
 	war_goal = defend_capital_independence
 }
 
-# Colonial Independance
-cb_colonial_independance_war = {
+# Colonial Independence
+cb_colonial_independence_war = {
 	exclusive = yes
 	independence = yes
 
-	prerequisites = {
+	prerequisites_self = {
 		is_subject = yes
+	}
+
+	prerequisites = {
 		is_colonial_nation_of = FROM
 	}
+
+	war_goal = defend_capital_independence
+}
+
+# Triggered Independence - Used for the Sultan's relative rebels
+cb_triggered_independence_war = {
+	exclusive = yes
+	independence = yes
+	is_triggered_only = yes
+	months = 12
 
 	war_goal = defend_capital_independence
 }
@@ -444,11 +486,14 @@ cb_colonial_independance_war = {
 # Nationalism
 cb_nationalist = {
 
-	prerequisites = {
+	prerequisites_self = {
 		dip_tech = 23
 		is_free_or_tributary_trigger = yes
-		culture_group_claim = FROM
 		is_revolutionary = no
+	}
+
+	prerequisites = {
+		culture_group_claim = FROM
 	}
 
 	war_goal = take_province_nationalist
@@ -458,7 +503,7 @@ cb_nationalist = {
 cb_imperial = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		OR = {
 			dip_tech = 23
 			invasion_nation = yes
@@ -476,8 +521,11 @@ cb_imperial = {
 cb_hegemon = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_hegemon = no
+	}
+
+	prerequisites = {
 		from = { is_hegemon = yes }
 	}
 
@@ -488,8 +536,8 @@ cb_hegemon = {
 # War Against the World CB for pirates
 cb_war_against_the_world = {
 	valid_for_subject = no
-	
-	prerequisites = {
+
+	prerequisites_self = {
 		has_reform = war_against_the_world_doctrine_reform
 		is_free_or_tributary_trigger = yes
 		is_revolutionary = no
@@ -504,8 +552,12 @@ cb_daimyo_annex = {
 	exclusive = yes
 	independence = yes
 
-	prerequisites = {
+	prerequisites_self = {
 		is_subject = yes
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		OR = {
 			vassal_of = FROM
 			junior_union_with = FROM
@@ -516,17 +568,9 @@ cb_daimyo_annex = {
 				tag = SOO
 				has_government_attribute = is_pirate_republic_reform
 			}
-			AND = {
-				has_country_flag = ikko_ikki_peasants_flag
-				OR = {
-					has_reform = leading_clergy_reform
-					has_reform = monastic_order_reform
-					has_reform = peasants_republic
-				}
-			}
+			has_country_flag = ikko_ikki_peasants_flag
 		}
 		from = { has_reform = shogunate }
-		is_revolutionary = no
 	}
 
 	war_goal = annex_country_japan
@@ -536,8 +580,12 @@ cb_independent_daimyo_annex = {
 	valid_for_subject = no
 	exclusive = yes
 
-	prerequisites = {
+	prerequisites_self = {
 		is_subject = no
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		NOT = {
 			vassal_of = FROM
 			junior_union_with = FROM
@@ -548,17 +596,9 @@ cb_independent_daimyo_annex = {
 				tag = SOO
 				has_government_attribute = is_pirate_republic_reform
 			}
-			AND = {
-				has_country_flag = ikko_ikki_peasants_flag
-				OR = {
-					has_reform = leading_clergy_reform
-					has_reform = monastic_order_reform
-					has_reform = peasants_republic
-				}
-			}
+			has_country_flag = ikko_ikki_peasants_flag
 		}
 		from = { has_reform = shogunate }
-		is_revolutionary = no
 	}
 
 	war_goal = annex_country_japan
@@ -567,8 +607,12 @@ cb_independent_daimyo_annex = {
 cb_shogun_annex = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_reform = shogunate
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		from = {
 			OR = {
 				has_reform = daimyo
@@ -576,21 +620,13 @@ cb_shogun_annex = {
 					tag = SOO
 					has_government_attribute = is_pirate_republic_reform
 				}
-				AND = {
-					has_country_flag = ikko_ikki_peasants_flag
-					OR = {
-						has_reform = leading_clergy_reform
-						has_reform = monastic_order_reform
-						has_reform = peasants_republic
-					}
-				}
+				has_country_flag = ikko_ikki_peasants_flag
 			}
 			OR = {
 				num_of_cities = 10
 				is_subject = no
 			}
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = annex_country_japan
@@ -600,24 +636,21 @@ cb_shogun_annex = {
 cb_sengoku = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
+		is_subject = yes
+		is_revolutionary = no
 		OR = {
 			has_reform = daimyo
 			AND = {
 				tag = SOO
 				has_government_attribute = is_pirate_republic_reform
 			}
-			AND = {
-				has_country_flag = ikko_ikki_peasants_flag
-				OR = {
-					has_reform = leading_clergy_reform
-					has_reform = monastic_order_reform
-					has_reform = peasants_republic
-				}
-			}
+			has_country_flag = ikko_ikki_peasants_flag
 		}
+	}
+
+	prerequisites = {
 		is_neighbor_of = FROM
-		is_subject = yes
 		from = {
 			OR = {
 				has_reform = daimyo
@@ -625,18 +658,10 @@ cb_sengoku = {
 					tag = SOO
 					has_government_attribute = is_pirate_republic_reform
 				}
-				AND = {
-					has_country_flag = ikko_ikki_peasants_flag
-					OR = {
-						has_reform = leading_clergy_reform
-						has_reform = monastic_order_reform
-						has_reform = peasants_republic
-					}
-				}
+				has_country_flag = ikko_ikki_peasants_flag
 			}
 			is_subject = yes
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = annex_country_japan
@@ -646,13 +671,13 @@ cb_sengoku = {
 cb_revolutionary = {
 	valid_for_subject = no
 
-	prerequisites = {
-		is_neighbor_of = FROM
+	prerequisites_self = {
 		cb_on_government_enemies = yes
+		is_revolutionary = no
 		NOT = {
 			has_reform = papacy_reform
 			has_reform = steppe_horde
-			has_reform = dutch_republic
+			has_government_attribute = has_dutch_election
 			has_reform = celestial_empire
 			has_reform = iqta
 			has_reform = mamluk_government
@@ -661,11 +686,15 @@ cb_revolutionary = {
 			has_reform = colonial_government
 			government = native
 		}
+	}
+
+	prerequisites = {
+		is_neighbor_of = FROM
 		FROM = {
 			NOT = {
 				has_reform = papacy_reform
 				has_reform = steppe_horde
-				has_reform = dutch_republic
+				has_government_attribute = has_dutch_election
 				has_reform = celestial_empire
 				has_reform = iqta
 				has_reform = mamluk_government
@@ -685,7 +714,6 @@ cb_revolutionary = {
 				NOT = { FROM = { government = republic } }
 			}
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = war_goal_change_government_mutual
@@ -694,9 +722,12 @@ cb_revolutionary = {
 # Colonialist CB
 cb_colonial = {
 
+	prerequisites_self = {
+		is_revolutionary = no
+	}
+
 	prerequisites = {
 		colony_claim = FROM
-		is_revolutionary = no
 	}
 
 	war_goal = take_colony
@@ -705,7 +736,7 @@ cb_colonial = {
 # Liberation CB
 cb_liberation = {
 
-	prerequisites = {
+	prerequisites_self = {
 		has_country_flag = fra_liberation_wars_enabled
 	}
 
@@ -717,8 +748,12 @@ cb_crusade = {
 	valid_for_subject = no
 	holy_war = yes
 
+	prerequisites_self = {
+		is_revolutionary = no
+		NOT = { has_government_attribute = has_upgraded_holy_wars }
+	}
+
 	prerequisites = {
-		NOT = { has_reform = religious_permanent_revolution_reform }
 		is_neighbor_of = FROM
 		NOT = { religion_group = FROM }
 		NOT = {	has_matching_religion = FROM }
@@ -748,7 +783,6 @@ cb_crusade = {
 			}
 			cb_on_religious_enemies = yes
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_crusade
@@ -779,12 +813,15 @@ cb_crusade_pheasants = {
 cb_defender_of_the_faith = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_defender_of_faith = yes
-		is_neighbor_of = FROM
-		NOT = {	has_matching_religion = FROM }
 		cb_on_religious_enemies = yes
 		is_revolutionary = no
+	}
+
+	prerequisites = {
+		is_neighbor_of = FROM
+		NOT = {	has_matching_religion = FROM }
 		OR = {
 			hre_religion_treaty = no
 			capital_scope = { is_part_of_hre = no }
@@ -799,37 +836,67 @@ cb_defender_of_the_faith = {
 cb_heretic = {
 	valid_for_subject = no
 
+	prerequisites_self = {
+		is_revolutionary = no
+	}
+
 	prerequisites = {
 		is_neighbor_of = FROM
+		religion_group = from
+		NOT = {	has_matching_religion = FROM }
 		OR = {
 			cb_on_religious_enemies = yes
 			FROM = { has_ruler_flag = hussite_heretic }
 		}
-		religion_group = from
-		NOT = {	has_matching_religion = FROM }
 		OR = {
 			NOT = { has_dlc = "Art of War" }
 			hre_religion_treaty = no
 			capital_scope = { is_part_of_hre = no }
 			FROM = { capital_scope = { is_part_of_hre = no } }
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_heretic
+}
+
+# Holy War
+cb_external_perfectionism = {
+	valid_for_subject = no
+	holy_war = yes
+
+	prerequisites_self = {
+		has_dlc = "Mandate of Heaven"
+		religion = confucianism
+		is_revolutionary = no
+		OR = {
+			full_idea_group = humanist_ideas	#Oh, the irony
+			cb_on_religious_enemies = yes
+		}
+	}
+
+	prerequisites = {
+		is_neighbor_of = FROM
+		FROM = { NOT = { religion = ROOT } }
+	}
+
+	war_goal = superiority_crusade
 }
 
 # Excommunication War
 cb_excommunication = {
 	valid_for_subject = no
 
+	prerequisites_self = {
+		religion = catholic
+		is_excommunicated = no
+		is_revolutionary = no
+	}
+
 	prerequisites = {
 		FROM = {
 			is_excommunicated = yes
 			religion = catholic
 		}
-		religion = catholic
-		is_excommunicated = no
 		FROM = {
 			is_neighbor_of = ROOT
 			any_owned_province = {
@@ -847,7 +914,6 @@ cb_excommunication = {
 			capital_scope = { is_part_of_hre = no }
 			FROM = { capital_scope = { is_part_of_hre = no } }
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = take_province_excommunication
@@ -855,6 +921,10 @@ cb_excommunication = {
 
 # Trade War
 cb_trade_war = {
+
+	prerequisites_self = {
+		is_revolutionary = no
+	}
 
 	prerequisites = {
 
@@ -868,7 +938,6 @@ cb_trade_war = {
 				FROM = { has_government_attribute = is_merchant_republic }
 			}
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_trade_mutual
@@ -891,11 +960,14 @@ cb_trade_war = {
 # Trade War for embargoed Trade League members
 cb_trade_league_dispute = {
 
-	prerequisites = {
+	prerequisites_self = {
 		is_trade_league_leader = yes
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		NOT = { ROOT = { trade_embargo_by = FROM } }
 		ROOT = { trade_league_embargoed_by = FROM }
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_trade_mutual
@@ -919,16 +991,19 @@ cb_trade_league_dispute = {
 cb_imperial_ban = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_emperor = yes
 		is_imperial_ban_allowed = yes
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		FROM = {
 			capital_scope = { is_part_of_hre = no }
 			any_owned_province = {
 				is_part_of_hre = yes
 			}
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = take_province_ban
@@ -937,16 +1012,19 @@ cb_imperial_ban = {
 cb_imperial_ban_incident = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_emperor = yes
 		is_imperial_ban_allowed = yes
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		FROM = {
 			capital_scope = { is_part_of_hre = no }
 			any_owned_province = {
 				is_part_of_hre = yes
 			}
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = take_capital_ban
@@ -956,14 +1034,17 @@ cb_imperial_ban_incident = {
 cb_liberate_elector = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_emperor = yes
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		FROM = {
 			any_subject_country = {
 				is_elector = yes
 			}
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_liberation
@@ -973,11 +1054,14 @@ cb_liberate_elector = {
 cb_super_badboy = {
 	coalition = yes
 
+	prerequisites_self = {
+		num_of_coalition_members = 3
+		is_revolutionary = no		
+	}
+
 	prerequisites = {
 		coalition_target = FROM
 		NOT = { FROM = { is_in_coalition_war = yes } }
-		num_of_coalition_members = 3
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_punitive
@@ -988,9 +1072,12 @@ cb_super_badboy = {
 cb_claim_throne = {
 	valid_for_subject = no
 
+	prerequisites_self = {
+		is_revolutionary = no
+	}
+
 	prerequisites = {
 		succession_claim = FROM
-		is_revolutionary = no
 	}
 
 	war_goal = take_capital_throne
@@ -1000,13 +1087,16 @@ cb_claim_throne = {
 cb_horde_vs_civ = {
 	valid_for_subject = no
 
+	prerequisites_self = {
+		is_nomad = yes
+		is_revolutionary = no
+	}
+
 	prerequisites = {
 		is_neighbor_of = FROM
 		FROM = {
 			is_nomad = no
 		}
-		is_nomad = yes
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_horde
@@ -1016,13 +1106,16 @@ cb_horde_vs_civ = {
 cb_tribal_feud = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_nomad = yes
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		FROM = {
 			is_nomad = yes
 		}
 		is_neighbor_of = FROM
-		is_revolutionary = no
 	}
 
 	war_goal = take_province_tribal_feud
@@ -1032,15 +1125,18 @@ cb_tribal_feud = {
 cb_revoke_electorate = {
 	no_opinion_hit = yes
 
-	prerequisites = {
+	prerequisites_self = {
 		NOT = { has_dlc = "Common Sense" } # replaced by revoke elector diploaction
 		NOT = { has_dlc = "Art of War" } # breaks league system
+		is_emperor = yes
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		FROM = {
 			is_elector = yes
 		}
-		is_emperor = yes
 		NOT = { religion = FROM }
-		is_revolutionary = no
 	}
 
 	war_goal = revoke_elector
@@ -1048,6 +1144,9 @@ cb_revoke_electorate = {
 
 # When someone is privateering in a node that you trade and have some power in.
 cb_privateers = {
+	prerequisites_self = {
+		is_revolutionary = no
+	}
 
 	prerequisites = {
 		FROM = {
@@ -1075,7 +1174,6 @@ cb_privateers = {
 				}
 			}
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = blockade_ports
@@ -1086,8 +1184,11 @@ cb_support_rebels = {
 	support_rebels = yes
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "Art of War"
+	}
+
+	prerequisites = {
 		has_spawned_supported_rebels = FROM
 	}
 
@@ -1099,6 +1200,10 @@ cb_crush_the_revolution = {
 	ai_peace_desire = -50
 	valid_for_subject = no
 
+	prerequisites_self = {
+		is_revolutionary = no
+		is_free_or_tributary_trigger = yes
+	}
 
 	prerequisites = {
 		OR = {
@@ -1110,8 +1215,6 @@ cb_crush_the_revolution = {
 				}
 			}
 		}
-		is_revolutionary = no
-		is_free_or_tributary_trigger = yes
 		NOT = { truce_with = FROM }
 		FROM = {
 			is_revolutionary = yes
@@ -1124,13 +1227,16 @@ cb_crush_the_revolution = {
 cb_spread_the_revolution = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_revolutionary = yes
 		OR = {
 			ai = no
 			capital_scope = { continent = europe }
 			is_revolution_target = yes
 		}
+	}
+
+	prerequisites = {
 		FROM = {
 			NOT = { is_subject_of = ROOT }
 			is_revolutionary = no
@@ -1143,8 +1249,11 @@ cb_spread_the_revolution = {
 cb_annex_the_revolution = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_revolutionary = yes
+	}
+
+	prerequisites = {
 		FROM = {
 			NOT = { is_subject_of = ROOT }
 			is_revolutionary = yes
@@ -1160,17 +1269,20 @@ cb_religious_league = {
 
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "Art of War"
 		is_in_league_war = no
+		is_league_leader = yes
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		FROM = {
 			is_emperor = yes
 			is_in_league_war = no
 		}
-		is_league_leader = yes
 		hre_heretic_religion = ROOT
 		is_league_enemy = FROM
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_religious_league
@@ -1180,11 +1292,14 @@ cb_flower_wars = {
 
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "El Dorado"
 		religion = nahuatl
 		is_free_or_tributary_trigger = yes
 		is_religion_reformed = no
+	}
+
+	prerequisites = {
 		FROM = {
 			NOT = { is_subject_of = ROOT }
 		}
@@ -1198,11 +1313,14 @@ cb_maya_expansion = {
 
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "El Dorado"
 		religion = mesoamerican_religion
 		is_free_or_tributary_trigger = yes
 		is_religion_reformed = no
+	}
+
+	prerequisites = {
 		FROM = {
 			NOT = { is_subject_of = ROOT }
 			religion_group = pagan
@@ -1217,13 +1335,16 @@ cb_maya_expansion = {
 cb_humiliate_rotw = {
 	valid_for_subject = no
 
+	prerequisites_self = {
+		ai = no
+		is_revolutionary = no
+	}
+
 	prerequisites = {
 		NOT = {
 			truce_with = FROM
 		}
-		ai = no
 		is_rival = FROM
-		is_revolutionary = no
 	}
 
 	attacker_disabled_po = {
@@ -1246,7 +1367,7 @@ cb_humiliate_rotw = {
 cb_chinese_unification = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		is_free_or_tributary_trigger = yes
 		OR = {
 			AND = {
@@ -1264,7 +1385,9 @@ cb_chinese_unification = {
 			}
 			has_government_attribute = has_unify_china_cb
 		}
-		
+	}
+
+	prerequisites = {		
 		FROM = { #Applies against other powers in China unless they have the Mandate of Heaven
 			NOT = { is_subject_of = ROOT }
 			OR = {
@@ -1296,19 +1419,15 @@ cb_chinese_unification = {
 cb_take_mandate = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "Mandate of Heaven"
 		is_subject = no
-		is_neighbor_of = FROM
 		NOT = { has_reform = shogunate }
-		FROM = { is_emperor_of_china = yes }
+		is_revolutionary = no
 		OR = {
 			religion_group = pagan
 			religion_group = eastern
 		}
-		NOT = { truce_with = FROM }
-		is_revolutionary = no
-		
 		OR = {
 			ai = no
 			culture_group = east_asian
@@ -1317,6 +1436,12 @@ cb_take_mandate = {
 				has_owner_accepted_culture = yes
 			}
 		}
+	}
+
+	prerequisites = {
+		is_neighbor_of = FROM
+		FROM = { is_emperor_of_china = yes }
+		NOT = { truce_with = FROM }		
 	}
 
 	war_goal = take_capital_take_mandate
@@ -1336,9 +1461,12 @@ cb_force_tributary = {
 
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "Mandate of Heaven"
 		is_emperor_of_china = yes
+	}
+
+	prerequisites = {
 		FROM = { is_subject = no }
 		is_neighbor_of = FROM
 		OR = {
@@ -1381,7 +1509,7 @@ cb_hundred_years_union = {
 	is_triggered_only = yes
 	months = 360
 	
-	prerequisites = {
+	prerequisites_self = {
 		OR = {
 			tag = ENG
 			tag = GBR
@@ -1394,15 +1522,16 @@ cb_hundred_years_union = {
 cb_force_join_hre = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "Emperor"
-		ROOT = {
-			is_emperor = yes
-			hre_reform_passed = emperor_reichsstabilitaet
-			can_use_peace_treaty = {
-				who = FROM
-				treaty = po_join_empire
-			}
+		is_emperor = yes
+		hre_reform_passed = emperor_reichsstabilitaet
+	}
+
+	prerequisites = {
+		can_use_peace_treaty = {
+			who = FROM
+			treaty = po_join_empire
 		}
 		FROM = {
 			religion_group = ROOT
@@ -1445,24 +1574,27 @@ cb_imperial_realm_war = {
 cb_world_crusade = {
 	valid_for_subject = no
 
+	prerequisites_self = {
+		has_government_attribute = has_upgraded_holy_wars
+		is_revolutionary = no
+	}
+
 	prerequisites = {
-		has_reform = religious_permanent_revolution_reform
+		NOT = { religion = FROM }
+		NOT = {	has_matching_religion = FROM }
 		OR = {
 			is_neighbor_of = FROM
 			claim = FROM
 			cb_on_religious_enemies = yes
-			AND  = {
+			AND = {
+				FROM = { religion_group = pagan }
 				OR = {
 					cb_on_primitives = yes
 					cb_on_overseas = yes
 					has_reform = mission_to_civilize_reform
 				}
-				FROM = { religion_group = pagan }
 			}
 		}
-		NOT = { religion = FROM }
-		NOT = {	has_matching_religion = FROM }
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_world_crusade
@@ -1471,12 +1603,15 @@ cb_world_crusade = {
 cb_war_against_heresy = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_country_flag = war_against_heresy_flag
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		religion_group = FROM
 		NOT = { religion = FROM }
 		NOT = {	has_matching_religion = FROM }
-		is_revolutionary = no
 	}
 
 	war_goal = superiority_world_crusade
@@ -1486,8 +1621,11 @@ cb_war_against_heresy = {
 cb_vassalize_majapahit = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		mission_completed = mnd_maj_enforce_loyalty
+	}
+
+	prerequisites = {
 		FROM = {
 			is_free_or_tributary_trigger = yes
 			OR = {
@@ -1508,8 +1646,11 @@ cb_vassalize_majapahit = {
 cb_vassalize_malacca = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		mission_completed = mnd_mlc_destroy_majapahit
+	}
+
+	prerequisites = {
 		FROM = {
 			is_free_or_tributary_trigger = yes
 			culture_group = malay
@@ -1522,9 +1663,12 @@ cb_vassalize_malacca = {
 cb_sword_of_islam = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		mission_completed = atj_porch_of_mecca
 		religion = sunni
+	}
+
+	prerequisites = {
 		FROM = {
 			NOT = { religion_group = muslim }
 			OR = {
@@ -1559,12 +1703,15 @@ cb_force_migration = {
 
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "Conquest of Paradise"
 		OR = {
 			is_native_tribe = yes
 			is_migratory_tribe = yes
 		}
+	}
+
+	prerequisites = {
 		FROM = {
 			is_migratory_tribe = yes
 			OR = {
@@ -1585,9 +1732,12 @@ cb_force_migration = {
 cb_native_american_tribal_feud = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "Conquest of Paradise"
 		is_native_tribe = yes
+	}
+
+	prerequisites = {
 		FROM = {
 			is_native_tribe = yes
 			if = {
@@ -1621,9 +1771,12 @@ cb_native_american_tribal_feud = {
 cb_push_back_colonizers = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_dlc = "Conquest of Paradise"
 		is_native_tribe = yes
+	}
+
+	prerequisites = {
 		FROM = {
 			is_native_tribe = no
 			OR = {
@@ -1659,13 +1812,17 @@ cb_claim_norwegian_throne = {
 # CB for enforcing becoming an elector
 cb_enforce_electorate_right = {
 	valid_for_subject = no
-	prerequisites = {
+
+	prerequisites_self = {
 		is_part_of_hre = yes
 		is_elector = no
 		is_emperor = no
 		any_subject_country = {
 			is_elector = yes
 		}
+	}
+
+	prerequisites = {
 		FROM = {
 			is_emperor = yes
 		}
@@ -1709,15 +1866,72 @@ cb_enforce_electorate_right = {
 cb_unite_balkans = {
 	valid_for_subject = no
 
-	prerequisites = {
+	prerequisites_self = {
 		has_country_flag = enable_unite_balkans_cb_flag
+		is_revolutionary = no
+	}
+
+	prerequisites = {
 		FROM = {
 			any_owned_province = {
 				region = balkan_region
 			}
 		}
-		is_revolutionary = no
 	}
 
 	war_goal = take_province_balkans
+}
+
+# CB for the Ottomans to create an Eyalet - Mission Reward
+cb_ottoman_subjugation_war = {
+	valid_for_subject = no
+
+	is_triggered_only = yes
+	months = 60
+
+	war_goal = take_capital_eyalet_war
+}
+
+# Eyalet that broke free
+cb_disloyal_eyalet = {
+	valid_for_subject = no
+
+	is_triggered_only = yes
+	months = 120
+
+	war_goal = take_capital_disloyal
+}
+
+# CB for the Ottomans to create an Eyalet - Mission Reward
+cb_ottoman_invasion = {
+	valid_for_subject = no
+
+	is_triggered_only = yes
+	months = 600
+
+	war_goal = take_capital_ottoman_invasion
+}
+
+conquer_china_cb = {
+
+	prerequisites_self = {
+		has_country_flag = access_conquest_of_china_cb_flag
+	}
+
+	prerequisites = {
+		FROM = { 
+			NOT = { is_subject_of = ROOT }
+			culture_group = east_asian #Chinese
+			any_owned_province = {
+				OR = {
+					region = north_china_region
+					region = xinan_region
+					region = south_china_region
+				}
+			}
+		}
+		is_neighbor_of = FROM
+	}
+
+	war_goal = take_capital_imperial
 }

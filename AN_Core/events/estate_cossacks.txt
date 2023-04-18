@@ -71,19 +71,20 @@ country_event = {
 					}
 					is_city = yes
 				}
-				set_province_flag = serfs_are_fleeing
+				save_event_target_as = serfs_fleeing_province
 			}
 			random_owned_province = {
 				limit = {
 					has_terrain = steppe
 				}
-				set_province_flag = serfs_are_arriving
+				save_event_target_as = serfs_arriving_province
 			}
 		}
 	}
 	
 	option = {
 		name = cossack_estate_events.1.a #These Serfs must be brought back.
+		goto = serfs_fleeing_province
 		ai_chance = {
 			factor = 50
 			modifier = {
@@ -126,24 +127,13 @@ country_event = {
 			influence = 10
 			duration = 3650
 		}
-		random_owned_province = {
-			limit = {
-				has_province_flag = serfs_are_fleeing
-			}
+		event_target:serfs_fleeing_province = {
 			add_base_production = 1
-			clr_province_flag = serfs_are_fleeing
-		}
-		hidden_effect = {
-			random_owned_province = {
-				limit = {
-					has_province_flag = serfs_are_arriving
-				}
-				clr_province_flag = serfs_are_arriving
-			}
 		}
 	}
 	option = {
 		name = cossack_estate_events.1.b #We cannot afford to anger the Cossacks.
+		goto = serfs_arriving_province
 		ai_chance = {
 			factor = 50
 			modifier = {
@@ -186,20 +176,8 @@ country_event = {
 			influence = -10
 			duration = 3650
 		}
-		random_owned_province = {
-			limit = {
-				has_province_flag = serfs_are_arriving
-			}
+		event_target:serfs_arriving_province = {
 			add_base_manpower = 1
-			clr_province_flag = serfs_are_arriving
-		}
-		hidden_effect = {
-			random_owned_province = {
-				limit = {
-					has_province_flag = serfs_are_fleeing
-				}
-				clr_province_flag = serfs_are_fleeing
-			}
 		}
 	}
 }
@@ -250,7 +228,7 @@ country_event = {
 			has_estate = estate_nomadic_tribes
 		}
 		any_owned_province = {
-			base_tax = 2
+			development = 4
 			NOT = { region = scandinavia_region }
 			NOT = { region = baltic_region }
 			NOT = { region = east_siberia_region }
@@ -301,6 +279,7 @@ country_event = {
 			}
 		}
 	}
+	goto = raided_province
 	
 	mean_time_to_happen = {
 		months = 500
@@ -310,7 +289,7 @@ country_event = {
 		hidden_effect = {
 			random_owned_province = {
 				limit = {
-					base_tax = 2
+					development = 4
 					NOT = { region = scandinavia_region }
 					NOT = { region = baltic_region }
 					NOT = { region = east_siberia_region }
@@ -406,6 +385,7 @@ country_event = {
 					owner = { set_country_flag = cossack_raids_started_here }
 					owner = { save_event_target_as = cossacks_here_target }
 				}
+				save_event_target_as = raided_province
 			}
 		}
 	}
@@ -415,9 +395,21 @@ country_event = {
 		ai_chance = {
 			factor = 100
 		}
-		random_neighbor_country = {
-			limit = { has_country_flag = cossack_raids_started_here }
+		event_target:cossacks_here_target = {
 			country_event  = { id = cossack_estate_events.3 }
+		}
+		if = {
+			limit = {
+				event_target:cossacks_here_target = {
+					has_estate_privilege = estate_cossacks_expand_cossacks_raiders
+				}
+			}
+			event_target:raided_province = {
+				remove_loot = {
+					who = event_target:cossacks_here_target
+					amount = 1000
+				}
+			}
 		}
 	}
 	option = {
@@ -446,16 +438,36 @@ country_event = {
 				loyalty = -10
 			}
 		}
-		random_owned_province = {
+		if = {
 			limit = {
-				base_tax = 2
-				any_neighbor_province = {
-					owner = {
-						has_country_flag = cossack_raids_started_here
-					}
+				event_target:cossacks_here_target = {
+					has_estate_privilege = estate_cossacks_expand_cossacks_raiders
 				}
 			}
-			add_base_tax = -1
+			event_target:raided_province = {
+				remove_loot = {
+					who = event_target:cossacks_here_target
+					amount = 1000
+				}
+				add_treasury = 50
+				add_mil_power = 15
+			}
+		}
+		event_target:raided_province = {
+			random_list = {
+				1 = {
+					trigger = { base_tax = 2 }
+					add_base_tax = -1
+				}
+				1 = {
+					trigger = { base_production = 2 }
+					add_base_production = -1
+				}
+				1 = {
+					trigger = { base_manpower = 2 }
+					add_base_manpower = -1
+				}
+			}
 			owner = {
 				clr_country_flag = cossack_raids_started_here
 			}
@@ -528,13 +540,17 @@ country_event = {
 		}
 		add_opinion = { who = FROM modifier = cossack_raids_opinion }
 		tooltip = {
-			FROM = {
-				add_casus_belli = {
-				    target = ROOT
-				    type = cb_border_war
-				    months = 120
-				}
+			reverse_add_casus_belli = {
+				type = cb_border_war
+				target = FROM
+				months = 120
 			}
+		}
+		if = {
+			limit = { has_estate_privilege = estate_cossacks_expand_cossacks_raiders }
+			custom_tooltip = estate_cossacks_expand_cossacks_raiders_at
+			add_treasury = 50
+			add_mil_power = 15
 		}
 	}
 	option = {
@@ -570,6 +586,12 @@ country_event = {
 		}
 		FROM  = {
 			country_event  = { id = cossack_estate_events.5 }
+		}
+		if = {
+			limit = { has_estate_privilege = estate_cossacks_expand_cossacks_raiders }
+			custom_tooltip = estate_cossacks_expand_cossacks_raiders_at
+			add_treasury = 50
+			add_mil_power = 15
 		}
 	}
 }

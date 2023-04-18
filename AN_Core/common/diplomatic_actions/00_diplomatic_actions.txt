@@ -89,34 +89,63 @@
 #Cut because the Grand Crusade war doesn't really have any place in the current content, but it could be very useful for the future.
 #Also modders should have the chance to just uncomment it all so they can experience the great 30 Years War like Crusade.
 declarewar = {
-#	condition = {
-#		tooltip = GRAND_CRUSADE_NO_OTHER_WAR
-#		potential = { }
-#		allow = {
-#			NOT = {
-#				is_in_war = {
-#					attacker_leader = ROOT
-#					casus_belli = cb_grand_crusade
-#				}
-#			}
-#		}
-#	}
-#	effect = {
-#		if = {
-#			limit = {
-#				has_global_flag = grand_crusades_enabled
-#				has_country_flag = grand_crusader_war_monger_flag
-#				is_in_war = {
-#					attacker_leader = ROOT
-#					casus_belli = cb_grand_crusade
-#				}
-#			}
-#			FROM = {
-#				save_global_event_target_as = grand_crusade_target
-#			}
-#		}
-#	}
+	#condition = {
+	#	tooltip = GRAND_CRUSADE_NO_OTHER_WAR
+	#	potential = { }
+	#	allow = {
+	#		NOT = {
+	#			is_in_war = {
+	#				attacker_leader = ROOT
+	#				casus_belli = cb_grand_crusade
+	#			}
+	#		}
+	#	}
+	#}
+	#effect = {
+	#	if = {
+	#		limit = {
+	#			has_global_flag = grand_crusades_enabled
+	#			has_country_flag = grand_crusader_war_monger_flag
+	#			is_in_war = {
+	#				attacker_leader = ROOT
+	#				casus_belli = cb_grand_crusade
+	#			}
+	#		}
+	#		FROM = {
+	#			save_global_event_target_as = grand_crusade_target
+	#		}
+	#	}
+	#}
+	condition = {
+		tooltip = AI_CANNOT_DECLARE_WHEN_STABILITY_LOSS
+		potential = {
+			ai = yes
+		}
+		allow = {
+			ai = yes
+			NOT = {
+				has_global_modifier_value = {
+					which = stability_cost_to_declare_war
+					value = 1
+				}
+			}
+		}
+	}
+	condition = {
+		tooltip = CANNOT_DECLARE_WARS_OTHER_THAN_INDEPENDENCE_WARS
+		potential = {
+			has_country_modifier = revoked_war_rights
+			FROM = { NOT = { overlord_of = ROOT } }
+		}
+		allow = {
+			OR = {
+				NOT = { has_country_modifier = revoked_war_rights }
+				FROM = { overlord_of = ROOT }
+			}
+		}
+	}
 	effect = {
+		on_war_declaration_effect = yes
 		if = {
 			limit = { 
 				has_country_flag = nor_norwegian_independence_modifier
@@ -130,6 +159,7 @@ declarewar = {
 		if = {
 			limit = {
 				has_country_flag = teu_joined_the_hre
+				tag = TEU
 				is_part_of_hre = yes
 				FROM = { is_part_of_hre = yes }
 			}
@@ -225,12 +255,30 @@ allianceaction = {
 		}
 		allow = {
 			OR = {
-				OR = {
-					government = republic 
-					is_revolutionary = yes
-				}
+				government = republic 
+				is_revolutionary = yes
 				NOT = { FROM = { has_government_attribute = cannot_ally_non_republics_or_non_rev } }
 			}
+		}
+	}
+	condition = {
+		tooltip = CANNOT_MAKE_ALLIANCES
+		potential = {
+			has_government_attribute = cannot_form_alliances
+		}
+		allow = {
+			NOT = { has_government_attribute = cannot_form_alliances }
+		}
+	}
+	condition = {
+		tooltip = FROM_CANNOT_MAKE_ALLIANCES
+		potential = {
+			FROM = {
+				has_government_attribute = cannot_form_alliances
+			}
+		}
+		allow = {
+			NOT = { FROM = { has_government_attribute = cannot_form_alliances } }
 		}
 	}
 }
@@ -272,7 +320,11 @@ annexationaction = {
 		tooltip = ANNEX_TOO_LOW
 		potential = {
 			FROM = {
-				vassal_of = ROOT
+				OR = {
+					is_subject_of_type = core_eyalet
+					is_subject_of_type = appanage
+					vassal_of = ROOT
+				}
 			}
 		}
 		allow = {
@@ -300,6 +352,29 @@ annexationaction = {
 	#		}
 	#	}
 	#}
+	condition = {
+		tooltip = CANNOT_ANNEX
+		potential = {
+			FROM = {
+				has_country_modifier = tur_mamlukian_administration
+			}
+		}
+		allow = {
+			FROM = {
+				NOT = { has_country_modifier = tur_mamlukian_administration }
+			}
+		}
+	}
+	condition = {
+		tooltip = NEEDS_50_CROWNLAND_TT
+		potential = {
+			has_government_attribute = need_crownland_to_annex
+			NOT = { crown_land_share = 50 }
+		}
+		allow = {
+			crown_land_share = 50
+		}
+	}
 }
 
 integrationaction = {
@@ -326,6 +401,19 @@ integrationaction = {
 			NOT = { has_government_attribute = cannot_integrate_personal_unions }
 		}
 	}
+	condition = {
+		tooltip = CANNOT_ANNEX
+		potential = {
+			FROM = {
+				has_country_modifier = tur_mamlukian_administration
+			}
+		}
+		allow = {
+			FROM = {
+				NOT = { has_country_modifier = tur_mamlukian_administration }
+			}
+		}
+	}
 }
 
 vassalaction = {
@@ -346,7 +434,7 @@ vassalaction = {
 	}
 }
 
-abandon_union_action = {
+abandon_union = {
 	condition = {
 		potential = {
 		}
@@ -467,5 +555,11 @@ ask_for_tributary_state_action = {
 				}
 			}
 		}
+	}
+}
+
+break_alliance = {
+	effect = {
+		on_alliance_broken_effect = yes
 	}
 }
