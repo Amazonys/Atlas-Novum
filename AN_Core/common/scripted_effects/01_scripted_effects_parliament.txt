@@ -1,0 +1,334 @@
+halves_parliament_bribe_costs = {
+    if = {
+        limit = {
+			OR = {
+				has_dlc = "Common Sense"
+				has_dlc = "Domination"
+			}
+		}
+        custom_tooltip = halves_parliament_bribe_costs_tt
+    }
+    set_country_flag = halved_parliament_bribe_costs
+}
+
+unlock_new_issues = {
+	if = {
+        limit = {
+			OR = {
+				has_dlc = "Common Sense"
+				has_dlc = "Domination"
+			}
+		}
+		custom_tooltip = pol_unlock_new_issues_tt 
+	}
+	set_country_flag = pol_new_issues_tt
+}
+
+# Country scope
+# Supports the following estates
+################################
+# estate_brahmins
+# estate_church
+# estate_maratha
+# estate_nobles
+# estate_burghers
+# estate_vaisyas
+# estate_cossacks
+# estate_nomadic_tribes
+# estate_dhimmi
+# estate_jains
+# estate_rajput
+# estate_janissaries
+# estate_eunuchs
+issue_effect_scaling_with_estate_influence = {
+	if = {
+		limit = { has_government_attribute = english_parliament }
+		if = {
+			limit = {
+				has_estate = $estate$
+			}
+			custom_tooltip = issue_effects_with_$estate$_influence_tt
+			if = {
+				limit = {
+					NOT = {
+						estate_influence = {
+							influence = 20
+							estate = $estate$
+						}
+					}
+				}
+				[[effect1]$effect1$]
+			}
+			if = {
+				limit = {
+					estate_influence = {
+						influence = 20
+						estate = $estate$
+					}
+					NOT = {
+						estate_influence = {
+							influence = 40
+							estate = $estate$
+						}
+					}
+				}
+				$effect2$
+			}
+			if = {
+				limit = {
+					estate_influence = {
+						influence = 40
+						estate = $estate$
+					}
+					NOT = {
+						estate_influence = {
+							influence = 60
+							estate = $estate$
+						}
+					}
+				}
+				$effect3$
+			}
+			if = {
+				limit = {
+					estate_influence = {
+						influence = 60
+						estate = $estate$
+					}
+					NOT = {
+						estate_influence = {
+							influence = 80
+							estate = $estate$
+						}
+					}
+				}
+				$effect4$
+			}
+			if = {
+				limit = {
+					estate_influence = {
+						influence = 80
+						estate = $estate$
+					}
+				}
+				$effect5$
+			}
+		}
+		else = {
+			$fallback_effect$
+		}
+	}
+	else = {
+		$fallback_effect$
+	}
+}
+
+bribe_effect_scaling_with_estate_loyalty = {
+	if = {
+		limit = { has_government_attribute = english_parliament }
+		if = {
+			limit = {
+				has_estate = $estate$
+			}
+			custom_tooltip = bribe_effect_scales_with_$estate$_tt
+			if = {
+				limit = {
+					NOT = {
+						estate_loyalty = {
+							estate = $estate$
+							loyalty = 30
+						}
+					}
+				}
+				$effect_angry$
+			}
+			if = {
+				limit = {
+					estate_loyalty = {
+						estate = $estate$
+						loyalty = 30
+					}
+					NOT = {
+						estate_loyalty = {
+							estate = $estate$
+							loyalty = 60
+						}
+					}
+				}
+				$effect_neutral$
+			}
+			if = {
+				limit = {
+					estate_loyalty = {
+						loyalty = 60
+						estate = $estate$
+					}
+				}
+				$effect_happy$
+			}
+		}
+		else = {
+			$effect_neutral$
+		}
+	}
+	else = {
+		[[default_effect]$default_effect$]
+	}
+}
+
+increase_issue_passed_counter = {
+	hidden_effect = {
+		change_variable = {
+			which = issues_passed
+			value = 1
+		}
+	}
+}
+
+# Supports the following issues
+###############################
+# Loc in style of: unlock_issue_$issue$_tt: "Unlock the §Y§! Parliament Issue."
+# acts_of_high_admiralty
+# acts_of_maritime_courage
+# acts_of_maritime_professionalism
+# english_scottish_act_of_union
+# british_ideas_laws
+# angevin_ideas_laws
+# english_ideas_laws
+# cultural_unity_act
+# colonial_venture_act
+# crown_of_iberia_act
+# act_of_exploration
+# acts_of_impressment
+# acts_of_taxation
+# act_of_representation
+# english_french_act_of_union
+# crown_of_italy_act
+# the_gold_act
+# the_spice_act
+# the_sugar_act
+# establish_the_imperial_diet_act
+# appointment_of_state_minister
+# enact_mercantilism
+# promote_free_trade
+# military_reform_acts
+unlock_issue = {
+	if = {
+		limit = { has_parliament = yes }
+		custom_tooltip = unlock_issue_$issue$_tt
+	}
+	else = {
+		add_adm_power = 25
+		add_dip_power = 25
+		add_mil_power = 25
+	}
+	hidden_effect = {
+		set_country_flag = unlocked_issue_$issue$
+	}
+}
+
+back_seats_of_bribe_type = {
+	every_owned_province = {
+		limit = { 
+			has_seat_in_parliament = yes
+			OR = {
+				current_bribe = $bribe$
+				current_bribe = national_$bribe$
+			}
+			NOT = { province_id = FROM }
+		}
+		back_current_issue = yes
+	}
+}
+
+bribe_estate_effect = {
+	if = {
+		limit = {
+			has_expensive_debate = yes
+			NOT = { halved_parliament_bribes = yes }
+		}
+		add_estate_influence_modifier = {
+			estate = $estate$
+			desc = EST_VAL_SEAT_BRIBED
+			influence = 4
+			duration = 9125
+			add = yes
+		}
+	}
+	else_if = {
+		limit = {
+			OR = {
+				AND = {
+					has_expensive_debate = yes
+					halved_parliament_bribes = yes
+				}
+				AND = {
+					NOT = { has_expensive_debate = yes }
+					NOT = { halved_parliament_bribes = yes }
+				}
+			}
+		}
+		add_estate_influence_modifier = {
+			estate = $estate$
+			desc = EST_VAL_SEAT_BRIBED
+			influence = 2
+			duration = 9125
+			add = yes
+		}
+	}
+	else = {
+		add_estate_influence_modifier = {
+			estate = $estate$
+			desc = EST_VAL_SEAT_BRIBED
+			influence = 1
+			duration = 9125
+			add = yes
+		}
+	}
+}
+
+national_bribe_estate_effect = {
+	if = {
+		limit = {
+			has_expensive_debate = yes
+			NOT = { halved_parliament_bribes = yes }
+		}
+		add_estate_influence_modifier = {
+			estate = $estate$
+			desc = EST_VAL_SEAT_BRIBED
+			influence = 20
+			duration = 9125
+			add = yes
+		}
+	}
+	else_if = {
+		limit = {
+			OR = {
+				AND = {
+					has_expensive_debate = yes
+					halved_parliament_bribes = yes
+				}
+				AND = {
+					NOT = { has_expensive_debate = yes }
+					NOT = { halved_parliament_bribes = yes }
+				}
+			}
+		}
+		add_estate_influence_modifier = {
+			estate = $estate$
+			desc = EST_VAL_SEAT_BRIBED
+			influence = 10
+			duration = 9125
+			add = yes
+		}
+	}
+	else = {
+		add_estate_influence_modifier = {
+			estate = $estate$
+			desc = EST_VAL_SEAT_BRIBED
+			influence = 5
+			duration = 9125
+			add = yes
+		}
+	}
+}

@@ -23,25 +23,20 @@ country_decisions = {
 			33 = {
 				change_province_name = "St. Petersburg"
 				rename_capital = "St. Petersburg"
-				add_base_tax = 6
+				add_base_tax = 3
+				add_base_production = 3
 				add_base_manpower = 3
-				change_culture = capital
+				change_culture = ROOT
+				if = {
+					limit = { NOT = { province_has_center_of_trade_of_level = 3 } }
+					add_center_of_trade_level = 1
+				}
+				move_capital_effect = yes
 			}
 			set_country_flag = relocated_capital_st_petersburg
 			add_years_of_income = -1
-			add_prestige = 100
-			33 = {
-				move_capital_effect = yes
-			}
-			if = {
-				limit = {
-					33 = {
-						NOT = { province_has_center_of_trade_of_level = 3 }
-					}
-				}
-				33 = {
-					add_center_of_trade_level = 1
-				}
+			add_prestige_or_monarch_power = {
+				amount = 100
 			}
 		}
 		ai_will_do = {
@@ -52,12 +47,11 @@ country_decisions = {
 			}
 		}
 	}
-
+	
 	establish_russian_patriarchate = {
 		potential = {
-			NOT = {
-				has_mission = rus_patriarchate_mission
-			}
+			NOT = { has_mission = rus_patriarchate_mission }
+			NOT = { has_mission = mos_rus_russian_patriarchate }
 			tag = RUS
 			normal_or_historical_nations = yes
 			OR = {
@@ -77,11 +71,181 @@ country_decisions = {
 			add_country_modifier = {
 				name = "russian_patriarchate"
 				duration = -1
+			}		
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	rus_sell_vodka_to_the_people = {
+		potential = {
+			has_country_flag = rus_enable_vodka_sales_decision
+		}
+		allow = {
+			grain = 1
+			custom_trigger_tooltip = {
+				tooltip = decision_once_every_ten_years
+				OR = {
+					NOT = { has_country_flag = rus_sold_vodka_to_the_people }
+					had_country_flag = {
+						flag = rus_sold_vodka_to_the_people
+						days = 3650
+					}
+				}
+			}
+		}
+		effect = {
+			clr_country_flag = rus_sold_vodka_to_the_people
+			set_country_flag = rus_sold_vodka_to_the_people
+			add_rebel_progress = {
+				value = -20
+			}
+			add_years_of_owned_provinces_production_income = {
+				custom_tooltip = MONOPOLY_INCOME_GRAIN_DESC
+				trigger = {
+					trade_goods = grain
+				}
+				years = 6
+			}
+			custom_tooltip = rus_sell_vodka_to_the_people_bt
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						trade_goods = grain
+					}
+					add_prosperity = -10
+				}
+			}
+			if = {
+				limit = { has_country_modifier = rus_vodka_sales }
+				extend_country_modifier = {
+					name = rus_vodka_sales
+					duration = 3650
+				}
+			}
+			else = {
+				add_country_modifier = {
+					name = rus_vodka_sales
+					duration = 7300
+				}
 			}
 		}
 		ai_will_do = {
 			factor = 1
 		}
 	}
-
+	
+	rus_abolish_the_serfdom = {
+		potential = {
+			has_country_flag = final_serfdom_privileges
+		}
+		allow = {
+			stability = 1
+			adm_power_cost = 100
+			dip_power_cost = 100
+			mil_power_cost = 100
+		}
+		effect = {
+			clr_country_flag = final_serfdom_privileges
+			add_stability = -1
+			adm_power_cost = 100
+			dip_power_cost = 100
+			mil_power_cost = 100
+			remove_estate_privilege = estate_nobles_total_serfdom
+			remove_estate_privilege = estate_nobles_restricted_serfdom
+			remove_estate_privilege = estate_nobles_devastating_serfdom
+			random_owned_province = {
+				spawn_rebels = {
+					type = noble_rebels
+					size = 3
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	rus_claim_emperor_title = {
+		potential = {
+			has_dlc = "Domination"
+			tag = RUS
+			NOT = { has_country_flag = rus_proclaimed_empire_title }
+		}
+		provinces_to_highlight = {
+			is_capital = yes
+			NOT = { owned_by = ROOT }
+			has_discovered = ROOT
+			owner = {
+				if = {
+					limit = {
+						OR = {
+							has_dlc = "Rights of Man"
+							has_dlc = "Emperor"
+						}
+					}
+					is_great_power = yes
+				}
+				else = {
+					total_development = ROOT
+				}
+			}
+		}
+		major = yes
+		allow = {
+			if = {
+				limit = {
+					OR = {
+						has_dlc = "Rights of Man"
+						has_dlc = "Emperor"
+					}
+				}
+				is_great_power = yes
+			}
+			else = {
+				total_development = 1000
+			}
+			has_government_power = {
+				mechanic_type = russian_modernization_mechanic
+				power_type = russian_modernization
+				value = 90
+			}
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = rus_claim_emperor_title_at
+					any_known_country = {
+						OR = {
+							is_rival = ROOT
+							is_enemy = ROOT
+						}
+						humiliated_by = ROOT
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = rus_claim_emperor_title_bt
+					NOT = {
+						calc_true_if = {
+							all_known_country = {
+								OR = {
+									is_rival = ROOT
+									is_enemy = ROOT
+								}
+							}
+							amount = 1
+						}
+					}
+				}
+			}
+		}
+		effect = {
+			set_country_flag = rus_proclaimed_empire_title
+			country_event = {
+				id = flavor_rus.200
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
 }

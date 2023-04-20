@@ -13,7 +13,7 @@ country_event = {
 	title = cossack_estate_events.1.t
 	desc = cossack_estate_events.1.d
 	picture = COSSACK_ESTATE_eventPicture
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		any_owned_province = {
@@ -50,13 +50,13 @@ country_event = {
 			}
 		}
 	}
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 	is_triggered_only = yes
-
+	
 	immediate = {
 		hidden_effect = {
 			set_country_flag = colonization_of_the_steppes_flag
@@ -71,19 +71,20 @@ country_event = {
 					}
 					is_city = yes
 				}
-				set_province_flag = serfs_are_fleeing
+				save_event_target_as = serfs_fleeing_province
 			}
 			random_owned_province = {
 				limit = {
 					has_terrain = steppe
 				}
-				set_province_flag = serfs_are_arriving
+				save_event_target_as = serfs_arriving_province
 			}
 		}
 	}
-
+	
 	option = {
 		name = cossack_estate_events.1.a #These Serfs must be brought back.
+		goto = serfs_fleeing_province
 		ai_chance = {
 			factor = 50
 			modifier = {
@@ -126,24 +127,13 @@ country_event = {
 			influence = 10
 			duration = 3650
 		}
-		random_owned_province = {
-			limit = {
-				has_province_flag = serfs_are_fleeing
-			}
+		event_target:serfs_fleeing_province = {
 			add_base_production = 1
-			clr_province_flag = serfs_are_fleeing
-		}
-		hidden_effect = {
-			random_owned_province = {
-				limit = {
-					has_province_flag = serfs_are_arriving
-				}
-				clr_province_flag = serfs_are_arriving
-			}
 		}
 	}
 	option = {
 		name = cossack_estate_events.1.b #We cannot afford to anger the Cossacks.
+		goto = serfs_arriving_province
 		ai_chance = {
 			factor = 50
 			modifier = {
@@ -186,20 +176,8 @@ country_event = {
 			influence = -10
 			duration = 3650
 		}
-		random_owned_province = {
-			limit = {
-				has_province_flag = serfs_are_arriving
-			}
+		event_target:serfs_arriving_province = {
 			add_base_manpower = 1
-			clr_province_flag = serfs_are_arriving
-		}
-		hidden_effect = {
-			random_owned_province = {
-				limit = {
-					has_province_flag = serfs_are_fleeing
-				}
-				clr_province_flag = serfs_are_fleeing
-			}
 		}
 	}
 }
@@ -210,7 +188,7 @@ country_event = {
 	id = cossack_estate_events.2
 	title = cossack_estate_events.2.t
 	desc = {
-		trigger = {
+		trigger = { 
 			has_estate = estate_burghers
 			has_estate = estate_nobles
 		}
@@ -237,7 +215,7 @@ country_event = {
 		desc = cossack_estate_events.2.d.fallback
 	}
 	picture = COSSACK_ESTATE_RAIDERS_eventPicture
-
+	
 	trigger = {
 		has_dlc = "The Cossacks"
 		num_of_cities = 6
@@ -250,7 +228,7 @@ country_event = {
 			has_estate = estate_nomadic_tribes
 		}
 		any_owned_province = {
-			base_tax = 2
+			development = 4
 			NOT = { region = scandinavia_region }
 			NOT = { region = baltic_region }
 			NOT = { region = east_siberia_region }
@@ -301,16 +279,17 @@ country_event = {
 			}
 		}
 	}
-
+	goto = raided_province
+	
 	mean_time_to_happen = {
 		months = 500
 	}
-
+	
 	immediate = {
 		hidden_effect = {
 			random_owned_province = {
 				limit = {
-					base_tax = 2
+					development = 4
 					NOT = { region = scandinavia_region }
 					NOT = { region = baltic_region }
 					NOT = { region = east_siberia_region }
@@ -406,18 +385,31 @@ country_event = {
 					owner = { set_country_flag = cossack_raids_started_here }
 					owner = { save_event_target_as = cossacks_here_target }
 				}
+				save_event_target_as = raided_province
 			}
 		}
 	}
-
+	
 	option = {
 		name = cossack_estate_events.2.a #Demand that the $ESTATE_COSSACKS$ be brought to Justice!
 		ai_chance = {
 			factor = 100
 		}
-		random_neighbor_country = {
-			limit = { has_country_flag = cossack_raids_started_here }
+		event_target:cossacks_here_target = {
 			country_event  = { id = cossack_estate_events.3 }
+		}
+		if = {
+			limit = {
+				event_target:cossacks_here_target = {
+					has_estate_privilege = estate_cossacks_expand_cossacks_raiders
+				}
+			}
+			event_target:raided_province = {
+				remove_loot = {
+					who = event_target:cossacks_here_target
+					amount = 1000
+				}
+			}
 		}
 	}
 	option = {
@@ -446,16 +438,36 @@ country_event = {
 				loyalty = -10
 			}
 		}
-		random_owned_province = {
+		if = {
 			limit = {
-				base_tax = 2
-				any_neighbor_province = {
-					owner = {
-						has_country_flag = cossack_raids_started_here
-					}
+				event_target:cossacks_here_target = {
+					has_estate_privilege = estate_cossacks_expand_cossacks_raiders
 				}
 			}
-			add_base_tax = -1
+			event_target:raided_province = {
+				remove_loot = {
+					who = event_target:cossacks_here_target
+					amount = 1000
+				}
+				add_treasury = 50
+				add_mil_power = 15
+			}
+		}
+		event_target:raided_province = {
+			random_list = {
+				1 = {
+					trigger = { base_tax = 2 }
+					add_base_tax = -1
+				}
+				1 = {
+					trigger = { base_production = 2 }
+					add_base_production = -1
+				}
+				1 = {
+					trigger = { base_manpower = 2 }
+					add_base_manpower = -1
+				}
+			}
 			owner = {
 				clr_country_flag = cossack_raids_started_here
 			}
@@ -485,9 +497,9 @@ country_event = {
 	title = cossack_estate_events.3.t
 	desc = cossack_estate_events.3.d
 	picture = COSSACK_ESTATE_RAIDERS_eventPicture
-
+	
 	is_triggered_only = yes
-
+	
 	option = {
 		name = cossack_estate_events.3.a #This matter is beyond our control!
 		ai_chance = {
@@ -528,13 +540,17 @@ country_event = {
 		}
 		add_opinion = { who = FROM modifier = cossack_raids_opinion }
 		tooltip = {
-			FROM = {
-				add_casus_belli = {
-				    target = ROOT
-				    type = cb_border_war
-				    months = 120
-				}
+			reverse_add_casus_belli = {
+				type = cb_border_war
+				target = FROM
+				months = 120
 			}
+		}
+		if = {
+			limit = { has_estate_privilege = estate_cossacks_expand_cossacks_raiders }
+			custom_tooltip = estate_cossacks_expand_cossacks_raiders_at
+			add_treasury = 50
+			add_mil_power = 15
 		}
 	}
 	option = {
@@ -571,6 +587,12 @@ country_event = {
 		FROM  = {
 			country_event  = { id = cossack_estate_events.5 }
 		}
+		if = {
+			limit = { has_estate_privilege = estate_cossacks_expand_cossacks_raiders }
+			custom_tooltip = estate_cossacks_expand_cossacks_raiders_at
+			add_treasury = 50
+			add_mil_power = 15
+		}
 	}
 }
 
@@ -580,9 +602,9 @@ country_event = {
 	title = cossack_estate_events.4.t
 	desc = cossack_estate_events.4.d
 	picture = COSSACK_ESTATE_RAIDERS_eventPicture
-
+	
 	is_triggered_only = yes
-
+	
 	option = {
 		name = cossack_estate_events.4.a #We care little for such excuses.
 		add_opinion = { who = FROM modifier = cossack_raids_opinion }
@@ -612,9 +634,9 @@ country_event = {
 	title = cossack_estate_events.5.t
 	desc = cossack_estate_events.5.d
 	picture = COSSACK_ESTATE_RAIDERS_eventPicture
-
+	
 	is_triggered_only = yes
-
+	
 	option = {
 		name = cossack_estate_events.5.a #If we could only believe that.
 		add_prestige = 5
@@ -630,9 +652,9 @@ country_event = {
 	title = cossack_estate_events.6.t
 	desc = cossack_estate_events.6.d
 	picture = COSSACK_ESTATE_eventPicture
-
+	
 	is_triggered_only = yes
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		any_owned_province = {
@@ -657,11 +679,11 @@ country_event = {
 			}
 		}
 	}
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 
 	option = {
 		name = cossack_estate_events.6.a #Ok
@@ -680,7 +702,7 @@ country_event = {
 	title = cossack_estate_events.7.t
 	desc = cossack_estate_events.7.d
 	picture = COSSACK_ESTATE_eventPicture
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		any_owned_province = {
@@ -705,13 +727,13 @@ country_event = {
 			}
 		}
 	}
-
+	
 	is_triggered_only = yes
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 	option = {
 		name = cossack_estate_events.7.a #Ok
 		add_estate_influence_modifier = {
@@ -730,14 +752,14 @@ country_event = {
 	title = cossack_estate_events.8.t
 	desc = cossack_estate_events.8.d
 	picture = COSSACK_ESTATE_eventPicture
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		any_owned_province = {
 			has_terrain = steppe
 			is_territory = no
 		}
-		estate_territory = {
+		estate_territory = { 
 			estate = estate_cossacks
 			territory = 1
 		}
@@ -755,13 +777,13 @@ country_event = {
 			}
 		}
 	}
-
+	
 	is_triggered_only = yes
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 	option = {
 		name = cossack_estate_events.8.a #We need more registered Cossacks!
 		add_yearly_manpower = 1
@@ -835,7 +857,7 @@ country_event = {
 	title = cossack_estate_events.9.t
 	desc = cossack_estate_events.9.d
 	picture = COSSACK_ESTATE_eventPicture
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		any_owned_province = {
@@ -854,13 +876,13 @@ country_event = {
 			}
 		}
 	}
-
+	
 	is_triggered_only = yes
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 	option = {
 		name = cossack_estate_events.9.a #
 		ai_chance = {
@@ -934,7 +956,7 @@ country_event = {
 	title = cossack_estate_events.10.t
 	desc = cossack_estate_events.10.d
 	picture = COSSACK_ESTATE_RAIDERS_eventPicture
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		has_estate = estate_burghers
@@ -954,13 +976,13 @@ country_event = {
 			}
 		}
 	}
-
+	
 	is_triggered_only = yes
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 	option = {
 		name = cossack_estate_events.10.a #Support the $ESTATE_COSSACKS$.
 		ai_chance = {
@@ -1053,7 +1075,7 @@ country_event = {
 	title = cossack_estate_events.11.t
 	desc = cossack_estate_events.11.d
 	picture = COSSACK_ESTATE_eventPicture
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		num_of_colonists = 1
@@ -1079,13 +1101,13 @@ country_event = {
 			}
 		}
 	}
-
+	
 	is_triggered_only = yes
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 	immediate = {
 		hidden_effect = {
 			random_owned_province = {
@@ -1102,7 +1124,7 @@ country_event = {
 			}
 		}
 	}
-
+	
 	option = {
 		name = cossack_estate_events.11.a #Enlist $ESTATE_COSSACKS$ Settlers.
 		ai_chance = {
@@ -1179,7 +1201,7 @@ country_event = {
 	title = cossack_estate_events.12.t
 	desc = cossack_estate_events.12.d
 	picture = COSSACK_ESTATE_UPSET_eventPicture
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		any_owned_province = {
@@ -1188,7 +1210,7 @@ country_event = {
 			is_capital = no
 			is_city = yes
 		}
-		estate_territory = {
+		estate_territory = { 
 			estate = estate_cossacks
 			territory = 1
 		}
@@ -1210,23 +1232,23 @@ country_event = {
 				modifier = EST_VAL_COSSACK_UPRISING
 			}
 		}
-		estate_territory = {
+		estate_territory = { 
 			estate = estate_cossacks
 			territory = 10
 		}
 	}
-
+	
 	is_triggered_only = yes
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 	immediate = {
 		hidden_effect = {
 			while = {
 				limit = {
-					NOT = {
+					NOT = { 
 						development_in_provinces = {
 							has_province_flag = cossack_revolt
 							value = estate
@@ -1285,7 +1307,7 @@ country_event = {
 		if = {
 			limit = {
 				NOT = {
-					estate_territory = {
+					estate_territory = { 
 						estate = estate_cossacks
 						territory = 10
 					}
@@ -1303,12 +1325,12 @@ country_event = {
 		}
 		else_if = {
 			limit = {
-				estate_territory = {
+				estate_territory = { 
 					estate = estate_cossacks
 					territory = 10
 				}
 				NOT = {
-					estate_territory = {
+					estate_territory = { 
 						estate = estate_cossacks
 						territory = 20
 					}
@@ -1326,7 +1348,7 @@ country_event = {
 		}
 		else_if = {
 			limit = {
-				estate_territory = {
+				estate_territory = { 
 					estate = estate_cossacks
 					territory = 20
 				}
@@ -1390,7 +1412,7 @@ country_event = {
 	title = cossack_estate_events.13.t
 	desc = cossack_estate_events.13.d
 	picture = COSSACK_ESTATE_eventPicture
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		any_owned_province = {
@@ -1401,13 +1423,13 @@ country_event = {
 			is_city = yes
 		}
 	}
-
+	
 	is_triggered_only = yes
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 	immediate = {
 		hidden_effect = {
 			random_owned_province = {
@@ -1422,7 +1444,7 @@ country_event = {
 			}
 		}
 	}
-
+	
 	option = {
 		name = cossack_estate_events.13.a #
 		event_target:growing_cossack_communities = {
@@ -1457,7 +1479,7 @@ country_event = {
 	title = cossack_estate_events.14.t
 	desc = cossack_estate_events.14.d
 	picture = COSSACK_ESTATE_UPSET_eventPicture
-
+	
 	trigger = {
 		has_estate = estate_cossacks
 		any_owned_province = {
@@ -1480,13 +1502,13 @@ country_event = {
 			}
 		}
 	}
-
+	
 	is_triggered_only = yes
-
+	
 	mean_time_to_happen = {
 		days = 1
 	}
-
+	
 	option = {
 		name = cossack_estate_events.14.a #Preposterous.
 		ai_chance = {
@@ -1536,11 +1558,11 @@ province_event = {
 	title = cossack_estate_events.15.t
 	desc = cossack_estate_events.15.d
 	picture = COSSACK_ESTATE_UPSET_eventPicture
-
+	
 	is_triggered_only = yes
 
 	option = {
 		name = cossack_estate_events.15.a #Ok.
-
+		
 	}
 }

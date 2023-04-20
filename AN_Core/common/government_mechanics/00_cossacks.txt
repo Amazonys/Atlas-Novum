@@ -1,0 +1,159 @@
+cossacks_mechanic = {
+	alert_icon_gfx = GFX_alerticons_government_mechanics
+	alert_icon_index = 6
+	available = {
+		has_dlc = "The Cossacks"
+	}
+	
+	powers = {
+		cossacks_adm_power = {
+			max = 150
+			monarch_power = ADM
+			base_monthly_growth = 3
+		}
+		cossacks_dip_power = {
+			max = 150
+			monarch_power = DIP
+			base_monthly_growth = 3
+		}
+		cossacks_mil_power = {
+			max = 150
+			monarch_power = MIL
+			base_monthly_growth = 3
+		}
+	}
+	
+	interactions = {
+		cossacks_ability_receive_serfs = {
+			icon = GFX_cossacks_ability_ADM
+			cost_type = cossacks_adm_power
+			cost = 100
+			trigger = {
+				has_neighbor = yes
+			}
+			effect = {
+				random_rival_country = {
+					limit = {
+						is_neighbor_of = root
+					}
+					save_event_target_as = source_country
+				}
+				if = {
+					limit = {
+						#use NOT here because changing the scopt to a non-existent country will fail anyway, giving us the check we want
+						NOT = {
+							event_target:source_country = {
+								exists = yes
+							}
+						}
+					}
+					random_neighbor_country = {
+						save_event_target_as = source_country
+					}
+				}
+				random_owned_province = {
+					limit = {
+						OR = {
+							not = { religion = event_target:source_country }
+							AND = {
+								not = { 
+									event_target:source_country = {
+										accepted_culture = prev
+									}
+								}
+								not = { culture = event_target:source_country }
+							}
+						}
+					}
+					add_random_development = 1
+				}
+				event_target:source_country = {
+					add_country_modifier = {
+						name = serfs_recieved_by_cossacks
+						duration = 3650
+					}
+				}
+			}
+			cooldown_years = 0
+			ai_chance = {
+				factor = 100
+			}
+		}
+		cossacks_ability_raiding_parties = {
+			icon = GFX_cossacks_ability_DIP
+			cost_type = cossacks_dip_power
+			cost = 100
+			trigger = { 
+			}
+			effect = { 
+				add_country_modifier = {
+					name = raiding_parties_modifier
+					duration = 3650
+				}
+			}
+			cooldown_years = 10
+			ai_chance = {
+				factor = 1
+				modifier = {
+					factor = 20
+					is_at_war = yes
+				}
+				modifier = {
+					factor = 100
+					is_in_important_war = yes
+				}
+			}
+		}
+		cossacks_ability_cossacks = {
+			icon = GFX_cossacks_ability_MIL
+			cost_type = cossacks_mil_power
+			cost = 100
+			trigger = {
+				capital_scope = {
+					controller = { 
+						tag = ROOT
+					}
+					has_siege = no
+				}
+			}
+			effect = { 
+				create_unit_forcelimit_percentage = {
+					type = infantry
+					special_unit_category = cossacks
+					force_limit_percentage = 0.2
+				}
+				add_war_exhaustion = -2
+			}
+			cooldown_years = 0
+			ai_chance = {
+				factor = 1
+				modifier = {
+					factor = 100
+					needs_regiment_type = cossacks
+				}
+				modifier = {
+					factor = 100
+					is_at_war = yes
+					NOT = { army_size_percentage = 0.8 }
+				}
+				modifier = {
+					factor = 100
+					is_in_important_war = yes
+					NOT = { army_size_percentage = 1 }
+				}
+				modifier = {
+					factor = 0
+					is_at_war = no
+					OR = {
+						num_of_loans = 3
+						is_in_deficit = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					is_bankrupt = yes
+				}
+			}
+		}
+	}
+}
