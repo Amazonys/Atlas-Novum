@@ -83,7 +83,7 @@ NDefines.NDiplomacy.BREAK_ALLIANCE_DIPLOREP_FACTOR = 3		-- idk		-- AI acceptance
 NDefines.NDiplomacy.AE_COALITION_THRESHOLD = -50			-- considering a rebalance of AE to -100 = coalition		-- Coalitions can form below this amount of AE opinion
 
  --Empire of China
-NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.03			-- from 0p06
+NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.04			-- from 0p06
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_DEVASTATION = -2.5			-- from -5p0
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_TRIBUTARY_DEV = 0.05		-- from 0p15
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_NONTRIBUTARY_DEV = -0.15			-- from -0p3
@@ -146,10 +146,9 @@ NDefines.NCountry.MONTHS_TO_CHANGE_CULTURE = 12			-- from 10
 NDefines.NCountry.RAZE_PROVINCE_POWER_PER_DEVELOPMENT = 10			-- from 25p0
 NDefines.NCountry.HORDE_UNITY_PER_RAZE = 0.25			-- from 0p5
 NDefines.NCountry.MERCHANT_REPUBLIC_SIZE_LIMIT = 50
-NDefines.NCountry.PS_BOOST_MILITARIZATION = 30			-- Same logic as above new provinces cause faster decline thus need lower cost ideally I can find a better solution later Base 50
-NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.15	-- from 0.3
-NDefines.NCountry.REVOLT_SIZE_BASE = 2	-- from 4
-NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03			-- % each tech increases size of rebels by this percent.
+NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.1 -- from 0.3
+NDefines.NCountry.REVOLT_SIZE_BASE = 1	-- from 4
+NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03		-- % each tech increases size of rebels by this percent.
 NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 NDefines.NCountry.CROWN_LANDS_ALERT_THRESHOLD = 35
 NDefines.NCountry.MIN_POPULATION_FOR_TRADEGOOD_ASSIGNMENT = 1001
@@ -254,8 +253,11 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local auto
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
  --NMilitary changes
-NDefines.NMilitary.SLACKEN_AP_DROP = 0.1 -- was 0.05 +100% cost
-NDefines.NMilitary.SLACKEN_MANPOWER_INCREASE = 1.5 -- was 1 +50% manpower
+NDefines.NMilitary.SLACKEN_AP_DROP = 0.1 	--Defines how much AP is lost when activating slacken toggle.
+NDefines.NMilitary.SLACKEN_MIN_AP = 0			--Defines how much AP is at least needed to keep the Slacken Modifier active. Put a -1 here if you want the toggle to not turn off automatically
+NDefines.NMilitary.SLACKEN_MAX_MP_PERCENTAGE = 0.95   		--Defines how much manpower percentage of your whole manpower pool you can have before the toggle turns off automatically. "1" would mean "100% of your manpower pool". Put a -1 here if you don't want this toggle to turn off from having manpower
+
+NDefines.NMilitary.COAST_RAID_RANGE = 3							-- default coastal raid range
 
 NDefines.NMilitary.BASE_COMBAT_WIDTH = 10
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
@@ -408,23 +410,9 @@ NDefines.NReligion.MAX_CARDINALS_PER_COUNTRY = 6							-- Max cardinals in a sin
 NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 30.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 600.0							-- WAS 200 -- When a cardinal is chosen the formula is diving a countrys development by this number.
 NDefines.NReligion.NUMBER_OF_POSSIBLE_CARDINALS = 5						-- Number of cardinals from said number of most successful provinces to be randomly picked from
---NDefines.NReligion.REFORM_DESIRE_PER_YEAR = -0.012								-- Increase of reform desire for each year.
+NDefines.NReligion.REFORM_DESIRE_PER_YEAR = 0.01								-- Increase of reform desire for each year.
 
 ---- NGovernment
-NDefines.NGovernment.RUSSIAN_ABILITY_COST = 100
-NDefines.NGovernment.RUSSIAN_ABILITY_POOL_SIZE = 150
-NDefines.NGovernment.RUSSIAN_ABILITY_BASE_GAIN = 1
-NDefines.NGovernment.RUSSIAN_ABILITY_SUDEBNIK_MIN_AUTONOMY = 10
-NDefines.NGovernment.RUSSIAN_ABILITY_SUDEBNIK_AUTONOMY_CHANGE = -10
-NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_THRESHOLD = 0.3
-NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_AI_THRESHOLD = 0.85 -- AI will use ability when revolt risk is 90%, or when they have full power
-NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_CHANGE = -0.3
-NDefines.NGovernment.RUSSIAN_ABILITY_STRELTSY_WE_CHANGE = -2
-NDefines.NGovernment.RUSSIAN_ABILITY_STRELTSY_SPAWN_SIZE = 0.2
-
-NDefines.NGovernment.IQTA_POLICY_COOLDOWN_YEARS = 20
-NDefines.NGovernment.EFFICIENT_FARMING_DUCAT_MULTIPLIER = 2
-NDefines.NGovernment.LAND_AQUISITION_MANPOWER_MULTIPLIER = 0.05
 
 NDefines.NGovernment.GOVERNMENT_REFORM_BASE_COST = 100.0
 NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 100.0 -- to be set to 0 soon

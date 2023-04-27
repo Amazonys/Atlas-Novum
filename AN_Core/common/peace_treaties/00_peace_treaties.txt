@@ -1,0 +1,61 @@
+# Completely scripted peace treaties are made here
+
+# THIS is the Taker and FROM the Giver in all scopes unless otherwise stated
+
+# This functionality was made to fully support modded subject types. It can probably also be used for other things, but has the following limitations: 
+# These treaties don't support having a different Taker/Giver than the two countries that are negotiating.
+# Nor do they support setting provinces (like cede province) or third party countries (like annull treaties) as targets.
+
+# Example:
+make_dummy = {
+	# The following strings need localization: 
+	#		"make_dummy_desc" (uses text processing, supporting bracket notation) ("[FROM.GetName] becomes a [THIS.GetName] Dummy")
+	#		"CB_ALLOWED_make_dummy" (uses plain localization) ("Enforced Dumbness")
+	#		"PEACE_make_dummy" (uses plain localization, but with support for $TAKER$, $TAKERS$, $GIVER$ and $GIVERS$) ("Become $TAKERS$ Dummy")
+
+	# Values default to 0 or "no" unless otherwise stated
+	
+	category = 6 # Any number between 0 and 6. Represents the tab under which it will be listed. 6 corresponds to "treaties". This value currently defaults to 6.
+	power_projection = vassalized_rival # "power_projection" will only be applied if giver is your rival.
+	power_cost_base = 1.0 # Base factor for diplomatic power cost when treaty is not allowed by casus belli. Scales with war score cost.
+	prestige_base = 0.1 # Base factor for prestige gain and loss. Scales with war score cost.
+	ae_base = 2.0 # Base factor for aggressive expansion. Scales with war score cost.
+	warscore_cost = {
+		# Which of the giver's provinces' war score costs are included and by how much. All entries default to 0. Any combination of entries can be used. Try negative values at your own risk.
+		all_provinces = 0.0 # All the giver's provinces
+		no_provinces = 20.0 # This is just a constant. Equivalent to a single province with with war score cost 1
+		owner_keeps = 0.0 # The provinces that are not of any of the types below
+		conquered = 1.0 # Provinces that are selected by a Demand Province treaty
+		returned_core = 0.0 # Provinces that are selected by a Return Core treaty
+		released_nation = 0.0 # Provinces that will become a part of a selected released-to-be nation
+		cancelled_subject = 0.0 # This one should not be relevant here since Giver can't be a cancelled subject. Including anyway for completeness
+		concede_colonial_region = 0.0 # Ditto
+	}
+	warscore_cap = -1 # Warscore cost will never go above this value. Only enabled if non-negative. This value defaults to -1.
+	requires_demand_independence = yes # Whether this can be demanded by the former subject in an independence war without also demanding independence.
+	is_make_subject = yes # This will make the treaty mutually exclusive with other treaties that makes the giver a subject, or that explicitly frees the giver from their current overlord.
+	requires_is_allowed = no # If set to "yes", treaty will only be visible when explicitly allowed by casus belli. If not, it will be available but cost diplomatic power.
+	
+	is_visible = { # Defaults to equivalent of "always = yes"
+		always = no ################################# Remove this line to enable "make_dummy" peace option #################################
+		religion_group = christian
+	}
+	is_allowed = { # Defaults to equivalent of "always = yes"
+		religion = catholic
+	}
+	effect = { # Defaults to empty effect (which makes error log entry but is safe)
+		create_subject = {
+			subject = FROM
+			subject_type = dummy
+		}
+	}
+	ai_weight = { # Defaults to always evaluate to 0
+		export_to_variable = {
+			variable_name = ai_value # Mandatory to have entry called "ai_value". Its value at the end of the ai_weight scope is what will be used
+			value = 50
+		}
+		limit = { # if limit evaluates false, ai_weight will evaluate to 0 regardless
+			owns_core_province = 1
+		}
+	}
+}

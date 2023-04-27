@@ -1,0 +1,489 @@
+########################################
+# Events for Muscovy
+#
+# written by Ogulcan Yildirim
+########################################
+
+namespace = flavor_mos
+normal_or_historical_nations = yes
+
+# The Tatar Yoke Tribute Introduction
+country_event = {
+	id = flavor_mos.1
+	title = flavor_mos.1.t
+	desc = flavor_mos.1.desc
+	picture = TRIBUTE_TO_TATARS_eventPicture
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	trigger = {
+		has_dlc = "Domination"
+		tag = MOS
+		NOT = { is_year = 1480 }
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	option = {
+		name = flavor_mos.1.a
+		add_country_modifier = {
+			name = the_tatar_yoke
+			duration = -1
+			desc = the_tatar_yoke_desc
+		}
+		custom_tooltip = flavor_mos.1.a.tt
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# The end of the Tatar Yoke
+country_event = {
+	id = flavor_mos.2
+	title = flavor_mos.2.t
+	desc = flavor_mos.2.desc
+	picture = GOOD_WITH_MONARCH_eventPicture
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	option = {
+		name = flavor_mos.2.a
+		if = {
+			limit = { has_country_modifier = the_tatar_yoke }
+			remove_country_modifier = the_tatar_yoke
+			add_stability_or_adm_power = yes
+		}
+		else = {
+			every_country = {
+				limit = { has_country_modifier = the_tatar_yoke }
+				remove_country_modifier = the_tatar_yoke
+				add_stability_or_adm_power = yes
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# The yearly Tatar Yoke Tribute
+country_event = {
+	id = flavor_mos.3
+	title = flavor_mos.3.t
+	desc = flavor_mos.3.desc
+	picture = TRIBUTE_TO_TATARS_eventPicture
+	is_triggered_only = yes
+
+	trigger = {
+		has_dlc = "Domination"
+		NOT = { has_global_flag = end_of_the_tatar_yoke }
+		has_country_modifier = the_tatar_yoke
+		466 = {
+			owner = {
+				NOT = { war_with = ROOT }
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+    
+    immediate = {
+        hidden_effect = {
+            export_to_variable = {
+                which = mos_tribute_to_pay
+                value = monthly_income
+                who = ROOT
+            }
+            multiply_variable = {
+                which = mos_tribute_to_pay
+                value = 2
+            }
+        }
+    }
+
+	#Pay the Annual Tribute
+	option = {
+		name = flavor_mos.3.a
+		custom_tooltip = flavor_mos.3.a.tt
+		hidden_effect = {
+			466 = {
+				owner = {
+					country_event = {
+						id = flavor_mos.4
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				OR = {
+					NOT = { years_of_income = 0.3 }
+					466 = {
+						owner = {
+							OR = {
+								is_at_war = yes
+								NOT = { manpower_percentage = 0.5 }
+								NOT = { mil_power_cost = 50 }
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	#Refuse to pay the Annual Tribute
+	option = {
+		name = flavor_mos.3.b
+		custom_tooltip = flavor_mos.3.b.tt
+		hidden_effect = {
+			466 = {
+				owner = {
+					country_event = {
+						id = flavor_mos.5
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				years_of_income = 0.3
+				466 = {
+					owner = {
+						is_at_war = no
+						manpower_percentage = 0.5
+						mil_power_cost = 50
+					}
+				}
+			}
+		}
+	}
+}
+
+# FROM pays Tribute
+country_event = {
+	id = flavor_mos.4
+	title = flavor_mos.4.t
+	desc = flavor_mos.4.desc
+	picture = TRIBUTE_TO_TATARS_eventPicture
+	is_triggered_only = yes
+    
+    immediate = {
+        hidden_effect = {
+            export_to_variable = {
+                which = mos_tribute_to_pay
+                value = monthly_income
+                who = FROM
+            }
+            multiply_variable = {
+                which = mos_tribute_to_pay
+                value = 3
+            }
+        }
+    }
+
+	option = {
+		name = flavor_mos.4.a
+		transfer_treasury = {
+			giver = FROM
+			taker = ROOT
+			variable = mos_tribute_to_pay
+			custom_tooltip = flavor_mos.4.a.tt
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# FROM refuses to pay Tribute
+country_event = {
+	id = flavor_mos.5
+	title = flavor_mos.5.t
+	desc = flavor_mos.5.desc
+	picture = TRIBUTE_TO_TATARS_eventPicture
+	is_triggered_only = yes
+
+	#Retaliate against them!
+	option = {
+		name = flavor_mos.5.a
+		mil_power_cost = 50
+		add_yearly_manpower = -0.2
+		custom_tooltip = flavor_mos.5.a.tt
+		hidden_effect = {
+			FROM = {
+				country_event = {
+					id = flavor_mos.6
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				OR = {
+					is_at_war = yes
+					NOT = { manpower_percentage = 0.5 }
+					NOT = { mil_power_cost = 50 }
+				}
+			}
+		}
+	}
+
+	#We have to live without it
+	option = {
+		name = flavor_mos.5.b
+		add_prestige = -5
+		add_horde_unity = -2
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				is_at_war = no
+				manpower_percentage = 0.5
+				mil_power_cost = 50
+			}
+			modifier = {
+				factor = 0
+				truce_with = ROOT
+			}
+		}
+	}
+}
+
+# FROM retaliates!
+country_event = {
+	id = flavor_mos.6
+	title = flavor_mos.6.t
+	desc = flavor_mos.6.desc
+	picture = HORDE_ON_HORSEBACK_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = flavor_mos.6.a
+		custom_tooltip = flavor_mos.6.a.tt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					region = russia_region
+				}
+				remove_loot = {
+					who = FROM
+					amount = 5
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# Third Period of the Muscovite Civil War - The blinding of Vasily II
+country_event = {
+	id = flavor_mos.7
+	title = flavor_mos.7.t
+	desc = flavor_mos.7.desc
+	picture = BATTLE_eventPicture
+	
+	fire_only_once = yes
+	
+	trigger = {
+		has_dlc = "Domination"
+		tag = MOS
+		has_ruler_flag = has_vasily_ii
+		num_of_cities = 2
+	}
+	
+	mean_time_to_happen = {
+		months = 50
+	}
+	
+	#
+	option = {
+		name = flavor_mos.7.a
+		exile_ruler_as = {
+			name = vasily_ii
+		}
+		exile_heir_as = ivan_veliky
+		hidden_effect = {
+			if = {
+				limit = { has_leader = "Dmitry Shemiaka Rurikovich" }
+				define_leader_to_ruler = {
+					name = "Dmitry Shemiaka Rurikovich"
+					adm = 2
+					dip = 1
+					mil = 5
+					claim = 40
+				}
+				kill_leader = {
+					type = "Dmitry Shemiaka Rurikovich"
+				}
+			}
+			else = {
+				define_ruler = {
+					name = "Dmitry Shemiaka"
+					dynasty = "Rurikovich"
+					min_age = 20
+					max_age = 40
+					adm = 2
+					dip = 1
+					mil = 5
+					claim = 40
+				}
+			}
+			set_ruler_flag = dmitry_shemiaka_in_power
+		}
+		add_ruler_modifier = {
+			name = vasily_ii_in_exile
+			duration = -1
+			desc = vasily_ii_in_exile_desc
+		}
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#The Rule of Dmitry
+country_event = {
+	id = flavor_mos.8
+	title = flavor_mos.8.t
+	desc = flavor_mos.8.desc
+	picture = BATTLE_eventPicture
+	fire_only_once = yes
+	goto = capital
+	trigger = {
+		tag = MOS
+		has_ruler_flag = dmitry_shemiaka_in_power
+		had_ruler_flag = {
+			flag = dmitry_shemiaka_in_power
+			days = 730
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 6
+	}
+	
+	immediate = {
+		hidden_effect = {
+			capital_scope = {
+				save_event_target_as = capital
+			}
+		}
+	}
+	
+	#Move against Dmitry!
+	option = {
+		name = flavor_mos.8.a
+		set_ruler = vasily_ii
+		set_heir = ivan_veliky
+		capital_scope = {
+			spawn_rebels = {
+				type = pretender_rebels
+				size = 2
+				leader = "Dmitry Shemiaka"
+				leader_dynasty = "Rurikovich"
+			}
+		}
+		set_country_flag = dmitry_shemiaka_defeated
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	#Abdicate the throne to Dmitry
+	option = {
+		name = flavor_mos.8.b
+		remove_country_modifier = vasily_ii_in_exile
+		add_legitimacy = 20
+		set_country_flag = mos_civil_war_ended_flag
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#Dmitry defeated
+country_event = {
+	id = flavor_mos.9
+	title = flavor_mos.9.t
+	desc = flavor_mos.9.desc
+	picture = BATTLE_eventPicture
+	fire_only_once = yes
+	
+	trigger = {
+		tag = MOS
+		had_country_flag = { flag = dmitry_shemiaka_defeated days = 730 }
+		NOT = { num_of_rebel_armies = 1 }
+		NOT = { num_of_rebel_controlled_provinces = 1 }
+	}
+	
+	mean_time_to_happen = {
+		months = 2
+	}
+	
+	option = {
+		name = flavor_mos.9.a #Ok
+		add_stability_or_adm_power = yes
+		set_country_flag = mos_civil_war_ended_flag
+	}
+}
+
+# The end of the Tatar Yoke - Tatar Yoke broke on its own
+country_event = {
+	id = flavor_mos.10
+	title = flavor_mos.10.t
+	desc = flavor_mos.10.desc
+	picture = GOOD_WITH_MONARCH_eventPicture
+	fire_only_once = yes
+	trigger = {
+		has_country_modifier = the_tatar_yoke
+		total_development = 300
+		OR = {
+			controls = 466
+			total_development = 450
+		}
+	}
+	mean_time_to_happen = {
+		months = 3
+	}
+
+	option = {
+		name = flavor_mos.2.a
+		set_global_flag = end_of_the_tatar_yoke
+		if = {
+			limit = { has_country_modifier = the_tatar_yoke }
+			remove_country_modifier = the_tatar_yoke
+			add_stability_or_adm_power = yes
+		}
+		else = {
+			every_country = {
+				limit = { has_country_modifier = the_tatar_yoke }
+				remove_country_modifier = the_tatar_yoke
+				add_stability_or_adm_power = yes
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}

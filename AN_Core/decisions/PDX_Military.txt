@@ -24,7 +24,7 @@ country_decisions = {
 			# England, France, Barbary Coast
 		}
 	}
-
+	
 	state_firearm_regiments = {
 		potential = {
 			has_dlc = "Cradle of Civilization"
@@ -47,7 +47,7 @@ country_decisions = {
 			factor = 0 #Plays it safer with cash
 		}
 	}
-
+	
 	abolish_state_firearm_regiments = {
 		potential = {
 			has_dlc = "Cradle of Civilization"
@@ -65,7 +65,7 @@ country_decisions = {
 			factor = 0 #Plays it safer with cash
 		}
 	}
-
+	
 	standardized_uniforms = {
 		potential = {
 			has_dlc = "Cradle of Civilization"
@@ -87,7 +87,7 @@ country_decisions = {
 			factor = 0 #Plays it safer with cash
 		}
 	}
-
+	
 	abolish_standardized_uniforms = {
 		potential = {
 			has_dlc = "Cradle of Civilization"
@@ -104,5 +104,263 @@ country_decisions = {
 			factor = 0 #Plays it safer with cash
 		}
 	}
-
+	
+	kor_righteous_army = {
+		potential = {
+			has_government_attribute = has_righteous_army
+		}
+		allow = {
+			is_at_war = yes
+			OR = {
+				num_of_owned_provinces_with = {
+					culture = ROOT
+					NOT = { controlled_by = ROOT }
+					value = 10
+				}
+				is_in_war = {
+					defenders = ROOT
+				}
+			}
+			NOT = { has_country_modifier = the_righteous_army }
+			if = {
+				limit = { government = monarchy }
+				legitimacy = 80
+			}
+		}
+		effect = {
+			add_legitimacy = -10
+			add_war_exhaustion = -2
+			add_estate_loyalty = {
+				estate = estate_nobles
+				loyalty = -10
+			}
+			add_country_modifier = { 
+				name = "the_righteous_army" 
+				duration = -1
+				desc = the_righteous_army_tt
+			}
+			custom_tooltip = kor_righteous_army_ct
+		}
+		ai_will_do = {
+			factor = 10
+		}
+	}
+	
+	por_raise_the_ordenancas = {
+		potential = {
+			has_government_attribute = can_raise_manpower_from_home_region
+		}
+		allow = {
+			is_at_war = yes
+			custom_trigger_tooltip = {
+				tooltip = decision_once_every_ten_years
+				OR = {
+					NOT = { has_country_flag = raised_the_ordenancas }
+					had_country_flag = {
+						flag = raised_the_ordenancas
+						days = 3650
+					}
+				}
+			}
+			OR = {
+				is_in_war = {
+					defender_leader = ROOT
+				}
+				mil_power_cost = 50
+			}
+		}
+		effect = {
+			clr_country_flag = raised_the_ordenancas
+			set_country_flag = raised_the_ordenancas
+			if = {
+				limit = {
+					is_in_war = {
+						defender_leader = ROOT
+					}
+				}
+				custom_tooltip = por_raise_the_ordenancas_bt
+			}
+			else = {
+				mil_power_cost = 50
+			}
+			hidden_effect = {
+				capital_scope = {
+					save_event_target_as = capital_province
+					region = {
+						limit = {
+							owned_by = ROOT
+							NOT = {
+								province_distance = {
+									who = event_target:capital_province
+									distance = 50
+								}
+							}
+						}
+						set_province_flag = ordencas_province_flag
+					}
+				}
+				add_years_of_owned_provinces_manpower = {
+					years = 1
+					trigger = {
+						has_province_flag = ordencas_province_flag
+					}
+				}
+				add_years_of_owned_provinces_sailors = {
+					years = 1
+					trigger = {
+						has_province_flag = ordencas_province_flag
+					}
+				}
+				every_owned_province = {
+					limit = { has_province_flag = ordencas_province_flag }
+					clr_province_flag = ordencas_province_flag
+				}
+			}
+			custom_tooltip = por_raise_the_ordenancas_at
+			add_war_exhaustion = -2
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	gra_rally_the_volunteers = {
+		potential = {
+			has_government_attribute = can_rally_volunteers_from_allies
+		}
+		allow = {
+			is_at_war = yes
+			custom_trigger_tooltip = {
+				tooltip = decision_once_every_ten_years
+				OR = {
+					NOT = { has_country_flag = rallied_the_volunteers }
+					had_country_flag = {
+						flag = rallied_the_volunteers
+						days = 3650
+					}
+				}
+			}
+			OR = {
+				is_in_war = {
+					defender_leader = ROOT
+				}
+				mil_power_cost = 50
+			}
+			OR = {
+				any_ally = { religion = ROOT }
+				any_subject_country = { religion = ROOT }
+			}
+		}
+		effect = {
+			clr_country_flag = rallied_the_volunteers
+			set_country_flag = rallied_the_volunteers
+			if = {
+				limit = {
+					is_in_war = {
+						defender_leader = ROOT
+					}
+				}
+				custom_tooltip = por_raise_the_ordenancas_bt
+			}
+			else = {
+				mil_power_cost = 50
+			}
+			custom_tooltip = por_raise_the_ordenancas_ct
+			hidden_effect = {
+				if = {
+					limit = {
+						calc_true_if = {
+							all_known_country = {
+								OR = {
+									alliance_with = ROOT
+									is_subject_of = ROOT
+								}
+								religion = ROOT
+							}
+							all_ally = {
+								religion = ROOT
+							}
+							amount = 5
+						}
+					}
+					add_country_modifier = {
+						name = rallied_volunteers_level_5
+						duration = 3650
+					}
+				}
+				else_if = {
+					limit = {
+						calc_true_if = {
+							all_known_country = {
+								OR = {
+									alliance_with = ROOT
+									is_subject_of = ROOT
+								}
+								religion = ROOT
+							}
+							all_ally = {
+								religion = ROOT
+							}
+							amount = 4
+						}
+					}
+					add_country_modifier = {
+						name = rallied_volunteers_level_4
+						duration = 3650
+					}
+				}
+				else_if = {
+					limit = {
+						calc_true_if = {
+							all_known_country = {
+								OR = {
+									alliance_with = ROOT
+									is_subject_of = ROOT
+								}
+								religion = ROOT
+							}
+							all_ally = {
+								religion = ROOT
+							}
+							amount = 3
+						}
+					}
+					add_country_modifier = {
+						name = rallied_volunteers_level_3
+						duration = 3650
+					}
+				}
+				else_if = {
+					limit = {
+						calc_true_if = {
+							all_known_country = {
+								OR = {
+									alliance_with = ROOT
+									is_subject_of = ROOT
+								}
+								religion = ROOT
+							}
+							all_ally = {
+								religion = ROOT
+							}
+							amount = 2
+						}
+					}
+					add_country_modifier = {
+						name = rallied_volunteers_level_2
+						duration = 3650
+					}
+				}
+				else = {
+					add_country_modifier = {
+						name = rallied_volunteers_level_1
+						duration = 3650
+					}
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
 }

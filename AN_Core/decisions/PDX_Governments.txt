@@ -1,10 +1,11 @@
-country_decisions = {
+country_decisions = {	
 	formalize_separation_of_powers = {
 		potential = {
-			has_reform = parliamentary_reform
-			NOT = {
-				has_country_modifier = separation_of_powers
+			OR = {
+				has_parliament = yes
+				has_reform = parliamentary_reform
 			}
+			NOT = { has_country_modifier = separation_of_powers }
 		}
 		allow = {
 			stability = 2
@@ -21,7 +22,7 @@ country_decisions = {
 			factor = 1
 		}
 	}
-
+	
 	go_cult_of_reason = {
 		potential = {
 			is_revolutionary_republic_trigger = yes
@@ -42,7 +43,7 @@ country_decisions = {
 			factor = 1
 		}
 	}
-
+	
 	elevate_bishopric = {
 		major = yes
 		potential = {
@@ -67,5 +68,99 @@ country_decisions = {
 			factor = 1
 		}
 	}
-
+	
+	force_reelection = {
+		major = yes
+		potential = {
+			has_government_attribute = can_force_election
+		}
+		allow = {
+			republican_tradition = 55
+			custom_trigger_tooltip = {
+				tooltip = force_reelection_tt
+				OR = {
+					NOT = { has_country_flag = forced_reelection_flag }
+					had_country_flag = {
+						flag = forced_reelection_flag
+						days = 5475
+					}
+				}
+			}
+		}
+		effect = {
+			add_republican_tradition = -5
+			clr_country_flag = forced_reelection_flag
+			set_country_flag = forced_reelection_flag
+			set_country_flag = increased_election_cost
+			if = {
+				limit = { NOT = { has_government_attribute = is_pirate_republic_reform } } 
+				country_event = {
+					id = 700
+				}
+			}
+			else = {
+				country_event = {
+					id = pirates.1
+				}
+			}
+			custom_tooltip = force_reelection_ct
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	force_issue_through = {
+		major = yes
+		potential = {
+			has_government_attribute = can_force_issue_through
+			has_parliament = yes
+		}
+		allow = {
+			has_active_debate = yes
+			custom_trigger_tooltip = {
+				tooltip = decision_once_every_twenty_years
+				OR = {
+					NOT = { has_country_flag = forced_issue_flag }
+					had_country_flag = {
+						flag = forced_issue_flag
+						days = 7300
+					}
+				}
+			}
+			if = {
+				limit = { uses_devotion = yes }
+				devotion = 10
+			}
+			else_if = {
+				limit = { uses_republican_tradition = yes }
+				republican_tradition = 5
+			}
+			else_if = {
+				limit = { uses_meritocracy = yes }
+				meritocracy = 10
+			}
+			else_if = {
+				limit = { uses_horde_unity = yes }
+				horde_unity = 10
+			}
+			else = {
+				legitimacy = 10
+			}
+		}
+		effect = {
+			end_current_debate = yes
+			add_legitimacy_equivalent = {
+				amount = -10
+				republican_tradition = -5
+			}
+			hidden_effect = {
+				clr_country_flag = forced_issue_flag
+				set_country_flag = forced_issue_flag
+			}
+		}
+		ai_will_do = {
+			factor = 100
+		}
+	}
 }
