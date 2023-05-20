@@ -4,10 +4,10 @@
 -- NDefines.NGame.START_DATE = "1291.5.18" --from 1444.11.11 - per Draiocht's 1291
 NDefines.NGame.END_DATE = "1900.1.2" --from 1821.1.2
 NDefines.NGame.MAX_COLONIAL_NATIONS = 100 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
-NDefines.NGame.MAX_CLIENT_STATES = 50		-- Max is 100 -- Lower this to 75 after 1.18 (used to start at K75 for some reason)
-NDefines.NGame.MAX_ESTATE_COUNTRIES = 50		-- Max is 100
-NDefines.NGame.MAX_TRADING_CITIES = 50 -- 75	-- Max is 100
-NDefines.NGame.MAX_CUSTOM_COUNTRIES = 50 -- 75				-- Max is 100
+NDefines.NGame.MAX_CLIENT_STATES = 100		-- Max is 100 -- Lower this to 75 after 1.18 (used to start at K75 for some reason)
+NDefines.NGame.MAX_ESTATE_COUNTRIES = 100		-- Max is 100
+NDefines.NGame.MAX_TRADING_CITIES = 100 -- 75	-- Max is 100
+NDefines.NGame.MAX_CUSTOM_COUNTRIES = 100 -- 75				-- Max is 100
 
   --NDiplomacy
 NDefines.NDiplomacy.FAVORS_LAND_DIVIDER = 4			-- from 2      note inversed value
