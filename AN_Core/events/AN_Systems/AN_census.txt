@@ -2827,7 +2827,7 @@ province_event = { #SECONDARY INTERACTION
 
 	option = { #
 		name = "AN_culture_matrix.integrate_sec"
-		trigger = { has_province_modifier = AN_unified_secondary_culture }
+		trigger = { OR = { has_province_modifier = AN_unified_secondary_culture_1 has_province_modifier = AN_unified_secondary_culture_2 has_province_modifier = AN_unified_secondary_culture_3 } }
 		hidden_effect = {
 			province_event = { id = census.5031 days = 0 }
 		}
@@ -2836,7 +2836,7 @@ province_event = { #SECONDARY INTERACTION
 
 	option = { #
 		name = "AN_culture_matrix.protect_sec"
-		trigger = { NOT = { OR = { has_province_modifier = AN_primary_secondary_culture has_province_modifier = AN_unified_secondary_culture has_province_modifier = AN_accepted_secondary_culture } } }
+		trigger = { NOT = { OR = { has_province_modifier = AN_primary_secondary_culture_1 has_province_modifier = AN_primary_secondary_culture_2 has_province_modifier = AN_primary_secondary_culture_3 has_province_modifier = AN_unified_secondary_culture_1 has_province_modifier = AN_unified_secondary_culture_2 has_province_modifier = AN_unified_secondary_culture_3 has_province_modifier = AN_accepted_secondary_culture_1 has_province_modifier = AN_accepted_secondary_culture_2 has_province_modifier = AN_accepted_secondary_culture_3 } } }
 		hidden_effect = {
 			province_event = { id = census.5032 days = 0 }
 		}
@@ -2845,7 +2845,7 @@ province_event = { #SECONDARY INTERACTION
 	
 	option = { #
 		name = "AN_culture_matrix.expel_sec"
-		trigger = { NOT = { OR = { has_province_modifier = AN_primary_secondary_culture has_province_modifier = AN_unified_secondary_culture has_province_modifier = AN_accepted_secondary_culture } } }
+		trigger = { NOT = { OR = { has_province_modifier = AN_primary_secondary_culture_1 has_province_modifier = AN_primary_secondary_culture_2 has_province_modifier = AN_primary_secondary_culture_3 has_province_modifier = AN_unified_secondary_culture_1 has_province_modifier = AN_unified_secondary_culture_2 has_province_modifier = AN_unified_secondary_culture_3 has_province_modifier = AN_accepted_secondary_culture_1 has_province_modifier = AN_accepted_secondary_culture_2 has_province_modifier = AN_accepted_secondary_culture_3 } } }
 		hidden_effect = {
 			province_event = { id = census.5033 days = 0 }
 		}
@@ -2893,8 +2893,8 @@ province_event = { #MAJORITY INTEGRATE
 
 	option = { #
 		name = "AN_culture_matrix.integrate_maj_prov"
-		trigger = { NOT = { has_province_flag = AN_integrate_maj } }
-		set_province_flag = AN_integrate_maj
+		trigger = { NOT = { has_province_flag = AN_int_maj } }
+		set_province_flag = AN_int_maj
 		set_variable = { which = AN_culture_progress value = 0 }
 		AN_check_culture_minorities = yes
 		
@@ -2905,33 +2905,39 @@ province_event = { #MAJORITY INTEGRATE
 
 	option = { #
 		name = "AN_culture_matrix.integrate_maj_area"
-		trigger = { NOT = { has_province_flag = AN_integrate_maj } }
+		trigger = { NOT = { has_province_flag = AN_int_maj } }
 		
-		set_province_flag = AN_integrate_maj
+		set_province_flag = AN_int_maj
 		set_variable = { which = AN_culture_progress value = 0 }
 		AN_check_culture_minorities = yes
 		
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_province_culture which = PREV }
 			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_secondary_culture which = AN_province_culture }
 		}
 		
-		save_event_target_as = AN_prov_select
 		
 		area = {
 			limit = {
 				OR = {
-					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_maj } }
-					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_min } }
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_sec } }
 				}
 			}
 			if = { 
 				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
-				set_province_flag = AN_integrate_maj
+				set_province_flag = AN_int_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_int_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
 			else = {
-				set_province_flag = AN_integrate_min
+				set_province_flag = AN_int_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -2944,33 +2950,39 @@ province_event = { #MAJORITY INTEGRATE
 	
 	option = { #
 		name = "AN_culture_matrix.integrate_maj_region"
-		trigger = { NOT = { has_province_flag = AN_integrate_maj } }
+		trigger = { NOT = { has_province_flag = AN_int_maj } }
 		
-		set_province_flag = AN_integrate_maj
+		set_province_flag = AN_int_maj
 		set_variable = { which = AN_culture_progress value = 0 }
 		AN_check_culture_minorities = yes
 		
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_province_culture which = PREV }
 			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_secondary_culture which = AN_province_culture }
 		}
 		
-		save_event_target_as = AN_prov_select
 		
 		region = {
 			limit = {
 				OR = {
-					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_maj } }
-					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_min } }
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_sec } }
 				}
 			}
 			if = { 
 				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
-				set_province_flag = AN_integrate_maj
+				set_province_flag = AN_int_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_int_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
 			else = {
-				set_province_flag = AN_integrate_min
+				set_province_flag = AN_int_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -2983,32 +2995,39 @@ province_event = { #MAJORITY INTEGRATE
 	
 	option = { #
 		name = "AN_culture_matrix.integrate_maj_global"
-		trigger = { NOT = { has_province_flag = AN_integrate_maj } }
+		trigger = { NOT = { has_province_flag = AN_int_maj } }
 		
-		set_province_flag = AN_integrate_maj
+		set_province_flag = AN_int_maj
 		set_variable = { which = AN_culture_progress value = 0 }
 		AN_check_culture_minorities = yes
 		
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_province_culture which = PREV }
 			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_secondary_culture which = AN_province_culture }
 		}
 		
 		owner = {
 			every_owned_province = {
 				limit = {
 					OR = {
-						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_maj } }
-						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_min } }
+						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_maj } }
+						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_min } }
+						AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_sec } }
 					}
 				}
 				if = { 
 					limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
-					set_province_flag = AN_integrate_maj
+					set_province_flag = AN_int_maj
 					set_variable = { which = AN_culture_progress value = 0 }
 				}
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+					set_province_flag = AN_int_min
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
 				else = {
-					set_province_flag = AN_integrate_min
+					set_province_flag = AN_int_sec
 					set_variable = { which = AN_minority_progress value = 0 }
 				}
 				AN_check_culture_minorities = yes
@@ -3060,8 +3079,8 @@ province_event = { #MINORITY INTEGRATE
 
 	option = { #
 		name = "AN_culture_matrix.integrate_min_prov"
-		trigger = { NOT = { has_province_flag = AN_integrate_min } }
-		set_province_flag = AN_integrate_min
+		trigger = { NOT = { has_province_flag = AN_int_min } }
+		set_province_flag = AN_int_min
 		set_variable = { which = AN_culture_progress value = 0 }
 		AN_check_culture_minorities = yes
 		
@@ -3070,34 +3089,39 @@ province_event = { #MINORITY INTEGRATE
 
 	option = { #
 		name = "AN_culture_matrix.integrate_min_area"
-		trigger = { NOT = { has_province_flag = AN_integrate_min } }
+		trigger = { NOT = { has_province_flag = AN_int_min } }
 		
-		set_province_flag = AN_integrate_min
+		set_province_flag = AN_int_min
 		set_variable = { which = AN_culture_progress value = 0 }
 		AN_check_culture_minorities = yes
 		
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_minority_culture which = PREV }
 			set_variable = { which = AN_province_culture which = AN_minority_culture }
+			set_variable = { which = AN_secondary_culture which = AN_minority_culture }
 		}
 		
-		save_event_target_as = AN_prov_select
 		
 		area = {
 			limit = {
 				OR = {
-					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_maj } }
-					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_min } }
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_sec } }
 				}
-				area = event_target:AN_prov_select
 			}
 			if = { 
 				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
-				set_province_flag = AN_integrate_maj
+				set_province_flag = AN_int_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_int_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
 			else = {
-				set_province_flag = AN_integrate_min
+				set_province_flag = AN_int_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3108,33 +3132,39 @@ province_event = { #MINORITY INTEGRATE
 	
 	option = { #
 		name = "AN_culture_matrix.integrate_min_region"
-		trigger = { NOT = { has_province_flag = AN_integrate_min } }
+		trigger = { NOT = { has_province_flag = AN_int_min } }
 		
-		set_province_flag = AN_integrate_min
+		set_province_flag = AN_int_min
 		set_variable = { which = AN_culture_progress value = 0 }
 		AN_check_culture_minorities = yes
 		
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_minority_culture which = PREV }
 			set_variable = { which = AN_province_culture which = AN_minority_culture }
+			set_variable = { which = AN_secondary_culture which = AN_minority_culture }
 		}
 		
-		save_event_target_as = AN_prov_select
 		
 		region = {
 			limit = {
 				OR = {
-					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_maj } }
-					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_min } }
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_sec } }
 				}
 			}
 			if = { 
 				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
-				set_province_flag = AN_integrate_maj
+				set_province_flag = AN_int_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_int_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
 			else = {
-				set_province_flag = AN_integrate_min
+				set_province_flag = AN_int_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3145,32 +3175,39 @@ province_event = { #MINORITY INTEGRATE
 	
 	option = { #
 		name = "AN_culture_matrix.integrate_min_global"
-		trigger = { NOT = { has_province_flag = AN_integrate_min } }
+		trigger = { NOT = { has_province_flag = AN_int_min } }
 		
-		set_province_flag = AN_integrate_min
+		set_province_flag = AN_int_min
 		set_variable = { which = AN_culture_progress value = 0 }
 		AN_check_culture_minorities = yes
 		
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_minority_culture which = PREV }
 			set_variable = { which = AN_province_culture which = AN_minority_culture }
+			set_variable = { which = AN_secondary_culture which = AN_minority_culture }
 		}
 		
 		owner = {
 			every_owned_province = {
 				limit = {
 					OR = {
-						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_maj } }
-						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_integrate_min } }
+						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_maj } }
+						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_min } }
+						AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_sec } }
 					}
 				}
 				if = { 
 					limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
-					set_province_flag = AN_integrate_maj
+					set_province_flag = AN_int_maj
 					set_variable = { which = AN_culture_progress value = 0 }
 				}
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+					set_province_flag = AN_int_min
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
 				else = {
-					set_province_flag = AN_integrate_min
+					set_province_flag = AN_int_sec
 					set_variable = { which = AN_minority_progress value = 0 }
 				}
 				AN_check_culture_minorities = yes
@@ -3183,6 +3220,180 @@ province_event = { #MINORITY INTEGRATE
 	option = { #back
 		name = "setup.back"
 		province_event = { id = census.502 days = 0 }
+	}
+	option = { #exit
+		name = "setup.exit"
+	}
+}
+
+province_event = { #Secondary INTEGRATE
+	id = census.5031
+	title = "census.5031.t"
+	desc = "census.5031.d"
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			#AN_check_dev_variables = yes
+			set_ttt_bar_data = {
+				bg=yes
+				id=3
+				size=M
+				color=3 #for red, 3 for blue
+				data=AN_culture_progress
+				datatype=which
+				max=100
+				maxtype=value
+				min=0
+				mintype=value
+			}
+		}
+	}
+
+	option = { #
+		name = "AN_culture_matrix.integrate_sec_prov"
+		trigger = { NOT = { has_province_flag = AN_int_sec } }
+		set_province_flag = AN_int_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		province_event = { id = census.503 days = 0 }
+	}
+
+	option = { #
+		name = "AN_culture_matrix.integrate_sec_area"
+		trigger = { NOT = { has_province_flag = AN_int_sec } }
+		
+		set_province_flag = AN_int_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_secondary_culture which = PREV }
+			set_variable = { which = AN_province_culture which = AN_secondary_culture }
+			set_variable = { which = AN_minority_culture which = AN_secondary_culture }
+		}
+		
+		area = {
+			limit = {
+				OR = {
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_sec } }
+				}
+			}
+			if = { 
+				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_int_maj
+				set_variable = { which = AN_culture_progress value = 0 }
+			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_int_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_int_sec
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			AN_check_culture_minorities = yes
+		}
+		
+		province_event = { id = census.503 days = 0 }
+	}
+	
+	option = { #
+		name = "AN_culture_matrix.integrate_sec_region"
+		trigger = { NOT = { has_province_flag = AN_int_sec } }
+		
+		set_province_flag = AN_int_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_secondary_culture which = PREV }
+			set_variable = { which = AN_province_culture which = AN_secondary_culture }
+			set_variable = { which = AN_minority_culture which = AN_secondary_culture }
+		}
+		
+		
+		region = {
+			limit = {
+				OR = {
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_sec } }
+				}
+			}
+			if = { 
+				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_int_maj
+				set_variable = { which = AN_culture_progress value = 0 }
+			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_int_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_int_sec
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			AN_check_culture_minorities = yes
+		}
+		
+		province_event = { id = census.502 days = 0 }
+	}
+	
+	option = { #
+		name = "AN_culture_matrix.integrate_min_global"
+		trigger = { NOT = { has_province_flag = AN_int_min } }
+		
+		set_province_flag = AN_int_min
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_secondary_culture which = PREV }
+			set_variable = { which = AN_province_culture which = AN_secondary_culture }
+			set_variable = { which = AN_minority_culture which = AN_secondary_culture }
+		}
+		
+		owner = {
+			every_owned_province = {
+				limit = {
+					OR = {
+						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_maj } }
+						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_min } }
+						AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_int_sec } }
+					}
+				}
+				if = { 
+					limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+					set_province_flag = AN_int_maj
+					set_variable = { which = AN_culture_progress value = 0 }
+				}
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+					set_province_flag = AN_int_min
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				else = {
+					set_province_flag = AN_int_sec
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				AN_check_culture_minorities = yes
+			}
+		}
+		
+		province_event = { id = census.503 days = 0 }
+	}
+	
+	option = { #back
+		name = "setup.back"
+		province_event = { id = census.503 days = 0 }
 	}
 	option = { #exit
 		name = "setup.exit"
@@ -3238,15 +3449,16 @@ province_event = { #MAJORITY PROTECT
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_province_culture which = PREV }
 			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_secondary_culture which = AN_province_culture }
 		}
 		
-		save_event_target_as = AN_prov_select
 		
 		area = {
 			limit = {
 				OR = {
 					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_maj } }
 					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
 				}
 			}
 			if = { 
@@ -3254,8 +3466,13 @@ province_event = { #MAJORITY PROTECT
 				set_province_flag = AN_protect_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
-			else = {
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 				set_province_flag = AN_protect_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_protect_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3277,15 +3494,16 @@ province_event = { #MAJORITY PROTECT
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_province_culture which = PREV }
 			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_secondary_culture which = AN_province_culture }
 		}
 		
-		save_event_target_as = AN_prov_select
 		
 		region = {
 			limit = {
 				OR = {
 					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_maj } }
 					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
 				}
 			}
 			if = { 
@@ -3293,8 +3511,13 @@ province_event = { #MAJORITY PROTECT
 				set_province_flag = AN_protect_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
-			else = {
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 				set_province_flag = AN_protect_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_protect_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3316,6 +3539,7 @@ province_event = { #MAJORITY PROTECT
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_province_culture which = PREV }
 			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_secondary_culture which = AN_province_culture }
 		}
 		
 		owner = {
@@ -3324,6 +3548,7 @@ province_event = { #MAJORITY PROTECT
 					OR = {
 						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_maj } }
 						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+						AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
 					}
 				}
 				if = { 
@@ -3331,8 +3556,13 @@ province_event = { #MAJORITY PROTECT
 					set_province_flag = AN_protect_maj
 					set_variable = { which = AN_culture_progress value = 0 }
 				}
-				else = {
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 					set_province_flag = AN_protect_min
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				else = {
+					set_province_flag = AN_protect_sec
 					set_variable = { which = AN_minority_progress value = 0 }
 				}
 				AN_check_culture_minorities = yes
@@ -3403,6 +3633,7 @@ province_event = { #MINORITY PROTECT
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_minority_culture which = PREV }
 			set_variable = { which = AN_province_culture which = AN_minority_culture }
+			set_variable = { which = AN_secondary_culture which = AN_minority_culture }
 		}
 		
 		area = {
@@ -3410,6 +3641,7 @@ province_event = { #MINORITY PROTECT
 				OR = {
 					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_maj } }
 					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
 				}
 			}
 			if = { 
@@ -3417,8 +3649,13 @@ province_event = { #MINORITY PROTECT
 				set_province_flag = AN_protect_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
-			else = {
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 				set_province_flag = AN_protect_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_protect_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3438,6 +3675,7 @@ province_event = { #MINORITY PROTECT
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_minority_culture which = PREV }
 			set_variable = { which = AN_province_culture which = AN_minority_culture }
+			set_variable = { which = AN_secondary_culture which = AN_minority_culture }
 		}
 		
 		region = {
@@ -3445,6 +3683,7 @@ province_event = { #MINORITY PROTECT
 				OR = {
 					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_maj } }
 					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
 				}
 			}
 			if = { 
@@ -3452,8 +3691,13 @@ province_event = { #MINORITY PROTECT
 				set_province_flag = AN_protect_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
-			else = {
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 				set_province_flag = AN_protect_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_protect_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3473,6 +3717,7 @@ province_event = { #MINORITY PROTECT
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_minority_culture which = PREV }
 			set_variable = { which = AN_province_culture which = AN_minority_culture }
+			set_variable = { which = AN_secondary_culture which = AN_minority_culture }
 		}
 		
 		owner = {
@@ -3481,6 +3726,7 @@ province_event = { #MINORITY PROTECT
 					OR = {
 						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_maj } }
 						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+						AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
 					}
 				}
 				if = { 
@@ -3488,8 +3734,13 @@ province_event = { #MINORITY PROTECT
 					set_province_flag = AN_protect_maj
 					set_variable = { which = AN_culture_progress value = 0 }
 				}
-				else = {
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 					set_province_flag = AN_protect_min
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				else = {
+					set_province_flag = AN_protect_sec
 					set_variable = { which = AN_minority_progress value = 0 }
 				}
 				AN_check_culture_minorities = yes
@@ -3502,6 +3753,179 @@ province_event = { #MINORITY PROTECT
 	option = { #back
 		name = "setup.back"
 		province_event = { id = census.502 days = 0 }
+	}
+	option = { #exit
+		name = "setup.exit"
+	}
+}
+
+province_event = { #SECONDARY PROTECT
+	id = census.5032
+	title = "census.5032.t"
+	desc = "census.5032.d"
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			#AN_check_dev_variables = yes
+			set_ttt_bar_data = {
+				bg=yes
+				id=3
+				size=M
+				color=3 #for red, 3 for blue
+				data=AN_culture_progress
+				datatype=which
+				max=100
+				maxtype=value
+				min=0
+				mintype=value
+			}
+		}
+	}
+
+	option = { #
+		name = "AN_culture_matrix.protect_sec_prov"
+		trigger = { NOT = { has_province_flag = AN_protect_sec } }
+		set_province_flag = AN_protect_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		province_event = { id = census.503 days = 0 }
+	}
+
+	option = { #
+		name = "AN_culture_matrix.protect_sec_area"
+		trigger = { NOT = { has_province_flag = AN_protect_sec } }
+		
+		set_province_flag = AN_protect_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_secondary_culture which = PREV }
+			set_variable = { which = AN_province_culture which = AN_secondary_culture }
+			set_variable = { which = AN_minority_culture which = AN_secondary_culture }
+		}
+		
+		area = {
+			limit = {
+				OR = {
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+				}
+			}
+			if = { 
+				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_protect_maj
+				set_variable = { which = AN_culture_progress value = 0 }
+			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_protect_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_protect_sec
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			AN_check_culture_minorities = yes
+		}
+		
+		province_event = { id = census.503 days = 0 }
+	}
+	
+	option = { #
+		name = "AN_culture_matrix.protect_sec_region"
+		trigger = { NOT = { has_province_flag = AN_protect_sec } }
+		
+		set_province_flag = AN_protect_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_secondary_culture which = PREV }
+			set_variable = { which = AN_province_culture which = AN_secondary_culture }
+			set_variable = { which = AN_minority_culture which = AN_secondary_culture }
+		}
+		
+		region = {
+			limit = {
+				OR = {
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+				}
+			}
+			if = { 
+				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_protect_maj
+				set_variable = { which = AN_culture_progress value = 0 }
+			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_protect_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_protect_sec
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			AN_check_culture_minorities = yes
+		}
+		
+		province_event = { id = census.503 days = 0 }
+	}
+	
+	option = { #
+		name = "AN_culture_matrix.protect_sec_global"
+		trigger = { NOT = { has_province_flag = AN_protect_sec } }
+		
+		set_province_flag = AN_protect_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_secondary_culture which = PREV }
+			set_variable = { which = AN_province_culture which = AN_secondary_culture }
+			set_variable = { which = AN_minority_culture which = AN_secondary_culture }
+		}
+		
+		owner = {
+			every_owned_province = {
+				limit = {
+					OR = {
+						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_maj } }
+						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+						AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_protect_min } }
+					}
+				}
+				if = { 
+					limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+					set_province_flag = AN_protect_maj
+					set_variable = { which = AN_culture_progress value = 0 }
+				}
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+					set_province_flag = AN_protect_min
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				else = {
+					set_province_flag = AN_protect_sec
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				AN_check_culture_minorities = yes
+			}
+		}
+		
+		province_event = { id = census.503 days = 0 }
+	}
+	
+	option = { #back
+		name = "setup.back"
+		province_event = { id = census.503 days = 0 }
 	}
 	option = { #exit
 		name = "setup.exit"
@@ -3557,6 +3981,7 @@ province_event = { #MAJORITY EXPEL
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_province_culture which = PREV }
 			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_secondary_culture which = AN_province_culture }
 		}
 		
 		
@@ -3565,6 +3990,7 @@ province_event = { #MAJORITY EXPEL
 				OR = {
 					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_maj } }
 					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
 				}
 			}
 			if = { 
@@ -3572,8 +3998,13 @@ province_event = { #MAJORITY EXPEL
 				set_province_flag = AN_expel_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
-			else = {
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 				set_province_flag = AN_expel_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_expel_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3595,6 +4026,7 @@ province_event = { #MAJORITY EXPEL
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_province_culture which = PREV }
 			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_secondary_culture which = AN_province_culture }
 		}
 		
 		region = {
@@ -3602,6 +4034,7 @@ province_event = { #MAJORITY EXPEL
 				OR = {
 					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_maj } }
 					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
 				}
 			}
 			if = { 
@@ -3609,8 +4042,13 @@ province_event = { #MAJORITY EXPEL
 				set_province_flag = AN_expel_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
-			else = {
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 				set_province_flag = AN_expel_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_expel_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3632,6 +4070,7 @@ province_event = { #MAJORITY EXPEL
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_province_culture which = PREV }
 			set_variable = { which = AN_minority_culture which = AN_province_culture }
+			set_variable = { which = AN_secondary_culture which = AN_province_culture }
 		}
 		
 		owner = {
@@ -3640,6 +4079,7 @@ province_event = { #MAJORITY EXPEL
 					OR = {
 						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_maj } }
 						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+						AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
 					}
 				}
 				if = { 
@@ -3647,8 +4087,13 @@ province_event = { #MAJORITY EXPEL
 					set_province_flag = AN_expel_maj
 					set_variable = { which = AN_culture_progress value = 0 }
 				}
-				else = {
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 					set_province_flag = AN_expel_min
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				else = {
+					set_province_flag = AN_expel_sec
 					set_variable = { which = AN_minority_progress value = 0 }
 				}
 				AN_check_culture_minorities = yes
@@ -3719,15 +4164,16 @@ province_event = { #MINORITY EXPEL
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_minority_culture which = PREV }
 			set_variable = { which = AN_province_culture which = AN_minority_culture }
+			set_variable = { which = AN_secondary_culture which = AN_minority_culture }
 		}
 		
-		save_event_target_as = AN_prov_select
 		
 		area = {
 			limit = {
 				OR = {
 					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_maj } }
 					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
 				}
 			}
 			if = { 
@@ -3735,8 +4181,13 @@ province_event = { #MINORITY EXPEL
 				set_province_flag = AN_expel_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
-			else = {
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 				set_province_flag = AN_expel_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_expel_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3756,15 +4207,16 @@ province_event = { #MINORITY EXPEL
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_minority_culture which = PREV }
 			set_variable = { which = AN_province_culture which = AN_minority_culture }
+			set_variable = { which = AN_secondary_culture which = AN_minority_culture }
 		}
 		
-		save_event_target_as = AN_prov_select
 		
 		region = {
 			limit = {
 				OR = {
 					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_maj } }
 					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
 				}
 			}
 			if = { 
@@ -3772,8 +4224,13 @@ province_event = { #MINORITY EXPEL
 				set_province_flag = AN_expel_maj
 				set_variable = { which = AN_culture_progress value = 0 }
 			}
-			else = {
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 				set_province_flag = AN_expel_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_expel_sec
 				set_variable = { which = AN_minority_progress value = 0 }
 			}
 			AN_check_culture_minorities = yes
@@ -3793,6 +4250,7 @@ province_event = { #MINORITY EXPEL
 		event_target:AN_DUMMY_PROV = {
 			set_variable = { which = AN_minority_culture which = PREV }
 			set_variable = { which = AN_province_culture which = AN_minority_culture }
+			set_variable = { which = AN_secondary_culture which = AN_minority_culture }
 		}
 		
 		owner = {
@@ -3801,6 +4259,7 @@ province_event = { #MINORITY EXPEL
 					OR = {
 						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_maj } }
 						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+						AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
 					}
 				}
 				if = { 
@@ -3808,8 +4267,13 @@ province_event = { #MINORITY EXPEL
 					set_province_flag = AN_expel_maj
 					set_variable = { which = AN_culture_progress value = 0 }
 				}
-				else = {
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
 					set_province_flag = AN_expel_min
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				else = {
+					set_province_flag = AN_expel_sec
 					set_variable = { which = AN_minority_progress value = 0 }
 				}
 				AN_check_culture_minorities = yes
@@ -3823,6 +4287,182 @@ province_event = { #MINORITY EXPEL
 	option = { #back
 		name = "setup.back"
 		province_event = { id = census.502 days = 0 }
+	}
+	option = { #exit
+		name = "setup.exit"
+	}
+}
+
+province_event = { #SECONDARY EXPEL
+	id = census.5033
+	title = "census.5033.t"
+	desc = "census.5033.d"
+	picture = DIPLOMACY_eventPicture
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			#AN_check_dev_variables = yes
+			set_ttt_bar_data = {
+				bg=yes
+				id=3
+				size=M
+				color=3 #for red, 3 for blue
+				data=AN_culture_progress
+				datatype=which
+				max=100
+				maxtype=value
+				min=0
+				mintype=value
+			}
+		}
+	}
+
+	option = { #
+		name = "AN_culture_matrix.expel_sec_prov"
+		trigger = { NOT = { has_province_flag = AN_expel_sec } }
+		set_province_flag = AN_expel_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		province_event = { id = census.503 days = 0 }
+	}
+
+	option = { #
+		name = "AN_culture_matrix.expel_sec_area"
+		trigger = { NOT = { has_province_flag = AN_expel_sec } }
+		
+		set_province_flag = AN_expel_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_secondary_culture which = PREV }
+			set_variable = { which = AN_province_culture which = AN_secondary_culture }
+			set_variable = { which = AN_minority_culture which = AN_secondary_culture }
+		}
+		
+		
+		area = {
+			limit = {
+				OR = {
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+				}
+			}
+			if = { 
+				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_expel_maj
+				set_variable = { which = AN_culture_progress value = 0 }
+			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_expel_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_expel_sec
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			AN_check_culture_minorities = yes
+		}
+		
+		province_event = { id = census.503 days = 0 }
+	}
+	
+	option = { #
+		name = "AN_culture_matrix.expel_sec_region"
+		trigger = { NOT = { has_province_flag = AN_expel_sec } }
+		
+		set_province_flag = AN_expel_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_secondary_culture which = PREV }
+			set_variable = { which = AN_province_culture which = AN_secondary_culture }
+			set_variable = { which = AN_minority_culture which = AN_secondary_culture }
+		}
+		
+		
+		region = {
+			limit = {
+				OR = {
+					AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_maj } }
+					AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+					AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+				}
+			}
+			if = { 
+				limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_expel_maj
+				set_variable = { which = AN_culture_progress value = 0 }
+			}
+			else_if = {
+				limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+				set_province_flag = AN_expel_min
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			else = {
+				set_province_flag = AN_expel_sec
+				set_variable = { which = AN_minority_progress value = 0 }
+			}
+			AN_check_culture_minorities = yes
+		}
+		
+		province_event = { id = census.503 days = 0 }
+	}
+	
+	option = { #
+		name = "AN_culture_matrix.expel_sec_global"
+		trigger = { NOT = { has_province_flag = AN_expel_sec } }
+		
+		set_province_flag = AN_expel_sec
+		set_variable = { which = AN_culture_progress value = 0 }
+		AN_check_culture_minorities = yes
+		
+		event_target:AN_DUMMY_PROV = {
+			set_variable = { which = AN_secondary_culture which = PREV }
+			set_variable = { which = AN_province_culture which = AN_secondary_culture }
+			set_variable = { which = AN_minority_culture which = AN_secondary_culture }
+		}
+		
+		owner = {
+			every_owned_province = {
+				limit = {
+					OR = {
+						AND = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_maj } }
+						AND = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+						AND = { is_variable_equal = { which = AN_secondary_culture which = event_target:AN_DUMMY_PROV } NOT = { has_province_flag = AN_expel_min } }
+					}
+				}
+				if = { 
+					limit = { is_variable_equal = { which = AN_province_culture which = event_target:AN_DUMMY_PROV } }
+					set_province_flag = AN_expel_maj
+					set_variable = { which = AN_culture_progress value = 0 }
+				}
+				else_if = {
+					limit = { is_variable_equal = { which = AN_minority_culture which = event_target:AN_DUMMY_PROV } }
+					set_province_flag = AN_expel_min
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				else = {
+					set_province_flag = AN_expel_sec
+					set_variable = { which = AN_minority_progress value = 0 }
+				}
+				AN_check_culture_minorities = yes
+			}
+		}
+		
+		province_event = { id = census.503 days = 0 }
+	}
+
+
+	option = { #back
+		name = "setup.back"
+		province_event = { id = census.503 days = 0 }
 	}
 	option = { #exit
 		name = "setup.exit"
