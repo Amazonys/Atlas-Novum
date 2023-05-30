@@ -36,9 +36,15 @@ country_event = {
 	
 	option = {
 		name = "flavor_ara.EVTOPTA1"
-		add_country_modifier = {
-			name = ara_consulate_sea
-			duration = 18250
+		if = {
+			limit = { has_dlc = "Domination" }
+			add_government_reform = consulate_of_the_sea
+		}
+		else = {
+			add_country_modifier = {
+				name = ara_consulate_sea
+				duration = 18250
+			}
 		}
 	}
 }
@@ -207,75 +213,79 @@ country_event = {
 	
 	trigger = {
 		tag = ARA
-		NOT = { is_year = 1500 }
-		OR = { 
-			adm = 4 
-			dip = 4 
-		}
-		any_owned_province = {
-			culture = catalan
-		}
-		NOT = { 
-			any_owned_province = {
-				has_province_modifier = ara_sindicat_remenca 
-			}
+		catalonia_area = {
+			type = all 
+			country_or_non_sovereign_subject_holds = ROOT 
 		}
 	}
 	
 	mean_time_to_happen = {
-		months = 200
+		months = 60
 	}
 	
 	immediate = {
 		hidden_effect = {
+			set_country_flag = ara_remensa_flag
 			random_owned_province = {
 				limit = {
 					is_core = ROOT
 					culture = catalan
 				}
-				set_province_flag = ara_sindicat_remença_flag
+				set_province_flag = ara_sindicat_remensa_flag
 			}
 			random_owned_province = {
 				limit = {
 					is_core = ROOT
 					culture = catalan
-					NOT = {  has_province_flag = ara_sindicat_remença_flag }
+					NOT = {  has_province_flag = ara_sindicat_remensa_flag }
 				}
-				set_province_flag = ara_sindicat_remença_flag
+				set_province_flag = ara_sindicat_remensa_flag
 			}
 			random_owned_province = {
 				limit = {
 					is_core = ROOT
 					culture = catalan
-					NOT = { has_province_flag = ara_sindicat_remença_flag }
+					NOT = { has_province_flag = ara_sindicat_remensa_flag }
 				}
-				set_province_flag = ara_sindicat_remença_flag
+				set_province_flag = ara_sindicat_remensa_flag
 			}
 		}
 	}
 	
 	option = {
 		name = "flavor_ara.EVTOPTA6"
+		trigger = {
+			if = { 
+				limit = { has_dlc = "Domination" }
+				has_estate = estate_burghers
+			}
+		}
 		add_country_modifier = {
 			name = "decentralization_modifier"
 			duration = 3650
 		}
-		every_owned_province = {
-			limit = {
-				has_province_flag = ara_sindicat_remença_flag
-			}
-			add_local_autonomy = 25
-			add_province_modifier = { 
-				name = ara_sindicat_remenca 
-				duration = -1
-			}
+		if = {
+			limit = { has_dlc = "Domination" }
+			set_country_flag = remensa_privilege_flag
+			set_estate_privilege = estate_burghers_sindicat_remensa_privilege
 		}
-		hidden_effect = {
+		else = {
 			every_owned_province = {
 				limit = {
-					has_province_flag = ara_sindicat_remença_flag
+					has_province_flag = ara_sindicat_remensa_flag
 				}
-				clr_province_flag = ara_sindicat_remença_flag
+				add_province_modifier = { 
+					name = ara_sindicat_remensa 
+					duration = -1
+				}
+			}
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						has_province_flag = ara_sindicat_remensa_flag
+					}
+					clr_province_flag = ara_sindicat_remensa_flag
+				}
 			}
 		}
 	}
@@ -283,13 +293,55 @@ country_event = {
 		name = "flavor_ara.EVTOPTB6"
 		every_owned_province = {
 			limit = {
-				has_province_flag = ara_sindicat_remença_flag
+				has_province_flag = ara_sindicat_remensa_flag
 			}
-			clr_province_flag = ara_sindicat_remença_flag
+			clr_province_flag = ara_sindicat_remensa_flag
 			spawn_rebels = {
 				type = anti_tax_rebels
-				size = 1
+				size = 2
 			}
+			add_local_autonomy = -25
+		}
+	}
+	
+	option = {
+		name = "flavor_ara.EVTOPTC6"
+		
+		trigger = {
+			OR = { 
+				NOT = { legitimacy = 50 }
+				NOT = { stability = 0 }
+			}
+		}
+		every_owned_province = {
+			limit = {
+				has_province_flag = ara_sindicat_remensa_flag
+			}
+			clr_province_flag = ara_sindicat_remensa_flag
+			spawn_rebels = {
+				type = noble_rebels
+				size = 3
+			}
+		}
+		define_ruler = {
+			name = "Èric" 
+			DIP = 6
+			ADM = 5
+			MIL = 4
+			age = 28
+			
+		}
+		if = {
+			limit = { has_dlc = "Rights of Man" }
+			add_ruler_personality = careful_personality
+			add_ruler_personality = peasant_revolt_leader_personality
+		}
+		custom_tooltip = ara_become_p_republic_tt
+		add_stability_or_adm_power = yes 
+		hidden_effect = {
+			change_government = republic 
+			add_government_reform = peasants_republic
+			hidden_effect = { add_republican_tradition = 100 }
 		}
 	}
 }
@@ -572,3 +624,151 @@ country_event = {
 		}
 	}
 }
+
+#1.35 Content by Big Boss#
+
+country_event = {
+	id = flavor_ara.12
+	title = flavor_ara.12.t 
+	desc = flavor_ara.12.d 
+	picture = SONS_OF_ARAGON_eventPicture
+	fire_only_once = yes
+	trigger = {
+		tag = ARA 
+		NOT = { is_year = 1452 }
+	}
+	
+	mean_time_to_happen = { months = 2 } 
+	major = yes 
+	major_trigger = {
+		OR = { 
+			tag = CAS 
+			is_rival = CAS 
+			is_enemy = CAS 
+			capital_scope = {
+				region = iberia_region 
+			}
+		}
+	}
+	
+	option = { 
+		name = flavor_ara.12.a 
+		
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				has_opinion = {
+					who = CAS 
+					value = 0
+				}
+			}
+		}
+		custom_tooltip = ara_claims_in_castile_tt
+		hidden_effect = {
+			CAS = { 
+				every_owned_province = {
+					limit = { is_core = CAS  owned_by = CAS } 
+					add_permanent_claim = ROOT 
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = flavor_ara.12.b 
+		
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				NOT = {
+					has_opinion = {
+						who = CAS 
+						value = 0
+					}
+				}
+			}
+		}
+		CAS = {
+			add_opinion = {
+				who = ROOT 
+				modifier = successful_diplomacy
+			}
+		}
+		add_opinion = {
+			who = CAS 
+			modifier = successful_diplomacy
+		}
+		if = { 
+			limit = { 
+				OR = { 
+					is_rival = CAS 
+					is_enemy = CAS 
+					CAS = {
+						OR = { 
+							is_rival = ROOT 
+							is_enemy = ROOT 
+						}
+					}
+				}
+			}
+			remove_rival = CAS 
+			CAS = { 
+				remove_rival = ROOT 
+				add_stability_or_adm_power = yes 
+			} 
+			add_trust = { 
+				who = CAS 
+				value = 10 
+				mutual = yes 
+			}
+		}
+	}
+}	
+
+country_event = { #Commercial Expansion in Alexandria
+	id = flavor_ara.13 
+	title = flavor_ara.13.t 
+	desc = flavor_ara.13.d 
+	picture = TRADEGOODS_eventPicture
+	
+	trigger = {
+		OR = { 
+			tag = ARA 
+			was_tag = ARA 
+		}
+		OR = { 
+			mission_completed = gc_ara_alexandria2
+			mission_completed = gc_ara_alexandria
+			bahari_area = { 
+				type = all 
+				country_or_non_sovereign_subject_holds = ROOT 
+			}
+			delta_area = { 
+				type = all 
+				country_or_non_sovereign_subject_holds = ROOT 
+			}
+		}
+	}
+	
+	mean_time_to_happen = { months = 120 } 
+	
+	option = {
+		name = flavor_ara.13.a 
+		
+		bahari_area = { 
+			add_province_modifier = {
+				name = ara_nile_production_monopoly_modifier
+				duration = 9125 
+			}
+		}
+		delta_area = {
+			add_province_modifier = {
+				name = ara_nile_production_monopoly_modifier
+				duration = 9125 
+			}
+		}
+	}
+}
+	

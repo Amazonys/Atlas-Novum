@@ -361,6 +361,7 @@ country_decisions = {
 				name = "muslim_enforced_religion"
 				duration = -1
 			}
+			add_piety = -0.15
 		}
 		ai_will_do = {
 			factor = 1		
@@ -372,7 +373,6 @@ country_decisions = {
 			NOT = { has_ruler_modifier = khalifah }
 			religion = sunni
 			NOT = { tag = MAM } #Controls the Caliph already.
-			NOT = { government = republic }
 			ruler_religion = sunni
 		}
 		allow = {
@@ -385,14 +385,12 @@ country_decisions = {
 				name = "khalifah"
 				duration = -1
 			}
-			add_piety = 0.10
+			change_piety_effect = {
+				amount = 0.1
+			}
 		}
 		ai_will_do = {
 			factor = 1
-			modifier = { 
-				NOT = { piety = -0.1 }
-				factor = 0
-			}
 		}
 	}
 	
@@ -410,14 +408,10 @@ country_decisions = {
 				name = "sect_practices"
 				duration = -1
 			}
-			add_piety = 0.10
+			add_piety = 0.1
 		}
 		ai_will_do = {
 			factor = 1
-			modifier = { 
-				NOT = { piety = -0.1 }
-				factor = 0
-			}			
 		}
 	}
 	
@@ -436,14 +430,12 @@ country_decisions = {
 				name = "islamic_scholarly_centre"
 				duration = -1
 			}
-			add_piety = 0.25
+			change_piety_effect = {
+				amount = 0.25
+			}
 		}
 		ai_will_do = {
 			factor = 1
-			modifier = { 
-				NOT = { piety = -0.1 }
-				factor = 0
-			}			
 		}
 	}
 	
@@ -557,7 +549,21 @@ country_decisions = {
 			}
 		}
 		effect = {
-			change_religion = capital
+			if = {
+				limit = { capital_scope = { religion = sunni } }
+				change_religion = sunni
+			}
+			else_if = {
+				limit = { capital_scope = { religion = shiite } }
+				change_religion = shiite
+			}
+			else_if = {
+				limit = { capital_scope = { religion = ibadi } }
+				change_religion = ibadi
+			}
+			else = {
+				change_religion = capital
+			}
 			add_stability = 1
 			add_legitimacy = 10
 			clr_country_flag = sultan_titles_for_non_muslims
@@ -1083,6 +1089,127 @@ country_decisions = {
 			}
 		}
 	}
+
+	norse_flexible_deity_decision = {
+		potential = {
+			has_dlc = "Wealth of Nations"
+			religion = norse_pagan_reformed
+			has_country_flag = has_norse_flexible_deities_permanent
+		}
+		allow = {
+			has_regency = no
+			custom_trigger_tooltip = {
+				tooltip = decision_once_every_twenty_years
+				OR = {
+					has_personal_deity = odin
+					has_personal_deity = freya
+					has_personal_deity = tor
+					has_personal_deity = tyr
+					has_personal_deity = njord
+					has_personal_deity = snotra
+				}
+				OR = {
+					NOT = { has_country_flag = flexible_norse_deity_decision }
+					had_country_flag = {
+						flag = flexible_norse_deity_decision
+						days = 7300
+					}
+				}
+			}
+		}
+		effect = {
+			reduce_legitimacy_large_effect = yes
+			clr_country_flag = flexible_norse_deity_decision
+			set_country_flag = flexible_norse_deity_decision
+			country_event = { id = norse_events.1 }
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+	
+	norse_restore_the_uppsala_temple = {
+		potential = {
+			has_dlc = "Lions of the North"
+			religion = norse_pagan_reformed
+			#The Scandinavian countries get unique missions for restoring the Uppsala Temple
+			NOT = { tag = SWE }
+			NOT = { tag = DAN }
+			NOT = { tag = NOR }
+			NOT = { tag = SCA }
+			1 = { NOT = { has_province_flag = has_uppsala_temple_flag } }
+		}
+		provinces_to_highlight = {
+			province_id = 1
+			OR = {
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+				NOT = { religion = ROOT }
+				NOT = { has_tax_building_trigger = yes }
+				NOT = { development = 20 }
+				NOT = { controlled_by = ROOT }
+			}
+		}
+		allow = {
+			1 = {
+				owned_by = ROOT
+				is_core = ROOT
+				religion = ROOT
+				has_tax_building_trigger = yes
+				controlled_by = ROOT
+				development = 20
+			}
+			stability = 1
+		}
+		major = yes
+		effect = {
+			country_event = {
+				id = norse_events.6
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	norse_gain_norse_missions = {
+		potential = {
+			has_dlc = "Lions of the North"
+			religion = norse_pagan_reformed
+			OR = {
+				AND = {
+					mission_completed = swe_the_theologian_discussions
+					tag = SWE
+				}
+				AND = {
+					mission_completed = dan_the_age_of_reformation
+					tag = DAN
+				}
+				AND = {
+					mission_completed = nor_religious_path_mission
+					tag = NOR
+				}
+				AND = {
+					NOT = { has_mission = sca_restore_the_norse_faith }
+					tag = SCA
+				}
+			}
+			NOT = { has_country_flag = sca_unlock_norse_missions }
+		}
+		allow = {
+			religion = norse_pagan_reformed
+		}
+		major = yes
+		effect = {
+			set_country_flag = sca_unlock_norse_missions
+			country_event = {
+				id = flavor_sca.1
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
 	
 	tengri_yellow_shamanism = {
 		potential = {
@@ -1106,13 +1233,14 @@ country_decisions = {
 	
 	tengri_black_shamanism = {
 		potential = {
+			NOT = { has_country_modifier = yellow_shamanism_modifier }
 			NOT = { has_country_modifier = black_shamanism_modifier }
 			religion = tengri_pagan_reformed
-			NOT = { has_secondary_religion = yes }
 		}
 		allow = {
 			ADM = 3
 			NOT = { has_country_modifier = yellow_shamanism_modifier }
+			NOT = { has_secondary_religion = yes }
 		}
 		effect = {	
 			add_country_modifier = {
@@ -1918,6 +2046,35 @@ country_decisions = {
 			factor = 0
 		}
 	}
+	
+	buddhism_consulate_monasteries = {
+		potential = {
+			has_dlc = "Common Sense"
+			has_government_attribute = enable_karma_decision
+		}
+		allow = {
+			custom_trigger_tooltip = {
+				tooltip = decision_once_every_twenty_years
+				OR = {
+					NOT = { has_country_flag = karma_adjustment_decision }
+					had_country_flag = {
+						flag = karma_adjustment_decision
+						days = 7300
+					}
+				}
+			}
+		}
+		effect = {
+			country_event = {
+				id = buddhism_events.44
+			}
+			clr_country_flag = karma_adjustment_decision
+			set_country_flag = karma_adjustment_decision
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
 	build_the_third_temple = {
 		potential = {
 			religion = jewish
@@ -1957,4 +2114,305 @@ country_decisions = {
 			}
 		}
 	}	
+	#Cut because the Grand Crusade war doesn't really have any place in the current content, but it could be very useful for the future.
+	#Also modders should have the chance to just uncomment it all so they can experience the great 30 Years War like Crusade.
+	#join_the_grand_crusade = {
+	#	potential = {
+	#		has_global_flag = grand_crusades_enabled
+	#		is_at_war = no
+	#		is_free_or_tributary_trigger = yes
+	#		religion = catholic
+	#		NOT = { full_idea_group = humanist_ideas }
+	#		NOT = { tag = event_target:grand_crusader_war_monger }
+	#		knows_country = event_target:grand_crusader_war_monger
+	#		event_target:grand_crusader_war_monger = {
+	#			is_at_war = yes
+	#			is_in_war = {
+	#				casus_belli = cb_grand_crusade
+	#			}
+	#		}
+	#	}
+	#	major = yes
+	#	allow = {
+	#		event_target:grand_crusader_war_monger = {
+	#			any_war_enemy_country = {
+	#				is_in_war = {
+	#					defender_leader = THIS
+	#					casus_belli = cb_grand_crusade
+	#				}
+	#				NOT = { truce_with = ROOT }
+	#				NOT = { alliance_with = ROOT }
+	#			}
+	#		}
+	#		OR = {
+	#			is_rival = event_target:grand_crusade_target
+	#			is_enemy = event_target:grand_crusade_target
+	#			NOT = {
+	#				has_opinion = {
+	#					who = event_target:grand_crusade_target
+	#					value = -50
+	#				} 
+	#			}
+	#			has_opinion = {
+	#				who = event_target:grand_crusader_war_monger
+	#				value = 100
+	#			}
+	#			reverse_has_opinion = {
+	#				who = event_target:grand_crusader_war_monger
+	#				value = 100
+	#			}
+	#		}
+	#		is_at_war = no
+	#		NOT = { full_idea_group = humanist_ideas }
+	#	}
+	#	effect = {
+	#		custom_tooltip = join_the_grand_crusade_tt
+	#		hidden_effect = {
+	#			join_all_offensive_wars_of = event_target:grand_crusader_war_monger
+	#		}
+	#	}
+	#	ai_will_do = {
+	#		factor = 100
+	#		#We like the target
+	#		modifier = {
+	#			factor = 0.01
+	#			ai_attitude = {
+	#				who = event_target:grand_crusade_target
+	#				attitude = attitude_friendly
+	#			}
+	#		}
+	#		#We literally cannot reach the target
+	#		modifier = {
+	#			factor = 0.01
+	#			NOT = {
+	#				event_target:grand_crusade_target = {
+	#					capital_scope = {
+	#						range = ROOT
+	#					}
+	#				}
+	#			}
+	#		}
+	#		#We are too poor for that
+	#		modifier = {
+	#			factor = 0
+	#			OR = {
+	#				is_bankrupt = yes
+	#				num_of_loans = 4
+	#			}
+	#		}
+	#		#Why should I care?
+	#		modifier = {
+	#			factor = 0.25
+	#			OR = {
+	#				ruler_has_personality = sinner_personality
+	#				ruler_has_personality = free_thinker_personality
+	#				ruler_has_personality = scholar_personality
+	#				personality = ai_balanced
+	#			}
+	#		}
+	#		#Make peace please!
+	#		modifier = {
+	#			factor = 0.01
+	#			OR = {
+	#				ruler_has_personality = just_personality
+	#				personality = ai_diplomat
+	#			}
+	#		}
+	#		#DEUS VULT!
+	#		modifier = {
+	#			factor = 2
+	#			OR = {
+	#				ruler_has_personality = zealot_personality
+	#				ruler_has_personality = cruel_personality
+	#				ruler_has_personality = conqueror_personality
+	#				personality = ai_militarist
+	#			}
+	#		}
+	#		#We are the Pope. Of course we join!
+	#		modifier = {
+	#			factor = 2
+	#			tag = PAP
+	#		}
+	#		#The Crusade is losing!
+	#		modifier = {
+	#			factor = 2
+	#			event_target:grand_crusade_target = {
+	#				is_in_war = {
+	#					casus_belli = cb_grand_crusade
+	#					war_score = 25
+	#				}
+	#			}
+	#		}
+	#		#The Crusade is losing!
+	#		modifier = {
+	#			factor = 2
+	#			event_target:grand_crusade_target = {
+	#				is_in_war = {
+	#					casus_belli = cb_grand_crusade
+	#					war_score = 50
+	#				}
+	#			}
+	#		}
+	#		#The Crusade is losing!
+	#		modifier = {
+	#			factor = 2
+	#			event_target:grand_crusade_target = {
+	#				is_in_war = {
+	#					casus_belli = cb_grand_crusade
+	#					war_score = 75
+	#				}
+	#			}
+	#		}
+	#	}
+	#}
+	#defend_the_grand_crusade_target = {
+	#	potential = {
+	#		has_global_flag = grand_crusades_enabled
+	#		is_at_war = no
+	#		NOT = { religion_group = christian }
+	#		is_free_or_tributary_trigger = yes
+	#		NOT = { tag = event_target:grand_crusader_war_monger }
+	#		event_target:grand_crusader_war_monger = {
+	#			is_at_war = yes
+	#			is_in_war = {
+	#				casus_belli = cb_grand_crusade
+	#			}
+	#			any_war_enemy_country = {
+	#				is_in_war = {
+	#					defender_leader = THIS
+	#					casus_belli = cb_grand_crusade
+	#				}
+	#				religion_group = ROOT
+	#				ROOT = {
+	#					knows_country = PREV
+	#				}
+	#			}
+	#		}
+	#	}
+	#	major = yes
+	#	allow = {
+	#		event_target:grand_crusader_war_monger = {
+	#			any_war_enemy_country = {
+	#				is_in_war = {
+	#					defender_leader = THIS
+	#					casus_belli = cb_grand_crusade
+	#				}
+	#			}
+	#			NOT = { truce_with = ROOT }
+	#			NOT = { alliance_with = ROOT }
+	#		}
+	#		is_at_war = no
+	#		NOT = { full_idea_group = humanist_ideas }
+	#	}
+	#	effect = {
+	#		custom_tooltip = defend_the_grand_crusade_target_tt
+	#		hidden_effect = {
+	#			event_target:grand_crusader_war_monger = {
+	#				random_war_enemy_country = {
+	#					limit = {
+	#						is_in_war = {
+	#							defender_leader = THIS
+	#							casus_belli = cb_grand_crusade
+	#						}
+	#					}
+	#					ROOT = { join_all_defensive_wars_of = PREV }
+	#				}
+	#			}
+	#		}
+	#	}
+	#	ai_will_do = {
+	#		factor = 100
+	#		#We like the attacker...
+	#		modifier = {
+	#			factor = 0.01
+	#			ai_attitude = {
+	#				who = event_target:grand_crusader_war_monger
+	#				attitude = attitude_friendly
+	#			}
+	#		}
+	#		#We literally cannot reach the target
+	#		modifier = {
+	#			factor = 0
+	#			NOT = {
+	#				event_target:grand_crusade_target = {
+	#					capital_scope = {
+	#						range = ROOT
+	#					}
+	#				}
+	#			}
+	#		}
+	#		#We are too poor for that
+	#		modifier = {
+	#			factor = 0.01
+	#			OR = {
+	#				is_bankrupt = yes
+	#				num_of_loans = 4
+	#			}
+	#		}
+	#		#Why should I care?
+	#		modifier = {
+	#			factor = 0.25
+	#			OR = {
+	#				ruler_has_personality = sinner_personality
+	#				ruler_has_personality = free_thinker_personality
+	#				ruler_has_personality = scholar_personality
+	#				personality = ai_balanced
+	#			}
+	#		}
+	#		#Make peace please!
+	#		modifier = {
+	#			factor = 0.01
+	#			OR = {
+	#				ruler_has_personality = just_personality
+	#				personality = ai_diplomat
+	#			}
+	#		}
+	#		#DEUS VULT!
+	#		modifier = {
+	#			factor = 2
+	#			OR = {
+	#				ruler_has_personality = zealot_personality
+	#				ruler_has_personality = cruel_personality
+	#				ruler_has_personality = conqueror_personality
+	#				personality = ai_militarist
+	#			}
+	#		}
+	#		#The Crusade is winning!
+	#		modifier = {
+	#			factor = 2
+	#			event_target:grand_crusader_war_monger = {
+	#				is_in_war = {
+	#					casus_belli = cb_grand_crusade
+	#					war_score = 25
+	#				}
+	#			}
+	#		}
+	#		#The Crusade is winning!
+	#		modifier = {
+	#			factor = 2
+	#			event_target:grand_crusader_war_monger = {
+	#				is_in_war = {
+	#					casus_belli = cb_grand_crusade
+	#					war_score = 50
+	#				}
+	#			}
+	#		}
+	#		#The Crusade is winning!
+	#		modifier = {
+	#			factor = 2
+	#			event_target:grand_crusader_war_monger = {
+	#				is_in_war = {
+	#					casus_belli = cb_grand_crusade
+	#					war_score = 75
+	#				}
+	#			}
+	#		}
+	#	}
+	#}
+	#join_the_grand_crusade_title: "Join the Grand Crusade!"
+	#join_the_grand_crusade_desc: "The knights of the [grand_crusader_war_monger.GetName] have launched their Grand Crusade against the infidels of the [grand_crusade_target.GetAdjective] [grand_crusade_target.GovernmentName]. As fellow Catholics it is our holy right and duty to join these knights in order to free the Holy Land!"
+	#join_the_grand_crusade_tt: "We will join the §Y[grand_crusader_war_monger.GetAdjective]§! side of the §YGrand Crusade!"
+	#defend_the_grand_crusade_target_title: "Defend our Brethren!"
+	#defend_the_grand_crusade_target_desc: "Our brethren of the [grand_crusade_target.GetAdjective] [grand_crusade_target.GovernmentName] is under attack by these dogs of the [grand_crusader_war_monger.GetName]! As fellow [grand_crusade_target.Religion.GetGroupName]s it is our duty to aid them!"
+	#defend_the_grand_crusade_target_tt: "We will join the §Y[grand_crusade_target.GetAdjective]§! side of the §YGrand Crusade!"
 }

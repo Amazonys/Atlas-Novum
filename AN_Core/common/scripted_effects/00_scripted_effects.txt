@@ -394,7 +394,7 @@ enact_revolution_effect = {
 			}
 		}
 		hidden_effect = {
-			exile_ruler_as = ruler_of_france
+			exile_ruler_as = { name = ruler_of_france }
 		}
 	}
 	else = {
@@ -420,6 +420,11 @@ enact_revolution_effect = {
 		clr_country_flag = revolution_disaster_immediate_revolution
 	}
 	set_country_flag = revolutionary_republic_flag
+	
+	if = { 
+		limit = { tag = FRA has_dlc = "Domination" } 
+		swap_non_generic_missions = yes
+	}
 }
 
 #province scope
@@ -966,11 +971,11 @@ restore_old_nation_on_formation_effect = {
 			}
 			else_if = {
 				limit = {
-					has_reform = prussian_monarchy
+					has_reform = prussian_monarchy_base
 				}
 				event_target:old_tag_target = {
 					change_government = monarchy
-					add_government_reform = prussian_monarchy
+					add_government_reform = prussian_monarchy_base
 					#set_legacy_government = prussian_monarchy_legacy
 					define_ruler = {
 						dynasty = ROOT
@@ -1594,6 +1599,32 @@ create_colony_mission_reward = {
 	}
 }
 
+#Country effect
+seize_empty_province_effect = {
+	if = {
+		limit = {
+			$province$ = {
+				is_empty = yes
+			}
+		}
+		$province$ = {
+			cede_province = ROOT
+			add_core = ROOT
+		}
+	}
+	else_if = {
+		limit = { NOT = { owns_or_non_sovereign_subject_of = $province$ } }
+		add_core = $province$
+	}
+	else = {
+		$province$ = {
+			add_base_tax = 1
+			add_base_production = 1
+			add_base_manpower = 1
+		}
+	}
+}
+
 #Provine effect
 create_colony_mission_reward_province = {
 	if = {
@@ -1877,6 +1908,11 @@ add_legitimacy_equivalent = {
 # estate_burghers_orthodox_tolerance
 # estate_church_anti_heresy_act
 # estate_nobles_religious_conscription
+# estate_dhimmi_millet_system
+# estate_burghers_the_new_middle_class
+# estate_janissary_ottoman_vanguards
+# estate_nobles_english_copyhold_tenure
+# estate_burghers_autonomous_trade_companies
 ##########################################################
 # When adding new privileges then make sure that a unlock_privilege_$estate_privilege$_tt is defined in the localization
 # For checking if an estate privilege is unlocked already, use has_unlocked_estate_privilege = { estate_privilege = $estate_privilege$ }
@@ -1903,6 +1939,7 @@ unlock_estate_privilege = {
 # merc_frisian_free_company
 # merc_flemish_company
 # merc_reislaufer
+# merc_tatar_vanguard
 ##########################################################
 # When adding a new merc company then make sure that a unlock_$merc_company$_tt is defined in the localization
 # For checking if a merc company is unlocked already, use has_unlocked_merc_company = { merc_company = $merc_company$ }
@@ -1923,6 +1960,18 @@ unlock_merc_company = {
 	]
 }
 
+#Country effect
+##########################################################
+# Supports following church aspects
+# anglican_aspect
+# spread_the_book_of_common_prayer
+unlock_church_aspect = {
+	custom_tooltip = unlock_church_aspect_$church_aspect$_tt
+	hidden_effect = {
+		set_country_flag = unlocked_church_aspect_$church_aspect$
+	}
+}
+
 #Same as above, but this time it makes a company unavailable
 #Does not support any merc company yet
 #lock_merc_company = {
@@ -1935,13 +1984,45 @@ unlock_merc_company = {
 #Country effect
 ##########################################################
 # Supports following government reforms
-# prussian_monarchy
+# prussian_monarchy_base
 # prussian_republic_reform
 # prussian_theocratic_reform
 # holy_horde_reform
 # crusading_kingdom_reform
 # militarized_crusader_order_reform
 # allotment_system
+# expanded_devshirme_system_reform
+# ottoman_siyasah_tax_reform
+# fiqh_laws_reform
+# sufism_decree_reform
+# ottoman_conscription_reform
+# reformed_ottoman_conscription_reform
+# mansure_army_reform
+# janissary_military_reform
+# standardized_millets_reform
+# modernized_ottoman_government
+# reorganized_ottoman_government
+# russian_empire_reform
+# great_russian_republic_reform
+# professional_navy_reform
+# thalassocracy_reform
+# governing_senate_reform
+# enforced_autocracy_reform
+# holy_synod_reform
+# strengthened_the_patriarchy_reform
+# head_of_the_patriarchy_reform
+# tysyatsky_reform
+# namestnik_reform
+# oprichnina_reform
+# anglican_state_church_reform
+# english_conciliarism_reform
+# direct_royal_administration_reform
+# administration_of_the_parliament_reform
+# royal_charters_reform
+# commercial_trade_empire_reform
+# peters_government_reform
+# caliphate_reform
+# caliphate_theocracy_reform
 ##########################################################
 # When adding a new government reform then make sure that a unlock_$government_reform$_tt is defined in the localization
 # For checking if a government reform is unlocked already, use has_unlocked_government_reform = { government_reform = $government_reform$ }
@@ -1955,12 +2036,26 @@ unlock_government_reform = {
 
 #Country effect
 ##########################################################
-# Supports following government reforms
+# Has the localization for the following estates:
+# estate_brahmins
+# estate_church
+# estate_maratha
+# estate_nobles
+# estate_burghers
+# estate_vaisyas
 # estate_cossacks
+# estate_nomadic_tribes
+# estate_dhimmi
+# estate_jains
+# estate_rajput
+# estate_janissaries
+# estate_eunuchs
 ##########################################################
 # When adding a new estate then make sure that a unlock_$estate$_tt is defined in the localization
 # For checking if an Estate is unlocked already, use has_unlocked_estate = { estate = $estate$ }
 # For localization write the following: "Unlock the §Y<Estate>§! Estate."
+# Important: this way of unlocking an estate does not give you permanent access to the estate - hence the show_conditions.
+# For granting permanent access, use "enable_estate_effect"
 unlock_estate = {
 	custom_tooltip = unlock_$estate$_tt
 	hidden_effect = {
@@ -1971,67 +2066,126 @@ unlock_estate = {
 	]
 }
 
-halves_parliament_bribe_costs = {
-    if = {
-        limit = { has_dlc = "Common Sense" }
-        custom_tooltip = halves_parliament_bribe_costs_tt
-    }
-    set_country_flag = halved_parliament_bribe_costs
-}
-
 #Country effect
-add_increase_same_religion_opinion = {
-	custom_tooltip = increase_same_religion_opinion_tt
+##########################################################
+# Has the localization for the following estates:
+# estate_brahmins
+# estate_church
+# estate_maratha
+# estate_nobles
+# estate_burghers
+# estate_vaisyas
+# estate_cossacks
+# estate_nomadic_tribes
+# estate_dhimmi
+# estate_jains
+# estate_rajput
+# estate_janissaries
+# estate_eunuchs
+##########################################################
+# Unlocks the estate without any kind of condition
+enable_estate_effect = {
+	custom_tooltip = mechanic_enables_$estate$_yes
 	hidden_effect = {
-		set_country_flag = has_increased_religios_opinion
-		every_known_country = {
-			limit = {
-				OR = {
-					ROOT = { has_harmonized_with = PREV }
-					religion = ROOT
-				}
-				NOT = {
-					has_opinion_modifier = {
-						who = ROOT
-						modifier = increased_same_religion
-					}
-				}
-			}
-			add_opinion = {
-				who = ROOT
-				modifier = increased_same_religion
-			}
-			reverse_add_opinion = {
-				who = ROOT
-				modifier = increased_same_religion
-			}
-		}
+		clr_country_flag = disables_$estate$_flag
+		set_country_flag = enables_$estate$_flag
 	}
 }
 
 #Country effect
-remove_increase_same_religion_opinion = {
-	custom_tooltip = remove_increase_same_religion_opinion_tt
+##########################################################
+# Has the localization for the following estates:
+# estate_brahmins
+# estate_church
+# estate_maratha
+# estate_nobles
+# estate_burghers
+# estate_vaisyas
+# estate_cossacks
+# estate_nomadic_tribes
+# estate_dhimmi
+# estate_jains
+# estate_rajput
+# estate_janissaries
+# estate_eunuchs
+##########################################################
+# Locks the estate even if they would 
+disable_estate_effect = {
+	custom_tooltip = mechanic_disables_$estate$_yes
 	hidden_effect = {
-		clr_country_flag = has_increased_religios_opinion
-		every_country = {
-			limit = {
-				has_opinion_modifier = {
-					who = ROOT
-					modifier = increased_same_religion
-				}
-			}
-			remove_opinion = {
-				who = ROOT
-				modifier = increased_same_religion
-			}
-			reverse_remove_opinion = {
-				who = ROOT
-				modifier = increased_same_religion
-			}
-		}
+		set_country_flag = disables_$estate$_flag
+		clr_country_flag = enables_$estate$_flag
 	}
 }
+
+enable_full_ducat_gain_from_selling_crownland = {
+	custom_tooltip = enable_full_ducat_gain_from_selling_crownland_tt
+	set_country_flag = enable_full_ducat_gain_from_selling_crownland_flag
+}
+
+can_sell_crownland_to_estates_targeted = {
+	custom_tooltip = can_sell_crownland_to_estates_targeted_tt
+	set_country_flag = can_sell_crownland_to_estates_targeted_flag
+}
+
+can_seize_crownland_to_estates_targeted = {
+	custom_tooltip = can_seize_crownland_to_estates_targeted_tt
+	set_country_flag = can_seize_crownland_to_estates_targeted_flag
+}
+
+#Country effect
+#add_increase_same_religion_opinion = {
+#	custom_tooltip = increase_same_religion_opinion_tt
+#	hidden_effect = {
+#		set_country_flag = has_increased_religios_opinion
+#		every_known_country = {
+#			limit = {
+#				OR = {
+#					ROOT = { has_harmonized_with = PREV }
+#					religion = ROOT
+#				}
+#				NOT = {
+#					has_opinion_modifier = {
+#						who = ROOT
+#						modifier = increased_same_religion
+#					}
+#				}
+#			}
+#			add_opinion = {
+#				who = ROOT
+#				modifier = increased_same_religion
+#			}
+#			reverse_add_opinion = {
+#				who = ROOT
+#				modifier = increased_same_religion
+#			}
+#		}
+#	}
+#}
+
+#Country effect
+#remove_increase_same_religion_opinion = {
+#	custom_tooltip = remove_increase_same_religion_opinion_tt
+#	hidden_effect = {
+#		clr_country_flag = has_increased_religios_opinion
+#		every_country = {
+#			limit = {
+#				has_opinion_modifier = {
+#					who = ROOT
+#					modifier = increased_same_religion
+#				}
+#			}
+#			remove_opinion = {
+#				who = ROOT
+#				modifier = increased_same_religion
+#			}
+#			reverse_remove_opinion = {
+#				who = ROOT
+#				modifier = increased_same_religion
+#			}
+#		}
+#	}
+#}
 
 #Country effect
 add_increase_opinion_of_fetishists = {
@@ -2224,7 +2378,7 @@ disable_propogate_religion_immunity = {
 }
 
 #Country effect
-enable_propogate_religion_in_abrahamic_provinces = {
+enable_propagate_religion_in_abrahamic_provinces= {
 	custom_tooltip = enable_propogate_religion_in_abrahamic_provinces_tt
 	hidden_effect = {
 		set_country_flag = can_propagate_religion_in_abrahamic_provinces
@@ -2324,6 +2478,14 @@ unlock_cult_through_selection = {
 		country_event = {
 			id = fetishist_flavor.601
 		}
+	}
+}
+
+#Country effect
+half_estate_privilege_absolutism_loss = {
+	custom_tooltip = half_estate_privilege_absolutism_loss_tt
+	hidden_effect = {
+		set_country_flag = has_halved_absolutism_reduction
 	}
 }
 
@@ -2500,6 +2662,63 @@ remove_development_from_building = {
 	}
 }
 
+#Province effect - used for buildings
+update_improved_military_buildings_modifier = {
+	if = {
+		limit = {
+			owner = { has_government_attribute = improved_military_buildings }
+		}
+		tooltip = {
+			add_province_modifier = {
+				name = wei_suo_system_reform_$building$_modifier
+				duration = -1
+			}
+		}
+		hidden_effect = {
+			remove_province_modifier = wei_suo_system_reform_barracks_modifier
+			remove_province_modifier = wei_suo_system_reform_training_fields_modifier
+			remove_province_modifier = wei_suo_system_reform_regimental_camp_modifier
+			remove_province_modifier = wei_suo_system_reform_conscription_center_modifier
+			remove_province_modifier = wei_suo_system_reform_soldier_households_modifier
+			if = {
+				limit = { has_building = barracks }
+				add_province_modifier = {
+					name = wei_suo_system_reform_barracks_modifier
+					duration = -1
+				}
+			}
+			if = {
+				limit = { has_building = training_fields }
+				add_province_modifier = {
+					name = wei_suo_system_reform_training_fields_modifier
+					duration = -1
+				}
+			}
+			if = {
+				limit = { has_building = regimental_camp }
+				add_province_modifier = {
+					name = wei_suo_system_reform_regimental_camp_modifier
+					duration = -1
+				}
+			}
+			if = {
+				limit = { has_building = conscription_center }
+				add_province_modifier = {
+					name = wei_suo_system_reform_conscription_center_modifier
+					duration = -1
+				}
+			}
+			if = {
+				limit = { has_building = soldier_households }
+				add_province_modifier = {
+					name = wei_suo_system_reform_soldier_households_modifier
+					duration = -1
+				}
+			}
+		}
+	}
+}
+
 #Province effect
 add_latest_building = {
 	[[trade]
@@ -2578,15 +2797,15 @@ add_latest_building = {
 			add_building = shipyard
 		}
 	]
-	#[[coastal]
-	#	if = {
-	#		limit = { $builder$ = { dip_tech = 12 } }
-	#		add_building = naval_battery
-	#	}
-	#	else = {
-	#		add_building = coastal_defence
-	#	}
-	#]
+	[[coastal]
+		if = {
+			limit = { $builder$ = { dip_tech = 12 } }
+			add_building = naval_battery
+		}
+		else = {
+			add_building = coastal_defence
+		}
+	]
 	[[fort]
 		if = {
 			limit = { $builder$ = { mil_tech = 24 } }
@@ -2660,12 +2879,12 @@ upgrade_building = {
 			add_building = grand_shipyard
 		}
 	]
-	#[[coastal]
-	#	if = {
-	#		limit = { has_building = coastal_defence }
-	#		add_building = naval_battery
-	#	}
-	#]
+	[[coastal]
+		if = {
+			limit = { has_building = coastal_defence }
+			add_building = naval_battery
+		}
+	]
 	[[fort]
 		if = {
 			limit = { has_building = fort_17th }
@@ -2981,6 +3200,16 @@ enable_baseline_invite_scholar = {
 	}
 }
 
+enable_baseline_invite_scholar_no_privilege = {
+	custom_tooltip = enable_baseline_invite_scholar_tt
+	hidden_effect = {
+		country_event = {
+			id = muslim_school_events.24
+		}
+		set_country_flag = enabled_baseline_invite_scholar_no_priv
+	}
+}
+
 allow_baseline_invite_scholar_privilege = {
 	custom_tooltip = allows_every_time_invite_of_$religious_school$
 	hidden_effect = {
@@ -3006,13 +3235,16 @@ disable_baseline_invite_scholar = {
 	custom_tooltip = disable_baseline_invite_scholar_tt
 	hidden_effect = {
 		clr_country_flag = enabled_baseline_invite_scholar
-		clr_country_flag = privilege_can_always_invite_hanafi_school
-		clr_country_flag = privilege_can_always_invite_hanbali_school
-		clr_country_flag = privilege_can_always_invite_maliki_school
-		clr_country_flag = privilege_can_always_invite_shafii_school
-		clr_country_flag = privilege_can_always_invite_ismaili_school
-		clr_country_flag = privilege_can_always_invite_jafari_school
-		clr_country_flag = privilege_can_always_invite_zaidi_school
+		if = {
+			limit = { NOT = { has_country_flag = enabled_baseline_invite_scholar_no_priv } }
+			clr_country_flag = privilege_can_always_invite_hanafi_school
+			clr_country_flag = privilege_can_always_invite_hanbali_school
+			clr_country_flag = privilege_can_always_invite_maliki_school
+			clr_country_flag = privilege_can_always_invite_shafii_school
+			clr_country_flag = privilege_can_always_invite_ismaili_school
+			clr_country_flag = privilege_can_always_invite_jafari_school
+			clr_country_flag = privilege_can_always_invite_zaidi_school
+		}
 	}
 }
 
@@ -3040,11 +3272,14 @@ disable_capital_slave_raid = {
 }
 
 #On action effect
-grant_manpower_from_capital_slave_raid = {
+grant_manpower_from_besieging_fort = {
 	if = {
 		limit = {
 			ROOT = {
-				has_country_flag = enabled_capital_slave_raid
+				OR = {
+					has_government_attribute = manpower_from_capturing_forts
+					has_country_flag = enabled_capital_slave_raid
+				}
 			}
 			FROM = {
 				owner = {
@@ -3270,6 +3505,174 @@ select_biggest_country_of_region = {
 	}
 }
 
+select_biggest_country_of_scope_type = {
+	if = {
+		limit = { 
+			$trigger_scope$ = {
+				$limit$ 
+			} 
+		}
+		if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 1000
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 1000 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else_if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 900
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 900 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else_if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 800
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 800 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else_if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 700
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 700 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else_if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 600
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 600 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else_if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 500
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 500 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else_if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 400
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 400 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else_if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 300
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 300 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else_if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 200
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 200 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else_if = {
+			limit = { 
+				$trigger_scope$ = { 
+					$limit$
+					total_development = 100
+				}
+			}
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+					total_development = 100 
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+		else = {
+			$effect_scope$ = {
+				limit = { 
+					$limit$
+				}
+				save_event_target_as = selected_biggest_country
+			}
+		}
+	}
+}
+
 #Country effect
 mal_mansa_musa_visit_effect = {
 	trigger_switch = {
@@ -3385,64 +3788,6 @@ mal_select_country_for_region = {
 	}
 }
 
-#Country effect
-on_culture_demoted_effect = {
-	if = {
-		limit = {
-			has_country_modifier = plc_polish_lithuanian_union
-			OR = {
-				AND = {
-					primary_culture = polish
-					NOT = { accepted_culture = lithuanian }
-				}
-				AND = {
-					primary_culture = lithuanian
-					NOT = { accepted_culture = polish }
-				}
-				AND = {
-					OR = {
-						NOT = { accepted_culture = lithuanian }
-						NOT = { accepted_culture = polish }
-					}
-					NOT = { primary_culture = polish }
-					NOT = { primary_culture = lithuanian }
-				}
-			}
-		}
-		remove_country_modifier = plc_polish_lithuanian_union
-	}
-	if = {
-		limit = {
-			has_country_modifier = teu_pru_integration_of_the_poles
-			NOT = { accepted_culture = polish }
-			NOT = { primary_culture = polish }
-		}
-		remove_country_modifier = teu_pru_integration_of_the_poles
-	}
-	if = {
-		limit = {
-			has_country_modifier = teu_pru_integration_of_the_ruthenians
-			NOT = { accepted_culture = polish }
-			NOT = { primary_culture = polish }
-		}
-		remove_country_modifier = teu_pru_integration_of_the_ruthenians
-	}	
-	if = {
-		limit = {
-			has_country_modifier = dan_estonian_culture_accepted
-			NOT = { accepted_culture = estonian }
-			NOT = { primary_culture = estonian }
-		}
-		remove_country_modifier = dan_estonian_culture_accepted
-		every_owned_province = {
-			limit = {
-				has_province_modifier = dan_estonian_support
-			}
-			remove_province_modifier = dan_estonian_support
-		}
-	}
-}
-
 clr_protestant_aspects_buffs = {
 	if = {
 		limit = { NOT = { has_church_aspect = organised_through_bishops_aspect } }
@@ -3504,56 +3849,37 @@ clr_protestant_aspects_buffs = {
 		limit = { NOT = { has_church_aspect = head_of_the_church_aspect } }
 		remove_country_modifier = head_of_the_church_aspect_modifier
 	}
+	if = {
+		limit = { NOT = { has_church_aspect = anglican_aspect } }
+		remove_country_modifier = anglican_aspect_aspect_modifier
+	}
 }
 
 #Credits for that script goes to Stiopa
 for = {
-    set_variable = {
-        which = ForLoopCounter
-        value = $amount$
-    }
-
-    while = {
-        limit = {
-            check_variable = {
-                which = ForLoopCounter
-                value = 1
-            }
-        }
-        $effect$
-        subtract_variable = {
-            which = ForLoopCounter
-            value = 1
-        }
-    }
+	[[custom_tooltip]custom_tooltip = $custom_tooltip$]
+	hidden_effect = {
+		set_variable = {
+			which = ForLoopCounter
+			value = $amount$
+		}	
+		while = {
+			limit = {
+				check_variable = {
+					which = ForLoopCounter
+					value = 1
+				}
+			}
+			$effect$
+			subtract_variable = {
+				which = ForLoopCounter
+				value = 1
+			}
+		}
+	}
 }
 
-add_prestige_or_monarch_power = {
-    tooltip = {
-        add_prestige = $amount$
-    }
-    custom_tooltip = ME_ADD_PRESTIGE_OR_MONARCHPOWER
-    hidden_effect = {
-        for = {
-            amount = $amount$
-            effect = "
-                if = {
-                    limit = {
-                        NOT = { prestige = 100 }
-                    }
-                    add_prestige = 1
-                }
-                else = {
-                    add_adm_power = 1
-                    add_dip_power = 1
-                    add_mil_power = 1
-                }
-            "
-        }
-    }
-}
-
-add_stat_or_monarch_power = {
+change_ruler_stat = {
     tooltip = {
         change_$stat$ = $amount$
     }
@@ -3575,6 +3901,40 @@ add_stat_or_monarch_power = {
 					NOT = { $stat$ = 6 }
 				}
 				change_$stat$ = 1
+			}
+			else = {
+				add_$stat$_power = 100
+			}
+			subtract_variable = {
+				which = ForLoopCounter
+				value = 1
+			}
+		}
+    }
+}
+
+change_heir_stat = {
+    tooltip = {
+        change_heir_$stat$ = $amount$
+    }
+    custom_tooltip = ADD_STAT_OR_POWER_$stat$
+    hidden_effect = {
+		set_variable = {
+			which = ForLoopCounter
+			value = $amount$
+		}
+		while = {
+			limit = {
+				check_variable = {
+					which = ForLoopCounter
+					value = 1
+				}
+			}
+			if = {
+				limit = {
+					NOT = { heir_$stat$ = 6 }
+				}
+				change_heir_$stat$ = 1
 			}
 			else = {
 				add_$stat$_power = 100
@@ -3943,15 +4303,6 @@ fifty_percent_merc_army_professionalism_cost = {
 	}
 }
 
-increase_issue_passed_counter = {
-	hidden_effect = {
-		change_variable = {
-			which = issues_passed
-			value = 1
-		}
-	}
-}
-
 #Province effect
 set_center_level_3_center_of_trade = {
 	if = {
@@ -4251,26 +4602,6 @@ add_influence_to_mil_faction = {
 	}
 }
 
-on_harmonized_effect = {
-	if = {
-		limit = {
-			has_government_attribute = full_loyalty_on_harmonization
-		}
-		add_estate_loyalty = {
-			estate = estate_church
-			loyalty = 100
-		}
-		add_adm_power = 50
-	}
-}
-
-on_completed_agenda_effect_church = {
-	if = {
-		limit = { has_government_attribute = clergy_estate_agendas_gives_karma }
-		add_karma = 10
-	}
-}
-
 show_points_needed_for_livionian_government_of_category = {
 	[[adm]
 		if = {
@@ -4356,6 +4687,19 @@ show_points_needed_for_livionian_government_of_category = {
 	]
 }
 
+add_revolutionary_zeal_or_absolutism = {
+	if = {
+		limit = {
+			has_dlc = "Emperor"
+			is_revolutionary = yes
+		}
+		add_revolutionary_zeal = $amount$
+	}
+	else = {
+		add_absolutism = $amount$
+	}
+}
+
 #Cut because the Grand Crusade war doesn't really have any place in the current content, but it could be very useful for the future.
 #Also modders should have the chance to just uncomment it all so they can experience the great 30 Years War like Crusade.
 #enable_grand_crusade = {
@@ -4368,3 +4712,4256 @@ show_points_needed_for_livionian_government_of_category = {
 #	}
 #}
 #enable_grand_crusade_tt: "Enables the §YGrand Crusade§! casus belli against all §YHeathen§! nations which have at least §Y300§! total development.\nThis casus belli enables a decision for every independent §YCatholic§! nation to join the Grand Crusade.\n\nTo join the Grand Crusade the Catholic nation must fulfil the following conditions:\nHas at least §Y100§! opinion of us or vice versa\nIs NOT allied with the §YGrand Crusade Target§! target\nHas NOT a truce with the §YGrand Crusade Target§!\nIs not at war\nDid NOT complete the §YHumanist§! idea group\n\n§RNations of the religion group of the §YGrand Crusade Target§! can join the defender's side.§!"
+
+add_humiliation_reward = {
+	if = {
+		limit = { has_dlc = "Mandate of Heaven" }
+		custom_tooltip = add_humiliation_reward_tt
+	}
+	add_power_projection = {
+		type = humiliation_of_a_rival
+		amount = 30
+	}
+	hidden_effect = {
+		set_country_flag = humiliated_rival
+	}
+}
+
+set_likely_rebels_flag = {
+	hidden_effect = {
+		if = { limit = { likely_rebels = anglican_rebels } 					set_province_flag = likely_spawns_anglican_rebels }
+		if = { limit = { likely_rebels = animism_rebels } 					set_province_flag = likely_spawns_animism_rebels }
+		if = { limit = { likely_rebels = anti_tax_rebels } 					set_province_flag = likely_spawns_anti_tax_rebels }
+		if = { limit = { likely_rebels = buddhism_rebels } 					set_province_flag = likely_spawns_buddhism_rebels }
+		if = { limit = { likely_rebels = catholic_rebels } 					set_province_flag = likely_spawns_catholic_rebels }
+		if = { limit = { likely_rebels = confucianism_rebels } 				set_province_flag = likely_spawns_confucianism_rebels }
+		if = { limit = { likely_rebels = coptic_rebels } 					set_province_flag = likely_spawns_coptic_rebels }
+		if = { limit = { likely_rebels = cossack_rebels } 					set_province_flag = likely_spawns_cossack_rebels }
+		if = { limit = { likely_rebels = dreamtime_rebels } 				set_province_flag = likely_spawns_dreamtime_rebels }
+		if = { limit = { likely_rebels = eunuch_rebels } 					set_province_flag = likely_spawns_eunuch_rebels }
+		if = { limit = { likely_rebels = heretic_rebels } 					set_province_flag = likely_spawns_heretic_rebels }
+		if = { limit = { likely_rebels = hinduism_rebels } 					set_province_flag = likely_spawns_hinduism_rebels }
+		if = { limit = { likely_rebels = hussite_rebels } 					set_province_flag = likely_spawns_hussite_rebels }
+		if = { limit = { likely_rebels = ibadi_rebels } 					set_province_flag = likely_spawns_ibadi_rebels }
+		if = { limit = { likely_rebels = ikko_ikki_rebels } 				set_province_flag = likely_spawns_ikko_ikki_rebels }
+		if = { limit = { likely_rebels = inti_rebels } 						set_province_flag = likely_spawns_inti_rebels }
+		if = { limit = { likely_rebels = janissary_rebels } 				set_province_flag = likely_spawns_janissary_rebels }
+		if = { limit = { likely_rebels = jewish_rebels } 					set_province_flag = likely_spawns_jewish_rebels }
+		if = { limit = { likely_rebels = lollard_rebels } 					set_province_flag = likely_spawns_lollard_rebels }
+		if = { limit = { likely_rebels = mahayana_rebels } 					set_province_flag = likely_spawns_mahayana_rebels }
+		if = { limit = { likely_rebels = maya_rebels } 						set_province_flag = likely_spawns_maya_rebels }
+		if = { limit = { likely_rebels = nahuatl_rebels } 					set_province_flag = likely_spawns_nahuatl_rebels }
+		if = { limit = { likely_rebels = nap_republican_rebels } 			set_province_flag = likely_spawns_nap_republican_rebels }
+		if = { limit = { likely_rebels = nationalist_rebels } 				set_province_flag = likely_spawns_nationalist_rebels }
+		if = { limit = { likely_rebels = noble_rebels } 					set_province_flag = likely_spawns_noble_rebels }
+		if = { limit = { likely_rebels = norse_pagan_reformed_rebels } 		set_province_flag = likely_spawns_norse_pagan_reformed_rebels }
+		if = { limit = { likely_rebels = orthodox_rebels } 					set_province_flag = likely_spawns_orthodox_rebels }
+		if = { limit = { likely_rebels = particularist_rebels } 			set_province_flag = likely_spawns_particularist_rebels }
+		if = { limit = { likely_rebels = leadered_peasant_rebels } 			set_province_flag = likely_spawns_leadered_peasant_rebels }
+		if = { limit = { likely_rebels = polish_noble_rebels } 				set_province_flag = likely_spawns_polish_noble_rebels }
+		if = { limit = { likely_rebels = pretender_rebels } 				set_province_flag = likely_spawns_pretender_rebels }
+		if = { limit = { likely_rebels = protestant_rebels } 				set_province_flag = likely_spawns_protestant_rebels }
+		if = { limit = { likely_rebels = reformed_rebels } 					set_province_flag = likely_spawns_reformed_rebels }
+		if = { limit = { likely_rebels = revolutionary_rebels } 			set_province_flag = likely_spawns_revolutionary_rebels }
+		if = { limit = { likely_rebels = ronin_rebels } 					set_province_flag = likely_spawns_ronin_rebels }
+		if = { limit = { likely_rebels = shamanism_rebels } 				set_province_flag = likely_spawns_shamanism_rebels }
+		if = { limit = { likely_rebels = shiite_rebels } 					set_province_flag = likely_spawns_shiite_rebels }
+		if = { limit = { likely_rebels = shinto_rebels } 					set_province_flag = likely_spawns_shinto_rebels }
+		if = { limit = { likely_rebels = sikhism_rebels } 					set_province_flag = likely_spawns_sikhism_rebels }
+		if = { limit = { likely_rebels = sunni_rebels } 					set_province_flag = likely_spawns_sunni_rebels }
+		if = { limit = { likely_rebels = tengri_pagan_reformed_rebels } 	set_province_flag = likely_spawns_tengri_pagan_reformed_rebels }
+		if = { limit = { likely_rebels = totemism_rebels } 					set_province_flag = likely_spawns_totemism_rebels }
+		if = { limit = { likely_rebels = tribal_rebels } 					set_province_flag = likely_spawns_tribal_rebels }
+		if = { limit = { likely_rebels = vajrayana_rebels } 				set_province_flag = likely_spawns_vajrayana_rebels }
+		if = { limit = { likely_rebels = zoroastrian_rebels } 				set_province_flag = likely_spawns_zoroastrian_rebels }
+	}
+}
+
+#Province scope
+spawn_likely_rebels = {
+	trigger_switch = {
+		on_trigger = has_province_flag
+		likely_spawns_anglican_rebels = {				spawn_rebels = { type = anglican_rebels size = $size$ } }
+		likely_spawns_animism_rebels = {				spawn_rebels = { type = animism_rebels size = $size$ } }
+		likely_spawns_anti_tax_rebels = {				spawn_rebels = { type = anti_tax_rebels size = $size$ } }
+		likely_spawns_buddhism_rebels = {				spawn_rebels = { type = buddhism_rebels size = $size$ } }
+		likely_spawns_catholic_rebels = {				spawn_rebels = { type = catholic_rebels size = $size$ } }
+		likely_spawns_confucianism_rebels = {			spawn_rebels = { type = confucianism_rebels size = $size$ } }
+		likely_spawns_coptic_rebels = {					spawn_rebels = { type = coptic_rebels size = $size$ } }
+		likely_spawns_cossack_rebels = {				spawn_rebels = { type = cossack_rebels size = $size$ } }
+		likely_spawns_dreamtime_rebels = {				spawn_rebels = { type = dreamtime_rebels size = $size$ } }
+		likely_spawns_eunuch_rebels = {					spawn_rebels = { type = eunuch_rebels size = $size$ } }
+		likely_spawns_heretic_rebels = {				spawn_rebels = { type = heretic_rebels size = $size$ } }
+		likely_spawns_hinduism_rebels = {				spawn_rebels = { type = hinduism_rebels size = $size$ } }
+		likely_spawns_hussite_rebels = {				spawn_rebels = { type = hussite_rebels size = $size$ } }
+		likely_spawns_ibadi_rebels = {					spawn_rebels = { type = ibadi_rebels size = $size$ } }
+		likely_spawns_ikko_ikki_rebels = {				spawn_rebels = { type = ikko_ikki_rebels size = $size$ } }
+		likely_spawns_inti_rebels = {					spawn_rebels = { type = inti_rebels size = $size$ } }
+		likely_spawns_janissary_rebels = {				spawn_rebels = { type = janissary_rebels size = $size$ } }
+		likely_spawns_jewish_rebels = {					spawn_rebels = { type = jewish_rebels size = $size$ } }
+		likely_spawns_lollard_rebels = {				spawn_rebels = { type = lollard_rebels size = $size$ } }
+		likely_spawns_mahayana_rebels = {				spawn_rebels = { type = mahayana_rebels size = $size$ } }
+		likely_spawns_maya_rebels = {					spawn_rebels = { type = maya_rebels size = $size$ } }
+		likely_spawns_nahuatl_rebels = {				spawn_rebels = { type = nahuatl_rebels size = $size$ } }
+		likely_spawns_nap_republican_rebels = {			spawn_rebels = { type = nap_republican_rebels size = $size$ } }
+		likely_spawns_nationalist_rebels = {			spawn_rebels = { type = nationalist_rebels size = $size$ } }
+		likely_spawns_noble_rebels = {					spawn_rebels = { type = noble_rebels size = $size$ } }
+		likely_spawns_norse_pagan_reformed_rebels = {	spawn_rebels = { type = norse_pagan_reformed_rebels size = $size$ } }
+		likely_spawns_orthodox_rebels = {				spawn_rebels = { type = orthodox_rebels size = $size$ } }
+		likely_spawns_particularist_rebels = {			spawn_rebels = { type = particularist_rebels size = $size$ } }
+		likely_spawns_leadered_peasant_rebels = {		spawn_rebels = { type = leadered_peasant_rebels size = $size$ } }
+		likely_spawns_polish_noble_rebels = {			spawn_rebels = { type = polish_noble_rebels size = $size$ } }
+		likely_spawns_pretender_rebels = {				spawn_rebels = { type = pretender_rebels size = $size$ } }
+		likely_spawns_protestant_rebels = {				spawn_rebels = { type = protestant_rebels size = $size$ } }
+		likely_spawns_reformed_rebels = {				spawn_rebels = { type = reformed_rebels size = $size$ } }
+		likely_spawns_revolutionary_rebels = {			spawn_rebels = { type = revolutionary_rebels size = $size$ } }
+		likely_spawns_ronin_rebels = {					spawn_rebels = { type = ronin_rebels size = $size$ } }
+		likely_spawns_shamanism_rebels = {				spawn_rebels = { type = shamanism_rebels size = $size$ } }
+		likely_spawns_shiite_rebels = {					spawn_rebels = { type = shiite_rebels size = $size$ } }
+		likely_spawns_shinto_rebels = {					spawn_rebels = { type = shinto_rebels size = $size$ } }
+		likely_spawns_sikhism_rebels = {				spawn_rebels = { type = sikhism_rebels size = $size$ } }
+		likely_spawns_sunni_rebels = {					spawn_rebels = { type = sunni_rebels size = $size$ } }
+		likely_spawns_tengri_pagan_reformed_rebels = {	spawn_rebels = { type = tengri_pagan_reformed_rebels size = $size$ } }
+		likely_spawns_totemism_rebels = {				spawn_rebels = { type = totemism_rebels size = $size$ } }
+		likely_spawns_tribal_rebels = {					spawn_rebels = { type = tribal_rebels size = $size$ } }
+		likely_spawns_vajrayana_rebels = {				spawn_rebels = { type = vajrayana_rebels size = $size$ } }
+		likely_spawns_zoroastrian_rebels = {			spawn_rebels = { type = zoroastrian_rebels size = $size$ } }
+	}
+	hidden_effect = {
+		clr_province_flag = likely_spawns_anglican_rebels
+		clr_province_flag = likely_spawns_animism_rebels
+		clr_province_flag = likely_spawns_anti_tax_rebels
+		clr_province_flag = likely_spawns_buddhism_rebels
+		clr_province_flag = likely_spawns_catholic_rebels
+		clr_province_flag = likely_spawns_confucianism_rebels
+		clr_province_flag = likely_spawns_coptic_rebels
+		clr_province_flag = likely_spawns_cossack_rebels
+		clr_province_flag = likely_spawns_dreamtime_rebels
+		clr_province_flag = likely_spawns_eunuch_rebels
+		clr_province_flag = likely_spawns_heretic_rebels
+		clr_province_flag = likely_spawns_hinduism_rebels
+		clr_province_flag = likely_spawns_hussite_rebels
+		clr_province_flag = likely_spawns_ibadi_rebels
+		clr_province_flag = likely_spawns_ikko_ikki_rebels
+		clr_province_flag = likely_spawns_inti_rebels
+		clr_province_flag = likely_spawns_janissary_rebels
+		clr_province_flag = likely_spawns_jewish_rebels
+		clr_province_flag = likely_spawns_lollard_rebels
+		clr_province_flag = likely_spawns_mahayana_rebels
+		clr_province_flag = likely_spawns_maya_rebels
+		clr_province_flag = likely_spawns_nahuatl_rebels
+		clr_province_flag = likely_spawns_nap_republican_rebels
+		clr_province_flag = likely_spawns_nationalist_rebels
+		clr_province_flag = likely_spawns_noble_rebels
+		clr_province_flag = likely_spawns_norse_pagan_reformed_rebels
+		clr_province_flag = likely_spawns_orthodox_rebels
+		clr_province_flag = likely_spawns_particularist_rebels
+		clr_province_flag = likely_spawns_leadered_peasant_rebels
+		clr_province_flag = likely_spawns_polish_noble_rebels
+		clr_province_flag = likely_spawns_pretender_rebels
+		clr_province_flag = likely_spawns_protestant_rebels
+		clr_province_flag = likely_spawns_reformed_rebels
+		clr_province_flag = likely_spawns_revolutionary_rebels
+		clr_province_flag = likely_spawns_ronin_rebels
+		clr_province_flag = likely_spawns_shamanism_rebels
+		clr_province_flag = likely_spawns_shiite_rebels
+		clr_province_flag = likely_spawns_shinto_rebels
+		clr_province_flag = likely_spawns_sikhism_rebels
+		clr_province_flag = likely_spawns_sunni_rebels
+		clr_province_flag = likely_spawns_tengri_pagan_reformed_rebels
+		clr_province_flag = likely_spawns_totemism_rebels
+		clr_province_flag = likely_spawns_tribal_rebels
+		clr_province_flag = likely_spawns_vajrayana_rebels
+		clr_province_flag = likely_spawns_zoroastrian_rebels
+	}
+}
+
+ottoman_power_struggle_effect = {
+	[[legitimacy_effect]
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_legitimacy = -50 add_stability = -1 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_legitimacy = -50 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_legitimacy = -45 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_legitimacy = -40 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_legitimacy = -35 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_legitimacy = -30 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_legitimacy = -25 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_legitimacy = -20 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_legitimacy = -15 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_legitimacy = -10 }
+		else = { add_legitimacy = -5 }
+	]
+	[[republican_tradition_effect]
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_republican_tradition = -20 add_stability = -1 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_republican_tradition = -20 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_republican_tradition = -18 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_republican_tradition = -16 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_republican_tradition = -14 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_republican_tradition = -12 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_republican_tradition = -10 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_republican_tradition = -8 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_republican_tradition = -6 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_republican_tradition = -4 }
+		else = { add_republican_tradition = -2 }
+	]
+	[[corruption_effect]
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_corruption = 5.0 add_stability = -1 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_corruption = 5.0 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_corruption = 4.5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_corruption = 4.0 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_corruption = 3.5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_corruption = 3.0 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_corruption = 2.5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_corruption = 2.0 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_corruption = 1.5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_corruption = 1.0 }
+		else = { add_corruption = 0.5 }
+	]
+	[[monarch_power_effect]
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_adm_power = -250 add_dip_power = -250 add_mil_power = -250 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } random_list = { 1 = { add_adm_power = -250 } 1 = { add_dip_power = -250 } 1 = { add_mil_power = -250 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } random_list = { 1 = { add_adm_power = -225 } 1 = { add_dip_power = -225 } 1 = { add_mil_power = -225 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } random_list = { 1 = { add_adm_power = -200 } 1 = { add_dip_power = -200 } 1 = { add_mil_power = -200 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } random_list = { 1 = { add_adm_power = -175 } 1 = { add_dip_power = -175 } 1 = { add_mil_power = -175 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } random_list = { 1 = { add_adm_power = -150 } 1 = { add_dip_power = -150 } 1 = { add_mil_power = -150 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } random_list = { 1 = { add_adm_power = -125 } 1 = { add_dip_power = -125 } 1 = { add_mil_power = -125 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } random_list = { 1 = { add_adm_power = -100 } 1 = { add_dip_power = -100 } 1 = { add_mil_power = -100 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } random_list = { 1 = { add_adm_power = -75 } 1 = { add_dip_power = -75 } 1 = { add_mil_power = -75 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } random_list = { 1 = { add_adm_power = -50 } 1 = { add_dip_power = -50 } 1 = { add_mil_power = -50 } } }
+		else = { random_list = { 1 = { add_adm_power = -25 } 1 = { add_dip_power = -25 } 1 = { add_mil_power = -25 } } }
+	]
+	[[prestige_effect]
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_prestige = -50 add_stability = -1 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_prestige = -50 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_prestige = -45 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_prestige = -40 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_prestige = -35 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_prestige = -30 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_prestige = -25 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_prestige = -20 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_prestige = -15 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_prestige = -10 }
+		else = { add_prestige = -5 }
+	]
+	[[treasury_effect]
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_years_of_income = -1.5 add_stability = -1 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_years_of_income = -1.0 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_years_of_income = -0.9 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_years_of_income = -0.8 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_years_of_income = -0.7 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_years_of_income = -0.6 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_years_of_income = -0.5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_years_of_income = -0.4 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_years_of_income = -0.3 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_years_of_income = -0.2 }
+		else = { add_years_of_income = -0.1 }
+	]
+	[[inflation_effect]
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_inflation = 5.0 add_stability = -1 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_inflation = 5.0 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_inflation = 4.5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_inflation = 4.0 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_inflation = 3.5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_inflation = 3.0 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_inflation = 2.5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_inflation = 2.0 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_inflation = 1.5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_inflation = 1.0 }
+		else = { add_inflation = 0.5 }
+	]
+
+	hidden_effect = {
+		random_list = {
+			10 = { change_variable = { tur_power_struggle_intesity = 2 } }
+			80 = { change_variable = { tur_power_struggle_intesity = 1 } }
+			5 = {  }
+			4 = { change_variable = { tur_power_struggle_intesity = -1 } }
+			1 = { change_variable = { tur_power_struggle_intesity = -2 } }
+		}
+	}
+}
+
+ottoman_power_struggle_rebel_effect = {
+	if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } $province_1$ = { spawn_likely_rebels = { size = 3 } } $province_2$ = { spawn_likely_rebels = { size = 3 } } $province_3$ = { spawn_likely_rebels = { size = 3 } } $province_4$ = { spawn_likely_rebels = { size = 3 } } add_stability = -1 }
+	else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } $province_1$ = { spawn_likely_rebels = { size = 3 } } $province_2$ = { spawn_likely_rebels = { size = 3 } } $province_3$ = { spawn_likely_rebels = { size = 2 } } $province_4$ = { spawn_likely_rebels = { size = 2 } } }
+	else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } $province_1$ = { spawn_likely_rebels = { size = 3 } } $province_2$ = { spawn_likely_rebels = { size = 2 } } $province_3$ = { spawn_likely_rebels = { size = 2 } } $province_4$ = { spawn_likely_rebels = { size = 2 } } }
+	else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } $province_1$ = { spawn_likely_rebels = { size = 2 } } $province_2$ = { spawn_likely_rebels = { size = 2 } } $province_3$ = { spawn_likely_rebels = { size = 2 } } $province_4$ = { spawn_likely_rebels = { size = 2 } } }
+	else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } $province_1$ = { spawn_likely_rebels = { size = 2 } } $province_2$ = { spawn_likely_rebels = { size = 2 } } $province_3$ = { spawn_likely_rebels = { size = 2 } } $province_4$ = { spawn_likely_rebels = { size = 1 } } }
+	else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } $province_1$ = { spawn_likely_rebels = { size = 2 } } $province_2$ = { spawn_likely_rebels = { size = 2 } } $province_3$ = { spawn_likely_rebels = { size = 2 } } }
+	else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } $province_1$ = { spawn_likely_rebels = { size = 2 } } $province_2$ = { spawn_likely_rebels = { size = 2 } } $province_3$ = { spawn_likely_rebels = { size = 1 } } }
+	else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } $province_1$ = { spawn_likely_rebels = { size = 2 } } $province_2$ = { spawn_likely_rebels = { size = 2 } } }
+	else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } $province_1$ = { spawn_likely_rebels = { size = 2 } } $province_2$ = { spawn_likely_rebels = { size = 1 } } }
+	else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } $province_1$ = { spawn_likely_rebels = { size = 2 } } }
+	else = { $province_1$ = { spawn_likely_rebels = { size = 1 } } }
+
+	hidden_effect = {
+		random_list = {
+			10 = { change_variable = { tur_power_struggle_intesity = 2 } }
+			80 = { change_variable = { tur_power_struggle_intesity = 1 } }
+			5 = {  }
+			4 = { change_variable = { tur_power_struggle_intesity = -1 } }
+			1 = { change_variable = { tur_power_struggle_intesity = -2 } }
+		}
+	}
+}
+
+#Supports the following trade goods
+###################################
+# grain
+# wine
+# wool
+# cloth
+# fish
+# fur
+# salt
+# naval_supplies
+# copper
+# gold
+# iron
+# slaves
+# ivory
+# tea
+# chinaware
+# spices
+# coffee
+# cotton
+# sugar
+# tobacco
+# cocoa
+# silk
+# dyes
+# tropical_wood
+# livestock
+# incense
+# glass
+# paper
+# gems
+# coal
+# cloves
+increase_trade_goods_discovery = {
+	custom_tooltip = increase_trade_goods_discovery_$trade_goods$_tt
+	set_country_flag = increased_trade_goods_discovery_$trade_goods$
+}
+
+increase_gold_discovery = {
+	custom_tooltip = por_bandeirantes_tooltip
+	set_country_flag = por_bandeirantes_flag
+}
+
+enable_improved_consecration = {
+	if = {
+		limit = {
+			has_dlc = "Third Rome"
+			religion = orthodox
+		}
+		custom_tooltip = enable_improved_consecration_tt
+	}
+	hidden_effect = {
+		set_country_flag = has_improved_consecration
+		every_owned_province = {
+			limit = {
+				has_state_patriach = yes
+			}
+			add_province_modifier = {
+				name = consecrated_ground
+				duration = -1
+				hidden = yes
+			}
+		}
+	}
+}
+
+remove_dev_from_building = {
+	if = {
+		limit = {
+			FROM = { full_idea_group = economic_ideas }
+			gained_dev_from_eco_building = { building = $building$ }
+		}
+		add_base_$type$ = -$value$
+		if = {
+			limit = {
+				NOT = { base_$type$ = 1 }
+			}
+			set_base_$type$ = 1
+		}
+		hidden_effect = {
+			clr_province_flag = built_eco_dev_$building$
+		}
+	}
+}
+
+add_dev_from_building = {
+	if = {
+		limit = {
+			FROM = { full_idea_group = economic_ideas }
+			NOT = { gained_dev_from_eco_building = { building = $building$ } }
+		}
+		add_base_$type$ = $value$
+		hidden_effect = {
+			set_province_flag = built_eco_dev_$building$
+		}
+	}
+}
+
+#type = army/navy
+#leader = general/conquistador/admiral/explorer
+create_leader_scaling_with_tradition = {
+	if = {
+		limit = {
+			$type$_tradition = 80
+		}
+		create_$leader$ = {
+			tradition = 100
+		}
+	}
+	else_if = {
+		limit = {
+			$type$_tradition = 70
+		}
+		create_$leader$ = {
+			tradition = 90
+		}
+	}
+	else_if = {
+		limit = {
+			$type$_tradition = 60
+		}
+		create_$leader$ = {
+			tradition = 80
+		}
+	}
+	else_if = {
+		limit = {
+			$type$_tradition = 50
+		}
+		create_$leader$ = {
+			tradition = 70
+		}
+	}
+	else_if = {
+		limit = {
+			$type$_tradition = 40
+		}
+		create_$leader$ = {
+			tradition = 60
+		}
+	}
+	else_if = {
+		limit = {
+			$type$_tradition = 30
+		}
+		create_$leader$ = {
+			tradition = 50
+		}
+	}
+	else = {
+		create_$leader$ = {
+			tradition = 40
+		}
+	}
+	custom_tooltip = create_leader_scaling_with_tradition_tt
+}
+
+#type = heavy_ship/light_ship/galley/transport
+add_ship_construction_scaled_to_ports = {	
+	random_owned_province = {
+		limit = {
+			has_port = yes
+		}
+		if = {
+			limit = {
+				owner = {
+					num_of_ports = 10
+				}
+			}
+			add_unit_construction = {
+				amount = 5
+				type = $type$
+				speed = 0.5
+				cost = 0
+			}
+		}
+		else_if = {
+			limit = {
+				owner = {
+					num_of_ports = 8
+				}
+			}
+			add_unit_construction = {
+				amount = 4
+				type = $type$
+				speed = 0.5
+				cost = 0
+			}
+		}
+		else_if = {
+			limit = {
+				owner = {
+					num_of_ports = 6
+				}
+			}
+			add_unit_construction = {
+				amount = 3
+				type = $type$
+				speed = 0.5
+				cost = 0
+			}
+		}
+		else_if = {
+			limit = {
+				owner = {
+					num_of_ports = 4
+				}
+			}
+			add_unit_construction = {
+				amount = 2
+				type = $type$
+				speed = 0.5
+				cost = 0
+			}
+		}
+		add_unit_construction = {
+			amount = 1
+			type = $type$
+			speed = 0.5
+			cost = 0
+		}
+	}
+}
+
+update_entire_culture = {
+	change_primary_culture = $culture$_new
+	set_ruler_culture = $culture$_new
+	if = {
+		limit = {
+			has_heir = yes
+		}
+		set_heir_culture = $culture$_new
+	}
+	if = {
+		limit = {
+			has_consort = yes
+			consort_culture = $culture$
+		}
+		set_consort_culture = $culture$_new
+	}
+	hidden_effect = {
+		every_province = {
+			limit = {
+				culture = $culture$
+			}
+			change_culture = $culture$_new
+		}
+		every_country = {
+			limit = {
+				primary_culture = $culture$
+			}
+			change_primary_culture = $culture$_new
+			set_ruler_culture = $culture$_new
+			if = {
+				limit = {
+					has_heir = yes
+				}
+				set_heir_culture = $culture$_new
+			}
+			if = {
+				limit = {
+					has_consort = yes
+					consort_culture = $culture$
+				}
+				set_consort_culture = $culture$_new
+			}
+		}
+		set_global_flag = updated_$culture$_flag
+	}
+}
+
+update_entire_culture_foreign = {
+	hidden_effect = {
+		every_province = {
+			limit = {
+				culture = $culture$
+			}
+			change_culture = $culture$_new
+		}
+		every_country = {
+			limit = {
+				primary_culture = $culture$
+			}
+			change_primary_culture = $culture$_new
+			set_ruler_culture = $culture$_new
+			if = {
+				limit = {
+					has_heir = yes
+				}
+				set_heir_culture = $culture$_new
+			}
+			if = {
+				limit = {
+					has_consort = yes
+					consort_culture = $culture$
+				}
+				set_consort_culture = $culture$_new
+			}
+		}
+		set_global_flag = updated_$culture$_flag
+	}
+}
+
+update_entire_culture_group = {
+	change_primary_culture = $culture$_new
+	set_ruler_culture = $culture$_new
+	if = {
+		limit = {
+			has_heir = yes
+		}
+		set_heir_culture = $culture$_new
+	}
+	if = {
+		limit = {
+			has_consort = yes
+			OR = {
+				consort_culture = $culture1$
+				[[culture2]consort_culture = $culture2$]
+				[[culture3]consort_culture = $culture3$]
+				[[culture4]consort_culture = $culture4$]
+				[[culture5]consort_culture = $culture5$]
+				[[culture6]consort_culture = $culture6$]
+				[[culture7]consort_culture = $culture7$]
+				[[culture8]consort_culture = $culture8$]
+				[[culture9]consort_culture = $culture9$]
+				[[culture10]consort_culture = $culture10$]
+				[[culture11]consort_culture = $culture11$]
+				[[culture11]consort_culture = $culture11$]
+				[[culture12]consort_culture = $culture12$]
+				[[culture13]consort_culture = $culture13$]
+				[[culture14]consort_culture = $culture14$]
+				[[culture15]consort_culture = $culture15$]
+				[[culture16]consort_culture = $culture16$]
+				[[culture17]consort_culture = $culture17$]
+				[[culture18]consort_culture = $culture18$]
+				[[culture19]consort_culture = $culture19$]
+				[[culture20]consort_culture = $culture20$]
+			}
+			consort_culture = $culture$
+		}
+		set_consort_culture = $culture$_new
+	}
+	hidden_effect = {
+		every_province = {
+			limit = {
+				OR = {
+					culture = $culture1$
+					[[culture2]culture = $culture2$]
+					[[culture3]culture = $culture3$]
+					[[culture4]culture = $culture4$]
+					[[culture5]culture = $culture5$]
+					[[culture6]culture = $culture6$]
+					[[culture7]culture = $culture7$]
+					[[culture8]culture = $culture8$]
+					[[culture9]culture = $culture9$]
+					[[culture10]culture = $culture10$]
+					[[culture11]culture = $culture11$]
+					[[culture11]culture = $culture11$]
+					[[culture12]culture = $culture12$]
+					[[culture13]culture = $culture13$]
+					[[culture14]culture = $culture14$]
+					[[culture15]culture = $culture15$]
+					[[culture16]culture = $culture16$]
+					[[culture17]culture = $culture17$]
+					[[culture18]culture = $culture18$]
+					[[culture19]culture = $culture19$]
+					[[culture20]culture = $culture20$]
+				}
+			}
+			change_culture = $culture$_new
+		}
+		every_country = {
+			limit = {
+				OR = {
+					primary_culture = $culture1$
+					[[culture2]primary_culture = $culture2$]
+					[[culture3]primary_culture = $culture3$]
+					[[culture4]primary_culture = $culture4$]
+					[[culture5]primary_culture = $culture5$]
+					[[culture6]primary_culture = $culture6$]
+					[[culture7]primary_culture = $culture7$]
+					[[culture8]primary_culture = $culture8$]
+					[[culture9]primary_culture = $culture9$]
+					[[culture10]primary_culture = $culture10$]
+					[[culture11]primary_culture = $culture11$]
+					[[culture11]primary_culture = $culture11$]
+					[[culture12]primary_culture = $culture12$]
+					[[culture13]primary_culture = $culture13$]
+					[[culture14]primary_culture = $culture14$]
+					[[culture15]primary_culture = $culture15$]
+					[[culture16]primary_culture = $culture16$]
+					[[culture17]primary_culture = $culture17$]
+					[[culture18]primary_culture = $culture18$]
+					[[culture19]primary_culture = $culture19$]
+					[[culture20]primary_culture = $culture20$]
+				}
+			}
+			change_primary_culture = $culture$_new
+			set_ruler_culture = $culture$_new
+			if = {
+				limit = {
+					has_heir = yes
+				}
+				set_heir_culture = $culture$_new
+			}
+			if = {
+				limit = {
+					has_consort = yes
+					OR = {
+						consort_culture = $culture1$
+						[[culture2]consort_culture = $culture2$]
+						[[culture3]consort_culture = $culture3$]
+						[[culture4]consort_culture = $culture4$]
+						[[culture5]consort_culture = $culture5$]
+						[[culture6]consort_culture = $culture6$]
+						[[culture7]consort_culture = $culture7$]
+						[[culture8]consort_culture = $culture8$]
+						[[culture9]consort_culture = $culture9$]
+						[[culture10]consort_culture = $culture10$]
+						[[culture11]consort_culture = $culture11$]
+						[[culture11]consort_culture = $culture11$]
+						[[culture12]consort_culture = $culture12$]
+						[[culture13]consort_culture = $culture13$]
+						[[culture14]consort_culture = $culture14$]
+						[[culture15]consort_culture = $culture15$]
+						[[culture16]consort_culture = $culture16$]
+						[[culture17]consort_culture = $culture17$]
+						[[culture18]consort_culture = $culture18$]
+						[[culture19]consort_culture = $culture19$]
+						[[culture20]consort_culture = $culture20$]
+					}
+				}
+				set_consort_culture = $culture$_new
+			}
+		}
+		set_global_flag = updated_$culture$_flag
+	}
+}
+
+create_new_culture_group = {
+	change_primary_culture = $culture$_new
+	set_ruler_culture = $culture$_new
+	if = {
+		limit = {
+			has_heir = yes
+		}
+		set_heir_culture = $culture$_new
+	}
+	if = {
+		limit = {
+			has_consort = yes
+			OR = {
+				consort_culture = $culture$
+				[[culture2]consort_culture = $culture2$]
+				[[culture3]consort_culture = $culture3$]
+				[[culture4]consort_culture = $culture4$]
+				[[culture5]consort_culture = $culture5$]
+				[[culture6]consort_culture = $culture6$]
+				[[culture7]consort_culture = $culture7$]
+				[[culture8]consort_culture = $culture8$]
+				[[culture9]consort_culture = $culture9$]
+				[[culture10]consort_culture = $culture10$]
+				[[culture11]consort_culture = $culture11$]
+				[[culture11]consort_culture = $culture11$]
+				[[culture12]consort_culture = $culture12$]
+				[[culture13]consort_culture = $culture13$]
+				[[culture14]consort_culture = $culture14$]
+				[[culture15]consort_culture = $culture15$]
+				[[culture16]consort_culture = $culture16$]
+				[[culture17]consort_culture = $culture17$]
+				[[culture18]consort_culture = $culture18$]
+				[[culture19]consort_culture = $culture19$]
+				[[culture20]consort_culture = $culture20$]
+			}
+			consort_culture = $culture$
+		}
+		set_consort_culture = $culture$_new
+	}
+	hidden_effect = {
+		every_province = {
+			limit = {
+				OR = {
+					culture = $culture$
+					[[culture2]culture = $culture2$]
+					[[culture3]culture = $culture3$]
+					[[culture4]culture = $culture4$]
+					[[culture5]culture = $culture5$]
+					[[culture6]culture = $culture6$]
+					[[culture7]culture = $culture7$]
+					[[culture8]culture = $culture8$]
+					[[culture9]culture = $culture9$]
+					[[culture10]culture = $culture10$]
+					[[culture11]culture = $culture11$]
+					[[culture11]culture = $culture11$]
+					[[culture12]culture = $culture12$]
+					[[culture13]culture = $culture13$]
+					[[culture14]culture = $culture14$]
+					[[culture15]culture = $culture15$]
+					[[culture16]culture = $culture16$]
+					[[culture17]culture = $culture17$]
+					[[culture18]culture = $culture18$]
+					[[culture19]culture = $culture19$]
+					[[culture20]culture = $culture20$]
+				}
+			}
+			trigger_switch = {
+				on_trigger = culture
+				$culture$ = { change_culture = $culture$_new }
+				[[culture2]$culture2$ = { change_culture = $culture2$_new }]
+				[[culture3]$culture3$ = { change_culture = $culture3$_new }]
+				[[culture4]$culture4$ = { change_culture = $culture4$_new }]
+				[[culture5]$culture5$ = { change_culture = $culture5$_new }]
+				[[culture6]$culture6$ = { change_culture = $culture6$_new }]
+				[[culture7]$culture7$ = { change_culture = $culture7$_new }]
+				[[culture8]$culture8$ = { change_culture = $culture8$_new }]
+				[[culture9]$culture9$ = { change_culture = $culture9$_new }]
+				[[culture10]$culture10$ = { change_culture = $culture10$_new }]
+				[[culture11]$culture11$ = { change_culture = $culture11$_new }]
+				[[culture11]$culture11$ = { change_culture = $culture11$_new }]
+				[[culture12]$culture12$ = { change_culture = $culture12$_new }]
+				[[culture13]$culture13$ = { change_culture = $culture13$_new }]
+				[[culture14]$culture14$ = { change_culture = $culture14$_new }]
+				[[culture15]$culture15$ = { change_culture = $culture15$_new }]
+				[[culture16]$culture16$ = { change_culture = $culture16$_new }]
+				[[culture17]$culture17$ = { change_culture = $culture17$_new }]
+				[[culture18]$culture18$ = { change_culture = $culture18$_new }]
+				[[culture19]$culture19$ = { change_culture = $culture19$_new }]
+				[[culture20]$culture20$ = { change_culture = $culture20$_new }]
+			}
+		}
+		every_country = {
+			limit = {
+				OR = {
+					primary_culture = $culture$
+					[[culture2]primary_culture = $culture2$]
+					[[culture3]primary_culture = $culture3$]
+					[[culture4]primary_culture = $culture4$]
+					[[culture5]primary_culture = $culture5$]
+					[[culture6]primary_culture = $culture6$]
+					[[culture7]primary_culture = $culture7$]
+					[[culture8]primary_culture = $culture8$]
+					[[culture9]primary_culture = $culture9$]
+					[[culture10]primary_culture = $culture10$]
+					[[culture11]primary_culture = $culture11$]
+					[[culture11]primary_culture = $culture11$]
+					[[culture12]primary_culture = $culture12$]
+					[[culture13]primary_culture = $culture13$]
+					[[culture14]primary_culture = $culture14$]
+					[[culture15]primary_culture = $culture15$]
+					[[culture16]primary_culture = $culture16$]
+					[[culture17]primary_culture = $culture17$]
+					[[culture18]primary_culture = $culture18$]
+					[[culture19]primary_culture = $culture19$]
+					[[culture20]primary_culture = $culture20$]
+				}
+			}
+			trigger_switch = {
+				on_trigger = primary_culture
+				$culture$ = {
+					change_primary_culture = $culture$_new
+					set_ruler_culture = $culture$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture$_new }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture$_new }
+				}
+				[[culture2]$culture2$ = {
+					change_primary_culture = $culture2$_new
+					set_ruler_culture = $culture2$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture2$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture2$_new }
+				}]
+				[[culture3]$culture3$ = {
+					change_primary_culture = $culture3$_new
+					set_ruler_culture = $culture3$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture3$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture3$_new }
+				}]
+				[[culture4]$culture4$ = {
+					change_primary_culture = $culture4$_new
+					set_ruler_culture = $culture4$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture4$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture4$_new }
+				}]
+				[[culture5]$culture5$ = {
+					change_primary_culture = $culture5$_new
+					set_ruler_culture = $culture5$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture5$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture5$_new }
+				}]
+				[[culture6]$culture6$ = {
+					change_primary_culture = $culture6$_new
+					set_ruler_culture = $culture6$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture6$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture6$_new }
+				}]
+				[[culture7]$culture7$ = {
+					change_primary_culture = $culture7$_new
+					set_ruler_culture = $culture7$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture7$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture7$_new }
+				}]
+				[[culture8]$culture8$ = {
+					change_primary_culture = $culture8$_new
+					set_ruler_culture = $culture8$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture8$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture8$_new }
+				}]
+				[[culture9]$culture9$ = {
+					change_primary_culture = $culture9$_new
+					set_ruler_culture = $culture9$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture9$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture9$_new }
+				}]
+				[[culture10]$culture10$ = {
+					change_primary_culture = $culture10$_new
+					set_ruler_culture = $culture10$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture10$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture10$_new }
+				}]
+				[[culture11]$culture11$ = {
+					change_primary_culture = $culture11$_new
+					set_ruler_culture = $culture11$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture11$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture11$_new }
+				}]
+				[[culture11]$culture11$ = {
+					change_primary_culture = $culture11$_new
+					set_ruler_culture = $culture11$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture11$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture11$_new }
+				}]
+				[[culture12]$culture12$ = {
+					change_primary_culture = $culture12$_new
+					set_ruler_culture = $culture12$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture12$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture12$_new }
+				}]
+				[[culture13]$culture13$ = {
+					change_primary_culture = $culture13$_new
+					set_ruler_culture = $culture13$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture13$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture13$_new }
+				}]
+				[[culture14]$culture14$ = {
+					change_primary_culture = $culture14$_new
+					set_ruler_culture = $culture14$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture14$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture14$_new }
+				}]
+				[[culture15]$culture15$ = {
+					change_primary_culture = $culture15$_new
+					set_ruler_culture = $culture15$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture15$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture15$_new }
+				}]
+				[[culture16]$culture16$ = {
+					change_primary_culture = $culture16$_new
+					set_ruler_culture = $culture16$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture16$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture16$_new }
+				}]
+				[[culture17]$culture17$ = {
+					change_primary_culture = $culture17$_new
+					set_ruler_culture = $culture17$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture17$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture17$_new }
+				}]
+				[[culture18]$culture18$ = {
+					change_primary_culture = $culture18$_new
+					set_ruler_culture = $culture18$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture18$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture18$_new }
+				}]
+				[[culture19]$culture19$ = {
+					change_primary_culture = $culture19$_new
+					set_ruler_culture = $culture19$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture19$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture19$_new }
+				}]
+				[[culture20]$culture20$ = {
+					change_primary_culture = $culture20$_new
+					set_ruler_culture = $culture20$_new
+					if = { limit = { has_heir = yes } set_heir_culture = $culture20$ }
+					if = { limit = { has_consort = yes } set_consort_culture = $culture20$_new }
+				}]
+			}
+		}
+		set_global_flag = updated_$culture_group$_flag
+	}
+}
+#Supports the following trade goods		Base prices
+# grain									2.5
+# wine									2.5
+# wool									2.5
+# cloth									3
+# fish									2.5
+# fur									2
+# salt									3
+# naval_supplies						2
+# copper								3
+# gold									10	#Technically 0, but let us calculate with 10
+# iron									3
+# slaves								2
+# ivory									4
+# tea									3
+# chinaware								3
+# spices								3
+# coffee								3
+# cotton								3
+# sugar									3
+# tobacco								3
+# cocoa									4
+# silk									4
+# dyes									4
+# tropical_wood							2
+# livestock								2
+# incense								2.5
+# glass									3
+# paper									3.5
+# gems									4
+# coal									10
+# cloves								8
+# unknown								0	#Special and should not count
+
+determine_value_of_trade_goods_grain = {
+	set_variable = {
+		which = base_value_grain
+		value = 2.5
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_grain
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = mountain
+						has_terrain = coastal_desert
+						has_terrain = forest
+						has_terrain = woods
+						has_terrain = hills
+						has_terrain = jungle
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_grain
+				value = 0.15
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = highlands
+						has_terrain = marsh
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_grain
+				value = 0.25
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_climate = arid
+						has_climate = tropical
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_grain
+				value = 0.25
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = drylands
+						has_terrain = savannah
+						has_terrain = steppe
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_grain
+				value = 0.6
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_winter = severe_winter
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_grain
+				value = 0.35
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_winter = normal_winter
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_grain
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_terrain = farmlands
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_grain
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						region = poland_region
+						region = ruthenia_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_grain
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = grain }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = grain } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_grain
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_grain
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_grain
+				which = chance_modifier_grain
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_wine = {
+	set_variable = {
+		which = base_value_wine
+		value = 2.5
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_wine
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_winter = normal_winter
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wine
+				value = 0.25
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_terrain = farmlands
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wine
+				value = 1.25
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = hills
+						has_terrain = highlands
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wine
+				value = 1.25
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						area = cuyo_area
+						region = france_region
+						region = italy_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wine
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					culture_group = french
+					culture_group = iberian
+					culture_group = latin
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wine
+				value = 1.1
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = wine }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = wine } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wine
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_wine
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_wine
+				which = chance_modifier_wine
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_wool = {
+	set_variable = {
+		which = base_value_wool
+		value = 2.5
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_wool
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = grasslands
+						has_terrain = hills
+						has_terrain = forest
+						has_terrain = woods
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wool
+				value = 0.15
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = desert
+						has_terrain = savannah
+						has_terrain = highlands
+						has_terrain = drylands
+						has_climate = arid
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wool
+				value = 1.25
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = central_asia_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wool
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = tibet_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wool
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = wool }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = wool } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_wool
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_wool
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_wool
+				which = chance_modifier_wool
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_cloth = {
+	set_variable = {
+		which = base_value_cloth
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_cloth
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					development_discounting_tribal = 12
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_cloth
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = cloth }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = cloth } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_cloth
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_cloth
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_cloth
+				which = chance_modifier_cloth
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_fish = {
+	set_variable = {
+		which = base_value_fish
+		value = 2.5
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_fish
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						region = carribeans_region
+						region = malaya_region
+						region = moluccas_region
+						region = indonesia_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fish
+				value = 0.65
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					area = newfoundland_area
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fish
+				value = 15
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = coastline
+						has_terrain = coastal_desert
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fish
+				value = 1.1
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_terrain = glacier
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fish
+				value = 1.2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = fish }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = fish } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fish
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_fish
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_fish
+				which = chance_modifier_fish
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_fur = {
+	set_variable = {
+		which = base_value_fur
+		value = 2
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_fur
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = savannah
+						has_terrain = grasslands
+						has_terrain = highlands
+					}
+					has_winter = mild_winter
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fur
+				value = 0.75
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					NOT = { native_size = 1 }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fur
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					native_size = 1
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fur
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_terrain = forest
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fur
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_winter = normal_winter
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fur
+				value = 1.6
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_winter = severe_winter
+					NOT = { has_terrain = glacier }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fur
+				value = 2.5
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_fur
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = fur }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = fur } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_fur
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_fur
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_fur
+				which = chance_modifier_fur
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_salt = {
+	set_variable = {
+		which = base_value_salt
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_salt
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = desert
+						AND = {
+							has_terrain = marsh
+							NOT = { has_climate = arctic } #Hudson Bay
+						}
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_salt
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = peru_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_salt
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					area = western_sahara_area
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_salt
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = salt }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = salt } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_salt
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_salt
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_salt
+				which = chance_modifier_salt
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_naval_supplies = {
+	set_variable = {
+		which = base_value_naval_supplies
+		value = 2
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_naval_supplies
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = carribeans_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_naval_supplies
+				value = 0.65
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = mountain
+						has_terrain = grasslands
+						region = central_africa_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_naval_supplies
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				NOT = { num_of_ports = 1 }
+			}
+			multiply_variable = {
+				which = chance_modifier_naval_supplies
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = coastline
+						has_climate = tropical
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_naval_supplies
+				value = 0.75
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = forest
+						has_terrain = woods
+						has_terrain = hills
+						has_terrain = jungle
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_naval_supplies
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = naval_supplies }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = naval_supplies } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_naval_supplies
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_naval_supplies
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_naval_supplies
+				which = chance_modifier_naval_supplies
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_copper = {
+	set_variable = {
+		which = base_value_copper
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_copper
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = central_africa_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_copper
+				value = 0.7
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					is_random_new_world = yes
+					OR = {
+						has_terrain = mountain
+						has_terrain = highlands
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_copper
+				value = 1.1
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						area = minas_gerais_area
+						area = diamantina_area
+						area = mato_grosso_area
+						area = ofaie_area
+						area = great_valley_area
+						area = susquehanna_area
+						area = hudson_valley_area
+						area = lake_superior_area
+						area = south_iroquoisia_area
+						region = west_siberia_region
+						region = east_siberia_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_copper
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = copper }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = copper } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_copper
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_copper
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_copper
+				which = chance_modifier_copper
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_gold = {
+	set_variable = {
+		which = base_value_gold
+		value = 10
+	}
+	if = {
+		limit = {
+			#has_chance_scaling_cost = yes
+			always = no
+		}
+		set_variable = {
+			which = chance_modifier_gold
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					is_random_new_world = yes
+					has_terrain = mountain
+					continent = new_world #Always in RNW
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gold
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					normal_or_historical_nations = no
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gold
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = peru_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gold
+				value = 3.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						province_id = 852		# Mexico
+						province_id = 853		# Huastec
+						province_id = 854		# Sayultecas
+						province_id = 2617		# Huichol
+						province_id = 856		# Zacatecas
+						province_id = 857		# Guichichil
+						province_id = 858		# Tamaulipas
+						province_id = 2615		# Guamares
+						province_id = 4781		# Transvaal (Johannesburg mines)
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gold
+				value = 4
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						area = minas_gerais_area
+						area = diamantina_area
+						area = mato_grosso_area
+						area = ofaie_area
+						area = goias_area
+						area = pontal_area
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gold
+				value = 3.5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_country_flag = por_bandeirantes_flag
+					colonial_parent = { has_country_flag = por_bandeirantes_flag }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gold
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = gold }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = gold } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gold
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					province_id = 856
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gold
+				value = 100
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_gold
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_gold
+				which = chance_modifier_gold
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_iron = {
+	set_variable = {
+		which = base_value_iron
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_iron
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					normal_or_historical_nations = no
+					OR = {
+						has_terrain = mountain
+						has_terrain = hills
+						has_terrain = highlands
+						province_id = 990
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_iron
+				value = 1.2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					province_id = 990
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_iron
+				value = 20
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_iron
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_iron
+				which = chance_modifier_iron
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_slaves = {
+	set_variable = {
+		which = base_value_slaves
+		value = 2
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_slaves
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						region = horn_of_africa_region
+						region = kongo_region
+						area = west_africa_coast_area
+						area = gulf_of_guinea_area
+						area = benin_area
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_slaves
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = south_africa_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_slaves
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_slaves
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = slaves }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = slaves } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_slaves
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_slaves
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_slaves
+				which = chance_modifier_slaves
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_ivory = {
+	set_variable = {
+		which = base_value_ivory
+		value = 4
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_ivory
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						region = malaya_region
+						region = moluccas_region
+						region = indonesia_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_ivory
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = jungle
+						has_terrain = savannah
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_ivory
+				value = 1.25
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_ivory
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = ivory }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = ivory } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_ivory
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_ivory
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_ivory
+				which = chance_modifier_ivory
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_tea = {
+	set_variable = {
+		which = base_value_tea
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_tea
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_terrain = farmlands
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tea
+				value = 1.2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						area = assam_area
+						AND = {
+							has_climate = tropical
+							is_random_new_world = yes
+						}
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tea
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						area = banda_oriental_area #Yerba Mate
+						area = rio_grande_do_sol_area #Yerba Mate
+						area = buenos_aires_area #Yerba Mate
+						area = misiones_area #Yerba Mate
+						area = beni_area #Yerba Mate
+						area = moxos_area #Yerba Mate
+						area = paraguay_area #Yerba Mate
+						area = sao_paolo_area  #Yerba Mate
+						area = west_sao_paolo_area  #Yerba Mate
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tea
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = tea }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = tea } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tea
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_tea
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_tea
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_tea
+				which = chance_modifier_tea
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_chinaware = {
+	set_variable = {
+		which = base_value_chinaware
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_chinaware
+			value = 1
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_chinaware
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = chinaware }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = chinaware } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_chinaware
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_chinaware
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_chinaware
+				which = chance_modifier_chinaware
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_spices = {
+	set_variable = {
+		which = base_value_spices
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_spices
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					area = indian_ocean_islands_area
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_spices
+				value = 0.75
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						continent = north_america
+						continent = south_america
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_spices
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						region = malaya_region
+						region = indonesia_region
+						region = moluccas_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_spices
+				value = 1.25
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_spices
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = spices }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = spices } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_spices
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_spices
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_spices
+				which = chance_modifier_spices
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_coffee = {
+	set_variable = {
+		which = base_value_coffee
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_coffee
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = colombia_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_coffee
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_coffee
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = coffee }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = coffee } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_coffee
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_coffee
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_coffee
+				which = chance_modifier_coffee
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_cotton = {
+	set_variable = {
+		which = base_value_cotton
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_cotton
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = farmlands
+						has_terrain = grasslands
+						region = southeast_america_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_cotton
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_cotton
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = cotton }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = cotton } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_cotton
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_cotton
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_cotton
+				which = chance_modifier_cotton
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_sugar = {
+	set_variable = {
+		which = base_value_sugar
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_sugar
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					is_random_new_world = no
+					NOT = { province_id = 481 }
+					OR = {
+						region = carribeans_region
+						area = ceara_area
+						area = pernambuco_area
+						area = bahia_area
+						area = guyana_area
+						area = suriname_area
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_sugar
+				value = 2.5
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_sugar
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = sugar }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = sugar } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_sugar
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_sugar
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_sugar
+				which = chance_modifier_sugar
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_tobacco = {
+	set_variable = {
+		which = base_value_tobacco
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_tobacco
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						region = northeast_america_region
+						region = southeast_america_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tobacco
+				value = 2.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = australia_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tobacco
+				value = 0.2
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_tobacco
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = tobacco }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = tobacco } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tobacco
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_tobacco
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_tobacco
+				which = chance_modifier_tobacco
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_cocoa = {
+	set_variable = {
+		which = base_value_cocoa
+		value = 4
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_cocoa
+			value = 1
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = cocoa }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = cocoa } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_cocoa
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_cocoa
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_cocoa
+				which = chance_modifier_cocoa
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_silk = {
+	set_variable = {
+		which = base_value_silk
+		value = 4
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_silk
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					normal_or_historical_nations = no
+					FROM = { NOT = { religion_group = dharmic } }
+					FROM = { NOT = { religion_group = eastern } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_silk
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					normal_or_historical_nations = no
+					OR = {
+						region = south_china_region
+						region = xinan_region
+						region = north_china_region
+						region = hindusthan_region
+						region = bengal_region
+						region = deccan_region
+						region = coromandel_region
+					}
+					development_discounting_tribal = 20
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_silk
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_silk
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = silk }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = silk } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_silk
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_silk
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_silk
+				which = chance_modifier_silk
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_dyes = {
+	set_variable = {
+		which = base_value_dyes
+		value = 4
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_dyes
+			value = 1
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_dyes
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = dyes }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = dyes } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_dyes
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_dyes
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_dyes
+				which = chance_modifier_dyes
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_tropical_wood = {
+	set_variable = {
+		which = base_value_tropical_wood
+		value = 2
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_tropical_wood
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					area = amazon_area
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tropical_wood
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						region = malaya_region
+						region = moluccas_region
+						region = indonesia_region
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tropical_wood
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_tropical_wood
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = tropical_wood }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = tropical_wood } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_tropical_wood
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_tropical_wood
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_tropical_wood
+				which = chance_modifier_tropical_wood
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_livestock = {
+	set_variable = {
+		which = base_value_livestock
+		value = 2
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_livestock
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					province_id = 2002
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_livestock
+				value = 0.05
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_winter = severe_winter
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_livestock
+				value = 0.75
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = desert
+						has_terrain = savannah
+						has_terrain = highlands
+						has_terrain = drylands
+						has_climate = arid
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_livestock
+				value = 1.25
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_terrain = steppe
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_livestock
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = central_asia_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_livestock
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = mongolia_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_livestock
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = tibet_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_livestock
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = central_africa_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_livestock
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = livestock }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = livestock } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_livestock
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_livestock
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_livestock
+				which = chance_modifier_livestock
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_incense = {
+	set_variable = {
+		which = base_value_incense
+		value = 2.5
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_incense
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					area = indian_ocean_islands_area
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_incense
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = arabia_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_incense
+				value = 1.25
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_incense
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = incense }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = incense } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_incense
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_incense
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_incense
+				which = chance_modifier_incense
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_glass = {
+	set_variable = {
+		which = base_value_glass
+		value = 3
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_glass
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					development_discounting_tribal = 22
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_glass
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = glass }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = glass } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_glass
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_glass
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_glass
+				which = chance_modifier_glass
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_paper = {
+	set_variable = {
+		which = base_value_paper
+		value = 3.5
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_paper
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					development_discounting_tribal = 22
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_paper
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = paper }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = paper } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_paper
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_paper
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_paper
+				which = chance_modifier_paper
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_gems = {
+	set_variable = {
+		which = base_value_gems
+		value = 4
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_gems
+			value = 1
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = moluccas_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 1.2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = indonesia_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 0.75
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					continent = oceania
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 0.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						continent = south_america
+						continent = north_america
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						area = diamantina_area
+						area = bogota_area
+						area = murray_river_area #Opal
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						province_id = 1093 #Opal
+						province_id = 2736 #Opal
+						province_id = 4862 #Opal
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					region = brazil_region
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						has_terrain = mountain
+						has_terrain = jungle
+						has_terrain = hills
+						has_terrain = highlands
+						has_terrain = coastline #Pearls
+					}
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					is_random_new_world = yes
+					has_terrain = mountain
+					continent = new_world #Always in RNW
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					normal_or_historical_nations = no
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = gems }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = gems } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_gems
+				value = 1.5
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_gems
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_gems
+				which = chance_modifier_gems
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_coal = {
+	set_variable = {
+		which = base_value_coal
+		value = 10
+	}
+	if = {
+		limit = {
+			#has_chance_scaling_cost = yes
+			always = no
+		}
+		set_variable = {
+			which = chance_modifier_coal
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_coal
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_coal
+				which = chance_modifier_coal
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_cloves = {
+	set_variable = {
+		which = base_value_cloves
+		value = 8
+	}
+	if = {
+		limit = {
+			has_chance_scaling_cost = yes
+		}
+		set_variable = {
+			which = chance_modifier_cloves
+			value = 1
+		}
+		if = {
+			limit = {
+				has_country_flag = encourage_cash_crops_flag
+			}
+			multiply_variable = {
+				which = chance_modifier_cloves
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_increased_trade_goods_discovery = { trade_goods = cloves }
+					colonial_parent = { has_increased_trade_goods_discovery = { trade_goods = cloves } }
+				}
+			}
+			multiply_variable = {
+				which = chance_modifier_cloves
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_variable_equal = {
+						which = chance_modifier_cloves
+						value = 0
+					}
+				}
+			}
+			divide_variable = {
+				which = base_value_cloves
+				which = chance_modifier_cloves
+			}
+		}
+	}
+}
+determine_value_of_trade_goods_unknown = {
+	set_variable = {
+		which = base_value_unknown
+		value = 0
+	}
+}
+
+# The design behind it is the following:
+# 1. You colonize a province
+# 2. A pop-up event appears which gives you the choice to select the trade good for the province
+# 3. Every trade good has an own base price assigned to them. This base price should be their base value * 5 Ducats.
+# 4. Trade goods above 3 value also cost ADM power.
+# 5. Every time you select a certain trade good, the price increases
+# 6. The new price is calculated with this formula: (1 + (times you upgraded it)) * 5 (base trade good price)
+# 7. ADM costs are calculated as follows: (base trade good pirce - 2.5) * 25 * (times YOU upgraded it) as long (base trade good pirce - 2.5) => 0
+# 7. Gold will be counted as having a trade value of 10 Ducats so not all of the whole new world becomes one huge gold cluster
+
+calculate_trade_goods_price = {
+	owner = {
+		determine_value_of_trade_goods_$trade_goods$ = yes
+		set_variable = {
+			which = final_ducat_price_$trade_goods$
+			value = 1
+		}
+		set_variable = {
+			which = final_adm_cost_$trade_goods$
+			which = base_value_$trade_goods$
+		}
+		subtract_variable = {
+			which = final_adm_cost_$trade_goods$
+			value = 2.5
+		}
+		multiply_variable = {
+			which = final_adm_cost_$trade_goods$
+			value = 5
+		}
+		#Determine price increase on your own
+		if = {
+			limit = { has_country_flag = ever_selected_$trade_goods$ }
+			change_variable = {
+				which = final_ducat_price_$trade_goods$
+				which = ducat_cost_$trade_goods$_own_counter
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = final_adm_cost_$trade_goods$
+						value = 1
+					}
+				}
+				multiply_variable = {
+					which = final_adm_cost_$trade_goods$
+					which = ducat_cost_$trade_goods$_own_counter
+				}
+			}
+		}
+		multiply_variable = {
+			which = final_ducat_price_$trade_goods$
+			value = 10
+		}
+		multiply_variable = {
+			which = final_ducat_price_$trade_goods$
+			which = base_value_$trade_goods$
+		}
+	}
+}
+
+purchase_trade_goods = {
+	custom_tooltip = ducat_price_for_$trade_goods$_tt
+	if = {
+		limit = {
+			owner = {
+				check_variable = {
+					which = final_adm_cost_$trade_goods$
+					value = 1
+				}
+			}
+		}
+		custom_tooltip = adm_price_for_$trade_goods$_tt
+	}
+	hidden_effect = {
+		owner = {
+			if = {
+				limit = { NOT = { has_country_flag = ever_selected_$trade_goods$ } }
+				set_country_flag = ever_selected_$trade_goods$
+				set_variable = {
+					which = ducat_cost_$trade_goods$_own_counter
+					value = 1
+				}
+			}
+			else = {
+				change_variable = {
+					which = ducat_cost_$trade_goods$_own_counter
+					value = 1
+				}
+			}
+			while = {
+				limit = {
+					check_variable = {
+						which = final_ducat_price_$trade_goods$
+						value = 1
+					}
+				}
+				add_treasury = -1
+				subtract_variable = {
+					which = final_ducat_price_$trade_goods$
+					value = 1
+				}
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = final_adm_cost_$trade_goods$
+						value = 1
+					}
+				}
+				while = {
+					limit = {
+						check_variable = {
+							which = final_adm_cost_$trade_goods$
+							value = 1
+						}
+					}
+					add_adm_power = -1
+					subtract_variable = {
+						which = final_adm_cost_$trade_goods$
+						value = 1
+					}
+				}
+			}
+		}
+	}
+	change_trade_goods = $trade_goods$
+}
+
+change_japan_formable_color = {
+	if = {
+		limit = { was_tag = AKM }
+		change_country_color = {
+			color = { 137  195   235 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = AKT }
+		change_country_color = {
+			color = { 200  85  84 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = AMA }
+		change_country_color = {
+			color = { 205  94  60 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = ANU }
+		change_country_color = {
+			color = { 201 197 124 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = ARI }
+		change_country_color = {
+			color = { 201  149  242 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = ASA }
+		change_country_color = {
+			color = { 56  180  139 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = ASK }
+		change_country_color = {
+			color = { 162  32  65 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = ASN }
+		change_country_color = {
+			color = { 118 58 0 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = ASO }
+		change_country_color = {
+			color = { 151  99  192 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = CBA }
+		change_country_color = {
+			color = { 32 55  68 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = CSK }
+		change_country_color = {
+			color = { 115  75  62 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = DTE }
+		change_country_color = {
+			color = { 105  176  118 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = HSK }
+		change_country_color = {
+			color = { 49 103 69 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = HTK }
+		change_country_color = {
+			color = { 105  130  27 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = IMG }
+		change_country_color = {
+			color = { 220  203  24 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = ISK }
+		change_country_color = {
+			color = { 47 155 224 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = ITO }
+		change_country_color = {
+			color = { 71  74  77 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = KKC }
+		change_country_color = {
+			color = { 248 184  98 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = KNO }
+		change_country_color = {
+			color = { 22  94  131 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = KSA }
+		change_country_color = {
+			color = { 229 198 229 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = KSB }
+		change_country_color = {
+			color = { 255 208 108 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = KTB }
+		change_country_color = {
+			color = { 113 104 108 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = KTK }
+		change_country_color = {
+			color = { 52  185   146 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = KYO }
+		change_country_color = {
+			color = { 155  44  10 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = MOG }
+		change_country_color = {
+			color = { 205 67 30 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = MRI }
+		change_country_color = {
+			color = { 230  180  34 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = NHT }
+		change_country_color = {
+			color = { 86  33  43 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = ODA }
+		change_country_color = {
+			color = { 224 4 27 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = OGS }
+		change_country_color = {
+			color = { 201  126  145 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = OTM }
+		change_country_color = {
+			color = { 123  71  65 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = OUC }
+		change_country_color = {
+			color = { 216 145 145 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = OUE }
+		change_country_color = {
+			color = { 204  247  168 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = RFR }
+		change_country_color = {
+			color = { 39  100  157 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = RYU }
+		change_country_color = {
+			color = { 90  138  133 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = S4T }
+		change_country_color = {
+			color = { 241 235 99 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = SAG }
+		change_country_color = {
+			color = { 116 19 0 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = SBA }
+		change_country_color = {
+			color = { 0 163 175 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = SHN }
+		change_country_color = {
+			color = { 89  185  198 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = SMZ }
+		change_country_color = {
+			color = { 101 49 142 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = SOO }
+		change_country_color = {
+			color = { 231 96 158 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = STK }
+		change_country_color = {
+			color = { 2  135   96 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = TKA }
+		change_country_color = {
+			color = { 184  35  56 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = TKD }
+		change_country_color = {
+			color = { 234 85 6 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = TKG }
+		change_country_color = {
+			color = { 47 93 80 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = TKI }
+		change_country_color = {
+			color = { 86 84 162 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = TTI }
+		change_country_color = {
+			color = { 88  56   34 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = UES }
+		change_country_color = {
+			color = { 200 200 200 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = UTN }
+		change_country_color = {
+			color = { 222  183  97 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+	if = {
+		limit = { was_tag = YMN }
+		change_country_color = {
+			color = { 140 72 128 }
+		}
+		set_country_flag = has_overriden_color_flag
+	}
+}
+
+#civic_republicanism_focus_government
+#civic_republicanism_focus_expansion
+#civic_republicanism_focus_technology
+#civic_republicanism_focus_stability
+#civic_republicanism_focus_religion
+
+#civic_republicanism_focus_diplomacy
+#civic_republicanism_focus_court
+#civic_republicanism_focus_trade
+#civic_republicanism_focus_subjects
+#civic_republicanism_focus_development
+
+#civic_republicanism_focus_defensive
+#civic_republicanism_focus_sieges
+#civic_republicanism_focus_leaders
+#civic_republicanism_focus_quality
+#civic_republicanism_focus_naval
+
+pre_select_possible_ruler_focus_adm = {
+	random_list = {
+		1 = { set_country_flag = civic_republicanism_focus_government_flag }
+		1 = { set_country_flag = civic_republicanism_focus_expansion_flag }
+		1 = { set_country_flag = civic_republicanism_focus_technology_flag }
+		1 = { set_country_flag = civic_republicanism_focus_stability_flag }
+		1 = { set_country_flag = civic_republicanism_focus_religion_flag }
+	}
+}
+pre_select_possible_ruler_focus_dip = {
+	random_list = {
+		1 = { set_country_flag = civic_republicanism_focus_diplomacy_flag }
+		1 = { set_country_flag = civic_republicanism_focus_court_flag }
+		1 = { set_country_flag = civic_republicanism_focus_trade_flag }
+		1 = { set_country_flag = civic_republicanism_focus_subjects_flag }
+		1 = { set_country_flag = civic_republicanism_focus_development_flag }
+	}
+}
+pre_select_possible_ruler_focus_mil = {
+	random_list = {
+		1 = { set_country_flag = civic_republicanism_focus_defensive_flag }
+		1 = { set_country_flag = civic_republicanism_focus_sieges_flag }
+		1 = { set_country_flag = civic_republicanism_focus_leaders_flag }
+		1 = { set_country_flag = civic_republicanism_focus_quality_flag }
+		1 = { set_country_flag = civic_republicanism_focus_naval_flag }
+	}
+}
+pre_select_possible_ruler_focus_rng = {
+	random_list = {
+		1 = { set_country_flag = RNG_civic_republicanism_focus_government }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_expansion }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_technology }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_stability }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_religion }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_diplomacy }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_court }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_trade }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_subjects }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_development }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_defensive }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_sieges }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_leaders }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_quality }
+		1 = { set_country_flag = RNG_civic_republicanism_focus_naval }
+	}
+}
+
+pre_select_possible_ruler_focus = {
+	pre_select_possible_ruler_focus_adm = yes
+	pre_select_possible_ruler_focus_dip = yes
+	pre_select_possible_ruler_focus_mil = yes
+	pre_select_possible_ruler_focus_rng = yes
+}
+
+assign_ruler_focus_adm = {
+	trigger_switch = {
+		on_trigger = has_country_flag
+		civic_republicanism_focus_government_flag = {	add_ruler_modifier = { name = civic_republicanism_focus_government	duration = -1 } }
+		civic_republicanism_focus_expansion_flag = {	add_ruler_modifier = { name = civic_republicanism_focus_expansion	duration = -1 } }
+		civic_republicanism_focus_technology_flag = {	add_ruler_modifier = { name = civic_republicanism_focus_technology	duration = -1 } }
+		civic_republicanism_focus_stability_flag = {	add_ruler_modifier = { name = civic_republicanism_focus_stability	duration = -1 } }
+		civic_republicanism_focus_religion_flag = {		add_ruler_modifier = { name = civic_republicanism_focus_religion	duration = -1 } }
+	}
+}
+assign_ruler_focus_dip = {
+	trigger_switch = {
+		on_trigger = has_country_flag
+		civic_republicanism_focus_diplomacy_flag = {	add_ruler_modifier = { name = civic_republicanism_focus_diplomacy	duration = -1 } }
+		civic_republicanism_focus_court_flag = {		add_ruler_modifier = { name = civic_republicanism_focus_court		duration = -1 } }
+		civic_republicanism_focus_trade_flag = {		add_ruler_modifier = { name = civic_republicanism_focus_trade		duration = -1 } }
+		civic_republicanism_focus_subjects_flag = {		add_ruler_modifier = { name = civic_republicanism_focus_subjects	duration = -1 } }
+		civic_republicanism_focus_development_flag = {	add_ruler_modifier = { name = civic_republicanism_focus_development	duration = -1 } }
+	}
+}
+assign_ruler_focus_mil = {
+	trigger_switch = {
+		on_trigger = has_country_flag
+		civic_republicanism_focus_defensive_flag = {	add_ruler_modifier = { name = civic_republicanism_focus_defensive	duration = -1 } }
+		civic_republicanism_focus_sieges_flag = {		add_ruler_modifier = { name = civic_republicanism_focus_sieges		duration = -1 } }
+		civic_republicanism_focus_leaders_flag = {		add_ruler_modifier = { name = civic_republicanism_focus_leaders		duration = -1 } }
+		civic_republicanism_focus_quality_flag = {		add_ruler_modifier = { name = civic_republicanism_focus_quality		duration = -1 } }
+		civic_republicanism_focus_naval_flag = {		add_ruler_modifier = { name = civic_republicanism_focus_naval		duration = -1 } }
+	}
+}
+assign_ruler_focus_rng = {
+	trigger_switch = {
+		on_trigger = has_country_flag
+		RNG_civic_republicanism_focus_government = { 	add_ruler_modifier = { name = civic_republicanism_focus_government	duration = -1 }	}
+		RNG_civic_republicanism_focus_expansion = { 	add_ruler_modifier = { name = civic_republicanism_focus_expansion	duration = -1 }	}
+		RNG_civic_republicanism_focus_technology = { 	add_ruler_modifier = { name = civic_republicanism_focus_technology	duration = -1 }	}
+		RNG_civic_republicanism_focus_stability = { 	add_ruler_modifier = { name = civic_republicanism_focus_stability	duration = -1 }	}
+		RNG_civic_republicanism_focus_religion = { 		add_ruler_modifier = { name = civic_republicanism_focus_religion	duration = -1 }	}
+		RNG_civic_republicanism_focus_diplomacy = { 	add_ruler_modifier = { name = civic_republicanism_focus_diplomacy	duration = -1 }	}
+		RNG_civic_republicanism_focus_court = { 		add_ruler_modifier = { name = civic_republicanism_focus_court		duration = -1 }	}
+		RNG_civic_republicanism_focus_trade = { 		add_ruler_modifier = { name = civic_republicanism_focus_trade		duration = -1 }	}
+		RNG_civic_republicanism_focus_subjects = { 		add_ruler_modifier = { name = civic_republicanism_focus_subjects	duration = -1 }	}
+		RNG_civic_republicanism_focus_development = { 	add_ruler_modifier = { name = civic_republicanism_focus_development	duration = -1 }	}
+		RNG_civic_republicanism_focus_defensive = { 	add_ruler_modifier = { name = civic_republicanism_focus_defensive	duration = -1 }	}
+		RNG_civic_republicanism_focus_sieges = { 		add_ruler_modifier = { name = civic_republicanism_focus_sieges		duration = -1 }	}
+		RNG_civic_republicanism_focus_leaders = { 		add_ruler_modifier = { name = civic_republicanism_focus_leaders		duration = -1 }	}
+		RNG_civic_republicanism_focus_quality = { 		add_ruler_modifier = { name = civic_republicanism_focus_quality		duration = -1 }	}
+		RNG_civic_republicanism_focus_naval = { 		add_ruler_modifier = { name = civic_republicanism_focus_naval		duration = -1 }	}
+	}
+}
+
+assign_ruler_focus = {
+	assign_ruler_focus_$type$ = yes
+}
+
+post_ruler_focus_clearance = {
+	hidden_effect = {
+		clr_country_flag = civic_republicanism_focus_government_flag
+		clr_country_flag = civic_republicanism_focus_expansion_flag
+		clr_country_flag = civic_republicanism_focus_technology_flag
+		clr_country_flag = civic_republicanism_focus_stability_flag
+		clr_country_flag = civic_republicanism_focus_religion_flag
+		clr_country_flag = civic_republicanism_focus_diplomacy_flag
+		clr_country_flag = civic_republicanism_focus_court_flag
+		clr_country_flag = civic_republicanism_focus_trade_flag
+		clr_country_flag = civic_republicanism_focus_subjects_flag
+		clr_country_flag = civic_republicanism_focus_development_flag
+		clr_country_flag = civic_republicanism_focus_defensive_flag
+		clr_country_flag = civic_republicanism_focus_sieges_flag
+		clr_country_flag = civic_republicanism_focus_leaders_flag
+		clr_country_flag = civic_republicanism_focus_quality_flag
+		clr_country_flag = civic_republicanism_focus_naval_flag
+		clr_country_flag = RNG_civic_republicanism_focus_government
+		clr_country_flag = RNG_civic_republicanism_focus_expansion
+		clr_country_flag = RNG_civic_republicanism_focus_technology
+		clr_country_flag = RNG_civic_republicanism_focus_stability
+		clr_country_flag = RNG_civic_republicanism_focus_religion
+		clr_country_flag = RNG_civic_republicanism_focus_diplomacy
+		clr_country_flag = RNG_civic_republicanism_focus_court
+		clr_country_flag = RNG_civic_republicanism_focus_trade
+		clr_country_flag = RNG_civic_republicanism_focus_subjects
+		clr_country_flag = RNG_civic_republicanism_focus_development
+		clr_country_flag = RNG_civic_republicanism_focus_defensive
+		clr_country_flag = RNG_civic_republicanism_focus_sieges
+		clr_country_flag = RNG_civic_republicanism_focus_leaders
+		clr_country_flag = RNG_civic_republicanism_focus_quality
+		clr_country_flag = RNG_civic_republicanism_focus_naval
+	}
+}
+
+clr_ruler_focus_modifiers = {
+	post_ruler_focus_clearance = yes
+	if = { limit = { has_country_modifier = civic_republicanism_focus_government } 	remove_country_modifier = civic_republicanism_focus_government	}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_expansion } 	remove_country_modifier = civic_republicanism_focus_expansion	}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_technology } 	remove_country_modifier = civic_republicanism_focus_technology	}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_stability } 	remove_country_modifier = civic_republicanism_focus_stability	}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_religion } 	remove_country_modifier = civic_republicanism_focus_religion	}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_diplomacy } 	remove_country_modifier = civic_republicanism_focus_diplomacy	}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_court } 		remove_country_modifier = civic_republicanism_focus_court		}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_trade } 		remove_country_modifier = civic_republicanism_focus_trade		}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_subjects } 	remove_country_modifier = civic_republicanism_focus_subjects	}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_development } remove_country_modifier = civic_republicanism_focus_development	}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_defensive } 	remove_country_modifier = civic_republicanism_focus_defensive	}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_sieges } 		remove_country_modifier = civic_republicanism_focus_sieges		}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_leaders } 	remove_country_modifier = civic_republicanism_focus_leaders		}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_quality } 	remove_country_modifier = civic_republicanism_focus_quality		}
+	if = { limit = { has_country_modifier = civic_republicanism_focus_naval } 		remove_country_modifier = civic_republicanism_focus_naval		}
+}

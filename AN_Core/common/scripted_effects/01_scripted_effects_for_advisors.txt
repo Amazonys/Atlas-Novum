@@ -152,12 +152,12 @@ erase_advisor_flags_effect = { #Goes into the after = {} effect after check_if_n
 	}
 }
 
-internal_advisor_generation_effect = { #Only used within generate_advisor_of_type_and_semi_random_religion_effect
 #Requires check_if_non_state_advisor_effect in immediate as that gives the arguments to generate_advisor_of_type_and_semi_random_religion_effect that then passes it on to this.
 #$advisor_type$ = Advisor type if state religion.
 #$advisor_type_if_not_state$ = Advisor type if non-state religion.
 #$skill$ = Skill Level
 #$discount$ = yes/no for discount
+internal_advisor_generation_effect = { #Only used within generate_advisor_of_type_and_semi_random_religion_effect
 	trigger_switch = {
 		on_trigger = has_country_flag #Flags set by check_if_non_state_advisor_effect
 		state_religion_advisor = {
@@ -772,7 +772,6 @@ internal_advisor_generation_effect = { #Only used within generate_advisor_of_typ
 	}
 }
 
-generate_advisor_of_type_and_semi_random_religion_effect = {
 #Actual work is done by internal_advisor_generation_effect above but it goes through this first.
 #Requires check_if_non_state_advisor_effect in immediate.
 #$advisor_type$ = Advisor type if state religion.
@@ -780,6 +779,7 @@ generate_advisor_of_type_and_semi_random_religion_effect = {
 #$scaled_skill$ = yes/no
 #$skill$ = Skill Level
 #$discount$ = yes/no for discount
+generate_advisor_of_type_and_semi_random_religion_effect = {
 	
 	[[scaled_skill]
 		if = {
@@ -857,6 +857,83 @@ generate_scaled_advisor_of_type_and_religion_effect = {
 			religion = $religion$
 			skill = 3
 			discount = $discount$
+		}
+	}
+}
+
+#Use this one if you just want a scaling advisor with cost multiplier
+generate_scaled_advisor_of_type_and_cost_effect = {
+	if = {
+		limit = {
+			NOT = { monthly_income = 15 }
+		}
+		define_advisor = {
+			type = $type$
+			skill = 1
+			cost_multiplier = $cost_multiplier$
+		}
+	}
+	else_if = {
+		limit = {
+			NOT = { monthly_income = 25 }
+		}
+		define_advisor = {
+			type = $type$
+			skill = 2
+			cost_multiplier = $cost_multiplier$
+		}
+	}
+	else = {
+		define_advisor = {
+			type = $type$
+			skill = 3
+			cost_multiplier = $cost_multiplier$
+		}
+	}
+}
+
+#Use this one if you want to give as much details as possible for your advisor
+generate_very_specific_scaling_advisor_effect = {
+	if = {
+		limit = {
+			NOT = { monthly_income = 15 }
+		}
+		define_advisor = {
+			type = $type$
+			skill = 1
+			name = $name$
+			location = $location$
+			cost_multiplier = $cost_multiplier$
+			female = $female$
+			culture = $culture$
+			religion = $religion$
+		}
+	}
+	else_if = {
+		limit = {
+			NOT = { monthly_income = 25 }
+		}
+		define_advisor = {
+			type = $type$
+			skill = 2
+			name = $name$
+			location = $location$
+			cost_multiplier = $cost_multiplier$
+			female = $female$
+			culture = $culture$
+			religion = $religion$
+		}
+	}
+	else = {
+		define_advisor = {
+			type = $type$
+			skill = 3
+			name = $name$
+			location = $location$
+			cost_multiplier = $cost_multiplier$
+			female = $female$
+			culture = $culture$
+			religion = $religion$
 		}
 	}
 }
@@ -1288,9 +1365,175 @@ kill_advisor_by_category_effect = {
 	]
 }
 
+generate_estate_advisor = {
+	if = {
+		limit = {
+			monthly_income = 25
+			estate_influence = {
+				estate = $estate$
+				influence = 80
+			}
+		}
+		define_advisor = {
+			type = $type$
+			skill = 3
+			cost_multiplier = 0.5
+		}
+	}
+	else_if = {
+		limit = {
+			monthly_income = 25
+			estate_influence = {
+				estate = $estate$
+				influence = 60
+			}
+			NOT = {
+				estate_influence = {
+					estate = $estate$
+					influence = 80
+				}
+			}
+		}
+		define_advisor = {
+			type = $type$
+			skill = 3
+			cost_multiplier = 0.75
+		}
+	}
+	else_if = {
+		limit = {
+			monthly_income = 25
+			NOT = {
+				estate_influence = {
+					estate = $estate$
+					influence = 60
+				}
+			}
+		}
+		define_advisor = {
+			type = $type$
+			skill = 3
+		}
+	}
+	else_if = {
+		limit = {
+			NOT = { monthly_income = 25 }
+			estate_influence = {
+				estate = $estate$
+				influence = 80
+			}
+		}
+		define_advisor = {
+			type = $type$
+			skill = 2
+			cost_multiplier = 0.5
+		}
+	}
+	else_if = {
+		limit = {
+			NOT = { monthly_income = 25 }
+			estate_influence = {
+				estate = $estate$
+				influence = 60
+			}
+			NOT = {
+				estate_influence = {
+					estate = $estate$
+					influence = 80
+				}
+			}
+		}
+		define_advisor = {
+			type = $type$
+			skill = 2
+			cost_multiplier = 0.75
+		}
+	}
+	else_if = {
+		limit = {
+			NOT = { monthly_income = 25 }
+			NOT = {
+				estate_influence = {
+					estate = $estate$
+					influence = 60
+				}
+			}
+		}
+		define_advisor = {
+			type = $type$
+			skill = 2
+		}
+	}
+}
 
-
-
-
-
-
+generate_advisor = {
+	if = {
+		limit = {
+			has_country_flag = cheaper_selected_advisor
+		}
+		if = {
+			limit = { NOT = { monthly_income = 5 } }
+			define_advisor = {
+				type = $type$
+				religion = ROOT
+				culture = ROOT
+				skill = 1
+				discount = yes
+			}
+		}
+		else_if = {
+			limit = { NOT = { monthly_income = 15 } }
+			define_advisor = {
+				type = $type$
+				religion = ROOT
+				culture = ROOT
+				skill = 2
+				discount = yes
+			}
+		}
+		else = {
+			define_advisor = {
+				type = $type$
+				religion = ROOT
+				culture = ROOT
+				skill = 3
+				discount = yes
+			}
+		}
+	}
+	else = {
+		if = {
+			limit = {
+				NOT = { monthly_income = 15 }
+			}
+			define_advisor = {
+				type = $type$
+				religion = ROOT
+				culture = ROOT
+				skill = 1
+			}
+		}
+		else_if = {
+			limit = {
+				NOT = { monthly_income = 25 }
+			}
+			define_advisor = {
+				type = $type$
+				religion = ROOT
+				culture = ROOT
+				skill = 2
+			}
+		}
+		else = {
+			define_advisor = {
+				type = $type$
+				religion = ROOT
+				culture = ROOT
+				skill = 3
+			}
+		}
+	}
+	hidden_effect = {
+		clr_country_flag = cheaper_selected_advisor
+	}
+}

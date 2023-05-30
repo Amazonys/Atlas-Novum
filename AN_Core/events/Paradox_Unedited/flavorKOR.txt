@@ -483,54 +483,54 @@ country_event = {
 	}
 }
 
-# Sinmun Office
-country_event = {
-	id = 10502
-	title = "EVTNAME10502"
-	desc = "EVTDESC10502"
-	picture = COURT_eventPicture
-	
-	fire_only_once = yes
-	
-	trigger = {
-		tag = KOR
-		OR = {
-			dip = 4
-			adm = 4
-		}
-	}
-	
-	mean_time_to_happen = {
-		months = 2000
-		
-		modifier = {
-			factor = 2.0
-			stability = 3
-		}
-		modifier = {
-			factor = 0.8
-			NOT = { stability = 0 }
-		}
-	}
-	
-	option = {
-		name = "EVTOPTA10502"
-		ai_chance = { factor = 70 }
-		add_years_of_income = -0.5
-		add_country_modifier = { 
-			name = "sinmun_office" 
-			duration = -1 
-		}
-	}
-	option = {
-		name = "EVTOPTB10502"
-		ai_chance = { factor = 30 }
-		add_country_modifier = { 
-			name = "sinmun_office_rejected" 
-			duration = 365 
-		}
-	}
-}
+# Sinmun Office - is now a decision
+#country_event = {
+#	id = 10502
+#	title = "EVTNAME10502"
+#	desc = "EVTDESC10502"
+#	picture = COURT_eventPicture
+#	
+#	fire_only_once = yes
+#	
+#	trigger = {
+#		tag = KOR
+#		OR = {
+#			dip = 4
+#			adm = 4
+#		}
+#	}
+#	
+#	mean_time_to_happen = {
+#		months = 2000
+#		
+#		modifier = {
+#			factor = 2.0
+#			stability = 3
+#		}
+#		modifier = {
+#			factor = 0.8
+#			NOT = { stability = 0 }
+#		}
+#	}
+#	
+#	option = {
+#		name = "EVTOPTA10502"
+#		ai_chance = { factor = 70 }
+#		add_years_of_income = -0.5
+#		add_country_modifier = { 
+#			name = "sinmun_office" 
+#			duration = -1 
+#		}
+#	}
+#	option = {
+#		name = "EVTOPTB10502"
+#		ai_chance = { factor = 30 }
+#		add_country_modifier = { 
+#			name = "sinmun_office_rejected" 
+#			duration = 365 
+#		}
+#	}
+#}
 
 # Yi Sun-sin
 country_event = {
@@ -1674,6 +1674,12 @@ country_event = {
 }
 
 
+########################################
+# More Flavor Events for Korea
+#
+# written by Ogulcan Yildirim
+########################################
+
 #Rise of the Manchu
 country_event = {
 	id = flavor_kor.13
@@ -1760,6 +1766,15 @@ country_event = {
 		}
 		ai_chance = {
 			factor = 1
+			modifier = {
+				factor = 0
+				NOT = {
+					has_opinion = {
+						who = MCH
+						value = 100
+					}
+				}
+			}
 		}
 	}
 
@@ -1767,7 +1782,14 @@ country_event = {
 		name = flavor_kor.13.c
 		grant_independence = yes
 		ai_chance = {
-			factor = 0
+			factor = 1
+			modifier = {
+				factor = 0
+				has_opinion = {
+					who = MCH
+					value = 100
+				}
+			}
 		}
 	}
 }
@@ -1827,5 +1849,192 @@ country_event = {
 		ai_chance = {
 			factor = 0
 		}
+	}
+}
+
+#End of the Righteous Army
+country_event = {
+	id = flavor_kor.15
+	title = flavor_kor.15.t
+	desc = flavor_kor.15.d
+	picture = BATTLE_eventPicture
+	is_triggered_only = yes
+
+	trigger = {
+		is_at_war = no
+		has_country_modifier = the_righteous_army
+	}
+
+	immediate = {
+		hidden_effect = {
+			random_hired_mercenary_company = {
+				limit = {
+					template = merc_righteous_army
+				}
+				save_event_target_as = merc_righteous_army_target
+			}
+			add_country_modifier = {
+				name = the_righteous_army_cd
+				duration = 365
+			}
+		}
+	}
+
+	option = {
+		name = flavor_kor.15.a
+		remove_country_modifier = the_righteous_army
+		if = {
+			limit = { has_saved_event_target = merc_righteous_army_target }
+			event_target:merc_righteous_army_target = {
+				disband_mercenary_company = THIS
+			}
+		}
+	}
+}
+
+#The Tripitaka Koreana
+country_event = {
+	id = flavor_kor.16
+	title = flavor_kor.16.t
+	desc = flavor_kor.16.d
+	picture = BIG_BOOK_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		religion_group = eastern
+		FROM = {
+			has_province_modifier = tripitaka_koreana
+			NOT = { owned_by = ROOT }
+			NOT = {
+				owner = {
+					OR = {
+						is_in_war = {
+							defenders = PREV
+							defenders = ROOT
+						}
+						is_in_war = {
+							attackers = PREV
+							attackers = ROOT
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		hidden_effect = {
+			FROM = {
+				save_global_event_target_as = tripitaka_koreana_province
+				if = {
+					limit = { has_province_modifier = tripitaka_koreana_defenses }
+					remove_province_modifier = tripitaka_koreana_defenses
+				}
+				owner = {
+					save_event_target_as = tripitaka_koreana_og_owner
+				}
+			}
+		}
+	}
+	
+	#Steal it
+	option = {
+		name = flavor_kor.16.a
+		trigger = {
+			religion_group = eastern
+		}
+		add_prestige = 10
+		hidden_effect = {
+			FROM = {
+				owner = {
+					country_event = {
+						id = flavor_kor.17
+					}
+				}
+			}
+		}
+		custom_tooltip = tripitaka_koreana_tt
+		capital_scope = {
+			add_permanent_province_modifier = {
+				name = tripitaka_koreana
+				duration = -1
+			}
+		}
+		hidden_effect = {
+			event_target:tripitaka_koreana_province = {
+				remove_province_modifier = tripitaka_koreana
+			}
+		}
+		event_target:tripitaka_koreana_og_owner = {
+			add_opinion = {
+				who = ROOT
+				modifier = has_stolen_the_tripitaka_koreana
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+
+	#Burn it down!
+	option = {
+		name = flavor_kor.16.b
+		add_mil_power = 200
+		custom_tooltip = tripitaka_koreana_tt
+		hidden_effect = {
+			event_target:tripitaka_koreana_province = {
+				remove_province_modifier = tripitaka_koreana
+			}
+		}
+		event_target:tripitaka_koreana_og_owner = {
+			add_opinion = {
+				who = ROOT
+				modifier = has_destroyed_the_tripitaka_koreana
+			}
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	
+
+	#Spare it down!
+	option = {
+		name = flavor_kor.16.c
+		add_prestige = 10
+		event_target:tripitaka_koreana_og_owner = {
+			add_opinion = {
+				who = ROOT
+				modifier = has_spared_the_tripitaka_koreana
+			}
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#Tripitaka Koreana lost
+country_event = {
+	id = flavor_kor.17
+	title = flavor_kor.17.t
+	desc = flavor_kor.17.d
+	picture = BUDDHA_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = flavor_kor.17.a
+		custom_tooltip = tripitaka_koreana_tt
+		add_prestige = -20
+		add_legitimacy = -10
+	}
+	
+	after = {
+		clear_global_event_target = tripitaka_koreana_province
 	}
 }

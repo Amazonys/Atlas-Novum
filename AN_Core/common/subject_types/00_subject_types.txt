@@ -32,11 +32,16 @@
 vassal = {}
 march = {}
 daimyo_vassal = {}
+appanage = {}
 personal_union = {}
 client_vassal = {}
 client_march = {}
 colony = {}
 tributary_state = {}
+eyalet = {}
+core_eyalet = {}
+commercial_enterprise = {}
+trade_protectorate = {}
 #IR
 confederate = {}
 dominion = {}
@@ -61,6 +66,14 @@ default = {
 	transfer_trade_power = no
 	transfer_trade_if_merchant_republic = no
 	joins_overlords_wars = yes
+	can_be_co_belligerented =  no    #Enemies can force this subject to join its overlord into the defense war. Only used when the subject has the "joins_overlords_wars = no". By default it's "no".
+	can_be_called_to_wars =  no    #Overlord can ask subject to join wars like it could ask allies to join. You would require favors  to call them to wars. Only used when the subject has the "joins_overlords_wars = no". By default it's "no"
+	favors_cost_to_join_offensive_wars = 0   #Defines how much favors the overlord need to invest to call the subject into an offensive war
+	favors_cost_to_join_defensive_wars = 0   #Defines how much favors the overlord need to invest to call the subject into a defensive war
+	opinion_cost_to_join_offensive_wars = 0   #Defines how much opinion the subject loses of the overlord to call the subject into an offensive war. Applied if you do not have Leviathan
+	opinion_cost_to_join_defensive_wars = 0   #Defines how much opinion the subject loses of the overlord to call the subject into a defensive war. Applied if you do not have Leviathan
+	opinion_cost_instead_of_favors_cost = no   #Determines if the subject requires favors or opinion to join a the war. If set "yes" then it requires the aforementioned opinion costs - regardless if Leviathan is active or not. "No" is the default setting
+	opinion_on_subject_integration = -30 #Determines how much opinion they actually lose when a fellow subject gets integrated.
 	joins_colonial_wars = no
 	can_be_integrated = no
 	can_release_and_play = no							# "Release Colony" in SubjectView
@@ -94,7 +107,10 @@ default = {
 	is_colony_subtype = no
 	is_march = no
 	forms_trade_companies = yes
-	can_concentrate_development = yes
+	can_concentrate_development = no
+	can_have_great_projects_moved_by_overlord = yes
+	extend_trading_range = no
+	can_gain_favors = yes
 
 	max_government_rank = 0								# 0 means no limit
 	cities_required_for_bonuses = 0						# How many cities the subject needs before giving bonuses to overlord
@@ -197,6 +213,7 @@ vassal = {
 	has_power_projection = no
 	gets_help_with_rebels = yes
 	#takes_diplo_slot = no
+	counts_for_borders = no
 	can_be_annexed = yes
 	forms_trade_companies = no
 
@@ -252,6 +269,15 @@ vassal = {
 			}
 		}
 	}
+	modifier_subject = {
+		modifier = same_religion_subject_bonus_mod
+		trigger = {
+			overlord = {
+				has_government_attribute = same_religion_subject_bonus
+				religion = PREV
+			}
+		}
+	}
 
 	overlord_opinion_modifier = is_vassal
 	subject_opinion_modifier = is_vassal
@@ -270,6 +296,7 @@ march = {
 	military_focus = 2.5
 	base_liberty_desire = -15.0
 	can_be_annexed = no
+	counts_for_borders = no
 	forcelimit_to_overlord = 0.0
 	
 	#IR
@@ -312,11 +339,24 @@ march = {
 			}
 		}
 	}
+	modifier_subject = {
+		modifier = same_religion_subject_bonus_mod
+		trigger = {
+			overlord = {
+				has_government_attribute = same_religion_subject_bonus
+				religion = PREV
+			}
+		}
+	}
 }
 
 daimyo_vassal = {
 	copy_from = vassal
 	count = vassal
+
+	sprite = GFX_icon_daimyo_relation
+	diplomacy_overlord_sprite = GFX_icon_daimyo_subject # The one that the overlord sees
+	diplomacy_subject_sprite = GFX_icon_daimyo_overlord	# The one that the subject sees
 	
 	# Properties:
 	has_power_projection = yes
@@ -381,13 +421,67 @@ daimyo_vassal = {
 	modifier_overlord = {
 		modifier = daimyo_subject
 	}
-	
-	
+}
+
+appanage = {
+	copy_from = vassal
+	count = vassal
+    sprite = GFX_icon_appanage
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_appanage
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_appanage
+
+	# Properties:
+	has_power_projection = yes
+	takes_diplo_slot = yes
+	gets_help_with_rebels = no
+	separatists_become_subjects = yes
+	allows_taking_land_without_independence = yes
+	forms_trade_companies = no
+	can_concentrate_development = no
+	liberty_desire_development_ratio = 0.25
+	trust_on_start = 0
+	base_liberty_desire = 35.0
+	military_focus = 1.2
+
+	relative_power_class = 1
+	should_quit_wars_on_activation = yes
+
+	can_fight = {
+		same_overlord = appanage
+	}
+	can_rival = {
+		same_overlord = appanage
+	}
+	can_ally = {
+		same_overlord = appanage
+	}
+	can_marry = {
+		same_overlord = appanage
+	}
+
+	# Subject Interactions
+	#(disable)
+	scutage = yes
+	grant_core_claim = yes
+	grant_province = yes
+	place_relative_on_throne = no
+	enforce_religion = no
+	enforce_culture = no
+	seize_territory = no
+	#(enable)
+	contribute_to_capital = yes
+	return_land = yes
+	conscript_general = yes
+
+	# Modifiers
+
+	modifier_overlord = clear #We don't want to duplicate the ones inherited from vassal
+	modifier_subject = clear #Ditto
+	modifier_subject = {
+		modifier = appanage_subject
+	}
 	modifier_overlord = {
-		modifier = overlord_sword_hunt
-		trigger = {
-			has_country_modifier = subject_sword_hunt
-		}
+		modifier = appanage_overlord
 	}
 }
 
@@ -409,6 +503,7 @@ personal_union = {
 	can_union_break = yes
 	transfer_subjects_when_made = yes
 	can_be_integrated = yes 
+	counts_for_borders = no
 	liberty_desire_negative_prestige = 1.0
 	military_focus = 1.0
 
@@ -509,7 +604,7 @@ colony = {
 	#enforce_culture = yes
 	
 	liberty_desire_development_ratio = 0.1
-
+	opinion_on_subject_integration = 0
 	max_government_rank = 3
 	cities_required_for_bonuses = 20
 
@@ -551,6 +646,12 @@ colony = {
 			overlord = { has_government_attribute = extra_trade_goods_for_colonial_subjects }
 		}
 	}
+	modifier_subject = {
+		modifier = gbr_colonial_investment
+		trigger = {
+			overlord = { has_country_modifier = gbr_new_world_dominance }
+		}
+	}
 
 	overlord_opinion_modifier = colonial_relation
 	subject_opinion_modifier = colonial_relation
@@ -558,6 +659,9 @@ colony = {
 
 crown_colony = {
 	copy_from = colony
+	sprite = GFX_icon_crown_colony
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_crown_colony
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_crown_colony
 	count = colony
 
 	change_colonial_type = yes
@@ -593,6 +697,9 @@ crown_colony = {
 
 private_enterprise = {
 	copy_from = colony
+	sprite = GFX_icon_private_enterprise
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_private_enterprise
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_private_enterprise
 	count = colony
 
 	change_colonial_type = yes
@@ -622,6 +729,9 @@ private_enterprise = {
 
 self_governing_colony = {
 	copy_from = colony
+	sprite = GFX_icon_self_governing_colony
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_self_governing_colony
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_self_governing_colony
 	count = colony
 
 	change_colonial_type = yes
@@ -777,6 +887,348 @@ tributary_state = {
 	}
 }
 
+eyalet = {
+	copy_from = default
+
+	# Graphics:
+    sprite = GFX_icon_eyalet
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_eyalet
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_eyalet 
+
+	# Properties:
+	transfer_trade_power = yes
+	joins_overlords_wars = no
+	can_be_annexed = no
+	has_power_projection = no
+	gets_help_with_rebels = yes
+	forms_trade_companies = no
+	takes_diplo_slot = no
+	can_be_co_belligerented = yes
+	can_be_called_to_wars = yes
+	extend_trading_range = yes
+	opinion_cost_instead_of_favors_cost = yes
+	opinion_cost_to_join_offensive_wars = 40
+	opinion_cost_to_join_defensive_wars = 20
+	opinion_on_subject_integration = 0
+
+	max_government_rank = 2
+
+	liberty_desire_development_ratio = 0.1
+	liberty_desire_same_dynasty = -5.0
+	pays_overlord = 1.25
+	forcelimit_to_overlord = 0.2						# Percent of subject FL to use as base for modifiers
+	naval_forcelimit_to_overlord = 0.2					# Percent of subject FL to use as base for modifiers
+	manpower_to_overlord = 0.2							# Percent of subject FL to use as base for modifiers
+	sailors_to_overlord = 0.2							# Percent of subject FL to use as base for modifiers
+
+	relative_power_class = 1
+	should_quit_wars_on_activation = yes
+
+	restoration_cb = cb_disloyal_eyalet
+
+	# Subject Interactions:
+	support_loyalists = yes
+	place_relative_on_throne = yes
+	sacrifice_ruler = yes
+	sacrifice_heir = yes
+	divert_trade = yes
+	seize_territory = yes
+	siphon_income = yes
+
+	# Modifiers:
+	modifier_subject = clear # Use this to clear after copy_from.
+	modifier_subject = {
+		modifier = subject_tax_modifier
+		trigger = {
+			overlord = {
+				has_government_attribute = subject_tax_modifier_25
+			}
+		}
+	}
+	modifier_subject = {
+		modifier = same_religion_subject_bonus_mod
+		trigger = {
+			overlord = {
+				has_government_attribute = same_religion_subject_bonus
+				religion = PREV
+			}
+		}
+	}
+
+	overlord_opinion_modifier = is_eyalet
+	subject_opinion_modifier = is_eyalet
+}
+
+core_eyalet = {
+	copy_from = eyalet
+
+	# Graphics:
+    sprite = GFX_icon_core_eyalet
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_core_eyalet
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_core_eyalet 
+
+	# Properties:
+	can_be_annexed = yes
+
+	max_government_rank = 2
+
+	liberty_desire_development_ratio = 0.1
+	liberty_desire_same_dynasty = -5.0
+	pays_overlord = 1.5
+	forcelimit_to_overlord = 0.33						# Percent of subject FL to use as base for modifiers
+	naval_forcelimit_to_overlord = 0.33					# Percent of subject FL to use as base for modifiers
+	manpower_to_overlord = 0.33							# Percent of subject FL to use as base for modifiers
+	sailors_to_overlord = 0.33							# Percent of subject FL to use as base for modifiers
+	annex_cost_per_development = 6.0					# annex/integrate cost per development
+
+	relative_power_class = 2
+	should_quit_wars_on_activation = yes
+
+	restoration_cb = cb_disloyal_eyalet
+
+	# Subject Interactions:
+
+	# Modifiers:
+	modifier_subject = clear # Use this to clear after copy_from.
+	modifier_subject = {
+		modifier = subject_tax_modifier
+		trigger = {
+			overlord = {
+				has_government_attribute = subject_tax_modifier_25
+			}
+		}
+	}
+	modifier_subject = {
+		modifier = same_religion_subject_bonus_mod
+		trigger = {
+			overlord = {
+				has_government_attribute = same_religion_subject_bonus
+				religion = PREV
+			}
+		}
+	}
+
+	overlord_opinion_modifier = is_eyalet
+	subject_opinion_modifier = is_eyalet
+}
+
+#Trade Company Subject
+commercial_enterprise = {
+	copy_from = default
+
+	# Graphics:
+    sprite = GFX_icon_commercial_enterprise
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_commercial_enterprise
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_commercial_enterprise
+
+	# Properties:
+	overlord_can_attack = no
+	overlord_can_be_subject = yes
+	takes_diplo_slot = no
+	can_release_in_peace = no
+	overlord_enforce_peace_attacking = yes
+	can_transfer_in_peace = no
+	has_colonial_parent = yes
+	transfer_trade_power = yes
+	can_concentrate_development = yes
+	can_have_great_projects_moved_by_overlord = yes
+	extend_trading_range = yes
+	overlord_protects_external = yes
+	uses_tariffs = yes
+
+	opinion_on_subject_integration = 0
+	liberty_desire_development_ratio = 0.05
+
+	max_government_rank = 2
+	cities_required_for_bonuses = 10
+
+	relative_power_class = 0
+	should_quit_wars_on_activation = yes
+
+	can_fight = {
+		independent_nations = yes
+		other_overlord = all
+	}
+	can_rival = {
+		independent_nations = yes
+		other_overlord = all
+	}
+	can_ally = {
+		independent_nations = yes
+		other_overlord = all
+	}
+	forcelimit_to_overlord = 0.1						# Percent of subject FL to use as base for modifiers
+	naval_forcelimit_to_overlord = 0.1					# Percent of subject FL to use as base for modifiers
+	manpower_to_overlord = 0.1							# Percent of subject FL to use as base for modifiers
+	sailors_to_overlord = 0.1							# Percent of subject FL to use as base for modifiers
+
+	# Subject Interactions:
+	# (continuous)
+	embargo_rivals = yes
+	subsidize_armies = yes
+	divert_trade = yes
+	fortify_march = yes
+	send_officers = yes
+	# (immediate)
+	placate_rulers = yes
+	enforce_religion = yes
+	replace_governor = yes
+	grant_province = yes
+	enforce_culture = yes
+	siphon_income = yes
+	seize_territory = yes
+	start_colonial_war = yes
+	grant_core_claim = yes
+	sacrifice_ruler = yes
+	sacrifice_heir = yes
+	increase_tariffs = yes
+	decrease_tariffs = yes
+	takeondebt = yes
+	press_sailors = yes
+	return_land = yes
+	knowledge_sharing = yes
+	block_settlement_growth = yes
+	allow_settlement_growth = yes
+	upgrade_subject_type = yes
+	can_release_and_play = yes							# "Release Colony" in SubjectView
+
+	# Modifiers:
+	modifier_overlord = {
+		modifier = large_colonial_nation
+		trigger = {
+			num_of_cities = 20
+		}
+	}
+	modifier_overlord = {
+		modifier = private_enterprise_overlord
+	}
+
+	modifier_subject = {
+		modifier = private_enterprise_subject
+	}
+	modifier_overlord = {
+		modifier = gbr_emperor_of_india_overlord_bonus
+		trigger = {
+			overlord = {
+				has_country_modifier = gbr_emperor_of_india
+			}
+		}
+	}
+	modifier_subject = {
+		modifier = gbr_emperor_of_india_subject_bonus
+		trigger = {
+			overlord = {
+				has_country_modifier = gbr_emperor_of_india
+			}
+		}
+	}
+
+	overlord_opinion_modifier = is_trade_company
+	subject_opinion_modifier = is_trade_company
+}
+
+trade_protectorate = {
+	copy_from = default
+	can_have_great_projects_moved_by_overlord = no
+
+	# Triggers:
+	is_potential_overlord = {
+	}
+
+	# Graphics:
+	sprite = GFX_icon_trade_protectorate
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_trade_protectorate
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_trade_protectorate
+
+
+	# Properties:
+	can_fight_independence_war = yes
+	joins_overlords_wars = no
+	joins_colonial_wars = no
+	can_be_co_belligerented = yes    #Enemies can force this subject to join its overlord into the defense war. Only used when the subject has the "joins_overlords_wars = no". By default it's "no".
+	can_be_called_to_wars = yes    #Overlord can ask subject to join wars like it could ask allies to join. You would require favors  to call them to wars. Only used when the subject has the "joins_overlords_wars = no". By default it's "no"
+	opinion_cost_to_join_offensive_wars = 50   #Defines how much opinion the subject loses of the overlord to call the subject into an offensive war. Applied if you do not have Leviathan
+	opinion_cost_to_join_defensive_wars = 20   #Defines how much opinion the subject loses of the overlord to call the subject into a defensive war. Applied if you do not have Leviathan
+	opinion_cost_instead_of_favors_cost = yes   #Determines if the subject requires favors or opinion to join a the war. If set "yes" then it requires the aforementioned opinion costs - regardless if Leviathan is active or not. "No" is the default setting
+	opinion_on_subject_integration = 0 #Determines how much opinion they actually lose when a fellow subject gets integrated.
+	overlord_can_attack = yes
+	takes_diplo_slot = no
+	base_liberty_desire = -10
+	relative_power_class = 1
+	should_quit_wars_on_activation = no
+	can_have_subjects_of_other_types = yes
+	uses_military_focus = no
+	overlord_protects_external = yes
+	counts_for_borders = no
+	can_use_claims = no
+	share_rebel_popup = no
+	can_transfer_in_peace = no
+	can_set_mil_focus = no
+	can_send_missionary_to_subject = no
+	overlord_can_fabricate_for = no
+	does_overlord_size_count_for_warscore_cost = no
+	can_concentrate_development = no
+	transfer_trade_power = yes
+
+	liberty_desire_development_ratio = 0.175
+	trust_on_start = 0
+
+	pays_overlord = 1.0									# 1.0 represents the amount payed by vassals
+
+	overlord_opinion_modifier = is_trade_protectorate
+	subject_opinion_modifier = is_trade_protectorate
+
+	can_fight = {
+		independent_nations = yes
+		same_overlord = trade_protectorate
+		other_overlord = all
+	}
+	can_rival = {
+		independent_nations = yes
+		same_overlord = trade_protectorate
+		other_overlord = all
+	}
+	can_ally = {
+		independent_nations = yes
+		same_overlord = trade_protectorate
+		other_overlord = all
+	}
+	can_marry = {
+		independent_nations = yes
+		same_overlord = trade_protectorate
+		other_overlord = all
+	}
+
+	# Subject Interactions:
+	# (immediate)
+	block_settlement_growth = no
+	allow_settlement_growth = no
+	divert_trade = yes
+
+	# Modifiers:
+	modifier_subject = clear # Trade Protectorate don't get the ordinary subject_nation penalty 
+	modifier_subject = {
+		modifier = trade_protectorate_subject_modifier
+	}
+	modifier_subject = {
+		modifier = trade_protectorate_low_development_subject_modifier
+		trigger = {
+			NOT = { total_development = 200 }
+		}
+	}
+	modifier_overlord = {
+		modifier = trade_protectorate_overlord_modifier
+	}
+	modifier_subject = {
+		modifier = gbr_emperor_of_india_subject_bonus
+		trigger = {
+			overlord = {
+				has_country_modifier = gbr_emperor_of_india
+			}
+		}
+	}
+}
+
 #IR
 # confederate
 confederate = {
@@ -882,7 +1334,7 @@ dominion = {
 	can_use_claims = yes
 	joins_overlords_wars = yes
 	joins_colonial_wars = yes
-	counts_for_borders = yes
+	counts_for_borders = no
 	can_be_annexed = no
 	can_be_integrated = no
 	separatists_become_subjects = yes

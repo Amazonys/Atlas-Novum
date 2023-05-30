@@ -20,47 +20,10 @@ country_event = {
 	}
 
 	immediate = {
-		set_country_flag = english_civil_war_start_event
-
-		
-		random_owned_province = {
-			limit = {
-				region = british_isles_region
-				NOT = { area = munster_area }
-				NOT = { area = connacht_area }
-				NOT = { area = leinster_area }
-				NOT = { area = ulster_area }
-				OR = {
-					AND = {
-						NOT = { units_in_province = 1 }
-						is_capital = no
-					}
-					AND = {
-						NOT = {
-							root = {
-								any_owned_province = {
-									region = british_isles_region
-									NOT = { area = munster_area }
-									NOT = { area = connacht_area }
-									NOT = { area = leinster_area }
-									NOT = { area = ulster_area }
-									NOT = { units_in_province = 1 }
-									is_capital = no
-								}
-							}
-						}
-					}
-				}
-			}
-			set_province_flag = ENG_cw_spawn_rebels_here
-		}
-		if = {
-			limit = {
-				num_of_cities = 30
-			}
+		hidden_effect = {
+			set_country_flag = english_civil_war_start_event
 			random_owned_province = {
 				limit = {
-					NOT = { has_province_flag = ENG_cw_spawn_rebels_here }
 					region = british_isles_region
 					NOT = { area = munster_area }
 					NOT = { area = connacht_area }
@@ -88,7 +51,44 @@ country_event = {
 						}
 					}
 				}
-				set_province_flag = ENG_cw_spawn_more_rebels_here
+				set_province_flag = ENG_cw_spawn_rebels_here
+			}
+			if = {
+				limit = {
+					num_of_cities = 30
+				}
+				random_owned_province = {
+					limit = {
+						NOT = { has_province_flag = ENG_cw_spawn_rebels_here }
+						region = british_isles_region
+						NOT = { area = munster_area }
+						NOT = { area = connacht_area }
+						NOT = { area = leinster_area }
+						NOT = { area = ulster_area }
+						OR = {
+							AND = {
+								NOT = { units_in_province = 1 }
+								is_capital = no
+							}
+							AND = {
+								NOT = {
+									root = {
+										any_owned_province = {
+											region = british_isles_region
+											NOT = { area = munster_area }
+											NOT = { area = connacht_area }
+											NOT = { area = leinster_area }
+											NOT = { area = ulster_area }
+											NOT = { units_in_province = 1 }
+											is_capital = no
+										}
+									}
+								}
+							}
+						}
+					}
+					set_province_flag = ENG_cw_spawn_more_rebels_here
+				}
 			}
 		}
 	}
@@ -99,6 +99,7 @@ country_event = {
 		set_country_flag = supports_parliamentarians
 		add_yearly_manpower = -2.5
 		remove_country_modifier = eng_court_star_chamber
+		remove_government_reform = parliament_vs_monarchy_reform
 		if = {
 			limit = { has_heir = yes }
 			hidden_effect = {
@@ -141,6 +142,7 @@ country_event = {
 		add_government_reform = protectorate_parliament_reform
 		define_ruler = {
 			name = "Oliver Cromwell"
+			dynasty = "Cromwell"
 			ADM = 4
 			DIP = 4
 			MIL = 5
@@ -158,12 +160,13 @@ country_event = {
 		ai_chance = { factor = 50 }
 		set_country_flag = supports_royalists
 		add_yearly_manpower = -2.5
+		remove_government_reform = parliament_vs_monarchy_reform
 		random_owned_province = {
 			limit = {
 				has_province_flag = ENG_cw_spawn_rebels_here
 			}
 			spawn_rebels = {
-				type = pretender_rebels
+				type = parliamentarians_rebels
 				size = 3
 				leader = "Oliver"
 				leader_dynasty = "Cromwell"
@@ -181,7 +184,7 @@ country_event = {
 					has_province_flag = ENG_cw_spawn_more_rebels_here
 				}
 				spawn_rebels = {
-					type = pretender_rebels
+					type = parliamentarians_rebels
 					size = 2
 				}
 				clr_province_flag = ENG_cw_spawn_more_rebels_here
@@ -464,7 +467,7 @@ country_event = {
 					area = highlands_area
 				}
 				spawn_rebels = {
-					type = pretender_rebels
+					type = parliamentarians_rebels
 					size = 2
 				}
 			}
@@ -480,7 +483,7 @@ country_event = {
 					area = lowlands_area
 				}
 				spawn_rebels = {
-					type = pretender_rebels
+					type = parliamentarians_rebels
 					size = 2
 				}
 			}
@@ -575,7 +578,7 @@ country_event = {
 				unrest = 1
 			}
 			spawn_rebels = {
-				type = pretender_rebels
+				type = parliamentarians_rebels
 				size = 2
 			}
 		}
@@ -730,7 +733,7 @@ country_event = {
 				has_province_flag = irish_rebellion
 			}
 			spawn_rebels = {
-				type = pretender_rebels
+				type = parliamentarians_rebels
 				size = 1
 			}
 			clr_province_flag = irish_rebellion
@@ -817,20 +820,28 @@ country_event = {
 	option = {			# Order has finally been restored
 		name = "flavor_eng.EVTOPTA9235"
 		trigger = {
-			OR = { has_country_flag = supports_royalists }
+			has_country_flag = supports_royalists
 			NOT = { has_country_modifier = just_lost_to_rebels }
 		}
 		if = {
 			limit = { NOT = { government = monarchy } }
 			change_government_to_monarchy = yes
-			add_government_reform = autocracy_reform
+			if = {
+				limit = { has_dlc = "Domination" }
+				add_government_reform = absolute_british_monarchy
+			}
+			else = {
+				add_government_reform = autocracy_reform
+			}
 			#set_legacy_government = despotic_monarchy
 		}
 		if = {
-			limit = { has_reform = english_monarchy }
+			limit = { has_dlc = "Domination" }
+			add_government_reform = absolute_british_monarchy
+		}
+		else = {
 			add_government_reform = autocracy_reform
-			#set_legacy_government = despotic_monarchy
-		}			
+		}
 		clr_country_flag = supports_royalists
 		add_prestige = 50
 		add_absolutism = 10
@@ -885,13 +896,21 @@ country_event = {
 		if = {
 			limit = { NOT = { government = monarchy } }
 			change_government_to_monarchy = yes
-			add_government_reform = autocracy_reform
+			if = {
+				limit = { has_dlc = "Domination" }
+				add_government_reform = absolute_british_monarchy
+			}
+			else = {
+				add_government_reform = autocracy_reform
+			}
 			#set_legacy_government = despotic_monarchy
 		}
 		if = {
-			limit = { has_reform = english_monarchy }
+			limit = { has_dlc = "Domination" }
+			add_government_reform = absolute_british_monarchy
+		}
+		else = {
 			add_government_reform = autocracy_reform
-			#set_legacy_government = despotic_monarchy
 		}
 		clr_country_flag = supports_parliamentarians
 	}
@@ -942,6 +961,10 @@ country_event = {
 			change_government_to_republic = yes
 		}
 		change_government_reform_progress = 100
+		if = {
+			limit = { has_dlc = "Domination" }
+			add_government_reform = parliamentary_republic_reform
+		}
 		#set_legacy_government = constitutional_republic
 	}
 	option = {			# A Monarchy
@@ -958,7 +981,19 @@ country_event = {
 				kill_ruler = yes
 			}
 		}
-		add_government_reform = english_monarchy
+		if = {
+			limit = { has_dlc = "Domination" }
+			if = {
+				limit = { has_country_flag = eng_took_ave_branch }
+				add_government_reform = angevin_monarchy
+			}
+			else = {
+				add_government_reform = british_monarchy
+			}
+		}
+		else = {
+			add_government_reform = english_monarchy
+		}
 		#set_legacy_government = constitutional_monarchy
 	}
 }
@@ -997,6 +1032,10 @@ country_event = {
 			change_government_to_republic = yes
 		}
 		change_government_reform_progress = 100
+		if = {
+			limit = { has_dlc = "Domination" }
+			add_government_reform = parliamentary_republic_reform
+		}
 		#set_legacy_government = constitutional_republic
 	}
 	option = {			# A Monarchy
@@ -1013,7 +1052,19 @@ country_event = {
 				kill_ruler = yes
 			}
 		}
-		add_government_reform = english_monarchy
+		if = {
+			limit = { has_dlc = "Domination" }
+			if = {
+				limit = { has_country_flag = eng_took_ave_branch }
+				add_government_reform = angevin_monarchy
+			}
+			else = {
+				add_government_reform = british_monarchy
+			}
+		}
+		else = {
+			add_government_reform = english_monarchy
+		}
 		#set_legacy_government = constitutional_monarchy
 	}
 }

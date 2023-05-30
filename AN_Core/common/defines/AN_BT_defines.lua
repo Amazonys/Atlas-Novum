@@ -4,12 +4,12 @@
 -- NDefines.NGame.START_DATE = "1291.5.18" --from 1444.11.11 - per Draiocht's 1291
 NDefines.NGame.END_DATE = "1900.1.2" --from 1821.1.2
 NDefines.NGame.MAX_COLONIAL_NATIONS = 100 -- apparently pdx limited to 100 anyways - dumb af WHY IMPLEMENT A DEFINE IF IT NO USEFUL!?
-NDefines.NGame.MAX_CLIENT_STATES = 50		-- Max is 100 -- Lower this to 75 after 1.18 (used to start at K75 for some reason)
-NDefines.NGame.MAX_ESTATE_COUNTRIES = 50		-- Max is 100
-NDefines.NGame.MAX_TRADING_CITIES = 10 -- 75	-- Max is 100
-NDefines.NGame.MAX_CUSTOM_COUNTRIES = 50 -- 75				-- Max is 100
+NDefines.NGame.MAX_CLIENT_STATES = 100		-- Max is 100 -- Lower this to 75 after 1.18 (used to start at K75 for some reason)
+NDefines.NGame.MAX_ESTATE_COUNTRIES = 100		-- Max is 100
+NDefines.NGame.MAX_TRADING_CITIES = 100 -- 75	-- Max is 100
+NDefines.NGame.MAX_CUSTOM_COUNTRIES = 100 -- 75				-- Max is 100
 
-  --NDiplomacy 
+  --NDiplomacy
 NDefines.NDiplomacy.FAVORS_LAND_DIVIDER = 4			-- from 2      note inversed value
 NDefines.NDiplomacy.VASSALIZE_BASE_DEVELOPMENT_CAP = 1000			-- from 100, doubled after dev doubling, because this is annoying.
 NDefines.NDiplomacy.INTEGRATE_VASSAL_MIN_YEARS = 25 -- from 10
@@ -27,7 +27,7 @@ NDefines.NDiplomacy.AE_SAME_RELIGION_GROUP = 0.1
 NDefines.NDiplomacy.AE_DIFFERENT_RELIGION = -0.5
 NDefines.NDiplomacy.AE_HRE_INTERNAL = 1
 NDefines.NDiplomacy.AE_DISTANCE_BASE = 1.5
-NDefines.NDiplomacy.AE_SAME_OVERLORD = 0.5	
+NDefines.NDiplomacy.AE_SAME_OVERLORD = 0.5
  -- Peace AE
 NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.5			-- from 0p75
 NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.25			-- from 0p5
@@ -55,7 +55,7 @@ NDefines.NDiplomacy.PEACE_COST_CONCEDE_PROVINCE = 0.5			-- from 1   Some peace c
 NDefines.NDiplomacy.PEACE_COST_BECOME_VASSAL = 0.5			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   This might be a personal thing but completely taking land shouldnt be the same price or cheaper than enforcing vassalage   vassal relations historically happened somewhat often even between larger nations
 NDefines.NDiplomacy.PEACE_COST_RETURN_CORE = 0.5			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   returning a core to a rightful owner should be a less dramatic negotiating factor than taking a completely new province
 NDefines.NDiplomacy.PEACE_COST_REVOKE_CORE = 0.25			-- from 0p5
-NDefines.NDiplomacy.PEACE_COST_RELEASE_ANNEXED = 0.75			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   releasing an annexed vassal shouldnt be as dramatic as demanding a completely new province   Also encourages breaking up of blobs which can only be a good thing
+NDefines.NDiplomacy.PEACE_COST_RELEASE_ANNEXED = 0.75			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   releasing an annexed vassal shouldn't be as dramatic as demanding a completely new province   Also encourages breaking up of blobs which can only be a good thing
 NDefines.NDiplomacy.PEACE_COST_RELEASE_VASSAL = 0.75		-- from 0p5
 NDefines.NDiplomacy.PEACE_COST_CONVERSION = 0.1		-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   I know people love their beliefs and resist religious change but the absurdly high price of this made it only possible against very small tags where it was usually preferable to just annex   Now this might be useful
 NDefines.NDiplomacy.PEACE_COST_RELEASE = 1			-- from 2
@@ -81,9 +81,9 @@ NDefines.NDiplomacy.BREAK_ALLIANCE_PENALTY_MONTHS = 240		--	was 120 -- Break All
 NDefines.NDiplomacy.BREAK_ALLIANCE_PENALTY_SCALER = -0.75	--	was -0.85, slightly less	-- Break Alliance resentment is scaled by this value but is capped at -100.
 NDefines.NDiplomacy.BREAK_ALLIANCE_DIPLOREP_FACTOR = 3		-- idk		-- AI acceptance factor per diplomatic reputation
 NDefines.NDiplomacy.AE_COALITION_THRESHOLD = -50			-- considering a rebalance of AE to -100 = coalition		-- Coalitions can form below this amount of AE opinion
-	
+
  --Empire of China
-NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.03			-- from 0p06
+NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.04			-- from 0p06
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_DEVASTATION = -2.5			-- from -5p0
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_TRIBUTARY_DEV = 0.05		-- from 0p15
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_HUNDRED_NONTRIBUTARY_DEV = -0.15			-- from -0p3
@@ -101,7 +101,7 @@ NDefines.NDiplomacy.SUPPORT_REBELS_COST = 60
 NDefines.NDiplomacy.SOW_DISCONTENT_COST = 80
 NDefines.NDiplomacy.AGITATE_FOR_LIBERTY_COST = 70
 NDefines.NDiplomacy.SABOTAGE_RECRUITMENT_COST = 90
-NDefines.NDiplomacy.SLANDER_MERCHANTS_COST = 90	
+NDefines.NDiplomacy.SLANDER_MERCHANTS_COST = 90
  --HRE
 NDefines.NDiplomacy.MAX_FREE_CITIES = 20
 NDefines.NDiplomacy.HRE_PRINCE_AUTHORITY_THRESHOLD = 50			-- from original BtP increased from 25
@@ -136,33 +136,33 @@ NDefines.NCountry.RANDOM_LUCKY_DEVELOPMENT_WEIGHT = 0.2			-- from 0p4
 NDefines.NCountry.MIN_DEV_FOR_OLD_GREAT_POWER = 300			-- from 100
 NDefines.NCountry.PS_MAKE_PROVINCE_CORE = 5			-- from 10
 NDefines.NCountry.PS_MOVE_CAPITAL_EXTRA = 100			-- from 50
-NDefines.NCountry.PS_CHANGE_CULTURE = 10			-- from 10
+NDefines.NCountry.PS_CHANGE_CULTURE = 30			-- from 10
+NDefines.NCountry.PS_CHANGE_CULTURE_OVERSEAS_RELIGION_MOD = -0.1 --from -0.8,	-- Modifier how much cheaper it is to change culture in overseas province if same religion
 NDefines.NCountry.PS_IMPROVE_PROVINCE_BASE = 0			-- from 50 # ANSWER TO LIFE THE UNIVERSE AND EVERYTHING
 NDefines.NCountry.PS_IMPROVE_PROVINCE_CAPITAL_DISCOUNT = 0			-- from 0p05
 NDefines.NCountry.ESTATE_CROWNLAND_FROM_DEV = 0			-- was 0.2 --How much crownland you gain from developing a province.
 NDefines.NCountry.OVEREXTENSION_FACTOR = 0.5			-- from 1p0
-NDefines.NCountry.MONTHS_TO_CHANGE_CULTURE = 5			-- from 10
+NDefines.NCountry.MONTHS_TO_CHANGE_CULTURE = 12			-- from 10
 NDefines.NCountry.RAZE_PROVINCE_POWER_PER_DEVELOPMENT = 10			-- from 25p0
 NDefines.NCountry.HORDE_UNITY_PER_RAZE = 0.25			-- from 0p5
 NDefines.NCountry.MERCHANT_REPUBLIC_SIZE_LIMIT = 50
-NDefines.NCountry.PS_BOOST_MILITARIZATION = 30			-- Same logic as above new provinces cause faster decline thus need lower cost ideally I can find a better solution later Base 50
-NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.1	-- from 0.3
-NDefines.NCountry.REVOLT_SIZE_BASE = 3	-- from 4
-NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03			-- % each tech increases size of rebels by this percent.
+NDefines.NCountry.REVOLT_SIZE_DEVELOPMENT_MULTIPLIER = 0.1 -- from 0.3
+NDefines.NCountry.REVOLT_SIZE_BASE = 1	-- from 4
+NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03		-- % each tech increases size of rebels by this percent.
 NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 NDefines.NCountry.CROWN_LANDS_ALERT_THRESHOLD = 35
 NDefines.NCountry.MIN_POPULATION_FOR_TRADEGOOD_ASSIGNMENT = 1001
 
---NDefines.NCountry.CULTURE_LOSS_THRESHOLD = 0.10 					-- _CDEF_CULTURE_LOSS_THRESHOLD = 10,
---NDefines.NCountry.CULTURE_GAIN_THRESHOLD = 0.20 					-- _CDEF_CULTURE_GAIN_THRESHOLD = 10,
---NDefines.NCountry.CULTURE_COST_DIFF_ORIGINAL = -50				-- Difference in cost in percent to convert to original culture.
---NDefines.NCountry.CULTURE_COST_DIFF_ADJACENT = -25				-- Difference in cost in percent to convert to adjacent culture.
---NDefines.NCountry.CULTURE_COST_DIFF_PRIMARY = 0				-- Difference in cost in percent to convert to primary culture.
-NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 99999		-- Minimum development required to promote the culture.
-NDefines.NCountry.PS_SET_PRIMARY_CULTURE = 200
-NDefines.NCountry.PS_ADD_ACCEPTED_CULTURE = 99999
-NDefines.NCountry.PS_REMOVE_ACCEPTED_CULTURE = 100
-NDefines.NCountry.PS_REMOVE_ACCEPTED_CULTURE_UNREST_DURATION = 10
+NDefines.NCountry.CULTURE_LOSS_THRESHOLD = 0.05 					-- _CDEF_CULTURE_LOSS_THRESHOLD = 10,
+NDefines.NCountry.CULTURE_GAIN_THRESHOLD = 0.10 					-- _CDEF_CULTURE_GAIN_THRESHOLD = 10,
+NDefines.NCountry.CULTURE_COST_DIFF_ORIGINAL = -10			-- NOW MINORITY NOT ORIGINAL	-- Difference in cost in percent to convert to original culture.
+NDefines.NCountry.CULTURE_COST_DIFF_ADJACENT = -5				-- Difference in cost in percent to convert to adjacent culture.
+NDefines.NCountry.CULTURE_COST_DIFF_PRIMARY = 0				-- Difference in cost in percent to convert to primary culture.
+NDefines.NCountry.CULTURE_MIN_DEVELOPMENT_TO_PROMOTE = 30		-- Minimum development required to promote the culture.
+NDefines.NCountry.PS_SET_PRIMARY_CULTURE = 400
+NDefines.NCountry.PS_ADD_ACCEPTED_CULTURE = 200
+NDefines.NCountry.PS_REMOVE_ACCEPTED_CULTURE = 200
+NDefines.NCountry.PS_REMOVE_ACCEPTED_CULTURE_UNREST_DURATION = 25
 
 
 NDefines.NCountry.PILLAGE_CAPITAL_DEVELOPMENT_DECREASE = 0.1 -- from 0.2
@@ -183,16 +183,16 @@ NDefines.NCountry.PROVINCE_DISCOVERY_YEARS_RELIGION = 9999       -- was 100 -- Y
  -- Core Costs
 NDefines.NCountry.CORE_COLONY = 0.5								-- Multiplied with development, colonized by country or overseas
 NDefines.NCountry.CORE_OVERSEAS = 0.5						-- Multiplied with development, colonized by country or overseas
---NDefines.NCountry.CORE_SAME_REGION = 0.9						-- Multiplied with development, for colonial nations 
+--NDefines.NCountry.CORE_SAME_REGION = 0.9						-- Multiplied with development, for colonial nations
 --NDefines.NCountry.CORE_SAME_CONTINENT = 0.9					-- Multiplied with development, for colonial nations
 NDefines.NCountry.CORE_HAD_CLAIM = 0.1						-- Impacts MODIFIER_CORE_CREATION
 NDefines.NCountry.CORE_HAD_PERMANENT_CLAIM = 0.25
  -- states and territories
-NDefines.NCountry.ALLOWED_TERRITORY_VS_MAX_STATES = 1.5			-- Same logic as above new provinces and areas require higher numbers 
-NDefines.NCountry.TERRITORY_PENALTY_CAP = 60			-- Same logic as above new provinces and areas require higher numbers 
+NDefines.NCountry.ALLOWED_TERRITORY_VS_MAX_STATES = 1.5			-- Same logic as above new provinces and areas require higher numbers
+NDefines.NCountry.TERRITORY_PENALTY_CAP = 60			-- Same logic as above new provinces and areas require higher numbers
  -- abdicate and disinherit
 NDefines.NCountry.ABDICATE_LEGITIMACY_THRESHOLD = 75 -- from 50
-NDefines.NCountry.ABDICATE_AGE_THRESHOLD = 60 -- from 60 
+NDefines.NCountry.ABDICATE_AGE_THRESHOLD = 60 -- from 60
 NDefines.NCountry.ABDICATE_RULING_LENGTH_THRESHOLD = 25 -- from 20
 NDefines.NCountry.ABDICATE_LEGITIMACY_HIT = -25 -- from -20
 NDefines.NCountry.ABDICATE_PRESTIGE_HIT = -50 -- from -50
@@ -229,19 +229,21 @@ NDefines.NCountry.SETTLEMENT_GROWTH_CHECK_INTERVAL = 365 -- Interval in days bet
  --CONCETRATE DEV
 NDefines.NCountry.CONCENTRATE_DEVELOPMENT_COOLDOWN_DURATION = 9999 --
 NDefines.NCountry.CONCENTRATE_DEVELOPMENT_DEVELOPMENT_DECREASE = 1 --
-	
+
  --NEconomy
 NDefines.NEconomy.GOLD_MINE_SIZE = 40						-- Base income from gold mines
 NDefines.NEconomy.GOLD_MINE_DEPLETION_THRESHOLD = 5				-- Gold mines above production level or above can be depleted
-NDefines.NEconomy.GOLD_MINE_DEPLETION_CHANCE = 0.5					-- Chance of gold mine being depleted (yearly, per production above threshold) 
+NDefines.NEconomy.GOLD_MINE_DEPLETION_CHANCE = 0.5					-- Chance of gold mine being depleted (yearly, per production above threshold)
 NDefines.NEconomy.GOLD_MINE_SIZE_PRIMITIVES = 20
 NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided by this factor, do not set to zero!
+NDefines.NEconomy.MAX_BUILDING_SLOTS = 16	-- was 12					-- Maximum number of buildings slots, i.e. max buildings possible.
+--NDefines.NEconomy.COT_BUILDING_SLOTS = 2				-- may set to 1			-- Number of slots used by a Center of Trade.
  -- Loans
 NDefines.NEconomy.BASE_INTERESTS = 5.0 -- was 4.0
  --Monopoly bonus
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
  --Necessary
---NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable 
+--NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable
 NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.25						-- _EDEF_TRADE_WIND_STRENGTH_
 NDefines.NEconomy.TRADED_FRACTION_FOR_BONUS = 0.08				-- _EDEF_TRADED_FRACTION_FOR_BONUS_
 
@@ -253,18 +255,21 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local auto
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
  --NMilitary changes
-NDefines.NMilitary.SLACKEN_AP_DROP = 0.1 -- was 0.05 +100% cost
-NDefines.NMilitary.SLACKEN_MANPOWER_INCREASE = 1.5 -- was 1 +50% manpower
- 
+NDefines.NMilitary.SLACKEN_AP_DROP = 0.1 	--Defines how much AP is lost when activating slacken toggle.
+NDefines.NMilitary.SLACKEN_MIN_AP = 0			--Defines how much AP is at least needed to keep the Slacken Modifier active. Put a -1 here if you want the toggle to not turn off automatically
+NDefines.NMilitary.SLACKEN_MAX_MP_PERCENTAGE = 0.95   		--Defines how much manpower percentage of your whole manpower pool you can have before the toggle turns off automatically. "1" would mean "100% of your manpower pool". Put a -1 here if you don't want this toggle to turn off from having manpower
+
+NDefines.NMilitary.COAST_RAID_RANGE = 3							-- default coastal raid range
+
 NDefines.NMilitary.BASE_COMBAT_WIDTH = 10
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 42			-- from 50
-NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.2			-- from 0p25
+NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.25			-- from 0p25
 NDefines.NMilitary.FORTRESS_COST = 0.1			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
 NDefines.NMilitary.GARRISON_SIZE = 500		-- from 1000		-- GARRISON_SIZE
-NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 4 -- from 3, to 2, to 4	
+NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 4 -- from 3, to 2, to 4
 NDefines.NMilitary.MIN_MONTHLY_MANPOWER = 0.25
 
 --NDefines.NMilitary.MAX_BREACH = 3
@@ -272,7 +277,7 @@ NDefines.NMilitary.SIEGE_GARRISON_SURRENDER = 50			-- from 100		-- A siege ends 
 NDefines.NMilitary.ASSAULT_WIDTH_LIMIT = 5					-- how many times the garrison size that can effectively assault at the same time.
 --NDefines.NMilitary.ASSAULT_ATTACKER_LOSS = 1.0 					-- MDEF_ASSAULT_ATTACKER_LOSS = 10,
 NDefines.NMilitary.ASSAULT_DEFENDER_LOSS = 0.1 -- 0.05					-- _MDEF_ASSAULT_DEFENDER_LOSS = 10,
-NDefines.NMilitary.ASSAULT_DICE_MODIFIER = 5 	
+NDefines.NMilitary.ASSAULT_DICE_MODIFIER = 5
 
 --NDefines.NMilitary.SIEGE_ATTRITION = 1
 NDefines.NMilitary.SIEGE_DISEASE_IMPACT = 0.1 -- from 0.05
@@ -288,17 +293,17 @@ NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.25		-- 100 revanschism is 
 NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -12
 NDefines.NMilitary.CONTROL_DEVASTATION_IMPACT = -12
  --Unit Speeds
-NDefines.NMilitary.INFANTRY_SPEED = 0.6					
-NDefines.NMilitary.CAVALRY_SPEED = 0.8							
+NDefines.NMilitary.INFANTRY_SPEED = 0.6
+NDefines.NMilitary.CAVALRY_SPEED = 0.8
 NDefines.NMilitary.ARTILLERY_SPEED = 0.4
  -- speeds
 --NDefines.NMilitary.HOSTILE_TERRITORY_SPEED_MODIFIER = 0	-- speed modifier into hostile territory
 --NDefines.NMilitary.SHATTERED_RETREAT_SPEED_MODIFIER = 0.5			-- How much (by percentage) the movement speed will be modified when doing a shattered retreat
 NDefines.NMilitary.SEA_EXPLORE_SPEED = 10 --5						-- Can to some extent determine exploration speed of seas and coasts by specifying how long a ship pauses between exploration targets.
---NDefines.NMilitary.FORT_FLIPPING_TIME = 90 --30	
+--NDefines.NMilitary.FORT_FLIPPING_TIME = 90 --30
 --NDefines.NMilitary.INF_LOOT = 0.1								-- How many ducats/month will a single full strength infantry regiment loot?
 --NDefines.NMilitary.CAV_LOOT = 0.3								-- How many ducats/month will a single full strength cavalry regiment loot?
---NDefines.NMilitary.ART_LOOT = 0.05						-- How many ducats/month will a single full strength artillery regiment loot?	
+--NDefines.NMilitary.ART_LOOT = 0.05						-- How many ducats/month will a single full strength artillery regiment loot?
  --Loot and Devastation and raiding
 NDefines.NMilitary.LOOT_DEVASTATION_IMPACT = 25
 NDefines.NMilitary.SCORCHED_DEVASTATION_IMPACT = 50
@@ -306,7 +311,7 @@ NDefines.NMilitary.SCORCHED_DURATION = 36				-- months
 NDefines.NMilitary.LOOTED_DAYS = 730								-- Time the "Looted" static modifier lasts.
 NDefines.NMilitary.LOOTED_SCALE = 2								-- Scaling value from province development to number of ducats it contains.									-- Maximum amount of ducats (total) a province can be looted for each month.
 NDefines.NMilitary.LOOTED_RECOVERY = 0.2
-NDefines.NMilitary.SLAVE_RAIDS_SAILOR_FACTOR = 0.2						
+NDefines.NMilitary.SLAVE_RAIDS_SAILOR_FACTOR = 0.2
 NDefines.NMilitary.SLAVE_RAIDS_DURATION = 7300
  --Defence penalties
 NDefines.NMilitary.RIVER_CROSSING_PENALTY = 1						-- Dice roll penalty from river crossing
@@ -320,7 +325,7 @@ NDefines.NMilitary.ART_SUPPRESSION = 0.25					-- The amount of reduction to unre
 NDefines.NMilitary.ARMY_DRILL_YEARLY_DECAY = -0.05
 
  --- navy changes
- 
+
 NDefines.NMilitary.NAVAL_BASE_ENGAGEMENT_WIDTH = 10   		-- Number of ships that can fire per round
 NDefines.NMilitary.HEAVY_SHIP_COMBAT_WIDTH = 3
 NDefines.NMilitary.LIGHT_SHIP_COMBAT_WIDTH = 2
@@ -377,7 +382,7 @@ NDefines.NAI.PEACE_TERMS_PILLAGE_CAPITAL_MULT = 1.0 -- from 2
  -- abandon union
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_BASE_FACTOR = 10 --  was 60     AI scoring to abandoning Personal Union (given high enough LD and strength).
 NDefines.NAI.DIPLOMATIC_ACTION_ABANDON_UNION_STRENGTH_THRESHOLD = 5 --  was 2.5      Threshold in relative strength for AI to give up on Personal Union.
- -- distance 
+ -- distance
 NDefines.NAI.DIPLOMATIC_INTEREST_DISTANCE = 100 -- was 150
 
 NDefines.FORCE_COMPOSITION_CHANGE_TECH_LEVEL = 19 -- was 11
@@ -385,13 +390,13 @@ NDefines.FORCE_COMPOSITION_CHANGE_TECH_LEVEL = 19 -- was 11
 NDefines.NAI.MIN_SCORE_TO_CONCENTRATE_DEVELOPMENT = 9999999 -- from 1.5
  --- govt cap
 NDefines.NAI.GOVERNING_CAPACITY_OVER_PERCENTAGE_TOLERATED = 0.25 -- was 0.5 - AN overcap is awful, halving
-	
+
  --NGraphics changes
 NDefines.NGraphics.CITY_SPRAWL_AMOUNT = 1.0			-- from 3p0
 --NDefines.NGraphics.CAPITAL_INDICATOR_HEIGHT = 0.1 -- from 5.8 - LOWERING AS FLAGS WERE REMOVED FOR PERFORMANCE PURPOSES
 --NDefines.NGraphics.CAPITAL_INDICATOR_HEIGHT_SCALE = 140.0 -- from 140.0 - CHANGES SCALE OF CAPITAL INDICATOR
 
- --NEngine 
+ --NEngine
 NDefines.NEngine.EVENT_PROCESS_OFFSET = 90				-- Events are checked every X day per character or province (1 is ideal, but CPU heavy)
 --N0Defines.NEngine.TRIGGER_PROFILING_SAMPLING_RATE = 100000			-- Sampling rate for trigger profiling (Every nth call is recorded)
 
@@ -407,24 +412,10 @@ NDefines.NReligion.MAX_CARDINALS_PER_COUNTRY = 6							-- Max cardinals in a sin
 NDefines.NReligion.MINIMUM_DEVELOPMENT_ALLOWED = 30.0							-- WAS 10.0 -- You will need a higher development than this for your province to be eligible for cardinal
 NDefines.NReligion.COUNTRY_DEVELOPMENT_DIVIDER = 600.0							-- WAS 200 -- When a cardinal is chosen the formula is diving a countrys development by this number.
 NDefines.NReligion.NUMBER_OF_POSSIBLE_CARDINALS = 5						-- Number of cardinals from said number of most successful provinces to be randomly picked from
-
+NDefines.NReligion.REFORM_DESIRE_PER_YEAR = 0.01								-- Increase of reform desire for each year.
 
 ---- NGovernment
-NDefines.NGovernment.RUSSIAN_ABILITY_COST = 100
-NDefines.NGovernment.RUSSIAN_ABILITY_POOL_SIZE = 150
-NDefines.NGovernment.RUSSIAN_ABILITY_BASE_GAIN = 1
-NDefines.NGovernment.RUSSIAN_ABILITY_SUDEBNIK_MIN_AUTONOMY = 10
-NDefines.NGovernment.RUSSIAN_ABILITY_SUDEBNIK_AUTONOMY_CHANGE = -10
-NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_THRESHOLD = 0.3
-NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_AI_THRESHOLD = 0.85 -- AI will use ability when revolt risk is 90%, or when they have full power
-NDefines.NGovernment.RUSSIAN_ABILITY_OPRICHNINA_CHANGE = -0.3
-NDefines.NGovernment.RUSSIAN_ABILITY_STRELTSY_WE_CHANGE = -2
-NDefines.NGovernment.RUSSIAN_ABILITY_STRELTSY_SPAWN_SIZE = 0.2
 
-NDefines.NGovernment.IQTA_POLICY_COOLDOWN_YEARS = 20
-NDefines.NGovernment.EFFICIENT_FARMING_DUCAT_MULTIPLIER = 2
-NDefines.NGovernment.LAND_AQUISITION_MANPOWER_MULTIPLIER = 0.05
-	
 NDefines.NGovernment.GOVERNMENT_REFORM_BASE_COST = 100.0
 NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 100.0 -- to be set to 0 soon
 NDefines.NGovernment.GOVERNMENT_REFORM_YEARLY_BASE_PROGRESS = 10.0
@@ -441,7 +432,7 @@ NDefines.NGovernment.CENTRALIZE_STATE_ADM_COST = 100 -- from 50
 --NDefines.NGovernment.CENTRALIZE_STATE_STATE_COST_LIMIT = 10.0
 --NDefines.NGovernment.CENTRALIZE_STATE_REDUCTION = 0.0
 NDefines.NGovernment.CENTRALIZE_STATE_YEARS = 10 -- from 5
-	
+
 NDefines.NGovernment.CONCENTRATE_DEVELOPMENT_CAPITAL_PROPORTION = 0 -- from 0.8
 NDefines.NGovernment.DEVASTATION_PER_DEV_STOLEN = 0 -- from 5
 NDefines.NGovernment.FREE_CONCENTRATE_DEVELOPMENT_CAPITAL_PROPORTION = 0 -- from 1
