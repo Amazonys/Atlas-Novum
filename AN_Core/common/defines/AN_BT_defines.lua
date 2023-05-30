@@ -236,6 +236,8 @@ NDefines.NEconomy.GOLD_MINE_DEPLETION_THRESHOLD = 5				-- Gold mines above produ
 NDefines.NEconomy.GOLD_MINE_DEPLETION_CHANCE = 0.5					-- Chance of gold mine being depleted (yearly, per production above threshold)
 NDefines.NEconomy.GOLD_MINE_SIZE_PRIMITIVES = 20
 NDefines.NEconomy.CARAVAN_FACTOR = 10.0			-- from 3p0     Development is divided by this factor, do not set to zero!
+NDefines.NEconomy.MAX_BUILDING_SLOTS = 16	-- was 12					-- Maximum number of buildings slots, i.e. max buildings possible.
+--NDefines.NEconomy.COT_BUILDING_SLOTS = 2				-- may set to 1			-- Number of slots used by a Center of Trade.
  -- Loans
 NDefines.NEconomy.BASE_INTERESTS = 5.0 -- was 4.0
  --Monopoly bonus
