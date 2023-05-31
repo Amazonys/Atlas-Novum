@@ -226,6 +226,8 @@ NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 1 -- Affects chance of de
 NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.005 -- Minimum chance of increasing development for colonists promoting Settlement Growth
 NDefines.NCountry.SETTLEMENT_GROWTH_CHECK_INTERVAL = 365 -- Interval in days between checks for random development increase when working in Settlement Growth.
 
+ --SETTLEMENT
+NDefines.NCountry.OVERSEAS_DISTANCE = 0 -- was 150,	
  --CONCETRATE DEV
 NDefines.NCountry.CONCENTRATE_DEVELOPMENT_COOLDOWN_DURATION = 9999 --
 NDefines.NCountry.CONCENTRATE_DEVELOPMENT_DEVELOPMENT_DECREASE = 1 --
