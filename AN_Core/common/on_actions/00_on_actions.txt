@@ -5975,6 +5975,200 @@ on_estate_removed = {
 
 ##scope = colony province, FROM = owner country or province if there's a minority expulsion source, fires when the colony is created
 on_colony_established = {
+	#AMYZ RESETTLE FOR COLONY
+	hidden_effect = {
+		if = {	
+			limit = { NOT = { has_province_modifier = AN_received_migrants } }
+			save_global_event_target_as = AN_resettle_target
+			if = { 
+				limit = { 
+					owner = {
+						is_subject_of_type = colony
+					}
+				}
+				owner = {
+					overlord = {
+						random_owned_province = {
+							limit = { 
+								NOT = { has_province_modifier = AN_sent_migrants }
+								base_manpower = 2
+								OR = {
+									owner = { culture_group = variable:PREV:AN_province_culture }
+									owner = { culture_group = variable:PREV:AN_minority_culture }
+									owner = { culture_group = variable:PREV:AN_secondary_culture }
+								}
+							}
+							save_global_event_target_as = AN_resettle_origin
+						}
+					}
+				}
+			}
+			else = {
+				owner = {
+					random_owned_province = {
+						limit = { 
+							NOT = { has_province_modifier = AN_sent_migrants }
+							base_manpower = 2
+							OR = {
+								owner = { culture_group = variable:PREV:AN_province_culture }
+								owner = { culture_group = variable:PREV:AN_minority_culture }
+								owner = { culture_group = variable:PREV:AN_secondary_culture }
+							}
+						}
+				
+						save_global_event_target_as = AN_resettle_origin
+					}
+				}
+			}
+		
+			event_target:AN_resettle_origin = { 
+				if = {
+					limit = { base_manpower = 11  }
+					random_list = {
+						1 = {
+							AN_mig_sub = yes
+						}
+						1 = {
+							modifier = {
+								factor = 2
+								base_manpower = 11
+								NOT = { base_manpower = 21 }
+							}
+							modifier = {
+								factor = 3
+								base_manpower = 21
+								NOT = { base_manpower = 31 }
+							}
+							modifier = {
+								factor = 4
+								base_manpower = 31
+								NOT = { base_manpower = 41 }
+							}
+							modifier = {
+								factor = 5
+								base_manpower = 41
+								NOT = { base_manpower = 51 }
+							}
+							modifier = {
+								factor = 6
+								base_manpower = 51
+								NOT = { base_manpower = 61 }
+							}
+							modifier = {
+								factor = 7
+								base_manpower = 61
+								NOT = { base_manpower = 71 }
+							}
+							modifier = {
+								factor = 8
+								base_manpower = 71
+								NOT = { base_manpower = 81 }
+							}
+							modifier = {
+								factor = 9
+								base_manpower = 81
+								NOT = { base_manpower = 91 }
+							}
+							modifier = {
+								factor = 10
+								base_manpower = 91
+							}
+							#Do Nothing
+						}
+					}
+				}
+				else = {
+					AN_mig_sub = yes
+				}
+			
+				add_base_tax = -1 
+				add_base_manpower = -1 
+				
+				add_province_modifier = {
+					name = AN_sent_migrants
+					duration = 730
+					#hidden = yes
+				}
+			
+				AN_check_minorities = yes
+			}
+		
+			event_target:AN_resettle_target = { 
+				if = {
+					limit = { base_manpower = 11 }
+					random_list = {
+						1 = {
+							AN_mig_add = yes
+						}
+						1 = {
+							modifier = {
+								factor = 2
+								base_manpower = 11
+								NOT = { base_manpower = 21 }
+							}
+							modifier = {
+								factor = 3
+								base_manpower = 21
+								NOT = { base_manpower = 31 }
+							}
+							modifier = {
+								factor = 4
+								base_manpower = 31
+								NOT = { base_manpower = 41 }
+							}
+							modifier = {
+								factor = 5
+								base_manpower = 41
+								NOT = { base_manpower = 51 }
+							}
+							modifier = {
+								factor = 6
+								base_manpower = 51
+								NOT = { base_manpower = 61 }
+							}
+							modifier = {
+								factor = 7
+								base_manpower = 61
+								NOT = { base_manpower = 71 }
+							}
+							modifier = {
+								factor = 8
+								base_manpower = 71
+								NOT = { base_manpower = 81 }
+							}
+							modifier = {
+								factor = 9
+								base_manpower = 81
+								NOT = { base_manpower = 91 }
+							}
+							modifier = {
+								factor = 10
+								base_manpower = 91
+							}
+							#Do Nothing
+						}
+					}
+				}
+				else = {
+					AN_mig_add = yes
+				}
+			
+				add_base_tax = 1 
+				add_base_manpower = 1 
+			
+				AN_check_minorities = yes
+				
+				add_province_modifier = {
+					name = AN_received_migrants
+					duration = 730
+					#hidden = yes
+				}
+			}
+		
+			clear_global_event_target = AN_resettle_target
+			clear_global_event_target = AN_resettle_origin
+		}
+	}
 }
 
 #scope = new country, FROM = parent country
@@ -6311,160 +6505,6 @@ on_colony_finished = { #ROOT - Province
 	if = {
 		limit = { trade_goods = unknown }
 		province_event = { id = AN_tradegood_select.1 days = 0 }
-	}
-	save_global_event_target_as = AN_resettle_target
-	
-
-	hidden_effect = {
-		owner = {
-			random_owned_province = {
-				limit = { 
-					base_manpower = 2
-					OR = {
-						owner = { culture_group = variable:PREV:AN_province_culture }
-						owner = { culture_group = variable:PREV:AN_minority_culture }
-						owner = { culture_group = variable:PREV:AN_secondary_culture }
-					}
-				}
-				
-				save_global_event_target_as = AN_resettle_origin
-			}
-		}
-		
-		event_target:AN_resettle_origin = { 
-			if = {
-				limit = { base_manpower = 11  }
-				random_list = {
-					1 = {
-						AN_mig_sub = yes
-					}
-					1 = {
-						modifier = {
-							factor = 2
-							base_manpower = 11
-							NOT = { base_manpower = 21 }
-						}
-						modifier = {
-							factor = 3
-							base_manpower = 21
-							NOT = { base_manpower = 31 }
-						}
-						modifier = {
-							factor = 4
-							base_manpower = 31
-							NOT = { base_manpower = 41 }
-						}
-						modifier = {
-							factor = 5
-							base_manpower = 41
-							NOT = { base_manpower = 51 }
-						}
-						modifier = {
-							factor = 6
-							base_manpower = 51
-							NOT = { base_manpower = 61 }
-						}
-						modifier = {
-							factor = 7
-							base_manpower = 61
-							NOT = { base_manpower = 71 }
-						}
-						modifier = {
-							factor = 8
-							base_manpower = 71
-							NOT = { base_manpower = 81 }
-						}
-						modifier = {
-							factor = 9
-							base_manpower = 81
-							NOT = { base_manpower = 91 }
-						}
-						modifier = {
-							factor = 10
-							base_manpower = 91
-						}
-						#Do Nothing
-					}
-				}
-			}
-			else = {
-				AN_mig_sub = yes
-			}
-			
-			add_base_tax = -1 
-			add_base_manpower = -1 
-			
-			AN_check_minorities = yes
-		}
-		
-		event_target:AN_resettle_target = { 
-			if = {
-				limit = { base_manpower = 11 }
-				random_list = {
-					1 = {
-						AN_mig_add = yes
-					}
-					1 = {
-						modifier = {
-							factor = 2
-							base_manpower = 11
-							NOT = { base_manpower = 21 }
-						}
-						modifier = {
-							factor = 3
-							base_manpower = 21
-							NOT = { base_manpower = 31 }
-						}
-						modifier = {
-							factor = 4
-							base_manpower = 31
-							NOT = { base_manpower = 41 }
-						}
-						modifier = {
-							factor = 5
-							base_manpower = 41
-							NOT = { base_manpower = 51 }
-						}
-						modifier = {
-							factor = 6
-							base_manpower = 51
-							NOT = { base_manpower = 61 }
-						}
-						modifier = {
-							factor = 7
-							base_manpower = 61
-							NOT = { base_manpower = 71 }
-						}
-						modifier = {
-							factor = 8
-							base_manpower = 71
-							NOT = { base_manpower = 81 }
-						}
-						modifier = {
-							factor = 9
-							base_manpower = 81
-							NOT = { base_manpower = 91 }
-						}
-						modifier = {
-							factor = 10
-							base_manpower = 91
-						}
-						#Do Nothing
-					}
-				}
-			}
-			else = {
-				AN_mig_add = yes
-			}
-			
-			add_base_tax = 1 
-			add_base_manpower = 1 
-			
-			AN_check_minorities = yes
-		}
-		
-		clear_global_event_target = AN_resettle_target
-		clear_global_event_target = AN_resettle_origin
 	}
 }
 
