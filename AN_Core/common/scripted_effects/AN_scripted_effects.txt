@@ -161,31 +161,17 @@ discover_mission_cede = { # NEW CODE
 
 
 #Subject coloring
-AN_check_country_colors = {
+AN_check_country_colors = { #Now interfaces with PDX_RestoreColorORName/restore_color_decision
 	if = {
-		limit = { is_subject = no }
-		restore_country_color = yes
+		limit = { has_global_flag = AN_overlord_colors }
 		if = {
-			limit = {
-				any_subject_country = {
-					OR = {
-					#	is_subject_of_type = personal_union
-					#	is_subject_of_type = vassal
-					#	is_subject_of_type = march
-						is_subject_of_type = appanage
-						is_subject_of_type = eyalet
-						is_subject_of_type = core_eyalet
-						is_subject_of_type = commercial_enterprise
-						is_subject_of_type = colony
-						is_subject_of_type = confederate
-						is_subject_of_type = dominion
-						is_subject_of_type = fief
-					}
-				} 
-			}
-			save_global_event_target_as = AN_master_overlord
-			every_subject_country = {
-				limit = {
+			limit = { is_subject = no has_country_flag = has_overriden_color_flag }
+			restore_country_color = yes
+			clr_country_flag = has_overriden_color_flag
+		}
+		else = {
+			if = {
+				limit = { 
 					OR = {
 					#	is_subject_of_type = personal_union
 					#	is_subject_of_type = vassal
@@ -200,26 +186,18 @@ AN_check_country_colors = {
 						is_subject_of_type = fief
 					}
 				}
-				change_country_color = { country = event_target:AN_master_overlord }
-				every_subject_country = {
+				if = {
 					limit = {
-						OR = {
-						#	is_subject_of_type = personal_union
-						#	is_subject_of_type = vassal
-						#	is_subject_of_type = march
-							is_subject_of_type = appanage
-							is_subject_of_type = eyalet
-							is_subject_of_type = core_eyalet
-							is_subject_of_type = commercial_enterprise
-							is_subject_of_type = colony
-							is_subject_of_type = confederate
-							is_subject_of_type = dominion
-							is_subject_of_type = fief
-						}
+						overlord = { is_subject = no }
 					}
-					change_country_color = { country = event_target:AN_master_overlord }
-					every_subject_country = {
-						limit = {
+					overlord = { save_event_target_as = AN_color_target }
+					change_country_color = { country = event_target:AN_color_target }
+					set_country_flag = has_overriden_color_flag
+				}
+				else_if = {
+					limit = {
+						overlord = {
+							is_subject = yes
 							OR = {
 							#	is_subject_of_type = personal_union
 							#	is_subject_of_type = vassal
@@ -234,11 +212,50 @@ AN_check_country_colors = {
 								is_subject_of_type = fief
 							}
 						}
-						change_country_color = { country = event_target:AN_master_overlord }
+					}
+					if = {
+						limit = {
+							overlord = { overlord = { is_subject = no } }
+						}
+						overlord = { overlord = { save_event_target_as = AN_color_target } }
+						change_country_color = { country = event_target:AN_color_target }
+						set_country_flag = has_overriden_color_flag
+					}
+					else_if = {
+						limit = {
+							overlord = {
+								is_subject = yes
+								OR = {
+								#	is_subject_of_type = personal_union
+								#	is_subject_of_type = vassal
+								#	is_subject_of_type = march
+									is_subject_of_type = appanage
+									is_subject_of_type = eyalet
+									is_subject_of_type = core_eyalet
+									is_subject_of_type = commercial_enterprise
+									is_subject_of_type = colony
+									is_subject_of_type = confederate
+									is_subject_of_type = dominion
+									is_subject_of_type = fief
+								}
+							}
+						}
+						overlord = { overlord = { overlord = { save_event_target_as = AN_color_target } } }
+						change_country_color = { country = event_target:AN_color_target }
+						set_country_flag = has_overriden_color_flag
+					}
+					else = {
+						overlord = { overlord = { save_event_target_as = AN_color_target } }
+						change_country_color = { country = event_target:AN_color_target }
+						set_country_flag = has_overriden_color_flag
 					}
 				}
+				else = {
+					overlord = { save_event_target_as = AN_color_target }
+					change_country_color = { country = event_target:AN_color_target }
+					set_country_flag = has_overriden_color_flag
+				}
 			}
-			clear_global_event_target = AN_master_overlord
 		}
 	}
 }
