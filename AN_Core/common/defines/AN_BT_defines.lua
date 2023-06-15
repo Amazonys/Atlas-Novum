@@ -227,7 +227,7 @@ NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.005 -- Minimum chance of incre
 NDefines.NCountry.SETTLEMENT_GROWTH_CHECK_INTERVAL = 365 -- Interval in days between checks for random development increase when working in Settlement Growth.
 
  --SETTLEMENT
-NDefines.NCountry.OVERSEAS_DISTANCE = 0 -- was 150,	
+NDefines.NCountry.OVERSEAS_DISTANCE = 0 -- was 150,
  --CONCETRATE DEV
 NDefines.NCountry.CONCENTRATE_DEVELOPMENT_COOLDOWN_DURATION = 9999 --
 NDefines.NCountry.CONCENTRATE_DEVELOPMENT_DEVELOPMENT_DECREASE = 1 --
@@ -250,8 +250,8 @@ NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.25						-- _EDEF_TRADE_WIND_STRENGTH_
 NDefines.NEconomy.TRADED_FRACTION_FOR_BONUS = 0.08				-- _EDEF_TRADED_FRACTION_FOR_BONUS_
 
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
-NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is ncreased from development
-NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5	-- How much this is ncreased from local autonomy
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is increased from development
+NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5	-- How much this is increased from local autonomy
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local autonomy is added to this base in the formula.
  --Colonial nations44
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
@@ -289,7 +289,7 @@ NDefines.NMilitary.SIEGE_BONUS_FOOD_SHORTAGE = 2 -- from 2
 NDefines.NMilitary.SIEGE_BONUS_WATER_SHORTAGE = 3 -- from 3
 NDefines.NMilitary.SIEGE_BONUS_DEFENDERS_DESERT = 2 -- from 2
  -- Devastation
-NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 100			-- from 5     I dont actually know how this works     Might have it reversed better check later
+NDefines.NMilitary.DEVASTATION_DEVELOPMENT_SCALE = 100			-- from 5     I don't actually know how this works     Might have it reversed better check later
 NDefines.NMilitary.FORT_DEVASTATION_IMPACT = -6
 NDefines.NMilitary.REVANCHISM_DEVASTATION_IMPACT = -0.25		-- 100 revanschism is -20 a year.
 NDefines.NMilitary.SURRENDER_DEVASTATION_IMPACT = -12
@@ -315,7 +315,7 @@ NDefines.NMilitary.LOOTED_SCALE = 2								-- Scaling value from province develo
 NDefines.NMilitary.LOOTED_RECOVERY = 0.2
 NDefines.NMilitary.SLAVE_RAIDS_SAILOR_FACTOR = 0.2
 NDefines.NMilitary.SLAVE_RAIDS_DURATION = 7300
- --Defence penalties
+ --Defense penalties
 NDefines.NMilitary.RIVER_CROSSING_PENALTY = 1						-- Dice roll penalty from river crossing
 NDefines.NMilitary.STRAIT_CROSSING_PENALTY = 2					-- Dice roll penalty from strait crossing
 NDefines.NMilitary.SEA_LANDING_PENALTY = 2
@@ -373,8 +373,8 @@ NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_MONTHLY_PARTICIPATION_RATE = -0
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_PARTICIPATION_BREAK = -2.4 --At this level of (lack of) participation from the player, the AI will break the condottieri agreement and tell all their friends.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_PARTICIPATION_WARN = -1.2 --At this level of (lack of) participation from the player, a warning alert will be displayed about impendent AI discontent.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_HIRING_MALUS_YEARS = 25 --Once AI has told all their friends about how mean a player is, they will refuse to hire condottieri for cash this long.
-NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_PARTICIPATION_FROM_CASUALTIES = 0.5 --Scaler for casulties caused by condottieri.
-NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_MILITARY_RULERS = 1 --If set to 1, AI will only send Condottieri while having a miliaristic ruler.
+NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_PARTICIPATION_FROM_CASUALTIES = 0.5 --Scaler for casualties caused by condottieri.
+NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_MILITARY_RULERS = 1 --If set to 1, AI will only send Condottieri while having a militaristic ruler.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_ONLY_NEIGHBORS = 1 --If set to 1, AI will only send Condottieri to neighbors, regardless of access.
 NDefines.NAI.DIPLOMATIC_ACTION_OFFER_CONDOTTIERI_DISABLE_VERSUS_PLAYER_ENEMIES = 0 --If set to 1, AI will try avoid sending Condottieri having to fight against human player enemies.
  --Peace Deals
