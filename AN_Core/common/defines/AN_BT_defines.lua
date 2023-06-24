@@ -178,6 +178,15 @@ NDefines.NCountry.INNOVATIVENESS_FIRST_PICKED_IDEA = 1.0			-- Innovativeness bon
 --NDefines.NCountry.INNOVATIVENESS_DAYS_AFTER_FIRST_PICK_VIABLE = 365 -- How many days you can still get innov
 --NDefines.NCountry.INNOVATIVENESS_MAX = 100.0 -- Innovativeness Cap
 
+NDefines.NCountry.EXPLORE_COAST_EVENT_CHANCE = 1 --was 2			-- Chance (in %) of getting an event when exploring coasts
+NDefines.NCountry.MIN_TECH_FOR_CIRCUMNAVIGATE = 21	--was 9		-- Must have this level of dip tech to circumnavigate the globe
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_1 = 1468			-- Provinces for circumnavigation (coast of gambia)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_2 = 1539			-- Provinces for circumnavigation (magellan strait)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_3 = 1697			-- Provinces for circumnavigation (hawaii sea)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_4 = 1398			-- Provinces for circumnavigation (hawaii sea)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_5 = 1446			-- Provinces for circumnavigation (hawaii sea)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_6 = 1460			-- Provinces for circumnavigation (cape of good hope)
+
 
 --PROSPERITY/DEV CHANGES
 NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -2				-- monthly tick - WAS -2
