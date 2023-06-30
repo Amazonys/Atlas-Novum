@@ -168,6 +168,26 @@ NDefines.NCountry.PS_REMOVE_ACCEPTED_CULTURE_UNREST_DURATION = 25
 NDefines.NCountry.PILLAGE_CAPITAL_DEVELOPMENT_DECREASE = 0.1 -- from 0.2
 NDefines.NCountry.PILLAGE_CAPITAL_MAX_DEV_PILLAGED = 1 -- from 2
 
+
+NDefines.NCountry.INNOVATIVENESS_FIRST_REACHED_TECH_LEVEL = 1.0  -- Innovativeness bonus to first country (or countries) to reach a certain tech level.
+NDefines.NCountry.INNOVATIVENESS_FIRST_PICKED_IDEA = 1.0			-- Innovativeness bonus to first country (or countries) to pick an idea.
+--NDefines.NCountry.INNOVATIVENESS_BEHIND_IN_TECH_PENALTY = -0.03 	-- Innovativeness penalty if behind neighbors in tech (and not ahead of time).
+--NDefines.NCountry.INNOVATIVENESS_ENABLE_ANY_BEHIND_IN_TECH_PENALTY = 0	-- Enabled that if any tech is behind we apply the penalty. Turning this off will require you only to be ahead in one.
+--NDefines.NCountry.INNOVATIVENESS_ENABLE_PER_TECH_BEHIND_IN_TECH_PENALTY = 0 -- Enable that the penalty is applied for each tech we are behind in tech.
+--NDefines.NCountry.INNOVATIVENESS_AHEAD_OF_TIME_BONUS = 0.01 -- Bonus for being ahead of time in tech
+--NDefines.NCountry.INNOVATIVENESS_DAYS_AFTER_FIRST_PICK_VIABLE = 365 -- How many days you can still get innov
+--NDefines.NCountry.INNOVATIVENESS_MAX = 100.0 -- Innovativeness Cap
+
+NDefines.NCountry.EXPLORE_COAST_EVENT_CHANCE = 1 --was 2			-- Chance (in %) of getting an event when exploring coasts
+NDefines.NCountry.MIN_TECH_FOR_CIRCUMNAVIGATE = 21	--was 9		-- Must have this level of dip tech to circumnavigate the globe
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_1 = 1468			-- Provinces for circumnavigation (coast of gambia)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_2 = 1539			-- Provinces for circumnavigation (magellan strait)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_3 = 1697			-- Provinces for circumnavigation (hawaii sea)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_4 = 1398			-- Provinces for circumnavigation (hawaii sea)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_5 = 1446			-- Provinces for circumnavigation (hawaii sea)
+--NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_6 = 1460			-- Provinces for circumnavigation (cape of good hope)
+
+
 --PROSPERITY/DEV CHANGES
 NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -2				-- monthly tick - WAS -2
 NDefines.NCountry.PROSPERITY_INCREASE_SIZE= 0.5				-- if diceroll of d20< monarch stat, while possible ot increase - WAS 1, TURNED TO 0 CAUSE WHY SHOULD MONARCH INCREASE PROSP?? - PROBABLY SHOULD HANDLE THIS THROUGH EVENT/EDICT
