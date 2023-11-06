@@ -350,6 +350,7 @@ country_decisions = {
 	enforce_religion_muslim = {
 		potential = {
 			NOT = { has_ruler_modifier = muslim_enforced_religion }
+			NOT = { has_ruler_modifier = ARB_muslim_enforced_religion_buff }
 			religion_group = muslim
 		}
 		allow = {
@@ -357,11 +358,23 @@ country_decisions = {
 			has_regency = no
 		}
 		effect = {	
-			add_ruler_modifier = {
-				name = "muslim_enforced_religion"
-				duration = -1
+			if = {
+				limit = {
+					has_country_flag = ARB_buff_enforce_religious_unity_flag
+				}
+				add_ruler_modifier = {
+					name = "ARB_muslim_enforced_religion_buff"
+					duration = -1
+				}
+				add_piety = 0.3
 			}
-			add_piety = -0.15
+			else = {
+				add_ruler_modifier = {
+					name = "muslim_enforced_religion"
+					duration = -1
+				}
+				add_piety = -0.15
+			}
 		}
 		ai_will_do = {
 			factor = 1		
@@ -371,6 +384,7 @@ country_decisions = {
 	the_khalifah = {
 		potential = {
 			NOT = { has_ruler_modifier = khalifah }
+			NOT = { has_ruler_modifier = ARB_khalifah_upgraded }
 			religion = sunni
 			NOT = { tag = MAM } #Controls the Caliph already.
 			ruler_religion = sunni
@@ -381,12 +395,27 @@ country_decisions = {
 			is_female = no
 		}
 		effect = {	
-			add_ruler_modifier = {
-				name = "khalifah"
-				duration = -1
+			if = {
+				limit = {
+					mission_completed = ARB_unite_arabia
+				}
+				add_ruler_modifier = {
+					name = "ARB_khalifah_upgraded"
+					duration = -1
+				}
+				change_piety_effect = {
+					amount = 0.2
+				}
 			}
-			change_piety_effect = {
-				amount = 0.1
+			else = {
+				add_ruler_modifier = {
+					name = "khalifah"
+					duration = -1
+				}
+				
+				change_piety_effect = {
+					amount = 0.1
+				}
 			}
 		}
 		ai_will_do = {
@@ -536,7 +565,14 @@ country_decisions = {
 			}
 		}
 		allow = {
-			legitimacy = 90
+			if = {
+				limit = { OR = { government = monarchy government = tribal } }
+				legitimacy = 90
+			}
+			if = {
+				limit = { uses_devotion = yes }
+				NOT = { devotion = 80 }
+			}
 			has_regency = no
 			is_free_or_tributary_trigger = yes
 			custom_trigger_tooltip = {
@@ -576,6 +612,64 @@ country_decisions = {
 				has_country_flag = sultan_titles_for_non_muslims
 				had_country_flag = { flag = sultan_titles_for_non_muslims days = 10950 } #After 30 years
 				NOT = { tag = ARK }
+			}
+			modifier = {
+				factor = 0
+				government = theocracy
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					religion_group = jewish_group
+					religion_group = zoroastrian_group
+				}
+			}
+		}
+	}
+	
+	trade_propagation_convert_to_zoroastrianism = {
+		potential = {
+			has_dlc = "Cradle of Civilization"
+			NOT = { religion_group = zoroastrian_group }
+			capital_scope = {
+				religion_group = zoroastrian_group
+				is_node_in_trade_company_region = yes
+			}
+		}
+		allow = {
+			if = {
+				limit = { OR = { government = monarchy government = tribal } }
+				legitimacy = 90
+			}
+			if = {
+				limit = { uses_devotion = yes }
+				NOT = { devotion = 80 }
+			}
+			has_regency = no
+			is_free_or_tributary_trigger = yes
+			dominant_religion = zoroastrian
+		}
+		effect = {
+			change_religion = zoroastrian
+			add_stability = 1
+			add_legitimacy = 10
+			country_event = {
+				id = flavor_per.72
+			}
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				government = theocracy
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					religion_group = jewish_group
+					religion_group = muslim
+					religion_group = christian
+				}
 			}
 		}
 	}
@@ -2411,8 +2505,8 @@ country_decisions = {
 	#}
 	#join_the_grand_crusade_title: "Join the Grand Crusade!"
 	#join_the_grand_crusade_desc: "The knights of the [grand_crusader_war_monger.GetName] have launched their Grand Crusade against the infidels of the [grand_crusade_target.GetAdjective] [grand_crusade_target.GovernmentName]. As fellow Catholics it is our holy right and duty to join these knights in order to free the Holy Land!"
-	#join_the_grand_crusade_tt: "We will join the Â§Y[grand_crusader_war_monger.GetAdjective]Â§! side of the Â§YGrand Crusade!"
+	#join_the_grand_crusade_tt: "We will join the §Y[grand_crusader_war_monger.GetAdjective]§! side of the §YGrand Crusade!"
 	#defend_the_grand_crusade_target_title: "Defend our Brethren!"
 	#defend_the_grand_crusade_target_desc: "Our brethren of the [grand_crusade_target.GetAdjective] [grand_crusade_target.GovernmentName] is under attack by these dogs of the [grand_crusader_war_monger.GetName]! As fellow [grand_crusade_target.Religion.GetGroupName]s it is our duty to aid them!"
-	#defend_the_grand_crusade_target_tt: "We will join the Â§Y[grand_crusade_target.GetAdjective]Â§! side of the Â§YGrand Crusade!"
+	#defend_the_grand_crusade_target_tt: "We will join the §Y[grand_crusade_target.GetAdjective]§! side of the §YGrand Crusade!"
 }

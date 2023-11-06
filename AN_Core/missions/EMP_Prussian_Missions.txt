@@ -186,7 +186,7 @@ emp_bra_pru_1 = {
 		effect = {
 			if = { 
 				limit = { has_dlc = "Domination" }
-				add_accepted_culture_or_dip_power = { culture = prussian }
+				add_accepted_culture_or_dip_power = { culture = prussian dip_reward = yes }
 				custom_tooltip = pru_spread_dev_tt
 				hidden_effect = { 
 					west_prussia_area = {
@@ -283,8 +283,8 @@ emp_bra_pru_1 = {
 				has_tax_building_trigger = no
 				has_production_building_trigger = no
 				NOT = { development = 25 }
+				NOT = { owned_by = ROOT }
 			}
-			NOT = { owned_by = ROOT }
 		}
 		trigger = {
 			50 = {
@@ -393,7 +393,15 @@ emp_bra_pru_1_b = {
 			
 			
 			if = {
-				limit = { has_dlc = "Domination" }
+				limit = { 
+					has_dlc = "Domination" 
+					OR = {
+						tag = PRU
+						tag = GER 
+						has_country_flag = access_to_prussian_militarization_flag #For the modders
+					}
+					has_reform = prussian_monarchy
+				}
 				custom_tooltip = pru_access_normal_militarization_tt
 				set_country_flag = enable_second_mil_level_flag
 				regenerate_government_mechanics = yes
@@ -438,7 +446,15 @@ emp_bra_pru_1_b = {
 			
 			
 			if = {
-				limit = { has_dlc = "Domination" }
+				limit = { 
+					has_dlc = "Domination" 
+					OR = {
+						tag = PRU
+						tag = GER 
+						has_country_flag = access_to_prussian_militarization_flag #For the modders
+					}
+					has_reform = prussian_monarchy
+				}
 				custom_tooltip = pru_access_advanced_militarization_tt
 				clr_country_flag = enable_second_mil_level_flag
 				set_country_flag = enable_third_mil_level_flag
@@ -508,11 +524,15 @@ emp_bra_pru_2 = {
 				add_permanent_claim = ROOT
 			}
 			if = { 
-				limit = { has_dlc = "Domination"  NOT = { has_country_flag = declined_ANS_union_flag } }
+				limit = { 
+					has_dlc = "Domination"  
+					NOT = { has_country_flag = declined_ANS_union_flag }
+					is_or_was_tag = { tag = BRA }
+				}
 				custom_tooltip = pru_access_franconian_conquest_success_tt
 				tooltip = {
 					change_ruler_stat = {
-						stat = mil
+						type = mil
 						amount = 1
 					}
 					add_power_projection = {
@@ -522,6 +542,9 @@ emp_bra_pru_2 = {
 				}
 				custom_tooltip = zim_amongst_the_great_powers_tt
 				custom_tooltip = pru_access_franconian_conquest_failure_tt
+			}
+			else = {
+				add_dip_power = 50
 			}
 		}
 	}
@@ -550,18 +573,19 @@ emp_bra_pru_2 = {
 					has_country_flag = accepted_ANS_union_flag 
 					has_dlc = "Domination" 
 				}
+				clr_country_flag = accepted_ANS_union_flag
 				add_power_projection = {
 					type = pru_lords_franconia_power_projection
 					amount = 25
 				}
 				custom_tooltip = zim_amongst_the_great_powers_tt
 				change_ruler_stat = {
-					stat = mil
+					type = mil
 					amount = 1
 				}
 			}
 			add_mil_power = 100
-			add_accepted_culture_or_dip_power = { culture = franconian }
+			add_accepted_culture_or_dip_power = { culture = franconian dip_reward = yes }
 		}
 		ai_weight = {
 			factor = 75
@@ -645,43 +669,80 @@ emp_bra_pru_2 = {
 		}
 		effect = {
 			if = { 
+				limit = { has_country_flag = is_RPR_flag }
+				restore_country_name = yes 
+			}
+			if = { 
 				limit = { 
 					has_dlc = "Domination" 
 					has_dlc = "Mandate of Heaven" 
 					NOT = { current_age = age_of_absolutism } 
-					NOT = { current_age = age_of_revolutions } 
+					NOT = { current_age = age_of_revolutions }
 					NOT = { 
 						development_in_provinces = {
 							region = poland_region 
-							country_or_non_sovereign_subject_holds = ROOT 
 							value = 200 
 						}
 					}
 				}
 				custom_tooltip = pru_200_dev_unlock_Ability_x_tt
+				custom_tooltip = pol_alternatively_tt
+				tooltip = {
+					add_country_modifier = {
+						name = "polish_partitions"
+						duration = 7300
+					}
+				}
 			}
 			else_if = {
 				limit = { 
 					has_dlc = "Domination" 
 					has_dlc = "Mandate of Heaven" 
 					NOT = { current_age = age_of_absolutism } 
-					NOT = { current_age = age_of_revolutions } 
+					NOT = { current_age = age_of_revolutions }
 					development_in_provinces = {
-						region = poland_region 
-						country_or_non_sovereign_subject_holds = ROOT 
+						region = poland_region
 						value = 200 
 					}
 				}
-				set_country_flag = unlock_polish_ability_flag
 				custom_tooltip = pru_200_dev_unlock_Ability_tt
-			}
-			else = { 
-				add_country_modifier = {
-					name = "polish_partitions"
-					duration = 7300
+				custom_tooltip = pol_alternatively_tt
+				tooltip = {
+					add_country_modifier = {
+						name = "polish_partitions"
+						duration = 7300
+					}
 				}
 			}
-			restore_country_name = yes 
+			else = { 
+				tooltip = {
+					add_country_modifier = {
+						name = "polish_partitions"
+						duration = 7300
+					}
+				}
+			}
+			hidden_effect = {
+				if = {
+					limit = { 
+						has_dlc = "Domination" 
+						has_dlc = "Mandate of Heaven" 
+						NOT = { current_age = age_of_absolutism } 
+						NOT = { current_age = age_of_revolutions } 
+						development_in_provinces = {
+							region = poland_region 
+							value = 200 
+						}
+					}
+					set_country_flag = unlock_polish_ability_flag
+				}
+				else = {
+					add_country_modifier = {
+						name = "polish_partitions"
+						duration = 7300
+					}
+				}
+			}
 		}
 		ai_weight = {
 			factor = 500
@@ -883,7 +944,7 @@ emp_bra_pru_3 = {
 					has_dlc = "Domination" 
 				}
 				change_ruler_stat = {
-					stat = mil
+					type = mil
 					amount = 1
 				}
 			}
@@ -1102,17 +1163,15 @@ emp_bra_pru_3 = {
 						has_dlc = "Leviathan"
 					}
 					OR = {
-						has_construction = great_project 
 						has_great_project = {
 							type = kiel_canal
-							tier = 0
 						} 
 						development = 40
 					}
 				}
 				else = {
 					owned_by = ROOT
-					has_construction = kiel_canal
+					development = 40
 				}
 			}
 			4141 = {
@@ -1120,10 +1179,6 @@ emp_bra_pru_3 = {
 			}
 		}
 		effect = {
-			add_country_modifier = {
-				name = "pru_construction_modifier"
-				duration = 7300
-			}
 			if = { 
 				limit = { 
 					has_dlc = "Domination" 
@@ -1136,17 +1191,28 @@ emp_bra_pru_3 = {
 							}
 						}
 					}
+					NOT = { adm_tech = 22 }
 				}
-				1775 = { 
-					add_great_project = {
-						type = kiel_canal
-						instant = yes 
+				custom_tooltip = brapru_enable_construction_kiel_canal_tt
+				hidden_effect = {
+					1775 = { 
+						add_great_project = {
+							type = kiel_canal
+						}
 					}
 				}
 			}
 			else = { 
+				add_years_of_income = 1
+				add_country_modifier = {
+					name = "pru_construction_modifier"
+					duration = 7300
+				}
 				1775 = {
-					add_construction_progress = 0.25
+					if = {
+						limit = { has_construction = great_project }
+						add_construction_progress = 0.25
+					}
 				}
 			}
 		}
@@ -1269,7 +1335,7 @@ emp_bra_pru_4 = {
 			if = { 
 				limit = { has_dlc = "Domination" }
 				change_ruler_stat = {
-					stat = adm
+					type = adm
 					amount = 1
 				}
 				

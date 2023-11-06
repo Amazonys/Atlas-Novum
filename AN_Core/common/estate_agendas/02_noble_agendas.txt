@@ -235,6 +235,7 @@ estate_nobles_befriend_rival_of_rival = {
 				NOT = { is_rival = root }
 				NOT = { ROOT = { is_rival = prev } }
 				NOT = { alliance_with = root }
+				NOT = { war_with = root }
 				has_opinion = {
 					who = root
 					value = -50
@@ -2052,7 +2053,7 @@ estate_nobles_expand_into_x = {
 					area_for_scope_province = {
 						OR = {
 							is_empty = yes
-							owned_by = root
+							country_or_subject_holds = ROOT 
 						}
 					}
 				}
@@ -2131,7 +2132,7 @@ estate_nobles_expand_into_x = {
 						area_for_scope_province = {
 							OR = {
 								is_empty = yes
-								owned_by = root
+								country_or_subject_holds = ROOT 
 							}
 						}
 					}
@@ -2218,7 +2219,7 @@ estate_nobles_expand_into_x = {
 		else = {
 			event_target:agenda_province = {
 				area_for_scope_province = {
-					owned_by = root
+					country_or_subject_holds = ROOT 
 				}
 			}
 		}
@@ -2229,7 +2230,7 @@ estate_nobles_expand_into_x = {
 				type = all
 				NOT = { is_claim = root }
 				NOT = { is_core = root }
-				NOT = { owned_by = root }
+				NOT = { country_or_subject_holds = ROOT }
 			}
 		}
 	}
@@ -3222,4 +3223,484 @@ estate_nobles_improve_prestige = {
     }
 }
 
+#Mamluk Privileges as a reward of mam_recruit_the_mamluks
+
+estate_nobles_mam_three_privileges = {
+	can_select = {
+		NOT = {
+			num_of_estate_privileges = {
+				estate = estate_nobles
+				value = 3
+			}
+		}
+		has_country_flag = mam_access_new_agendas_about_mamluks_flag
+	}
+	selection_weight = {
+		factor = 5
+	}
+	pre_effect = {
+		set_variable = {
+			which = estate_dhimmi_three_privileges_var
+			value = 0
+		}
+		if = {
+			limit = {
+				num_of_estate_privileges = {
+					estate = estate_nobles
+					value = 1
+				}
+			}
+			set_variable = {
+				which = estate_nobles_three_privileges_var
+				value = 2
+			}
+		}
+		else = {
+			set_variable = {
+				which = estate_nobles_three_privileges_var
+				value = 1
+			}
+		}
+	}
+	task_requirements = {
+		if = {
+			limit = {
+				has_estate_agenda_auto_completion = {
+					estate = estate_nobles
+				}
+			}
+			has_estate_agenda_auto_completion = {
+				estate = estate_nobles
+			}
+		}
+		else = {
+			if = {
+				limit = {
+					check_variable = {
+						which = estate_nobles_three_privileges_var
+						value = 2
+					}
+				}
+				num_of_estate_privileges = {
+					estate = estate_nobles
+					value = 3
+				}
+			}
+			else = {
+				num_of_estate_privileges = {
+					estate = estate_nobles
+					value = 2
+				}
+			}
+		}
+	}
+    task_completed_effect = {
+		on_completed_agenda_effect = {
+			estate = estate_nobles
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = 20
+		}
+		if = {
+			limit = { has_government_mechanic = mamluk_mechanic }
+			add_government_power = {
+				mechanic_type = mamluk_mechanic
+				power_type = mamluk_mil_power
+				value = 10
+			}
+		}
+		else = {
+			add_mil_power = 25
+		}
+    }
+    failing_effect = {
+		on_failed_agenda_effect = yes
+		clr_auto_complete_flag = yes
+        add_estate_loyalty_modifier = {
+            estate = estate_nobles
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+estate_nobles_mam_recruit_mamluks = {
+	can_select = {
+		has_country_flag = mam_access_new_agendas_about_mamluks_flag
+		has_estate_privilege = estate_nobles_enlist_the_mamluks
+		if = {
+			limit = { NOT = { land_forcelimit = 200 } }
+			NOT = { mamluks_percentage = 0.1 }
+		}
+		else = {
+			NOT = { num_of_mamluks = 40 }
+		}
+		OR = {
+			tag = MAM
+			has_government_mechanic = mamluk_mechanic
+		}
+		NOT = { mamluks_percentage = 0.1 }
+	}
+	selection_weight = {
+		factor = 10
+	}
+	task_requirements = {
+		if = {
+			limit = {
+				has_estate_agenda_auto_completion = {
+					estate = estate_nobles
+				}
+			}
+			has_estate_agenda_auto_completion = {
+				estate = estate_nobles
+			}
+		}
+		else = {
+			if = {
+				limit = { NOT = { land_forcelimit = 200 } }
+				mamluks_percentage = 0.1
+			}
+			else = { num_of_mamluks = 40 }
+		}
+	}
+    task_completed_effect = {
+		on_completed_agenda_effect = {
+			estate = estate_nobles
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = 10
+		}
+		create_general = {
+			tradition = 60
+			add_fire = 1
+			add_shock = 1
+		}
+	}
+    failing_effect = {
+		on_failed_agenda_effect = yes
+		clr_auto_complete_flag = yes
+        add_estate_loyalty_modifier = {
+            estate = estate_nobles
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+estate_nobles_mam_develop_military_infrastructure = {
+	can_select = {
+		has_country_flag = mam_access_new_agendas_about_mamluks_flag
+		mil_tech = 8
+		OR = {
+			tag = MAM
+			has_government_mechanic = mamluk_mechanic
+		}
+		if = {
+			limit = { NOT = { num_of_provinces_in_states = 150 } }
+			NOT = {
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 40
+				}
+			}
+		}
+		else_if = {
+			limit = { NOT = { num_of_provinces_in_states = 125 } }
+			NOT = {
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 30
+				}
+			}
+		}
+		else_if = {
+			limit = { NOT = { num_of_provinces_in_states = 100 } }
+			NOT = {
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 25
+				}
+			}
+		}
+		else_if = {
+			limit = { NOT = { num_of_provinces_in_states = 75 } }
+			NOT = {
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 20
+				}
+			}
+		}
+		else_if = {
+			limit = { NOT = { num_of_provinces_in_states = 50 } }
+			NOT = {
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 15
+				}
+			}
+		}
+		else_if = {
+			limit = { NOT = { num_of_provinces_in_states = 25 } }
+			NOT = {
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 5
+				}
+			}
+		}
+		else = {
+			NOT = {
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 3
+				}
+			}
+		}
+	}
+	selection_weight = {
+		factor = 6
+	}
+	task_requirements = {
+		if = {
+			limit = {
+				has_estate_agenda_auto_completion = {
+					estate = estate_nobles
+				}
+			}
+			has_estate_agenda_auto_completion = {
+				estate = estate_nobles
+			}
+		}
+		else = {
+			if = {
+				limit = { num_of_provinces_in_states = 150 }
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 40
+				}
+			}
+			else_if = {
+				limit = { num_of_provinces_in_states = 125 }
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 30
+				}
+			}
+			else_if = {
+				limit = { num_of_provinces_in_states = 100 }
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 25
+				}
+			}
+			else_if = {
+				limit = { num_of_provinces_in_states = 75 }
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 20
+				}
+			}
+			else_if = {
+				limit = { num_of_provinces_in_states = 50 }
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 15
+				}
+			}
+			else_if = {
+				limit = { num_of_provinces_in_states = 25 }
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 5
+				}
+			}
+			else = {
+				num_of_owned_provinces_with = {
+					has_manpower_building_trigger = yes
+					value = 3
+				}
+			}
+		}
+	}
+    task_completed_effect = {
+		on_completed_agenda_effect = {
+			estate = estate_nobles
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = 15
+		}
+		add_yearly_manpower = 1
+	}
+    failing_effect = {
+		on_failed_agenda_effect = yes
+		clr_auto_complete_flag = yes
+        add_estate_loyalty_modifier = {
+            estate = estate_nobles
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+estate_nobles_mam_increase_army_tradition = {
+	can_select = {
+		has_country_flag = mam_access_new_agendas_about_mamluks_flag
+		OR = {
+			tag = MAM
+			has_estate_privilege = estate_nobles_enlist_the_mamluks
+		}
+		NOT = { army_tradition = 30 }
+	}
+	selection_weight = {
+		factor = 10
+	}
+	task_requirements = {
+		if = {
+			limit = {
+				has_estate_agenda_auto_completion = {
+					estate = estate_nobles
+				}
+			}
+			has_estate_agenda_auto_completion = {
+				estate = estate_nobles
+			}
+		}
+		else = {
+			army_tradition = 30
+		}
+	}
+    task_completed_effect = {
+		on_completed_agenda_effect = {
+			estate = estate_nobles
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = 15
+		}
+		add_mil_power = 50
+	}
+    failing_effect = {
+		on_failed_agenda_effect = yes
+		clr_auto_complete_flag = yes
+        add_estate_loyalty_modifier = {
+            estate = estate_nobles
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+estate_nobles_mam_increase_army_professionalism = {
+	can_select = {
+		has_dlc = "Cradle of Civilization"
+		has_country_flag = mam_access_new_agendas_about_mamluks_flag
+		OR = {
+			tag = MAM
+			has_estate_privilege = estate_nobles_enlist_the_mamluks
+		}
+		army_professionalism = 0.1
+		NOT = { army_professionalism = 0.25 }
+	}
+	selection_weight = {
+		factor = 10
+	}
+	task_requirements = {
+		if = {
+			limit = {
+				has_estate_agenda_auto_completion = {
+					estate = estate_nobles
+				}
+			}
+			has_estate_agenda_auto_completion = {
+				estate = estate_nobles
+			}
+		}
+		else = {
+			army_professionalism = 0.25
+		}
+	}
+    task_completed_effect = {
+		on_completed_agenda_effect = {
+			estate = estate_nobles
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = 15
+		}
+		add_absolutism = 5
+		add_army_professionalism = 0.1
+		define_advisor = {
+			type = commandant
+			skill = 3
+			discount = yes
+		}
+	}
+    failing_effect = {
+		on_failed_agenda_effect = yes
+		clr_auto_complete_flag = yes
+        add_estate_loyalty_modifier = {
+            estate = estate_nobles
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
+
+estate_nobles_mam_focus_on_military_matters = {
+	can_select = {
+		OR = {
+			has_dlc = "Res Publica"
+			has_dlc = "Common Sense"
+		}
+		has_country_flag = mam_access_new_agendas_about_mamluks_flag
+		NOT = { national_focus = MIL }
+	}
+	selection_weight = {
+		factor = 5
+	}
+	task_requirements = {
+		if = {
+			limit = {
+				has_estate_agenda_auto_completion = {
+					estate = estate_nobles
+				}
+			}
+			has_estate_agenda_auto_completion = {
+				estate = estate_nobles
+			}
+		}
+		else = {
+			national_focus = MIL
+		}
+	}
+    task_completed_effect = {
+		on_completed_agenda_effect = {
+			estate = estate_nobles
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = 15
+		}
+		capital_scope = { add_base_manpower = 1 }
+	}
+    failing_effect = {
+		on_failed_agenda_effect = yes
+		clr_auto_complete_flag = yes
+        add_estate_loyalty_modifier = {
+            estate = estate_nobles
+			desc = EST_VAL_AGENDA_DENIED
+			loyalty = -5
+			duration = 7300
+        }
+    }
+}
 

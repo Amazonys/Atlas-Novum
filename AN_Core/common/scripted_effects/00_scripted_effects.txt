@@ -1395,6 +1395,18 @@ set_great_project_tier_1 = {
 				tier = 1
 			}
 		}
+		else = {
+			random_list = {
+				1 = { add_base_tax = 2 }
+				1 = { add_base_production = 2 }
+				1 = { add_base_manpower = 2 }
+			}
+		}
+	}
+	else = {
+		add_base_tax = 1
+		add_base_production = 1
+		add_base_manpower = 1
 	}
 }
 
@@ -1884,15 +1896,6 @@ mal_determine_offer_acceptance = {
 }
 
 #Country effect
-add_legitimacy_equivalent = {
-	add_legitimacy = $amount$
-	add_horde_unity = $amount$
-	add_devotion = $amount$
-	add_meritocracy = $amount$
-	add_republican_tradition = $republican_tradition$	#This one is special because of how much republics scale with it
-}
-
-#Country effect
 ##########################################################
 # Supports following privileges
 # estate_burghers_hydraulic_rights
@@ -1913,6 +1916,15 @@ add_legitimacy_equivalent = {
 # estate_janissary_ottoman_vanguards
 # estate_nobles_english_copyhold_tenure
 # estate_burghers_autonomous_trade_companies
+# estate_nobles_defensive_policy
+# estate_qizilbash_defensive_policy
+# estate_ghulams_defensive_policy
+# estate_nobles_tofangchi_regiment
+# estate_qizilbash_tofangchi_regiment
+# estate_ghulams_tofangchi_regiment
+# estate_nobles_tupchi_artillery_corps
+# estate_qizilbash_tupchi_artillery_corps
+# estate_ghulams_tupchi_artillery_corps
 ##########################################################
 # When adding new privileges then make sure that a unlock_privilege_$estate_privilege$_tt is defined in the localization
 # For checking if an estate privilege is unlocked already, use has_unlocked_estate_privilege = { estate_privilege = $estate_privilege$ }
@@ -1922,6 +1934,22 @@ unlock_estate_privilege = {
 	hidden_effect = {
 		set_country_flag = unlocked_privilege_$estate_privilege$
 	}
+	[[modifier_tooltip]
+		custom_tooltip = unlock_estate_privilege_modifier_tooltip_tt
+		tooltip = {
+			add_country_modifier = {
+				name = $modifier_tooltip$
+				duration = -1
+				desc = UNTIL_PRIVILEGE_REVOKED
+			}
+		}
+	]
+	[[effect_tooltip]
+		custom_tooltip = unlock_estate_privilege_effect_tooltip_tt
+		tooltip = {
+			$effect_tooltip$
+		}
+	]
 }
 
 #Country effect
@@ -1960,18 +1988,6 @@ unlock_merc_company = {
 	]
 }
 
-#Country effect
-##########################################################
-# Supports following church aspects
-# anglican_aspect
-# spread_the_book_of_common_prayer
-unlock_church_aspect = {
-	custom_tooltip = unlock_church_aspect_$church_aspect$_tt
-	hidden_effect = {
-		set_country_flag = unlocked_church_aspect_$church_aspect$
-	}
-}
-
 #Same as above, but this time it makes a company unavailable
 #Does not support any merc company yet
 #lock_merc_company = {
@@ -1980,6 +1996,22 @@ unlock_church_aspect = {
 #		clr_country_flag = unlocked_$merc_company$
 #	}
 #}
+
+#Country effect
+##########################################################
+# Supports following church aspects
+# anglican_aspect
+# spread_the_book_of_common_prayer
+##########################################################
+# When adding a new unlockable Church Aspect then make sure that a unlock_church_aspect_$church_aspect$_tt is defined in the localization
+# For checking if a Church Aspect is unlocked already, use has_unlocked_church_aspect = { church_aspect = $church_aspect$ }
+# For localization write the following: "Unlock the Protestant church aspect '§Y<Church Aspect>§!'."
+unlock_church_aspect = {
+	custom_tooltip = unlock_church_aspect_$church_aspect$_tt
+	hidden_effect = {
+		set_country_flag = unlocked_church_aspect_$church_aspect$
+	}
+}
 
 #Country effect
 ##########################################################
@@ -2023,6 +2055,9 @@ unlock_church_aspect = {
 # peters_government_reform
 # caliphate_reform
 # caliphate_theocracy_reform
+# legacy_of_timur_reform
+# legacy_of_the_safavid_reform
+# divided_aristocracy_reform
 ##########################################################
 # When adding a new government reform then make sure that a unlock_$government_reform$_tt is defined in the localization
 # For checking if a government reform is unlocked already, use has_unlocked_government_reform = { government_reform = $government_reform$ }
@@ -2032,6 +2067,12 @@ unlock_government_reform = {
 	hidden_effect = {
 		set_country_flag = unlocked_$government_reform$
 	}
+	[[tooltip]
+		custom_tooltip = unlock_government_reform_tooltip
+		tooltip = {
+			add_government_reform = $government_reform$
+		}
+	]
 }
 
 #Country effect
@@ -2050,6 +2091,8 @@ unlock_government_reform = {
 # estate_rajput
 # estate_janissaries
 # estate_eunuchs
+# estate_qizilbash
+# estate_ghulams
 ##########################################################
 # When adding a new estate then make sure that a unlock_$estate$_tt is defined in the localization
 # For checking if an Estate is unlocked already, use has_unlocked_estate = { estate = $estate$ }
@@ -2059,7 +2102,7 @@ unlock_government_reform = {
 unlock_estate = {
 	custom_tooltip = unlock_$estate$_tt
 	hidden_effect = {
-		set_country_flag = unlocked_$estate$
+		set_country_flag = unlocked_$estate$_flag
 	}
 	[[show_conditions]
 		custom_tooltip = is_unavailable_$estate$
@@ -2082,6 +2125,8 @@ unlock_estate = {
 # estate_rajput
 # estate_janissaries
 # estate_eunuchs
+# estate_qizilbash
+# estate_ghulams
 ##########################################################
 # Unlocks the estate without any kind of condition
 enable_estate_effect = {
@@ -2108,6 +2153,8 @@ enable_estate_effect = {
 # estate_rajput
 # estate_janissaries
 # estate_eunuchs
+# estate_qizilbash
+# estate_ghulams
 ##########################################################
 # Locks the estate even if they would 
 disable_estate_effect = {
@@ -2361,6 +2408,14 @@ disable_propogate_religion_effect = {
 	}
 }
 
+#5, #10, #15, #20, #25, #30, #35, #40, #45
+set_trade_power_requirement_of_propogate_religion = {
+	custom_tooltip = set_trade_power_requirement_of_propogate_religion_$value$_tt
+	hidden_effect = {
+		set_country_flag = $value$_trade_power_for_propogate_religion
+	}
+}
+
 #Country effect
 enable_propogate_religion_immunity = {
 	custom_tooltip = enable_propogate_religion_immunity_tt
@@ -2390,6 +2445,44 @@ disable_propogate_religion_in_abrahamic_provinces = {
 	custom_tooltip = disable_propogate_religion_in_abrahamic_provinces_tt
 	hidden_effect = {
 		clr_country_flag = can_propagate_religion_in_abrahamic_provinces
+	}
+}
+
+#Country effect
+#Supports the following Trading Policies
+# maximize_profit
+# hostile_trading
+# improve_inland_routes
+# establish_communities
+# propagate_religion
+#Makes Trading Policy SELECTABLE
+unlock_trading_policy = {
+	custom_tooltip = unlock_trading_policy_$policy$_tt
+	hidden_effect = {
+		clr_country_flag = locked_trading_policy_$policy$
+	}
+}
+#Makes Trading Policy UNSELECTABLE
+lock_trading_policy = {
+	custom_tooltip = lock_trading_policy_$policy$_tt
+	hidden_effect = {
+		set_country_flag = locked_trading_policy_$policy$
+	}
+}
+#Makes Trading Policy VISIBLE
+enable_trading_policy = {
+	custom_tooltip = enable_trading_policy_$policy$_tt
+	hidden_effect = {
+		set_country_flag = enabled_trading_policy_$policy$
+		clr_country_flag = disabled_trading_policy_$policy$
+	}
+}
+#Makes Trading Policy INVISIBLE
+disable_trading_policy = {
+	custom_tooltip = disable_trading_policy_$policy$_tt
+	hidden_effect = {
+		set_country_flag = disabled_trading_policy_$policy$
+		clr_country_flag = enabled_trading_policy_$policy$
 	}
 }
 
@@ -3879,74 +3972,6 @@ for = {
 	}
 }
 
-change_ruler_stat = {
-    tooltip = {
-        change_$stat$ = $amount$
-    }
-    custom_tooltip = ADD_STAT_OR_POWER_$stat$
-    hidden_effect = {
-		set_variable = {
-			which = ForLoopCounter
-			value = $amount$
-		}
-		while = {
-			limit = {
-				check_variable = {
-					which = ForLoopCounter
-					value = 1
-				}
-			}
-			if = {
-				limit = {
-					NOT = { $stat$ = 6 }
-				}
-				change_$stat$ = 1
-			}
-			else = {
-				add_$stat$_power = 100
-			}
-			subtract_variable = {
-				which = ForLoopCounter
-				value = 1
-			}
-		}
-    }
-}
-
-change_heir_stat = {
-    tooltip = {
-        change_heir_$stat$ = $amount$
-    }
-    custom_tooltip = ADD_STAT_OR_POWER_$stat$
-    hidden_effect = {
-		set_variable = {
-			which = ForLoopCounter
-			value = $amount$
-		}
-		while = {
-			limit = {
-				check_variable = {
-					which = ForLoopCounter
-					value = 1
-				}
-			}
-			if = {
-				limit = {
-					NOT = { heir_$stat$ = 6 }
-				}
-				change_heir_$stat$ = 1
-			}
-			else = {
-				add_$stat$_power = 100
-			}
-			subtract_variable = {
-				which = ForLoopCounter
-				value = 1
-			}
-		}
-    }
-}
-
 for_variable_amount = {
     set_variable = {
         which = ForLoopCounter
@@ -4050,14 +4075,34 @@ faction_in_power_effect = {
 }
 
 ## adds the culture as an accepted culture or 100 dip power
-### add_accepted_culture_or_dip_power = { culture = <culture> }
+### add_accepted_culture_or_dip_power = { culture = <culture> (optional) free = yes (optional) dip_reward = yes (optional, use when you have this effect twice in a row) new_line = yes }
 ### the custom effect is only able to check for up to 10 culture slots
 #Credits for that script goes to Stiopa
+# In case you want a culture to be a free slot then make sure that you have the following covered:
+# defined a free_slot_for_$culture$ = { num_accepted_culture = 1 }
+# Supports currently the following cultures:
+#	armenian
+#	georgian
+#	turkish
+#	al_iraqiya_arabic
+#	al_suryah_arabic
 add_accepted_culture_or_dip_power = {
 	tooltip = {
 		add_accepted_culture = $culture$
 	}
-	custom_tooltip = ADD_ACCEPTED_CULTURE_TT # "If the §YCulture§! is already an §YAccepted Culture§!, or if there are not enough §YSlots§!, gain §G100§! Diplomatic Power instead."
+	[[free]
+		custom_tooltip = CULTURE_WILL_NOT_TAKE_SLOT_UNTIL_DEMOTED_TT
+		hidden_effect = {
+			add_country_modifier = {
+				name = free_slot_for_$culture$
+				duration = -1
+				hidden = yes
+			}
+		}
+	]
+	[[dip_reward]
+		custom_tooltip = ADD_ACCEPTED_CULTURE_TT # "If the §YCulture§! is already an §YAccepted Culture§!, or if there are not enough §YSlots§!, gain §G100§! Diplomatic Power instead."
+	]
 	hidden_effect = {
 		if = {
 			limit = {
@@ -4262,6 +4307,9 @@ add_accepted_culture_or_dip_power = {
 			add_dip_power = 100
 		}
 	}
+	[[new_line]
+		custom_tooltip = " "
+	]
 }
 
 #Use this scripted in the on_actions file, on_battle_won_country
@@ -4305,39 +4353,45 @@ fifty_percent_merc_army_professionalism_cost = {
 
 #Province effect
 set_center_level_3_center_of_trade = {
-	if = {
-		limit = { NOT = { province_has_center_of_trade_of_level = 1 } }
-		center_of_trade = 3
-	}
-	else = {
+	custom_tooltip = set_center_level_3_center_of_trade_tt
+	hidden_effect = {
 		if = {
-			limit = { province_has_center_of_trade_of_level = 3 }
-			add_base_production = 4
-		}
-		else_if = {
-			limit = { province_has_center_of_trade_of_level = 2 }
-			add_base_production = 2
-			add_center_of_trade_level = 1
+			limit = { NOT = { province_has_center_of_trade_of_level = 1 } }
+			center_of_trade = 3
 		}
 		else = {
-			add_center_of_trade_level = 2
+			if = {
+				limit = { province_has_center_of_trade_of_level = 3 }
+				add_base_production = 4
+			}
+			else_if = {
+				limit = { province_has_center_of_trade_of_level = 2 }
+				add_base_production = 2
+				add_center_of_trade_level = 1
+			}
+			else = {
+				add_center_of_trade_level = 2
+			}
 		}
 	}
 }
 
 
 set_center_level_2_center_of_trade = {
-	if = {
-		limit = { NOT = { province_has_center_of_trade_of_level = 1 } }
-		center_of_trade = 2
-	}
-	else = {
+	custom_tooltip = set_center_level_2_center_of_trade_tt
+	hidden_effect = {
 		if = {
-			limit = { province_has_center_of_trade_of_level = 2 }
-			add_base_production = 2
+			limit = { NOT = { province_has_center_of_trade_of_level = 1 } }
+			center_of_trade = 2
 		}
 		else = {
-			add_center_of_trade_level = 1
+			if = {
+				limit = { province_has_center_of_trade_of_level = 2 }
+				add_base_production = 2
+			}
+			else = {
+				add_center_of_trade_level = 1
+			}
 		}
 	}
 }
@@ -4878,95 +4932,95 @@ spawn_likely_rebels = {
 
 ottoman_power_struggle_effect = {
 	[[legitimacy_effect]
-		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_legitimacy = -50 add_stability = -1 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_legitimacy = -50 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_legitimacy = -45 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_legitimacy = -40 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_legitimacy = -35 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_legitimacy = -30 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_legitimacy = -25 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_legitimacy = -20 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_legitimacy = -15 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_legitimacy = -10 }
-		else = { add_legitimacy = -5 }
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_legitimacy = -30 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_legitimacy = -27 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_legitimacy = -24 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_legitimacy = -21 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_legitimacy = -18 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_legitimacy = -15 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_legitimacy = -12 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_legitimacy = -9 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_legitimacy = -6 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_legitimacy = -3 }
+		else = { add_legitimacy = -1 }
 	]
 	[[republican_tradition_effect]
-		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_republican_tradition = -20 add_stability = -1 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_republican_tradition = -20 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_republican_tradition = -18 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_republican_tradition = -16 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_republican_tradition = -14 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_republican_tradition = -12 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_republican_tradition = -10 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_republican_tradition = -8 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_republican_tradition = -6 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_republican_tradition = -4 }
-		else = { add_republican_tradition = -2 }
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_republican_tradition = -10 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_republican_tradition = -9 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_republican_tradition = -8 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_republican_tradition = -7 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_republican_tradition = -6 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_republican_tradition = -5 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_republican_tradition = -4 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_republican_tradition = -3 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_republican_tradition = -2 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_republican_tradition = -1 }
+		else = { add_republican_tradition = -1 }
 	]
 	[[corruption_effect]
-		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_corruption = 5.0 add_stability = -1 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_corruption = 5.0 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_corruption = 4.5 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_corruption = 4.0 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_corruption = 3.5 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_corruption = 3.0 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_corruption = 2.5 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_corruption = 2.0 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_corruption = 1.5 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_corruption = 1.0 }
-		else = { add_corruption = 0.5 }
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_corruption = 2.75 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_corruption = 2.50 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_corruption = 2.00 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_corruption = 1.75 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_corruption = 1.50 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_corruption = 1.25 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_corruption = 1.00 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_corruption = 0.75 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_corruption = 0.50 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_corruption = 0.25 }
+		else = { add_corruption = 0.1 }
 	]
 	[[monarch_power_effect]
-		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_adm_power = -250 add_dip_power = -250 add_mil_power = -250 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } random_list = { 1 = { add_adm_power = -250 } 1 = { add_dip_power = -250 } 1 = { add_mil_power = -250 } } }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } random_list = { 1 = { add_adm_power = -225 } 1 = { add_dip_power = -225 } 1 = { add_mil_power = -225 } } }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } random_list = { 1 = { add_adm_power = -200 } 1 = { add_dip_power = -200 } 1 = { add_mil_power = -200 } } }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } random_list = { 1 = { add_adm_power = -175 } 1 = { add_dip_power = -175 } 1 = { add_mil_power = -175 } } }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } random_list = { 1 = { add_adm_power = -150 } 1 = { add_dip_power = -150 } 1 = { add_mil_power = -150 } } }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } random_list = { 1 = { add_adm_power = -125 } 1 = { add_dip_power = -125 } 1 = { add_mil_power = -125 } } }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } random_list = { 1 = { add_adm_power = -100 } 1 = { add_dip_power = -100 } 1 = { add_mil_power = -100 } } }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } random_list = { 1 = { add_adm_power = -75 } 1 = { add_dip_power = -75 } 1 = { add_mil_power = -75 } } }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } random_list = { 1 = { add_adm_power = -50 } 1 = { add_dip_power = -50 } 1 = { add_mil_power = -50 } } }
-		else = { random_list = { 1 = { add_adm_power = -25 } 1 = { add_dip_power = -25 } 1 = { add_mil_power = -25 } } }
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_adm_power = -125 add_dip_power = -125 add_mil_power = -125 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } random_list = { 1 = { add_adm_power = -100 } 1 = { add_dip_power = -100 } 1 = { add_mil_power = -100 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } random_list = { 1 = { add_adm_power = -90 } 1 = { add_dip_power = -90 } 1 = { add_mil_power = -90 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } random_list = { 1 = { add_adm_power = -80 } 1 = { add_dip_power = -80 } 1 = { add_mil_power = -80 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } random_list = { 1 = { add_adm_power = -70 } 1 = { add_dip_power = -70 } 1 = { add_mil_power = -70 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } random_list = { 1 = { add_adm_power = -60 } 1 = { add_dip_power = -60 } 1 = { add_mil_power = -60 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } random_list = { 1 = { add_adm_power = -50 } 1 = { add_dip_power = -50 } 1 = { add_mil_power = -50 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } random_list = { 1 = { add_adm_power = -40 } 1 = { add_dip_power = -40 } 1 = { add_mil_power = -40 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } random_list = { 1 = { add_adm_power = -30 } 1 = { add_dip_power = -30 } 1 = { add_mil_power = -30 } } }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } random_list = { 1 = { add_adm_power = -20 } 1 = { add_dip_power = -20 } 1 = { add_mil_power = -20 } } }
+		else = { random_list = { 1 = { add_adm_power = -10 } 1 = { add_dip_power = -10 } 1 = { add_mil_power = -10 } } }
 	]
 	[[prestige_effect]
-		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_prestige = -50 add_stability = -1 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_prestige = -50 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_prestige = -45 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_prestige = -40 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_prestige = -35 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_prestige = -30 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_prestige = -25 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_prestige = -20 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_prestige = -15 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_prestige = -10 }
-		else = { add_prestige = -5 }
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_prestige = -30 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_prestige = -27 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_prestige = -24 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_prestige = -21 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_prestige = -18 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_prestige = -15 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_prestige = -12 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_prestige = -9 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_prestige = -6 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_prestige = -3 }
+		else = { add_prestige = -1 }
 	]
 	[[treasury_effect]
-		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_years_of_income = -1.5 add_stability = -1 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_years_of_income = -1.0 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_years_of_income = -0.9 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_years_of_income = -0.8 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_years_of_income = -0.7 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_years_of_income = -0.6 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_years_of_income = -0.5 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_years_of_income = -0.4 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_years_of_income = -0.3 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_years_of_income = -0.2 }
-		else = { add_years_of_income = -0.1 }
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_years_of_income = -0.75 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_years_of_income = -0.50 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_years_of_income = -0.45 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_years_of_income = -0.40 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_years_of_income = -0.35 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_years_of_income = -0.30 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_years_of_income = -0.25 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_years_of_income = -0.20 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_years_of_income = -0.15 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_years_of_income = -0.10 }
+		else = { add_years_of_income = -0.05 }
 	]
 	[[inflation_effect]
-		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_inflation = 5.0 add_stability = -1 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_inflation = 5.0 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_inflation = 4.5 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_inflation = 4.0 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_inflation = 3.5 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_inflation = 3.0 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_inflation = 2.5 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_inflation = 2.0 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_inflation = 1.5 }
-		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_inflation = 1.0 }
-		else = { add_inflation = 0.5 }
+		if = { limit = { check_variable = { tur_power_struggle_intesity = 100 } } add_inflation = 3.00 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 90 } } add_inflation = 2.50 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 80 } } add_inflation = 2.25 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 70 } } add_inflation = 2.00 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 60 } } add_inflation = 1.75 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 50 } } add_inflation = 1.50 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 40 } } add_inflation = 1.25 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 30 } } add_inflation = 1.00 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 20 } } add_inflation = 0.75 }
+		else_if = { limit = { check_variable = { tur_power_struggle_intesity = 10 } } add_inflation = 0.50 }
+		else = { add_inflation = 0.25 }
 	]
 
 	hidden_effect = {
@@ -8705,4 +8759,998 @@ clr_ruler_focus_modifiers = {
 	if = { limit = { has_country_modifier = civic_republicanism_focus_leaders } 	remove_country_modifier = civic_republicanism_focus_leaders		}
 	if = { limit = { has_country_modifier = civic_republicanism_focus_quality } 	remove_country_modifier = civic_republicanism_focus_quality		}
 	if = { limit = { has_country_modifier = civic_republicanism_focus_naval } 		remove_country_modifier = civic_republicanism_focus_naval		}
+}
+
+for_every_level_of_advisor_do = {
+	if = {
+		limit = {
+			has_advisor_of_type_and_level = { type = $type$ level = 1 }
+		}
+		$effect$
+		if = {
+			limit = {
+				has_advisor_of_type_and_level = { type = $type$ level = 2 }
+			}
+			$effect$
+			if = {
+				limit = {
+					has_advisor_of_type_and_level = { type = $type$ level = 3 }
+				}
+				$effect$
+				if = {
+					limit = {
+						has_advisor_of_type_and_level = { type = $type$ level = 4 }
+					}
+					$effect$
+					if = {
+						limit = {
+							has_advisor_of_type_and_level = { type = $type$ level = 5 }
+						}
+						$effect$
+					}
+				}
+			}
+		}
+	}
+}
+
+complete_artwork_effect_architecture = {
+	if = {
+		limit = { any_owned_province = { has_building = temple } }
+		random_owned_province = { limit = { has_building = temple } upgrade_building = { tax = yes } }
+	}
+	else = {
+		random_owned_province = {
+			limit = { NOT = { has_building = cathedral } religion = root culture = root }
+			add_building = cathedral
+		}
+	}
+	custom_tooltip = DUE_TO_ART_QUALITY_FOLLOWING_EFFECT_HAPPENS_TT
+	if = {
+		limit = { check_variable = { which = art_quality value = 4 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 25
+		}
+		random_owned_province = {
+			limit = { religion = root culture = root }
+			add_base_tax = 3
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = art_quality value = 3 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 20
+		}
+		random_owned_province = {
+			limit = { religion = root culture = root }
+			add_base_tax = 2
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = art_quality value = 2 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 15
+		}
+		random_owned_province = {
+			limit = { religion = root culture = root }
+			add_base_tax = 1
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = art_quality value = 1 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 10
+		}
+	}
+	else = {
+		add_prestige = -20
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = -10
+			scaled_with_gain_modifier = no
+		}
+	}
+}
+complete_artwork_effect_textiles = {
+	custom_tooltip = DUE_TO_ART_QUALITY_FOLLOWING_EFFECT_HAPPENS_TT
+	if = {
+		limit = { check_variable = { which = art_quality value = 4 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 25
+		}
+		add_mercantilism_or_monarch_power = {
+			amount = 3
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = art_quality value = 3 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 20
+		}
+		add_mercantilism_or_monarch_power = {
+			amount = 2
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = art_quality value = 2 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 15
+		}
+		add_mercantilism_or_monarch_power = {
+			amount = 1
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = art_quality value = 1 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 10
+		}
+	}
+	else = {
+		add_prestige = -20
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = -10
+			scaled_with_gain_modifier = no
+		}
+	}
+}
+complete_artwork_effect_painting = {
+	custom_tooltip = DUE_TO_ART_QUALITY_FOLLOWING_EFFECT_HAPPENS_TT
+	if = {
+		limit = { check_variable = { which = art_quality value = 4 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 25
+		}
+		add_prestige_or_monarch_power = { amount = 30 }
+	}
+	else_if = {
+		limit = { check_variable = { which = art_quality value = 3 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 20
+		}
+		add_prestige_or_monarch_power = { amount = 20 }
+	}
+	else_if = {
+		limit = { check_variable = { which = art_quality value = 2 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 15
+		}
+		add_prestige_or_monarch_power = { amount = 10 }
+	}
+	else_if = {
+		limit = { check_variable = { which = art_quality value = 1 } }
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 10
+		}
+	}
+	else = {
+		add_prestige = -20
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = -10
+			scaled_with_gain_modifier = no
+		}
+	}
+}
+complete_artwork_effect = {
+	remove_country_modifier = promoting_$type$
+	complete_artwork_effect_$type$ = yes
+	if = {
+		limit = { has_country_modifier = promoting_art }
+		country_event = {
+			id = promoting_art_events.1
+		}
+	}
+	hidden_effect = {
+		set_variable = {
+			which = art_progress
+			value = 0
+		}
+		set_variable = {
+			which = art_quality
+			value = 1
+		}
+	}
+}
+change_art_progress = {
+	change_variable = {
+		which = art_progress
+		value = $amount$
+	}
+}
+change_art_quality = {
+	change_variable = {
+		which = art_quality
+		value = $amount$
+	}
+}
+
+used_persian_influence_mechanic = {
+	custom_tooltip = used_persian_influence_mechanic_tt
+	hidden_effect = {
+		if = {
+			limit = { NOT = { has_country_flag = persian_influence_setup_flag } }
+			set_country_flag = persian_influence_setup_flag
+		}
+		remove_country_modifier = used_persian_influece_interaction_1
+		remove_country_modifier = used_persian_influece_interaction_2
+		remove_country_modifier = used_persian_influece_interaction_3
+		remove_country_modifier = used_persian_influece_interaction_4
+		remove_country_modifier = used_persian_influece_interaction_5
+		remove_country_modifier = used_persian_influece_interaction_6
+		remove_country_modifier = used_persian_influece_interaction_7
+		remove_country_modifier = used_persian_influece_interaction_8
+		remove_country_modifier = used_persian_influece_interaction_9
+		remove_country_modifier = used_persian_influece_interaction_10
+		remove_country_modifier = used_persian_influece_interaction_11
+		remove_country_modifier = used_persian_influece_interaction_12
+		remove_country_modifier = used_persian_influece_interaction_13
+		remove_country_modifier = used_persian_influece_interaction_14
+		remove_country_modifier = used_persian_influece_interaction_15
+		remove_country_modifier = used_persian_influece_interaction_16
+		remove_country_modifier = used_persian_influece_interaction_17
+		remove_country_modifier = used_persian_influece_interaction_18
+		remove_country_modifier = used_persian_influece_interaction_19
+		remove_country_modifier = used_persian_influece_interaction_20
+		change_variable = {
+			which = persian_influece_counter
+			value = 1
+		}
+		if = {
+			limit = { has_country_flag = improved_elevation_reduction }
+			if = {
+				limit = { check_variable = { which = persian_influece_counter_tooltip value = -400 } }
+				change_variable = {
+					which = persian_influece_counter_tooltip
+					value = -20
+				}
+			}
+		}
+		else = {
+			if = {
+				limit = { check_variable = { which = persian_influece_counter_tooltip value = -200 } }
+				change_variable = {
+					which = persian_influece_counter_tooltip
+					value = -20
+				}
+			}
+		}
+		change_variable = {
+			which = persian_influence_interaction_counter
+			value = 1
+		}
+		if = {
+			limit = { has_country_flag = improved_elevation_reduction }
+			if = {
+				limit = { check_variable = { which = persian_influece_counter value = 10 } }
+				if = {
+					limit = { check_variable = { which = persian_influece_counter value = 15 } }
+					if = {
+						limit = { check_variable = { which = persian_influece_counter value = 17 } }
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 19 } }
+							if = {
+								limit = { check_variable = { which = persian_influece_counter value = 20 } }
+								add_country_modifier = { name = used_persian_influece_interaction_20 duration = -1 hidden = yes }
+							}
+							else = {
+								add_country_modifier = { name = used_persian_influece_interaction_19 duration = -1 hidden = yes }
+							}
+						}
+						else = {
+							if = {
+								limit = { check_variable = { which = persian_influece_counter value = 18 } }
+								add_country_modifier = { name = used_persian_influece_interaction_18 duration = -1 hidden = yes }
+							}
+							else = {
+								add_country_modifier = { name = used_persian_influece_interaction_17 duration = -1 hidden = yes }
+							}
+						}
+					}
+					else = {
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 16 } }
+							add_country_modifier = { name = used_persian_influece_interaction_16 duration = -1 hidden = yes }
+						}
+						else = {
+							add_country_modifier = { name = used_persian_influece_interaction_15 duration = -1 hidden = yes }
+						}
+					}
+				}
+				else = {
+					if = {
+						limit = { check_variable = { which = persian_influece_counter value = 13 } }
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 14 } }
+							add_country_modifier = { name = used_persian_influece_interaction_14 duration = -1 hidden = yes }
+						}
+						else = {
+							add_country_modifier = { name = used_persian_influece_interaction_13 duration = -1 hidden = yes }
+						}
+					}
+					else = {
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 11 } }
+							if = {
+								limit = { check_variable = { which = persian_influece_counter value = 12 } }
+								add_country_modifier = { name = used_persian_influece_interaction_12 duration = -1 hidden = yes }
+							}
+							else = {
+								add_country_modifier = { name = used_persian_influece_interaction_11 duration = -1 hidden = yes }
+							}
+						}
+						else = {
+							add_country_modifier = { name = used_persian_influece_interaction_10 duration = -1 hidden = yes }
+						}
+					}
+				}
+			}
+			else = {
+				if = {
+					limit = { check_variable = { which = persian_influece_counter value = 5 } }
+					if = {
+						limit = { check_variable = { which = persian_influece_counter value = 8 } }
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 9 } }
+							add_country_modifier = { name = used_persian_influece_interaction_9 duration = -1 hidden = yes }
+						}
+						else = {
+							add_country_modifier = { name = used_persian_influece_interaction_8 duration = -1 hidden = yes }
+						}
+					}
+					else = {
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 6 } }
+							if = {
+								limit = { check_variable = { which = persian_influece_counter value = 7 } }
+								add_country_modifier = { name = used_persian_influece_interaction_7 duration = -1 hidden = yes }
+							}
+							else = {
+								add_country_modifier = { name = used_persian_influece_interaction_6 duration = -1 hidden = yes }
+							}
+						}
+						else = {
+							add_country_modifier = { name = used_persian_influece_interaction_5 duration = -1 hidden = yes }
+						}
+					}
+				}
+				else = {
+					if = {
+						limit = { check_variable = { which = persian_influece_counter value = 3 } }
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 4 } }
+							add_country_modifier = { name = used_persian_influece_interaction_4 duration = -1 hidden = yes }
+						}
+						add_country_modifier = { name = used_persian_influece_interaction_3 duration = -1 hidden = yes }
+					}
+					else = {
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 2 } }
+							add_country_modifier = { name = used_persian_influece_interaction_2 duration = -1 hidden = yes }
+						}
+						else = {
+							add_country_modifier = { name = used_persian_influece_interaction_1 duration = -1 hidden = yes }
+						}
+					}
+				}
+			}
+		}
+		else = {
+			if = {
+				limit = { check_variable = { which = persian_influece_counter value = 5 } }
+				if = {
+					limit = { check_variable = { which = persian_influece_counter value = 7 } }
+					if = {
+						limit = { check_variable = { which = persian_influece_counter value = 9 } }
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 10 } }
+							add_country_modifier = { name = used_persian_influece_interaction_10 duration = -1 hidden = yes }
+						}
+						else = {
+							add_country_modifier = { name = used_persian_influece_interaction_9 duration = -1 hidden = yes }
+						}
+					}
+					else = {
+						if = {
+							limit = { check_variable = { which = persian_influece_counter value = 8 } }
+							add_country_modifier = { name = used_persian_influece_interaction_8 duration = -1 hidden = yes }
+						}
+						else = {
+							add_country_modifier = { name = used_persian_influece_interaction_7 duration = -1 hidden = yes }
+						}
+					}
+				}
+				else = {
+					if = {
+						limit = { check_variable = { which = persian_influece_counter value = 6 } }
+						add_country_modifier = { name = used_persian_influece_interaction_6 duration = -1 hidden = yes }
+					}
+					else = {
+						add_country_modifier = { name = used_persian_influece_interaction_5 duration = -1 hidden = yes }
+					}
+				}
+			}
+			else = {
+				if = {
+					limit = { check_variable = { which = persian_influece_counter value = 3 } }
+					if = {
+						limit = { check_variable = { which = persian_influece_counter value = 4 } }
+						add_country_modifier = { name = used_persian_influece_interaction_4 duration = -1 hidden = yes }
+					}
+					add_country_modifier = { name = used_persian_influece_interaction_3 duration = -1 hidden = yes }
+				}
+				else = {
+					if = {
+						limit = { check_variable = { which = persian_influece_counter value = 2 } }
+						add_country_modifier = { name = used_persian_influece_interaction_2 duration = -1 hidden = yes }
+					}
+					else = {
+						add_country_modifier = { name = used_persian_influece_interaction_1 duration = -1 hidden = yes }
+					}
+				}
+			}
+		}
+	}
+}
+
+improve_elevation_effect = {
+	custom_tooltip = improve_elevation_effect_tt
+	hidden_effect = {
+		set_country_flag = improved_elevation_effect
+	}
+}
+
+improve_elevation_reduction = {
+	custom_tooltip = improve_elevation_reduction_tt
+	hidden_effect = {
+		set_country_flag = improved_elevation_reduction
+	}
+}
+
+improve_persian_influence_abilities = {
+	custom_tooltip = improve_persian_influence_abilities_tt
+	hidden_effect = {
+		set_country_flag = improved_persian_influence_abilities
+	}
+}
+
+improve_fabricate_religious_conflict = {
+	custom_tooltip = improve_fabricate_religious_conflict_tt
+	hidden_effect = {
+		set_country_flag = reduced_spread_faith_cb_spy_cost
+	}
+}
+
+consume_persian_influence_reduction = {
+	remove_country_modifier = used_persian_influece_interaction_1
+	remove_country_modifier = used_persian_influece_interaction_2
+	remove_country_modifier = used_persian_influece_interaction_3
+	remove_country_modifier = used_persian_influece_interaction_4
+	remove_country_modifier = used_persian_influece_interaction_5
+	remove_country_modifier = used_persian_influece_interaction_6
+	remove_country_modifier = used_persian_influece_interaction_7
+	remove_country_modifier = used_persian_influece_interaction_8
+	remove_country_modifier = used_persian_influece_interaction_9
+	remove_country_modifier = used_persian_influece_interaction_10
+	remove_country_modifier = used_persian_influece_interaction_11
+	remove_country_modifier = used_persian_influece_interaction_12
+	remove_country_modifier = used_persian_influece_interaction_13
+	remove_country_modifier = used_persian_influece_interaction_14
+	remove_country_modifier = used_persian_influece_interaction_15
+	remove_country_modifier = used_persian_influece_interaction_16
+	remove_country_modifier = used_persian_influece_interaction_17
+	remove_country_modifier = used_persian_influece_interaction_18
+	remove_country_modifier = used_persian_influece_interaction_19
+	remove_country_modifier = used_persian_influece_interaction_20
+	change_variable = {
+		which = persian_influece_counter
+		value = 0
+	}
+	change_variable = {
+		which = persian_influece_counter_tooltip
+		value = 0
+	}
+}
+
+#Check with "has_unlocked_decision = { type = <decisions id> }"
+#Supports the following decisions
+#################################
+# grand_vizier_selection
+# horse_breeding_decision
+unlock_decision = {
+	custom_tooltip = unlock_decision_$type$_tt
+	hidden_effect = { set_country_flag = unlocked_decision_$type$ }
+	[[effect_tooltip]
+		custom_tooltip = unlock_decision_effect_tt
+		$effect_tooltip$
+	]
+	[[custom_tooltip]custom_tooltip = $custom_tooltip$]
+}
+lock_decision = {
+	custom_tooltip = lock_decision_$type$_tt
+	hidden_effect = { clr_country_flag = unlocked_decision_$type$ }
+}
+
+#Supports the following holy orders
+###################################
+# savafid_order
+# zahediyeh_order
+unlock_holy_order = {
+	if = {
+		limit = { has_dlc = "Golden Century" }
+		custom_tooltip = unlock_holy_order_$type$_tt
+	}
+	hidden_effect = { set_country_flag = unlocked_holy_order_$type$ }
+}
+
+#Supports the following arguments
+#################################
+# fabricate_spread_the_true_faith_cb
+unlock_diplomatic_action = {
+	custom_tooltip = unlock_$type$_tt
+	hidden_effect = {
+		set_country_flag = unlocked_diplomatic_action_$type$
+	}
+	[[custom_tooltip]custom_tooltip = $custom_tooltip$]
+}
+
+enable_great_holy_war_cb = {
+	custom_tooltip = enable_great_holy_war_cb_tt
+	hidden_effect = { set_country_flag = enabled_great_holy_war_cb }
+}
+
+change_asha_vahishta = {
+	if = {
+		limit = { has_government_mechanic = the_three_royal_fires_mechanic }
+		[[custom_tooltip]custom_tooltip = $custom_tooltip$]
+		add_government_power = {
+			mechanic_type = the_three_royal_fires_mechanic
+			power_type = asha_vahishta
+			value = $value$
+		}
+	}
+}
+
+remove_asha_vahishta_loss_from_missionaries = {
+	custom_tooltip = remove_asha_vahishta_loss_from_missionaries_tt
+	hidden_effect = {
+		set_country_flag = removed_asha_vahishta_loss_from_missionaries
+	}
+}
+
+upgrade_the_three_fire = {
+	custom_tooltip = upgrade_the_three_fire_tt
+	hidden_effect = {
+		set_country_flag = upgraded_the_three_fire
+	}
+}
+
+remove_asha_vahishta_loss_from_force_conversion = {
+	custom_tooltip = remove_asha_vahishta_loss_from_force_conversion_tt
+	hidden_effect = {
+		set_country_flag = removed_asha_vahishta_loss_from_force_conversion
+	}
+}
+
+enable_three_royal_fires_mana_generation = {
+	custom_tooltip = enable_three_royal_fires_mana_generation_tt
+	hidden_effect = {
+		set_country_flag = enabled_three_royal_fires_mana_generation
+	}
+}
+
+# All is province scope here
+## add/upgrade trade building in province
+### add_or_upgrade_trade_building = yes  # feel free to refactor to include the amount of upgrades
+add_or_upgrade_trade_building = {
+	custom_tooltip = add_or_upgrade_trade_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = marketplace }
+			add_building = trade_depot
+		}
+		else_if = {
+			limit = { has_building = trade_depot }
+			add_building = stock_exchange
+		}
+		else_if = {
+			limit = { has_building = stock_exchange }
+			add_base_tax = 1
+			add_base_production = 1
+		}
+		else = { add_building = marketplace }
+	}
+}
+
+add_or_upgrade_tax_building = {
+	custom_tooltip = add_or_upgrade_tax_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = temple }
+			add_building = cathedral
+		}
+		else_if = {
+			limit = { has_building = cathedral }
+			add_base_tax = 2
+		}
+		else = { add_building = temple }
+	}
+}
+
+add_or_upgrade_production_building = {
+	custom_tooltip = add_or_upgrade_production_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = workshop }
+			add_building = counting_house
+		}
+		else_if = {
+			limit = { has_building = counting_house }
+			add_base_production = 2
+		}
+		else = { add_building = workshop }
+	}
+}
+
+add_or_upgrade_dock_building = {
+	custom_tooltip = add_or_upgrade_dock_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = dock }
+			add_building = drydock
+		}
+		else_if = {
+			limit = { has_building = drydock }
+			ROOT = { add_sailors = 0.5 }
+		}
+		else = { add_building = dock }
+	}
+}
+
+add_or_upgrade_shipyard_building = {
+	custom_tooltip = add_or_upgrade_shipyard_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = shipyard }
+			add_building = grand_shipyard 
+		}
+		else_if = {
+			limit = { has_building = grand_shipyard }
+			ROOT = { add_sailors = 0.5 }
+		}
+		else = { add_building = shipyard }
+	}
+}
+
+add_or_upgrade_manpower_building = {
+	custom_tooltip = add_or_upgrade_manpower_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = barracks }
+			add_building = training_fields  
+		}
+		else_if = {
+			limit = { has_building = training_fields }
+			add_base_tax = 1
+			add_base_manpower = 1
+		}
+		else = { add_building = barracks }
+	}
+}
+
+add_or_upgrade_forcelimit_building = {
+	custom_tooltip = add_or_upgrade_forcelimit_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = regimental_camp }
+			add_building = conscription_center   
+		}
+		else_if = {
+			limit = { has_building = conscription_center }
+			add_base_manpower = 2
+		}
+		else = { add_building = regimental_camp }
+	}
+}
+
+add_or_upgrade_university_building = {
+	custom_tooltip = add_or_upgrade_university_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = university }
+			add_base_tax = 1
+			add_base_production = 1
+			add_base_manpower = 1
+		}
+		else = { add_building = university }
+	}
+}
+
+add_or_upgrade_courthouse_building = {
+	custom_tooltip = add_or_upgrade_courthouse_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = courthouse }
+			add_building = town_hall   
+		}
+		else_if = {
+			limit = { has_building = town_hall }
+			add_base_tax = 1
+			add_base_production = 1
+			add_base_manpower = 1
+		}
+		else = { add_building = courthouse }
+	}
+}
+
+add_or_upgrade_fort_building = {
+	custom_tooltip = add_or_upgrade_fort_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = fort_15th }
+			add_building = fort_16th
+		}
+		else_if = {
+			limit = { has_building = fort_16th }
+			add_building = fort_17th
+		}
+		else_if = {
+			limit = { has_building = fort_17th }
+			add_building = fort_18th
+		}
+		else_if = {
+			limit = { has_building = fort_18th }
+			add_base_manpower = 3
+		}
+		else = { add_building = fort_15th }
+	}
+}
+
+add_or_upgrade_naval_defense_building = {
+	custom_tooltip = add_or_upgrade_naval_defense_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = coastal_defence }
+			add_building = naval_battery
+		}
+		else_if = {
+			limit = { has_building = naval_battery }
+			add_base_production = 2
+		}
+		else = { add_building = coastal_defence }
+	}
+}
+
+upgrade_trade_building = {
+	custom_tooltip = upgrade_trade_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = marketplace }
+			add_building = trade_depot
+		}
+		else_if = {
+			limit = { has_building = trade_depot }
+			add_building = stock_exchange
+		}
+		else_if = {
+			limit = { has_building = stock_exchange }
+			add_base_tax = 1
+			add_base_production = 1
+		}
+	}
+}
+
+upgrade_tax_building = {
+	custom_tooltip = upgrade_tax_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = temple }
+			add_building = cathedral
+		}
+		else_if = {
+			limit = { has_building = cathedral }
+			add_base_tax = 2
+		}
+	}
+}
+
+upgrade_production_building = {
+	custom_tooltip = upgrade_production_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = workshop }
+			add_building = counting_house
+		}
+		else_if = {
+			limit = { has_building = counting_house }
+			add_base_production = 2
+		}
+	}
+}
+
+upgrade_dock_building = {
+	custom_tooltip = upgrade_dock_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = dock }
+			add_building = drydock
+		}
+		else_if = {
+			limit = { has_building = drydock }
+			ROOT = { add_sailors = 0.5 }
+		}
+	}
+}
+
+upgrade_shipyard_building = {
+	custom_tooltip = upgrade_shipyard_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = shipyard }
+			add_building = grand_shipyard 
+		}
+		else_if = {
+			limit = { has_building = grand_shipyard }
+			ROOT = { add_sailors = 0.5 }
+		}
+	}
+}
+
+upgrade_manpower_building = {
+	custom_tooltip = upgrade_manpower_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = barracks }
+			add_building = training_fields  
+		}
+		else_if = {
+			limit = { has_building = training_fields }
+			add_base_tax = 1
+			add_base_manpower = 1
+		}
+	}
+}
+
+upgrade_forcelimit_building = {
+	custom_tooltip = upgrade_forcelimit_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = regimental_camp }
+			add_building = conscription_center   
+		}
+		else_if = {
+			limit = { has_building = conscription_center }
+			add_base_manpower = 2
+		}
+	}
+}
+
+upgrade_courthouse_building = {
+	custom_tooltip = upgrade_courthouse_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = courthouse }
+			add_building = town_hall   
+		}
+		else_if = {
+			limit = { has_building = town_hall }
+			add_base_tax = 1
+			add_base_production = 1
+			add_base_manpower = 1
+		}
+	}
+}
+
+upgrade_fort_building = {
+	custom_tooltip = upgrade_fort_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = fort_15th }
+			add_building = fort_16th
+		}
+		else_if = {
+			limit = { has_building = fort_16th }
+			add_building = fort_17th
+		}
+		else_if = {
+			limit = { has_building = fort_17th }
+			add_building = fort_18th
+		}
+		else_if = {
+			limit = { has_building = fort_18th }
+			add_base_manpower = 3
+		}
+	}
+}
+
+upgrade_naval_defense_building = {
+	custom_tooltip = upgrade_naval_defense_building_tt
+	hidden_effect = {
+		if = {
+			limit = { has_building = coastal_defence }
+			add_building = naval_battery
+		}
+		else_if = {
+			limit = { has_building = naval_battery }
+			add_base_production = 2
+		}
+	}
+}
+
+remove_temporary_colonist = {
+	hidden_effect = {
+		remove_country_modifier = temporary_colonist
+	}
+}
+
+restore_greek_names = {
+	custom_tooltip = reestablishing_themes_names_tooltip
+	hidden_effect = {
+		149 = { change_province_name = Adrianople rename_capital = Adrianople }
+		151 = { change_province_name = Constantinople rename_capital = Constantinople }
+		316 = { change_province_name = Optimatoi rename_capital = Nikomedeia }
+		317 = { change_province_name = Opsikion rename_capital = Prussa }
+		318 = { change_province_name = Smyrna rename_capital = Smyrna }
+		319 = { change_province_name = Mylasa rename_capital = Mougla }
+		322 = { change_province_name = Kotyaion rename_capital = Kotyaion }
+		323 = { change_province_name = Ikonion rename_capital = Iconion }
+		324 = { change_province_name = Laranda rename_capital = Laranda }
+		325 = { change_province_name = Paphlagonia rename_capital = Timonio }
+		326 = { change_province_name = Galatia rename_capital = Ancyra }
+		327 = { change_province_name = Cilicia rename_capital = Atana }
+		328 = { change_province_name = Sinope rename_capital = Sinop }
+		329 = { change_province_name = Sebasteia rename_capital = Sebastopolis }
+		330 = { change_province_name = Trebizond rename_capital = Trapezous }
+		331 = { change_province_name = Theodosiopolis rename_capital = Theodosiopolis }
+		1764 = { change_province_name = Mesambria rename_capital = Mesambria }
+		1846 = { change_province_name = Armeniakon rename_capital = Amasea }
+		1848 = { change_province_name = Baris rename_capital = Baris }
+		2296 = { change_province_name = Abydos rename_capital = Pigai }
+		2297 = { change_province_name = Thrakesion rename_capital = Magnesia }
+		2298 = { change_province_name = Attalia rename_capital = Attalia }
+		2299 = { change_province_name = Boukellarion rename_capital = Klaudiopol}
+		2300 = { change_province_name = Cappadocia rename_capital = Tavium }
+		2301 = { change_province_name = Charsianon rename_capital = Ceasarea }
+		2302 = { change_province_name = Seleucia rename_capital = Kermarage }
+		2304 = { change_province_name = Chaldia rename_capital = Amissos}
+		2305 = { change_province_name = Acilisene rename_capital = Acilisene }
+		2750 = { change_province_name = Philippopolis rename_capital = Philippopolis}
+		4307 = { change_province_name = Colonia rename_capital = Colonia }
+		4308 = { change_province_name = Laodicea rename_capital = Laodicea }
+		4309 = { change_province_name = Tralles rename_capital = Tralles }
+		4310 = { change_province_name = Tephrike rename_capital = Tephrike }
+		4311 = { change_province_name = Anatolikon rename_capital = Polydorion }
+		4312 = { change_province_name = Dorylaeum rename_capital = Dorylaeum }
+		4313 = { change_province_name = Gangra rename_capital = Gangra }
+		4314 = { change_province_name = Justinianopolis rename_capital = Justinianopolis }
+		4315 = { change_province_name = Evdoksia rename_capital = Evdoksia }
+	}
 }

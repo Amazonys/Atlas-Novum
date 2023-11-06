@@ -1576,6 +1576,18 @@ gbr_row_3 = {
 			unlock_issue = {
 				issue = act_of_exploration
 			}
+		
+			126 = { add_permanent_claim = ROOT }
+			163 = { add_permanent_claim = ROOT }
+			321 = { add_permanent_claim = ROOT }
+			4559 = { add_permanent_claim = ROOT }
+			corsica_sardinia_area = { 
+				limit = {
+					NOT = { is_core = EIC }
+					NOT = { is_permanent_claim = EIC }
+				}
+				add_permanent_claim = ROOT 
+			}
 		}
 		ai_weight = {
 			factor = 250
@@ -1909,6 +1921,51 @@ ave_row_3 = {
 				name = "eng_french_recovery"
 				duration = 9125
 			}
+			brittany_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			picardy_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			lorraine_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			west_burgundy_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			bourgogne_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			provence_area = {
+				limit = {
+					NOT = { is_core = ROOT }
+					NOT = { is_permanent_claim = ROOT }
+				}
+				add_permanent_claim = ROOT
+			}
+			add_permanent_claim_province = {
+				province = 178
+			}
 		}
 		ai_weight = {
 			factor = 250
@@ -1955,11 +2012,11 @@ ave_row_3 = {
 				add_adm_power = 50
 			}
 			change_ruler_stat = {
-				stat = adm
+				type = adm
 				amount = 1
 			}
 			change_ruler_stat = {
-				stat = dip
+				type = dip
 				amount = 1
 			}
 		}
@@ -2026,43 +2083,6 @@ ave_row_3 = {
 					duration = -1
 				}
 			}
-			if = {
-				limit = { has_government_attribute = english_parliament }
-				unlock_issue = {
-					issue = english_french_act_of_union
-				}
-			}
-			else = {
-				set_parliament_action_flag = {
-					parliament_action = english_french_act_of_union
-				}
-				custom_tooltip = english_french_act_of_union_at
-				hidden_effect = {
-					FRA = {
-						every_subject_country = {
-							limit = {
-								capital_scope = {
-									region = france_region
-								}
-							}
-							FRA = {
-								inherit = PREV
-							}
-						}
-					}
-					inherit = FRA
-					change_tag = AVE
-					on_change_tag_effect = yes
-					if = {
-						limit = { NOT = { has_idea_group = AVE_ideas } }
-						country_event = {
-							id = ideagroups.1
-						}
-					}
-				}
-				add_prestige = 25
-			}
-			custom_tooltip = english_french_act_of_union_bt	#claim tooltip
 			hidden_effect = {
 				catalonia_area = {
 					limit = {
@@ -2156,6 +2176,50 @@ ave_row_3 = {
 					add_permanent_claim = ROOT
 				}
 			}
+			if = {
+				limit = { has_government_attribute = english_parliament }
+				unlock_issue = {
+					issue = english_french_act_of_union
+				}
+			}
+			else = {
+				set_parliament_action_flag = {
+					parliament_action = english_french_act_of_union
+				}
+				custom_tooltip = english_french_act_of_union_at
+				add_prestige = 25
+				hidden_effect = {
+					FRA = {
+						every_subject_country = {
+							limit = {
+								capital_scope = {
+									region = france_region
+								}
+							}
+							FRA = {
+								inherit = PREV
+							}
+						}
+					}
+					inherit = FRA
+					change_tag = AVE
+					if = {
+						limit = {
+							NOT = { government_rank = 2 }
+						}
+						set_government_rank = 2
+					}
+					on_change_tag_effect = yes
+					if = {
+						limit = { NOT = { has_idea_group = AVE_ideas } }
+						country_event = {
+							id = ideagroups.1
+						}
+					}
+					complete_mission = ave_the_angevin_empire
+				}
+			}
+			custom_tooltip = english_french_act_of_union_bt	#claim tooltip
 		}
 		ai_weight = {
 			factor = 250
@@ -2286,8 +2350,8 @@ ave_row_3 = {
 				crown_land_share = 75
 			}
 			check_variable = {
-				which = land_units_killed
-				value = 20000	#Counts units killed in a SINGLE battle. Not from ALL battles combined.
+				which = total_land_units_killed
+				value = 100000
 			}
 		}
 		effect = {
@@ -2336,7 +2400,6 @@ ave_row_3 = {
 				duration = -1
 			}
 			custom_tooltip = ave_claim_the_empire_title_bt
-			set_country_flag = ave_automatic_renaming_when_government_changes
 			country_event_with_insight = {
 				id = flavor_gbr.20
 				insight_tooltip = ave_claim_the_empire_title_at
@@ -2713,7 +2776,7 @@ gbr_row_4 = {
 				}
 				west_bengal_area = {
 					limit = {
-						NOT = { is_claim = ROOT }
+						NOT = { is_permanent_claim = ROOT }
 						NOT = { is_core = ROOT }
 					}
 					add_permanent_claim = ROOT
@@ -2920,15 +2983,33 @@ ave_row_4 = {
 		trigger = {
 			picardy_area = {
 				type = all
-				country_or_non_sovereign_subject_holds = ROOT
+				owner = { 
+					OR = { 
+						tag = ROOT 
+						is_subject_of = ROOT 
+						overlord = { is_subject_of = ROOT }
+					}
+				}
 			}
 			west_burgundy_area = {
 				type = all
-				country_or_non_sovereign_subject_holds = ROOT
+				owner = { 
+					OR = { 
+						tag = ROOT 
+						is_subject_of = ROOT 
+						overlord = { is_subject_of = ROOT }
+					}
+				}
 			}
 			bourgogne_area = {
 				type = all
-				country_or_non_sovereign_subject_holds = ROOT
+				owner = { 
+					OR = { 
+						tag = ROOT 
+						is_subject_of = ROOT 
+						overlord = { is_subject_of = ROOT }
+					}
+				}
 			}
 		}
 		
@@ -3256,7 +3337,7 @@ gbr_ave_the_royal_court_slot = {
 				legitimacy = 95
 			}
 			ruler_total_stats = {
-				stats = 5
+				amount = 5
 			}
 			has_adm_advisor = yes
 			has_dip_advisor = yes
@@ -3322,16 +3403,19 @@ gbr_row_5 = {
 			num_of_allies = 3
 			calc_true_if = {
 				all_ally = {
-					OR = {
-						tag = POR
-						total_development = 200
-					}
-					capital_scope = {
-						same_continent = ROOT
-					}
-					has_opinion = {
-						who = ROOT
-						value = 150
+					custom_trigger_tooltip = {
+						tooltip = gbr_allies_on_the_mainland_tt
+						capital_scope = {
+							same_continent = ROOT
+						}
+						has_opinion = {
+							who = ROOT
+							value = 150
+						}
+						OR = {
+							tag = POR
+							total_development = 200
+						}
 					}
 				}
 				amount = 3
@@ -3806,25 +3890,12 @@ ave_row_5 = {
 				is_city = no
 				NOT = { country_or_non_sovereign_subject_holds = ROOT }
 			}
+			is_sea = no
 			has_discovered = ROOT
 		}
 		trigger = {
 			custom_trigger_tooltip = {
-				tooltip = miss_discover_canada
-				OR = {
-					north_america = {
-						has_discovered = ROOT
-					}
-					south_america = {
-						has_discovered = ROOT
-					}
-					new_world = {
-						has_discovered = ROOT
-					}
-				}
-			}
-			custom_trigger_tooltip = {
-				tooltip = gbr_colonize_canada_ct
+				tooltip = ave_colonize_america_tt
 				num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
 					value = 10
 					OR = {

@@ -46,16 +46,28 @@ parliamentary_reform = {
 		is_revolutionary = no
 		NOT = { has_government_attribute = is_pirate_republic_reform }
 		NOT = { has_government_attribute = english_parliament }
+		NOT = { #has a special "senate" themed reform
+			OR = {
+				tag = BYZ
+				was_tag = BYZ 
+			}
+		}
 	}
 	
 	trigger = {		
 		if = {
-			limit = { has_dlc = "Common Sense" }
+			limit = {
+				OR = {
+					has_dlc = "Common Sense"
+					has_dlc = "Domination"
+				}
+			}
 			OR = {
 				NOT = { has_estate = estate_nobles }
 				crown_stronger_than_estate = { estate = estate_nobles }
 				has_reform = parliamentary_reform
 			}
+			is_not_blocked_by_estate_privilege = { estate = estate_nobles }
 		}	
 		NOT = { has_reform = elective_monarchy }
 		NOT = { has_reform = polish_great_sejm }
@@ -107,6 +119,72 @@ parliamentary_reform = {
 	post_removed_effect = {
 		give_estate_land_share_init = { estate = estate_nobles }
 	}
+}
+
+restoration_of_the_senate_reform = {
+	icon = "restoration_of_the_senate_reform"
+	modifiers = {
+		global_unrest = -2
+		max_possible_parliament_seats = 8
+	}
+	potential = {
+		is_revolutionary = no
+		NOT = { has_government_attribute = is_pirate_republic_reform }
+		NOT = { has_government_attribute = english_parliament }
+		OR = {
+			tag = BYZ
+			was_tag = BYZ 
+		}
+	}
+	
+	trigger = {
+		NOT = { has_reform = elective_monarchy }
+		NOT = { has_reform = polish_great_sejm }
+		NOT = { has_reform = polish_elective_monarchy }
+		if = {
+			limit = { NOT = { has_dlc = "Mandate of Heaven" } }
+			NOT = { has_reform = celestial_empire }
+			NOT = { is_revolutionary_republic_trigger = yes }
+		}
+	}
+
+	conditional = {
+		allow = {
+			OR = {
+				has_dlc = "Common Sense"
+				has_dlc = "Domination"
+			}
+		}
+		has_parliament = yes
+		custom_attributes = {
+			blocked_call_diet = yes
+		}
+	}
+	ai = {
+		factor = 1
+		modifier = {
+			factor = 0.5
+			NOT = { technology_group = western }
+		}
+		modifier = {
+			factor = 0.5
+			NOT = { technology_group = western }
+			NOT = {
+				any_neighbor_country = {
+					technology_group = western
+				}
+			}
+		}
+		modifier = {
+			factor = 0
+			OR = {
+				has_reform = mughal_government
+				has_reform = celestial_empire
+				religion = confucianism
+			}
+		}
+	}
+
 }
 
 # Upgraded Indian estate reforms
@@ -509,43 +587,6 @@ holy_state_reform = {
 	}
 }
 
-# Sisterhood of Jeanne d'Arc
-sisterhood_of_jeanne_darc_reform = {
-	allow_normal_conversion = no
-	icon = "sisterhood"
-	valid_for_nation_designer = yes
-	nation_designer_trigger = {
-		religion_group = christian
-	}
-	potential = {
-		OR = {
-			has_reform = sisterhood_of_jeanne_darc_reform
-			have_had_reform = sisterhood_of_jeanne_darc_reform
-			has_country_modifier = sisters_takeover
-		}
-	}
-	trigger = {
-		religion_group = christian
-	}
-	nation_designer_cost = 100
-	modifiers = {
-		cb_on_religious_enemies = yes
-		monarch_military_power = 1
-		may_recruit_female_generals = yes
-		female_advisor_chance = 1.0
-		fire_damage = 0.1
-		discipline = 0.05
-	}
-	rulers_can_be_generals = yes
-	heirs_can_be_generals = yes
-	custom_attributes = {
-		monastic_order = yes
-	}
-	ai = {
-		factor = 10
-	}
-}
-
 # State and Religion
 papal_embassy_reform = {
 	icon = "pope"
@@ -702,6 +743,44 @@ lands_for_the_monasteries_reform = {
 	}
 }
 
+#the_avestan_dogma_reform = {
+#	icon = "articles_of_agreement"
+#	allow_normal_conversion = yes
+#	potential = {
+#		religion = zoroastrian
+#	}
+#	modifiers = {
+#		adm_advisor_cost = -0.1
+#		church_influence_modifier = 0.1
+#		church_loyalty_modifier = 0.1
+#	}
+#	conditional = {
+#		allow = { has_dlc = "King of Kings" }
+#		government_abilities = {
+#			the_three_royal_fires_mechanic
+#		}
+#	}
+#	#post_removed_effect = {
+#	#	hidden_effect = {
+#	#		if = {
+#	#			limit = { NOT = { has_government_mechanic = the_three_royal_fires_mechanic } }
+#	#			clr_country_flag = can_place_center_of_reformation
+#	#			every_owned_province = {
+#	#				limit = {
+#	#					is_reformation_center = yes
+#	#					religion = root
+#	#				}
+#	#				remove_reform_center = zoroastrian
+#	#			}
+#	#		}
+#	#	}
+#	#}
+#	
+#	ai = {
+#		factor = 1
+#	}
+#}
+
 zoroastrian_focus_reform = {
 	icon = "articles_of_agreement"
 	allow_normal_conversion = yes
@@ -715,10 +794,30 @@ zoroastrian_focus_reform = {
 	}
 	modifiers = {
 		no_religion_penalty = yes
-		global_unrest = -1
 		church_influence_modifier = 0.1
 		church_loyalty_modifier = 0.1
 	}
+	conditional = {
+		allow = { has_dlc = "King of Kings" }
+		government_abilities = {
+			the_three_royal_fires_mechanic
+		}
+	}
+	#post_removed_effect = {
+	#	hidden_effect = {
+	#		if = {
+	#			limit = { NOT = { has_government_mechanic = the_three_royal_fires_mechanic } }
+	#			clr_country_flag = can_place_center_of_reformation
+	#			every_owned_province = {
+	#				limit = {
+	#					is_reformation_center = yes
+	#					religion = root
+	#				}
+	#				remove_reform_center = zoroastrian
+	#			}
+	#		}
+	#	}
+	#}
 	
 	ai = {
 		factor = 1
@@ -964,7 +1063,7 @@ strengthen_the_ulema_reform = {
 	conditional = {
 		allow = { has_dlc = "Cradle of Civilization" }
 		custom_attributes = {
-			allow_piety_switch_decision = yes	#Enables a decision which gives 1 stabhit, but turns your piety 180Â°
+			allow_piety_switch_decision = yes	#Enables a decision which gives 1 stabhit, but turns your piety 180°
 		}
 	}
 	
@@ -1134,7 +1233,6 @@ secure_clergy_power_reform = {
 	}
 	modifiers = {
 		church_influence_modifier = 0.05
-		adm_advisor_cost = -0.1
 	}
 	effect = {
 		hidden_effect = {
@@ -1205,6 +1303,8 @@ separate_clergy_from_state_affairs_reform = {
 		}
 		NOT = { has_idea_group = religious_ideas }
 		NOT = { has_idea_group = theocracy_ideas }
+		is_not_blocked_by_estate_privilege = { estate = estate_church }
+		is_not_blocked_by_estate_privilege = { estate = estate_brahmins }
 	}
 	modifiers = {
 		tolerance_of_heathens_capacity = 1
@@ -1551,43 +1651,6 @@ sufism_decree_reform = {
 	}
 }
 
-#Korea
-#ways_of_perfectionism_reform = {
-#	icon = "asian_scripture"
-#	allow_normal_conversion = yes
-#	potential = {
-#		has_dlc = "Domination"
-#		NOT = { has_government_attribute = is_pirate_republic_reform }
-#		OR = {
-#			is_revolutionary = no
-#			NOT = { has_dlc = "Emperor" }
-#		}
-#		OR = {
-#			culture_group = korean_g
-#			primary_culture = korean_new
-#		}
-#	}
-#	trigger = {
-#		religion = confucianism
-#	}
-#	modifiers = {
-#		church_loyalty_modifier = 0.1
-#		harmonization_speed = 0.1
-#		yearly_harmony = 0.25
-#		state_governing_cost = -0.05
-#	}
-#	conditional = {
-#		allow = { has_dlc = "Mandate of Heaven" }
-#		custom_attributes = {
-#			full_loyalty_on_harmonization = yes	#Add +100 Loyalty when harmonizing something
-#		}
-#	}
-#	
-#	ai = {
-#		factor = 1
-#	}
-#}
-
 #England
 anglican_state_church_reform = {
 	icon = "anglican_state_church"
@@ -1637,6 +1700,53 @@ english_conciliarism_reform = {
 	
 	ai = {
 		factor = 1
+	}
+}
+
+#Persia
+legacy_of_the_safavid_reform = {
+	icon = "legacy_of_the_safavid_reform"
+	allow_normal_conversion = yes
+	potential = {
+		has_unlocked_government_reform = {
+			government_reform = legacy_of_the_safavid_reform
+		}
+	}
+	trigger = {
+		OR = {
+			has_reform = feudal_theocracy
+			has_reform = persian_government_reform
+		}
+	}
+	modifiers = {
+		church_loyalty_modifier = 0.1
+		global_missionary_strength = 0.015
+		church_privilege_slots = 1
+		church_influence_modifier = -0.1
+	}
+	effect = {
+	}
+	removed_effect = {
+	}
+	conditional = {
+		allow = {
+			OR = {
+				has_dlc = "Cradle of Civilization"
+				has_dlc = "King of Kings"
+			}
+		}
+		custom_attributes = {
+			upgrade_feudal_theocracy = yes
+		}
+	}
+	conditional = {
+		allow = { has_dlc = "Cradle of Civilization" }
+		custom_attributes = {
+			allow_piety_switch_decision = yes	#Enables a decision which gives 1 stabhit, but turns your piety 180°
+		}
+	}
+	ai = {
+		factor = 10
 	}
 }
 
@@ -1693,6 +1803,7 @@ defensive_stance_reform = {
 		OR = {
 			NOT = { has_dlc = "Domination" }
 			NOT = { culture_group = caucasian }
+			NOT = { primary_culture = georgian_new }
 		}
 	}
 	trigger = {
@@ -1743,6 +1854,9 @@ sustained_discipline_reform = {
 cavalry_warfare_reform = {
 	icon = "cavalry"
 	allow_normal_conversion = yes
+	potential = {
+		NOT = { has_unlocked_government_reform = { government_reform = legacy_of_the_seljuk_reform } }
+	}
 	trigger = {
 		if = {
 			limit = { has_modifier_locking_military_tier = yes }
@@ -1754,7 +1868,7 @@ cavalry_warfare_reform = {
 	}
 	modifiers = {
 		cav_to_inf_ratio = 0.1
-		cavalry_cost = -0.15
+		cavalry_cost = -0.1
 	}
 	
 	ai = {
@@ -1846,7 +1960,7 @@ mercenary_leadership_reform = {
 		}
 	}
 	modifiers = {
-		mercenary_cost = -0.25
+		mercenary_cost = -0.1
 		possible_condottieri = 0.5
 	}
 	
@@ -1882,7 +1996,7 @@ doppelsoldner_reform = {
 		}
 	}
 	modifiers = {
-		mercenary_cost = -0.25
+		mercenary_cost = -0.15
 		possible_condottieri = 0.5
 		merc_leader_army_tradition = 0.25
 	}
@@ -2051,6 +2165,7 @@ mansure_army_reform = {
 				has_not_modifier_locking_military_tier = yes
 			}
 		}
+		is_not_blocked_by_estate_privilege = { estate = estate_janissaries }
 	}
 	modifiers = {
 		drill_decay_modifier = -0.5
@@ -2471,7 +2586,7 @@ rajput_military_leadership_reform = {
 		rajput_loyalty_modifier = 0.1
 		rajput_influence_modifier = 0.1
 		rajput_privilege_slots = 1
-		special_unit_forcelimit = 0.1
+		allowed_rajput_fraction = 0.1
 	}
 	
 	ai = {
@@ -2518,6 +2633,7 @@ subutais_strategies_reform = {
 		OR = {
 			culture_group = altaic
 			culture_group = tartar
+			primary_culture = altaic_new
 		}
 	}
 	trigger = {
@@ -2561,6 +2677,35 @@ qollar_aghasi_regiments_reform = {
 		leader_land_shock = 2
 		mil_tech_cost_modifier = -0.1
 		global_autonomy = -0.03
+	}
+
+	ai = {
+		factor = 1000
+	}
+}
+
+legacy_of_the_seljuk_reform = {
+	icon = "legacy_of_the_seljuk_reform"
+	allow_normal_conversion = yes
+	potential = {
+		has_unlocked_government_reform = {
+			government_reform = legacy_of_the_seljuk_reform
+		}
+	}
+	trigger = {
+		if = {
+			limit = { has_modifier_locking_military_tier = yes }
+			OR = {
+				has_reform = legacy_of_the_seljuk_reform
+				has_not_modifier_locking_military_tier = yes
+			}
+		}
+	}
+	modifiers = {
+		cav_to_inf_ratio = 0.5
+		cavalry_cost = -0.25
+		nomadic_tribes_loyalty_modifier = 0.1
+		nomadic_tribes_privilege_slots = 1
 	}
 
 	ai = {
@@ -2635,7 +2780,12 @@ the_cawa_regiments_reform = {
 			has_dlc = "Domination"
 			has_dlc = "Origins"
 		}
-		primary_culture = amhara
+		OR = {
+			has_unlocked_government_reform = {
+				government_reform = the_cawa_regiments_reform
+			}
+			primary_culture = amhara
+		}
 	}
 	trigger = {
 		if = {
@@ -2777,7 +2927,7 @@ ordennancas_reform = {
 	}
 	modifiers = {
 		leader_land_shock = 1 
-		army_tradition_decay = -0.0005
+		army_tradition_decay = -0.005
 	}
 	custom_attributes = {
 		can_raise_manpower_from_home_region = yes
@@ -3056,7 +3206,7 @@ swiss_mercenary_reform = {
 
 # Hungarian
 expanded_black_army_reform = {
-	icon = "black_army"
+	icon = "black_army_reform"
 	allow_normal_conversion = yes
 	potential = {
 		has_dlc = "Domination"
@@ -3079,6 +3229,28 @@ expanded_black_army_reform = {
 	}
 	custom_attributes = {
 		mercs_do_not_cost_army_professionalism = yes
+	}
+	ai = {
+		factor = 1000
+	}
+}
+
+theme_system_reform = {
+	icon = "theme_system_reform"
+	allow_normal_conversion = yes
+	potential = {
+		has_dlc = "King of Kings"
+		has_unlocked_government_reform = {
+			government_reform = theme_system_reform
+		}
+	}
+	modifiers = {
+		manpower_in_own_culture_provinces = 0.25
+		manpower_in_accepted_culture_provinces = 0.25
+		state_maintenance_modifier = -0.1
+	}
+	custom_attributes = {
+		BYZ_buff_dynatoi_land_grants = yes
 	}
 	ai = {
 		factor = 1000
@@ -3320,7 +3492,10 @@ sygnakhs_system_reform = {
 	allow_normal_conversion = yes
 	potential = {
 		has_dlc = "Domination"
-		culture_group = caucasian
+		OR = {
+			culture_group = caucasian
+			primary_culture = georgian_new
+		}
 	}
 	trigger = {
 		if = {
@@ -3792,7 +3967,7 @@ war_economy_reform = {
 }
 
 thalassocracy_reform = {
-	icon = "admiralty"
+	icon = "admiralty_reform"
 	allow_normal_conversion = yes
 	potential = {
 		has_unlocked_government_reform = {
@@ -3873,11 +4048,30 @@ commercial_trade_empire_reform = {
 	}
 }
 
+laesio_enormis_reform = {
+	icon = "laesio_enormis_reform"
+	allow_normal_conversion = yes
+	potential = {
+		has_dlc = "King of Kings"
+		is_or_was_tag = { tag = BYZ }
+	}
+	modifiers = {
+		global_prosperity_growth = 0.5
+		nobles_loyalty_modifier = -0.05
+		nobles_influence_modifier = -0.1
+		production_efficiency = 0.15
+		global_autonomy = -0.05
+	}
+	ai = {
+		factor = 1
+	}
+}
+
 jap_gokaido_reform = {
 	icon = "jap_gokaido_reform"
 	allow_normal_conversion = no
 	potential = {
-		culture_group = japanese 
+		culture_group = japanese_g
 	}
 	trigger = {
 		OR = {
@@ -3921,7 +4115,7 @@ reform_the_samurai_reform = {
 	icon = "reform_the_samurai_reform"
 	allow_normal_conversion = yes
 	potential = {
-		culture_group = japanese 
+		culture_group = japanese_g 
 		tag = JAP 
 		OR = {
 			have_had_reform = reform_the_samurai_reform
@@ -3971,6 +4165,7 @@ tercios_reform = {
 				tooltip = has_unlocked_this_reform_tt
 				has_country_flag = enable_tercios_reform_flag
 			}
+			has_reform = tercios_reform
 		}
 		NOT = { religion_group = muslim } 
 	}
@@ -4018,6 +4213,312 @@ consulate_of_the_sea = {
 		can_use_trade_post = yes
 	}
 	
+	ai = {
+		factor = 10
+	}
+}
+
+restore_the_master_of_offices_reform = {
+	icon = "restore_the_master_of_offices_reform"
+	allow_normal_conversion = yes
+	potential = {
+		has_dlc = "King of Kings" 
+		OR = {
+			tag = BYZ
+			was_tag = BYZ
+		}
+	}
+	trigger = {
+	}
+	modifiers = {
+		same_religion_advisor_cost = -0.15
+		advisor_pool = 1
+	}
+	
+	custom_attributes = {
+		enables_statesman_autonomy_reduction = yes
+		#perhaps adm or dip advisor recruitment here
+	}
+	
+	ai = {
+		factor = 10
+	}
+}
+
+#1.36 Armenia
+
+nakharar_title = {
+	icon = "nakharar_title"
+	allow_normal_conversion = yes
+	lock_level_when_selected = yes
+	valid_for_nation_designer = no
+	potential = {
+		OR = {
+			tag = MLK
+			tag = ARM
+			was_tag = ARM
+		}
+		has_country_flag = arm_unlocked_nakharar
+	}
+	modifiers = {
+		nobles_privilege_slots = 1
+		nobles_influence_modifier = 0.05
+		nobles_loyalty_modifier = 0.1
+	}
+	
+	custom_attributes = {
+		seizing_land_no_rebels_from_estate_nobles = yes
+	}
+}
+
+sparapet_office = {
+	icon = "sparapet_office"
+	allow_normal_conversion = yes
+	lock_level_when_selected = yes
+	valid_for_nation_designer = no
+	potential = {
+		OR = {
+			tag = MLK
+			tag = ARM
+			was_tag = ARM
+		}
+		has_country_flag = arm_unlocked_sparapet
+	}
+	modifiers = {
+		leader_siege = 1 
+		army_tradition = 0.5
+	}
+	
+	custom_attributes = {
+		recruiting_general_gives_army_tradition = yes
+	}
+}
+
+#Turkomen
+
+turkoman_ottoman_institutions = {
+	icon = "turkoman_ottoman_institutions"
+	allow_normal_conversion = yes
+	potential = {
+		has_country_flag = turkoman_unlock_ottoman_reform
+		religion_group = muslim
+	}
+	modifiers = {
+		years_of_nationalism = -10
+		governing_capacity = 100
+	}
+	conditional = {
+		allow = { 
+			has_dlc = "Cradle of Civilization"
+		}
+		has_pashas = yes
+		has_janissaries = yes
+	}
+	conditional = {
+		allow = { has_dlc = "Cradle of Civilization" }
+		government_abilities = {
+			tribal_federation_mechanic
+		}
+	}
+	ai = {
+		factor = 3
+	}
+}
+
+#Court Ideas
+superiority_of_the_state_reform = {
+	icon = russian_queen	#TODO
+	potential = {
+		NOT = { has_unlocked_government_reform = { government_reform = divided_aristocracy_reform } }
+	}
+	trigger = {
+		full_idea_group = court_ideas
+	}
+	modifiers = {
+		all_estate_influence_modifier = -0.1
+		max_absolutism = 5
+	}
+	custom_attributes = {
+		can_sell_crownland_to_single_estates = yes
+		can_seize_crownland_of_single_estates = yes
+		seizing_land_no_rebels = yes
+	}
+	ai = {
+		factor = 1
+	}
+}
+
+#Persia
+divided_aristocracy_reform = {
+	icon = russian_queen	#TODO
+	potential = {
+		has_unlocked_government_reform = { government_reform = divided_aristocracy_reform }
+	}
+	modifiers = {
+		nobles_influence_modifier = -0.15
+		qizilbash_influence_modifier = -0.15
+		ghulams_influence_modifier = -0.15
+		max_absolutism = 10
+	}
+	custom_attributes = {
+		can_sell_crownland_to_single_estates = yes
+		can_seize_crownland_of_single_estates = yes
+		seizing_land_no_rebels = yes
+	}
+	ai = {
+		factor = 1
+	}
+}
+
+#Mamluks
+modernized_furusiyya_reform = {
+	icon = "modernized_furusiyya_reform"
+	allow_normal_conversion = yes
+	potential = {
+		has_dlc = "King of Kings"
+		OR = {
+			have_had_reform = modernized_furusiyya_reform
+			has_unlocked_government_reform = {
+				government_reform = modernized_furusiyya_reform
+			}
+		}
+		
+	}
+	modifiers = {
+		allowed_mamluks_fraction = 0.05
+	}
+
+	custom_attributes = {
+		recruiting_generals_increases_nobles_loyalty = yes
+	}
+
+	effect = {
+		custom_tooltip = mams_disc_tt
+		hidden_effect = {
+			add_country_modifier = {
+				name = mam_disc_troops_modifier
+				duration = -1 
+				hidden = yes 
+			}
+		}
+	}
+
+	removed_effect = {
+		remove_country_modifier = mam_disc_troops_modifier
+	}
+
+	custom_attributes = {
+		advisors_generate_innovativeness = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+karimi_stations_reform = {
+	icon = "karimi_stations_reform"
+	allow_normal_conversion = yes
+	potential = {
+		has_dlc = "Domination"
+		OR = {
+			have_had_reform = karimi_stations_reform
+			has_unlocked_government_reform = {
+				government_reform = karimi_stations_reform
+			}
+		}
+		
+	}
+	modifiers = {
+		trade_steering = 0.2
+		global_foreign_trade_power = 0.25
+	}
+
+	conditional = {
+		allow = {
+			has_dlc = "Res Publica"
+			has_dlc = "Mare Nostrum"
+		}
+		can_use_trade_post = yes
+	}
+	
+	ai = {
+		factor = 1
+	}
+}
+
+diwan_al_khass_reform = {
+	icon = "diwan_al_khass_reform"
+	allow_normal_conversion = yes
+	potential = {
+		has_dlc = "King of Kings"
+		is_or_was_tag = { tag = MAM }
+		
+	}
+	modifiers = {
+		development_cost = -0.05
+		build_cost = -0.1
+	}
+	
+	ai = {
+		factor = 10
+	}
+}
+
+state_madrasas_reform = {
+	icon = "state_madrasas_reform"
+	allow_normal_conversion = yes
+	potential = {
+		has_dlc = "King of Kings"
+		OR = {
+			have_had_reform = state_madrasas_reform
+			has_unlocked_government_reform = {
+				government_reform = state_madrasas_reform
+			}
+		}
+	}
+	modifiers = {
+		same_religion_advisor_cost = -0.2
+		yearly_government_power = 0.33
+	}
+
+	conditional = {
+		allow = { has_dlc = "Rule Britannia" }
+		custom_attributes = {
+			advisors_generate_innovativeness = yes
+		}
+	}
+	
+	ai = {
+		factor = 10
+	}
+}
+
+integrated_ottoman_officials = {
+	icon = "integrated_ottoman_officials"
+	allow_normal_conversion = yes
+	potential = {
+		has_dlc = "King of Kings"
+		OR = {
+			have_had_reform = integrated_ottoman_officials
+			has_unlocked_government_reform = {
+				government_reform = integrated_ottoman_officials
+			}
+		}
+	}
+	modifiers = {
+		global_autonomy = -0.05
+		tolerance_of_heathens_capacity = 1
+	}
+
+	conditional = {
+		allow = { 
+			has_dlc = "Cradle of Civilization"
+		}
+		has_pashas = yes
+		custom_attributes = { reveal_ruler_skills_for_mamluks = yes }
+	}
+
 	ai = {
 		factor = 10
 	}
