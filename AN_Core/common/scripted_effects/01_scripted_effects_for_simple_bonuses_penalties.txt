@@ -26,7 +26,7 @@ reduce_stability_or_adm_power = {
 	else = { add_adm_power = -50 }
 }
 
-add_stability_or_adm_power = {
+add_stability_or_adm_power_per_stab = {
     tooltip = {
         add_stability = $amount$
     }
@@ -345,6 +345,26 @@ add_claim_province = {
 	}
 }
 
+add_permanent_claim_multi_provinces = {
+	$target$ = {
+		limit = {
+			NOT = { is_core = PREV }
+			NOT = { is_permanent_claim = PREV }
+		}
+		add_permanent_claim = PREV
+	}
+}
+
+add_claim_multi_provinces = {
+	$target$ = {
+		limit = {
+			NOT = { is_core = PREV }
+			NOT = { is_permanent_claim = PREV }
+		}
+		add_claim = PREV
+	}
+}
+
 add_russian_claim = {
 	if = {
 		limit = { ROOT = { has_country_modifier = rus_expanded_administrative_offices } }
@@ -396,6 +416,31 @@ add_prestige_or_monarch_power = {
     }
 }
 
+add_mercantilism_or_monarch_power = {
+    tooltip = {
+        add_mercantilism = $amount$
+    }
+    custom_tooltip = ADD_MERCANTILISM_OR_MONARCHPOWER
+    hidden_effect = {
+        for = {
+            amount = $amount$
+            effect = "
+                if = {
+                    limit = {
+                        NOT = { mercantilism = 100 }
+                    }
+                    add_mercantilism = 1
+                }
+                else = {
+                    add_adm_power = 50
+                    add_dip_power = 50
+                    add_mil_power = 50
+                }
+            "
+        }
+    }
+}
+
 add_innovativeness_or_monarch_power = {
 	if = {
 		limit = { has_dlc = "Rule Britannia" }
@@ -403,9 +448,6 @@ add_innovativeness_or_monarch_power = {
 			change_innovativeness = $amount$
 		}
 		custom_tooltip = ADD_INNOVATIVENESS_OR_MONARCHPOWER
-		if = {
-			limit = { NOT = { innovativeness = 100 } }
-		}
 		hidden_effect = {
 			for = {
 				amount = $amount$
@@ -469,5 +511,185 @@ change_karma_effect = {
 		else = {
 			add_karma = $amount$
 		}
+	}
+}
+
+## adds army tradition until 100 is reached and then adds the rest as mil power
+### add_army_tradition_or_mil_power = { amount = <number> }
+add_army_tradition_or_mil_power = {
+	[[amount]
+		tooltip = {
+			add_army_tradition = $amount$
+		}
+		custom_tooltip = ME_ADD_ARMY_TRADITION_OR_MIL_POWER
+		hidden_effect = {
+			for = {
+				amount = $amount$
+				effect = "
+					if = {
+						limit = {
+							NOT = { army_tradition = 99.9 }
+						}
+						add_army_tradition = 1
+					}
+					else = {
+						add_mil_power = 3
+					}
+				"
+			}
+		}
+	]
+	
+	[[value]
+		tooltip = {
+			add_army_tradition = $value$
+		}
+		custom_tooltip = ME_ADD_ARMY_TRADITION_OR_MIL_POWER
+		hidden_effect = {
+			for = {
+				amount = $value$
+				effect = "
+					if = {
+						limit = {
+							NOT = { army_tradition = 99.9 }
+						}
+						add_army_tradition = 1
+					}
+					else = {
+						add_mil_power = 3
+					}
+				"
+			}
+		}
+	]
+}
+
+#Country effect
+add_legitimacy_equivalent = {
+	add_legitimacy = $amount$
+	add_horde_unity = $amount$
+	add_devotion = $amount$
+	add_meritocracy = $amount$
+	add_republican_tradition = $republican_tradition$	#This one is special because of how much republics scale with it
+}
+
+add_legitimacy_or_mil_power = {
+	if = {
+		limit = { NOT = { government = native } }
+		if = {
+			limit = { uses_republican_tradition = yes }
+			tooltip = { add_republican_tradition = $republican_tradition$ }
+			custom_tooltip = add_republican_tradition_or_mil_power_tt
+			hidden_effect = {
+				for = {
+					amount = $republican_tradition$
+					effect = "if = { limit = { NOT = { republican_tradition = 100 } } add_republican_tradition = 1 } else = { add_mil_power = 33 }"
+				}
+			}
+		}
+		else = {
+			if = {
+				limit = { uses_horde_unity = yes }
+				tooltip = { add_horde_unity = $amount$ }
+				custom_tooltip = add_horde_unity_or_mil_power_tt
+				hidden_effect = {
+					for = {
+						amount = $amount$
+						effect = "if = { limit = { NOT = { horde_unity = 100 } } add_horde_unity = 1 } else = { add_mil_power = 10 }"
+					}
+				}
+			}
+			else_if = {
+				limit = { uses_meritocracy = yes }
+				tooltip = { add_meritocracy = $amount$ }
+				custom_tooltip = add_meritocracy_or_mil_power_tt
+				hidden_effect = {
+					for = {
+						amount = $amount$
+						effect = "if = { limit = { NOT = { meritocracy = 100 } } add_meritocracy = 1 } else = { add_mil_power = 10 }"
+					}
+				}
+			}
+			else_if = {
+				limit = { uses_devotion = yes }
+				tooltip = { add_devotion = $amount$ }
+				custom_tooltip = add_devotion_or_mil_power_tt
+				hidden_effect = {
+					for = {
+						amount = $amount$
+						effect = "if = { limit = { NOT = { devotion = 100 } } add_devotion = 1 } else = { add_mil_power = 10 }"
+					}
+				}
+			}
+			else = {
+				tooltip = { add_legitimacy = $amount$ }
+				custom_tooltip = add_legitimacy_or_mil_power_tt
+				hidden_effect = {
+					for = {
+						amount = $amount$
+						effect = "if = { limit = { NOT = { legitimacy = 100 } } add_legitimacy = 1 } else = { add_mil_power = 10 }"
+					}
+				}
+			}
+		}
+	}
+}
+
+remove_comet_sighted_events = {
+	custom_tooltip = no_more_comet_sighted_event_tt
+	hidden_effect = { set_country_flag = no_more_comet_sighted_event }
+}
+
+remove_plague_events = {
+	custom_tooltip = emp_ven_plague_doctor_training_tt
+	hidden_effect = { set_country_flag = has_competent_doctors }
+}
+
+remove_sick_heir_events = {
+	custom_tooltip = remove_sick_heir_events_tt
+	hidden_effect = { set_country_flag = healthy_heir_diet }
+}
+
+remove_hunting_accident_events = {
+	custom_tooltip = remove_hunting_accident_events_tt
+	hidden_effect = { set_country_flag = no_more_hunting_for_heir }
+}
+
+reduce_hunting_accident_likelihood = {
+	custom_tooltip = reduce_hunting_accident_likelihood_tt
+	hidden_effect = { set_country_flag = selective_hunting_accident }
+}
+
+remove_base_development = {
+	add_base_$type$ = -$amount$
+	hidden_effect = {
+		if = {
+			limit = { NOT = { base_$type$ = 1 } }
+			set_base_$type$ = 1
+		}
+	}
+}
+
+greatly_reduce_propagate_religion_requirements = {
+	if = {
+		limit = {
+			has_dlc = "Cradle of Civilization"
+		}
+		custom_tooltip = rig_establish_religious_dominance_tt
+	}
+	hidden_effect = {
+		set_country_flag = 15_trade_power_for_propogate_religion
+	}
+}
+
+reduce_propagate_religion_requirements = {
+	if = {
+		limit = {
+			has_dlc = "Cradle of Civilization"
+		}
+		custom_tooltip = atj_propagate_religion_tt
+	}
+	hidden_effect = {
+		set_country_flag = 35_trade_power_for_propogate_religion
 	}
 }

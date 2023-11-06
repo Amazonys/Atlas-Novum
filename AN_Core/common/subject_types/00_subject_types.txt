@@ -42,6 +42,9 @@ eyalet = {}
 core_eyalet = {}
 commercial_enterprise = {}
 trade_protectorate = {}
+hereditary_pronoia_subject_type = {}
+pronoia_subject_type = {}
+cultural_sphere_of_influence_subject = {}
 #IR
 confederate = {}
 dominion = {}
@@ -67,13 +70,13 @@ default = {
 	transfer_trade_if_merchant_republic = no
 	joins_overlords_wars = yes
 	can_be_co_belligerented =  no    #Enemies can force this subject to join its overlord into the defense war. Only used when the subject has the "joins_overlords_wars = no". By default it's "no".
-	can_be_called_to_wars =  no    #Overlord can ask subject to join wars like it could ask allies to join. You would require favors  to call them to wars. Only used when the subject has the "joins_overlords_wars = no". By default it's "no"
+	must_accept_cta_from_overlord  =  no    #Overlord can ask subject to join wars like it could ask allies to join. You would require favors  to call them to wars. Only used when the subject has the "joins_overlords_wars = no". By default it's "no"
 	favors_cost_to_join_offensive_wars = 0   #Defines how much favors the overlord need to invest to call the subject into an offensive war
 	favors_cost_to_join_defensive_wars = 0   #Defines how much favors the overlord need to invest to call the subject into a defensive war
 	opinion_cost_to_join_offensive_wars = 0   #Defines how much opinion the subject loses of the overlord to call the subject into an offensive war. Applied if you do not have Leviathan
 	opinion_cost_to_join_defensive_wars = 0   #Defines how much opinion the subject loses of the overlord to call the subject into a defensive war. Applied if you do not have Leviathan
 	opinion_cost_instead_of_favors_cost = no   #Determines if the subject requires favors or opinion to join a the war. If set "yes" then it requires the aforementioned opinion costs - regardless if Leviathan is active or not. "No" is the default setting
-	opinion_on_subject_integration = -30 #Determines how much opinion they actually lose when a fellow subject gets integrated.
+	opinion_on_subject_integration = 30 #Determines how much opinion they actually lose when a fellow subject gets integrated.
 	joins_colonial_wars = no
 	can_be_integrated = no
 	can_release_and_play = no							# "Release Colony" in SubjectView
@@ -110,7 +113,7 @@ default = {
 	can_concentrate_development = no
 	can_have_great_projects_moved_by_overlord = yes
 	extend_trading_range = no
-	can_gain_favors = yes
+	can_gain_favors = no
 
 	max_government_rank = 0								# 0 means no limit
 	cities_required_for_bonuses = 0						# How many cities the subject needs before giving bonuses to overlord
@@ -182,6 +185,12 @@ default = {
 	allow_settlement_growth = yes
 	change_colonial_type = no
 	upgrade_subject_type = no
+	seize_court_resources = no
+	request_extra_levies = no
+	grant_administrative_autonomy = no
+
+	# disable_inheritance = yes # Use this for Personal Union types of subjects to disallow the inheriting mechanic
+
 
 	# (special)
 	sword_hunt = no
@@ -461,6 +470,9 @@ appanage = {
 	}
 
 	# Subject Interactions
+	seize_court_resources = yes
+	request_extra_levies = yes
+	grant_administrative_autonomy = yes
 	#(disable)
 	scutage = yes
 	grant_core_claim = yes
@@ -480,6 +492,14 @@ appanage = {
 	modifier_subject = clear #Ditto
 	modifier_subject = {
 		modifier = appanage_subject
+	}
+	modifier_subject = {
+		modifier = subject_tax_modifier
+		trigger = {
+			overlord = {
+				has_government_attribute = subject_tax_modifier_25
+			}
+		}
 	}
 	modifier_overlord = {
 		modifier = appanage_overlord
@@ -904,25 +924,28 @@ eyalet = {
 	gets_help_with_rebels = yes
 	forms_trade_companies = no
 	takes_diplo_slot = no
-	can_be_co_belligerented = yes
-	can_be_called_to_wars = yes
 	extend_trading_range = yes
-	opinion_cost_instead_of_favors_cost = yes
-	opinion_cost_to_join_offensive_wars = 40
-	opinion_cost_to_join_defensive_wars = 20
-	opinion_on_subject_integration = 0
 
+	counts_for_borders = yes
 	max_government_rank = 2
-
+	can_be_co_belligerented = yes
+	must_accept_cta_from_overlord = yes
+	can_gain_favors = yes
+	favors_cost_to_join_offensive_wars = 20   #Defines how much favors the overlord need to invest to call the subject into an offensive war
+	favors_cost_to_join_defensive_wars = 10   #Defines how much favors the overlord need to invest to call the subject into a defensive war
+	opinion_cost_to_join_offensive_wars = 40   #Defines how much opinion the subject loses of the overlord to call the subject into an offensive war. Applied if you do not have Leviathan
+	opinion_cost_to_join_defensive_wars = 20   #Defines how much opinion the subject loses of the overlord to call the subject into a defensive war. Applied if you do not have Leviathan
+	opinion_on_subject_integration = 0
+	
 	liberty_desire_development_ratio = 0.1
 	liberty_desire_same_dynasty = -5.0
 	pays_overlord = 1.25
-	forcelimit_to_overlord = 0.2						# Percent of subject FL to use as base for modifiers
-	naval_forcelimit_to_overlord = 0.2					# Percent of subject FL to use as base for modifiers
-	manpower_to_overlord = 0.2							# Percent of subject FL to use as base for modifiers
-	sailors_to_overlord = 0.2							# Percent of subject FL to use as base for modifiers
+	forcelimit_to_overlord = 0.1						# Percent of subject FL to use as base for modifiers
+	naval_forcelimit_to_overlord = 0.1					# Percent of subject FL to use as base for modifiers
+	manpower_to_overlord = 0.1							# Percent of subject FL to use as base for modifiers
+	sailors_to_overlord = 0.1							# Percent of subject FL to use as base for modifiers						# Percent of subject FL to use as base for modifiers
 
-	relative_power_class = 1
+	relative_power_class = 2
 	should_quit_wars_on_activation = yes
 
 	restoration_cb = cb_disloyal_eyalet
@@ -955,6 +978,9 @@ eyalet = {
 			}
 		}
 	}
+	modifier_subject = {
+		modifier = eyalet_modifier
+	}
 
 	overlord_opinion_modifier = is_eyalet
 	subject_opinion_modifier = is_eyalet
@@ -976,13 +1002,14 @@ core_eyalet = {
 	liberty_desire_development_ratio = 0.1
 	liberty_desire_same_dynasty = -5.0
 	pays_overlord = 1.5
-	forcelimit_to_overlord = 0.33						# Percent of subject FL to use as base for modifiers
-	naval_forcelimit_to_overlord = 0.33					# Percent of subject FL to use as base for modifiers
-	manpower_to_overlord = 0.33							# Percent of subject FL to use as base for modifiers
-	sailors_to_overlord = 0.33							# Percent of subject FL to use as base for modifiers
+	forcelimit_to_overlord = 0.2						# Percent of subject FL to use as base for modifiers
+	naval_forcelimit_to_overlord = 0.2					# Percent of subject FL to use as base for modifiers
+	manpower_to_overlord = 0.2							# Percent of subject FL to use as base for modifiers
+	sailors_to_overlord = 0.2							# Percent of subject FL to use as base for modifiers
 	annex_cost_per_development = 6.0					# annex/integrate cost per development
 
-	relative_power_class = 2
+	must_accept_cta_from_overlord = no
+	relative_power_class = 1
 	should_quit_wars_on_activation = yes
 
 	restoration_cb = cb_disloyal_eyalet
@@ -1007,6 +1034,9 @@ core_eyalet = {
 				religion = PREV
 			}
 		}
+	}
+	modifier_subject = {
+		modifier = eyalet_modifier
 	}
 
 	overlord_opinion_modifier = is_eyalet
@@ -1147,9 +1177,9 @@ trade_protectorate = {
 	joins_overlords_wars = no
 	joins_colonial_wars = no
 	can_be_co_belligerented = yes    #Enemies can force this subject to join its overlord into the defense war. Only used when the subject has the "joins_overlords_wars = no". By default it's "no".
-	can_be_called_to_wars = yes    #Overlord can ask subject to join wars like it could ask allies to join. You would require favors  to call them to wars. Only used when the subject has the "joins_overlords_wars = no". By default it's "no"
-	opinion_cost_to_join_offensive_wars = 50   #Defines how much opinion the subject loses of the overlord to call the subject into an offensive war. Applied if you do not have Leviathan
-	opinion_cost_to_join_defensive_wars = 20   #Defines how much opinion the subject loses of the overlord to call the subject into a defensive war. Applied if you do not have Leviathan
+	must_accept_cta_from_overlord = yes    #Overlord can ask subject to join wars like it could ask allies to join. You would require favors  to call them to wars. Only used when the subject has the "joins_overlords_wars = no". By default it's "no"
+	opinion_cost_to_join_offensive_wars = 100   #Defines how much opinion the subject loses of the overlord to call the subject into an offensive war. Applied if you do not have Leviathan
+	opinion_cost_to_join_defensive_wars = 50   #Defines how much opinion the subject loses of the overlord to call the subject into a defensive war. Applied if you do not have Leviathan
 	opinion_cost_instead_of_favors_cost = yes   #Determines if the subject requires favors or opinion to join a the war. If set "yes" then it requires the aforementioned opinion costs - regardless if Leviathan is active or not. "No" is the default setting
 	opinion_on_subject_integration = 0 #Determines how much opinion they actually lose when a fellow subject gets integrated.
 	overlord_can_attack = yes
@@ -1230,7 +1260,215 @@ trade_protectorate = {
 	}
 }
 
-#IR
+hereditary_pronoia_subject_type = {
+	copy_from = vassal
+	count = vassal
+
+	# Graphics:
+	sprite = GFX_icon_hereditary_pronoia_subject_type
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_hereditary_pronoia_subject_type
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_hereditary_pronoia_subject_type
+
+	# Properties:
+	created_by_overlord = yes
+	extend_trading_range = yes
+
+	takes_diplo_slot = no
+	can_be_integrated = no #can be inherited
+
+	place_relative_on_throne = no #exploitable
+
+	base_liberty_desire = 25.0
+
+	pays_overlord = 0.1 #purely military subject. Pays very little by default.
+	forcelimit_to_overlord = 0.1
+	naval_forcelimit_to_overlord = 0.1		
+	manpower_to_overlord = 0.2		    
+	sailors_to_overlord = 0.2		
+	military_focus = 1.0
+
+	subsidize_armies = yes
+	scutage = no
+	send_officers = yes
+	send_additional_troops = yes
+
+	modifier_subject = {
+		modifier = pronoia_base_modifiers
+	}
+	modifier_subject = {
+		modifier = BYZ_extra_forcelimit_for_pronoiars
+		trigger = {
+			overlord = {
+				has_country_flag = BYZ_extra_forcelimit_for_pronoiars_flag
+			}
+		}
+	}
+	modifier_subject = {
+		modifier = BYZ_army_trad
+		trigger = {
+			overlord = {
+				has_country_flag = BYZ_pronoia_subjects_get_3_yearly_army_tradition_flag
+			}
+		}
+	}
+	modifier_subject = {
+		modifier = BYZ_discipline
+		trigger = {
+			overlord = {
+				has_country_flag = BYZ_pronoia_will_get_5_discipline_flag
+			}
+		}
+	}
+
+	modifier_overlord = {
+		modifier = pronoia_base_overlord_modifiers
+	}
+	modifier_overlord = {
+		modifier = BYZ_pronoia_buff_army_tradition_modifier
+		trigger = {
+			army_size = 20
+			overlord = {
+				mission_completed = BYZ_strategoi_realms
+			}
+		}
+	}
+	modifier_overlord = {
+		modifier = BYZ_pronoia_land_forcelimit_penalty
+		trigger = {
+			NOT = {
+				overlord = {
+					has_country_flag = BYZ_no_pronoia_forcelimit_penalty
+				}
+			}
+		}
+	}
+}
+
+pronoia_subject_type = { #can be inherited
+
+	# Graphics:
+	sprite = GFX_icon_pronoia_subject_type
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_pronoia_subject_type
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_pronoia_subject_type
+
+	copy_from = hereditary_pronoia_subject_type
+	count = hereditary_pronoia_subject_type
+	disable_inheritance = yes # Use this for Personal Union types of subjects to disallow the inheriting mechanic
+	base_liberty_desire = 50.0
+}
+
+#Sphere of Influence
+cultural_sphere_of_influence_subject = {
+	copy_from = default
+	can_have_great_projects_moved_by_overlord = no
+
+	# Triggers:
+	is_potential_overlord = {
+		has_government_mechanic = persian_influence_mechanic
+	}
+
+	# Graphics:
+	sprite = GFX_icon_cultural_sphere_of_influence_subject
+	diplomacy_overlord_sprite = GFX_icon_diplomacy_lead_cultural_sphere_of_influence_subject
+	diplomacy_subject_sprite = GFX_icon_diplomacy_am_cultural_sphere_of_influence_subject
+
+	# Properties:
+	can_fight_independence_war = no
+	joins_overlords_wars = no
+	joins_colonial_wars = no
+	is_voluntary = yes
+	overlord_can_attack = yes
+	takes_diplo_slot = no
+	base_liberty_desire = -10
+	liberty_desire_negative_prestige = 2.0
+	relative_power_class = 1
+	should_quit_wars_on_activation = no
+	can_have_subjects_of_other_types = yes
+	uses_military_focus = no
+	overlord_protects_external = yes
+	counts_for_borders = no
+	can_use_claims = no
+	share_rebel_popup = no
+	can_transfer_in_peace = no
+	can_set_mil_focus = no
+	can_send_missionary_to_subject = yes
+	overlord_can_fabricate_for = no
+	does_overlord_size_count_for_warscore_cost = no
+	can_concentrate_development = no
+	extend_trading_range = yes
+
+	liberty_desire_development_ratio = 0.1
+	trust_on_start = 0
+	pays_overlord = 0.25									# 1.0 represents the amount payed by vassals
+
+	overlord_opinion_modifier = is_sphere_of_influence_overlord
+	subject_opinion_modifier = is_sphere_of_influence_subject
+
+	can_fight = {
+		independent_nations = yes
+		same_overlord = cultural_sphere_of_influence_subject
+		other_overlord = all
+	}
+	can_rival = {
+		independent_nations = yes
+		same_overlord = cultural_sphere_of_influence_subject
+		other_overlord = all
+	}
+	can_ally = {
+		independent_nations = yes
+		same_overlord = cultural_sphere_of_influence_subject
+		other_overlord = all
+	}
+	can_marry = {
+		independent_nations = yes
+		same_overlord = cultural_sphere_of_influence_subject
+		other_overlord = all
+	}
+
+	# Subject Interactions:
+	# (continuous)
+	embargo_rivals = yes
+	support_loyalists = yes
+	subsidize_armies = yes
+	send_officers = yes
+	divert_trade= yes
+	# (immediate)
+	placate_rulers = no
+	place_relative_on_throne = no
+	grant_province = yes
+	enforce_religion = no	#A subject in your sphere which changes its religion will fall out of the sphere
+	enforce_culture = no	#Has a custom diplomatic action for it instead
+	grant_core_claim = no
+	takeondebt = yes
+	bestow_gifts = yes
+	send_additional_troops = yes
+	demand_artifacts = yes
+	demand_additional_tribute = yes
+	conscript_general = yes
+	knowledge_sharing = yes
+	block_settlement_growth = no
+	allow_settlement_growth = no
+
+	# Modifiers:
+	modifier_subject = clear
+	modifier_overlord = {
+		trigger = {
+			overlord = { NOT = { primary_culture = prev } }
+		}
+		modifier = culturally_influencing_countries
+	}
+	modifier_overlord = {
+		trigger = {
+			overlord = { primary_culture = prev }
+		}
+		modifier = culturally_influencing_countries_same_culture
+	}
+	modifier_subject = {
+		modifier = culturally_influenced_country
+	}
+}
+
+#AN
 # confederate
 confederate = {
 	copy_from = vassal
