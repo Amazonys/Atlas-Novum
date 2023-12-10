@@ -119,6 +119,7 @@ NDefines.NCountry.EXPLOIT_ADM_INCOME = 30			-- from 60
 NDefines.NCountry.EXPLOIT_DIP_SAILORS = 3			-- from 6
 NDefines.NCountry.EXPLOIT_MIL_MANPOWER = 3			-- from 6
 NDefines.NCountry.EXPLOIT_COOLDOWN_MONTHS = 120			-- from 240
+NDefines.NCountry.ALLOW_ZERO_BASE_VALUES = 1  -- Affects base tax base manpower and base production
 NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 0			-- from 5
 NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 0			-- from 10
 NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 0			-- from 30
