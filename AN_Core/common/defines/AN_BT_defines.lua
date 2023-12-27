@@ -119,6 +119,7 @@ NDefines.NCountry.EXPLOIT_ADM_INCOME = 30			-- from 60
 NDefines.NCountry.EXPLOIT_DIP_SAILORS = 3			-- from 6
 NDefines.NCountry.EXPLOIT_MIL_MANPOWER = 3			-- from 6
 NDefines.NCountry.EXPLOIT_COOLDOWN_MONTHS = 120			-- from 240
+NDefines.NCountry.ALLOW_ZERO_BASE_VALUES = 1  -- Affects base tax base manpower and base production
 NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 0			-- from 5
 NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 0			-- from 10
 NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 0			-- from 30
@@ -180,12 +181,12 @@ NDefines.NCountry.INNOVATIVENESS_FIRST_PICKED_IDEA = 1.0			-- Innovativeness bon
 
 NDefines.NCountry.EXPLORE_COAST_EVENT_CHANCE = 1 --was 2			-- Chance (in %) of getting an event when exploring coasts
 NDefines.NCountry.MIN_TECH_FOR_CIRCUMNAVIGATE = 21	--was 9		-- Must have this level of dip tech to circumnavigate the globe
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_1 = 1468			-- Provinces for circumnavigation (coast of gambia)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_2 = 1539			-- Provinces for circumnavigation (magellan strait)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_3 = 1697			-- Provinces for circumnavigation (hawaii sea)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_4 = 1398			-- Provinces for circumnavigation (hawaii sea)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_5 = 1446			-- Provinces for circumnavigation (hawaii sea)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_6 = 1460			-- Provinces for circumnavigation (cape of good hope)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_1 = 13333			-- Provinces for circumnavigation (coast of gambia)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_2 = 14674			-- Provinces for circumnavigation (magellan strait)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_3 = 14555			-- Provinces for circumnavigation (hawaii sea)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_4 = 14214			-- Provinces for circumnavigation (hawaii sea)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_5 = 13968			-- Provinces for circumnavigation (hawaii sea)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_6 = 13596			-- Provinces for circumnavigation (cape of good hope)
 
 
 --PROSPERITY/DEV CHANGES

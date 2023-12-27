@@ -253,6 +253,10 @@ estate_burghers_land_of_commerce = {
 	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 1 } }
 	loyalty = -0.05
 	can_select = {
+		can_select_monarch_power_privilege = {
+			estate = estate_burghers
+			type = dip
+		}
 	}
 	on_granted = {
 	}
@@ -463,9 +467,21 @@ estate_burghers_indebted_to_burghers = {
 	loyalty = 0.05
 	influence = 0.05
 	on_granted = {
-		custom_tooltip = estate_burghers_indebted_to_burghers_effect_tooltip
 		if = {
-			limit = { NOT = { has_government_attribute = no_mercantilism_loss_from_privilege } }
+			limit = {
+				has_country_flag = BYZ_buff_burgher_loans_flag
+			}
+			custom_tooltip = BYZ_estate_burghers_indebted_to_burghers_effect_tooltip
+		}
+		else = {
+			custom_tooltip = estate_burghers_indebted_to_burghers_effect_tooltip
+		}
+		if = {
+			limit = {
+				NOT = { has_government_attribute = no_mercantilism_loss_from_privilege } 
+				NOT = { mission_completed = BYZ_economic_independence }
+				NOT = { has_country_flag = no_mercantilism_loss_estate_privilege_flag }
+			}
 			add_mercantilism = -1
 		}
 		tooltip = {
@@ -497,6 +513,21 @@ estate_burghers_indebted_to_burghers = {
 				duration = 60
 				estate_loan = yes
 			}
+			if = {
+				limit = {
+					has_country_flag = BYZ_buff_burgher_loans_flag
+				}
+				add_loan = {
+					fixed_interest = 1
+					duration = 60
+					estate_loan = yes
+				}
+				add_loan = {
+					fixed_interest = 1
+					duration = 60
+					estate_loan = yes
+				}
+			}
 		}
 	}
 	penalties = {
@@ -505,6 +536,7 @@ estate_burghers_indebted_to_burghers = {
 	benefits = {
 	}
 	can_select = {
+		not = { has_estate_privilege = estate_burghers_reliance_on_republics }
 		if = {
 			limit = {
 				has_estate_privilege = estate_burghers_indebted_to_burghers
@@ -541,6 +573,13 @@ estate_burghers_free_enterprise = {
 	conditional_modifier = {
 		trigger = { has_government_mechanic = russian_modernization_mechanic }
 		modifier = { monthly_russian_modernization = -0.03 }
+	}
+	conditional_modifier = {
+		trigger = { has_country_flag = BYZ_free_enterprise_buff }
+		modifier = {
+			trade_efficiency = 0.05
+			max_absolutism = 10
+		}
 	}
 	#conditional_modifier = {
 	#	trigger = { has_government_mechanic = ottoman_decadence_mechanic }
@@ -592,6 +631,26 @@ estate_burghers_patronage_of_the_arts = {
 	conditional_modifier = {
 		trigger = { has_government_mechanic = russian_modernization_mechanic }
 		modifier = { monthly_russian_modernization = -0.03 }
+	}
+	conditional_modifier = {
+		trigger = {
+			mission_completed = BYZ_glass_ware
+			NOT = { has_dlc = "Emperor" }
+			has_dlc = "Leviathan"
+		}
+		modifier = {
+			great_project_upgrade_cost = -0.1
+		}
+	}
+	conditional_modifier = {
+		trigger = {
+			mission_completed = BYZ_glass_ware
+			NOT = { has_dlc = "Emperor" }
+			NOT = { has_dlc = "Leviathan" }
+		}
+		modifier = {
+			build_cost = -0.05
+		}
 	}
 	#conditional_modifier = {
 	#	trigger = { has_government_mechanic = ottoman_decadence_mechanic }
@@ -980,6 +1039,24 @@ estate_burghers_monopoly_of_glass = {
 			burghers_privilege_slots = 1
 		}
 	}
+	conditional_modifier = {
+		trigger = {
+			mission_completed = BYZ_glass_ware
+			has_dlc = "Leviathan"
+		}
+		modifier = {
+			great_project_upgrade_cost = -0.1
+		}
+	}
+	conditional_modifier = {
+		trigger = {
+			mission_completed = BYZ_glass_ware
+			NOT = { has_dlc = "Leviathan" }
+		}
+		modifier = {
+			build_cost = -0.05
+		}
+	}
 	on_cooldown_expires = {
 		country_event = { id = monopoly_privileges.3 }
 	}
@@ -1259,7 +1336,7 @@ estate_burghers_exclusive_trade_rights = {
 }
 
 estate_burghers_control_over_monetary_policy = {
-	icon = privilege_give_money
+	icon = privilege_monopoly
 	max_absolutism = -10
 	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 2 } }
 	influence = 0.05
@@ -1281,7 +1358,7 @@ estate_burghers_control_over_monetary_policy = {
 		}
 		modifier = {
 			all_power_cost = -0.05
-			burghers_influence_modifier = 0.025
+			burghers_influence_modifier = 0.025 
 		}
 	}
 	conditional_modifier = {
@@ -1315,7 +1392,10 @@ estate_burghers_private_trade_fleets = {
 	influence = 0.1
 	loyalty = 0.05
 	is_valid = {
-		has_dlc = "Emperor"
+		OR = {
+			has_dlc = "Emperor"
+			has_dlc = "King of Kings"
+		}
 		num_of_ports = 1
 		navy_size = 1
 	}
@@ -1323,7 +1403,55 @@ estate_burghers_private_trade_fleets = {
 	}
 	benefits = {
 		light_ship_cost = -0.2
-		global_ship_trade_power = 0.1
+	}
+	conditional_modifier = {
+		trigger = {
+			NOT = { has_country_flag = BYZ_private_trade_fleet_buff }
+			NOT = {
+				OR = {
+					has_country_flag = YEM_upgrade_trade_ships_priv_1
+					has_country_flag = YEM_upgrade_trade_ships_priv_2
+				}
+			}
+		}
+		modifier = {
+			global_ship_trade_power = 0.1
+		}
+	}
+	conditional_modifier = {
+		trigger = {
+			OR = {
+				has_country_flag = BYZ_private_trade_fleet_buff
+				has_country_flag = YEM_upgrade_trade_ships_priv_1
+			}
+			NOT = { has_country_flag = YEM_upgrade_trade_ships_priv_2 }
+		}
+		modifier = {
+			global_ship_trade_power = 0.2
+		}
+	}
+	conditional_modifier = {
+		trigger = {
+			has_country_flag = YEM_upgrade_trade_ships_priv_2
+		}
+		modifier = {
+			global_ship_trade_power = 0.3
+		}
+	}
+	conditional_modifier = {
+		trigger = { has_country_flag = mam_upgrade_private_trade_fleets_flag }
+		modifier = { 
+			global_ship_trade_power = 0.1 
+			burghers_influence_modifier = -0.1
+		}
+	}
+	conditional_modifier = {
+		trigger = {
+			has_country_flag = ARB_upgrade_trade_ship_privilege_for_trade_steering_flag
+		}
+		modifier = {
+			trade_steering = 0.1
+		}
 	}
 	conditional_modifier = {
 		trigger = { has_government_mechanic = russian_modernization_mechanic }
@@ -1663,7 +1791,7 @@ estate_burghers_hydraulic_rights = {
 					name = estate_burghers_hydraulic_rights_savanna
 					duration = -1
 				}
-			}
+			}			
 		}
 	}
 	on_revoked = {
@@ -2086,7 +2214,7 @@ estate_burghers_orthodox_tolerance = {
 	}
 }
 
-#Poland Privileges
+#Poland Privileges 
 
 estate_burghers_polish_merchant_seal = {
 	icon = privilege_make_generous_donation
@@ -2094,16 +2222,16 @@ estate_burghers_polish_merchant_seal = {
 	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 2 } }
 	is_valid = {
 		has_dlc = "Lions of the North"
-		OR = {
+		OR = { 
 			mission_completed = pol_support_mercantile_class
 			has_estate_privilege = estate_burghers_the_great_privilege
 		}
 	}
 	influence = 0.05
 	loyalty = 0.05
-	benefits = {
-		placed_merchant_power = 5
-		center_of_trade_upgrade_cost = -0.1
+	benefits = { 
+		placed_merchant_power = 5 
+		center_of_trade_upgrade_cost = -0.1 
 	}
 	penalties = {
 	}
@@ -2122,6 +2250,7 @@ estate_burghers_rise_of_the_burghers = {
 		has_dlc = "Domination"
 		has_estate_privilege = estate_burghers_rise_of_the_burghers
 		is_revolutionary = no
+		NOT = { has_country_flag = enserfed_peasants }
 	}
 	influence = 0.15
 	loyalty = 0.0
@@ -2168,6 +2297,7 @@ estate_burghers_the_new_middle_class = {
 				estate_privilege = estate_burghers_the_new_middle_class
 			}
 		}
+		NOT = { has_country_flag = enserfed_peasants }
 	}
 	influence = 0.1
 	loyalty = 0.15
@@ -2176,12 +2306,13 @@ estate_burghers_the_new_middle_class = {
 	}
 	on_granted = {
 		add_mercantilism = -5
-		custom_tooltip = estate_privilege_only_revoked_by_republics
 		set_country_flag = rus_enacted_early_disconnection_flag
 		clr_country_flag = rus_enacted_early_serfdom_flag
+		set_country_flag = liberated_peasants
 	}
 	on_revoked = {
 		add_republican_tradition = -5
+		clr_country_flag = liberated_peasants
 		hidden_effect = {
 			if = {
 				limit = { government = republic }
@@ -2190,6 +2321,9 @@ estate_burghers_the_new_middle_class = {
 				}
 			}
 		}
+	}
+	on_invalid = {
+		clr_country_flag = liberated_peasants
 	}
 	benefits = {
 		burghers_privilege_slots = 1
@@ -2243,9 +2377,9 @@ estate_burghers_autonomous_trade_companies = {
 	}
 	influence = 0.05
 	loyalty = 0.05
-	benefits = {
-		placed_merchant_power = 5
-		center_of_trade_upgrade_cost = -0.1
+	benefits = { 
+		placed_merchant_power = 5 
+		center_of_trade_upgrade_cost = -0.1 
 	}
 	penalties = {
 	}
@@ -2581,7 +2715,7 @@ estate_burghers_financial_demand = {
 	benefits = {
 		global_tax_modifier = 0.1
 	}
-
+	
 	on_granted = {
 		enable_estate_action = {
 			estate_action = ASK_FOR_CONTRIBUTION_BURGHERS
@@ -2651,5 +2785,735 @@ estate_burghers_promote_burgher_bookkeeping = {
 	#}
 	ai_will_do = {
 		factor = 10
+	}
+}
+
+#1.36 
+
+#Turkomen
+
+estate_burghers_great_works_of_iran = {
+	icon = privilege_dev_cost_desert
+	land_share = 5
+	max_absolutism = -10
+	loyalty = 0.05
+	influence = 0.05
+	is_valid = {
+		has_unlocked_estate_privilege = {
+			estate_privilege = estate_burghers_great_works_of_iran
+		}
+	}
+	can_select = {
+		custom_trigger_tooltip = {
+			tooltip = has_unlocked_estate_burghers_great_works_of_iran_tt
+			has_unlocked_estate_privilege = {
+				estate_privilege = estate_burghers_great_works_of_iran
+			}	
+		}
+		any_owned_province = {
+			OR = {
+				has_terrain = mountain
+				has_terrain = highlands
+				has_terrain = desert
+				has_terrain = drylands
+			}
+			OR = {
+				region = persia_region
+				region = khorasan_region
+			}
+		}
+	}
+	on_granted = {
+		custom_tooltip = estate_burghers_great_works_of_iran_tt
+	}
+	on_granted_province = {
+		if = {
+			limit = {
+				has_terrain = mountain
+				OR = {
+					region = persia_region
+					region = khorasan_region
+				}
+			}
+			add_province_modifier = {
+				name = turkoman_privilege_mountains
+				duration = -1
+			}
+		}
+		if = {
+			limit = {
+				has_terrain = highlands
+				OR = {
+					region = persia_region
+					region = khorasan_region
+				}
+			}
+			add_province_modifier = {
+				name = turkoman_privilege_highlands
+				duration = -1
+			}
+		}
+		if = {
+			limit = {
+				has_terrain = desert
+				OR = {
+					region = persia_region
+					region = khorasan_region
+				}
+			}
+			add_province_modifier = {
+				name = turkoman_privilege_desert
+				duration = -1
+			}
+		}
+		if = {
+			limit = {
+				has_terrain = drylands
+				OR = {
+					region = persia_region
+					region = khorasan_region
+				}
+			}
+			add_province_modifier = {
+				name = turkoman_privilege_drylands
+				duration = -1
+			}
+		}
+	}
+	on_revoked = {
+		custom_tooltip = estate_burghers_great_works_of_iran_revoke
+	}
+	on_revoked_province = {
+		if = {
+			limit = { has_province_modifier = turkoman_privilege_mountains }
+			remove_province_modifier = turkoman_privilege_mountains
+		}
+		if = {
+			limit = { has_province_modifier = turkoman_privilege_highlands }
+			remove_province_modifier = turkoman_privilege_highlands
+		}
+		if = {
+			limit = { has_province_modifier = turkoman_privilege_desert }
+			remove_province_modifier = turkoman_privilege_desert
+		}
+		if = {
+			limit = { has_province_modifier = turkoman_privilege_drylands }
+			remove_province_modifier = turkoman_privilege_drylands
+		}
+	}
+	on_invalid = {
+	}
+	on_invalid_province = {
+		if = {
+			limit = { has_province_modifier = turkoman_privilege_mountains }
+			remove_province_modifier = turkoman_privilege_mountains
+		}
+		if = {
+			limit = { has_province_modifier = turkoman_privilege_highlands }
+			remove_province_modifier = turkoman_privilege_highlands
+		}
+		if = {
+			limit = { has_province_modifier = turkoman_privilege_desert }
+			remove_province_modifier = turkoman_privilege_desert
+		}
+		if = {
+			limit = { has_province_modifier = turkoman_privilege_drylands }
+			remove_province_modifier = turkoman_privilege_drylands
+		}
+	}
+	ai_will_do = {
+		factor = 0
+	}
+}
+
+#Mamluks
+
+estate_burghers_fund_karimi = {
+	icon = estate_burghers_fund_karimi
+	max_absolutism = -5
+	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 1 } }
+	land_share = 5
+	loyalty = 0.1
+	influence = 0.1
+	is_valid = {
+		is_or_was_tag = {
+			tag = MAM
+		}
+		has_dlc = "King of Kings"
+	}
+	modifier_by_land_ownership = {
+		global_tax_modifier = -0.25
+		trade_efficiency = 0.2
+		placed_merchant_power = 10
+	}
+	
+	ai_will_do = {
+		factor = 5
+	}
+}
+
+estate_burghers_foreign_expeditions = {
+	icon = estate_burghers_foreign_expeditions
+	max_absolutism = -5
+	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 1 } }
+	loyalty = 0.05
+	influence = 0.1
+	is_valid = {
+		has_unlocked_estate_privilege = { 
+			estate_privilege = estate_burghers_foreign_expeditions 
+		}
+	}
+	benefits = {
+		colonists = 1
+	}
+
+	loyalty_scaled_conditional_modifier = {
+		trigger = { always = yes }
+		modifier = {
+			colonist_placement_chance = 0.1
+		}
+	}
+	
+	ai_will_do = {
+		factor = 5
+	}
+}
+
+estate_burghers_nile_goods_transport = {
+	icon = estate_burghers_nile_goods_transport
+	max_absolutism = -5
+	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 1 } }
+	loyalty = 0.05
+	influence = 0.1
+	is_valid = {
+		has_unlocked_estate_privilege = { 
+			estate_privilege = estate_burghers_nile_goods_transport 
+		}
+	}
+	benefits = {
+		global_ship_trade_power = 0.2
+	}
+
+	loyalty_scaled_conditional_modifier = {
+		trigger = { always = yes }
+		modifier = {
+			production_efficiency = 0.2
+		}
+	}
+	
+	ai_will_do = {
+		factor = 5
+	}
+}
+
+estate_burghers_monopoly_of_coffee = {
+	icon = estate_burghers_monopoly_of_coffee
+	max_absolutism = -10
+	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 2 } }
+	loyalty = 0.1
+	is_valid = {
+		has_country_flag = mam_enable_coffee_monopoly_flag
+	}
+	can_select = {
+		custom_trigger_tooltip = {
+			tooltip = unavailable_during_revolution_disaster
+			NOT = { has_disaster = revolution }
+			NOT = {
+				has_disaster_progress = {
+					disaster = revolution
+					value = 1
+				}
+			}
+			NOT = { has_disaster = french_revolution }
+			NOT = {
+				has_disaster_progress = {
+					disaster = french_revolution
+					value = 1
+				}
+			}
+		}
+		any_owned_province = {
+			trade_goods = coffee
+		}
+	}
+	on_granted = {
+		if = {
+			limit = {
+				coffee = 1
+			}
+			add_mercantilism = 1
+		}
+		add_years_of_owned_provinces_production_income = {
+			years = 8
+			trigger = {
+				trade_goods = coffee
+			}
+			custom_tooltip = MONOPOLY_INCOME_COFFEE_DESC
+		}
+		custom_tooltip = estate_burghers_monopoly_of_coffee_effect_tooltip
+	}
+	on_granted_province = {
+		if = {
+			limit = {
+				trade_goods = coffee
+			}
+			add_province_modifier = {
+				name = estate_burghers_monopoly_of_coffee_mod
+				duration = -1
+				hidden = yes
+			}
+			add_base_tax = 1
+		}
+		else_if = {
+			limit = {
+				has_province_modifier = estate_burghers_monopoly_of_coffee_mod
+			}
+			remove_province_modifier = estate_burghers_monopoly_of_coffee_mod
+		}
+	}
+	on_revoked = {
+		custom_tooltip = estate_burghers_monopoly_of_coffee_revoke_tooltip
+	}
+	on_revoked_province = {
+		if = {
+			limit = {
+				has_province_modifier = estate_burghers_monopoly_of_coffee_mod
+			}
+			remove_province_modifier = estate_burghers_monopoly_of_coffee_mod
+			add_base_tax = -1
+		}
+	}
+	on_invalid = {
+		custom_tooltip = estate_burghers_monopoly_of_coffee_revoke_tooltip
+	}
+	on_invalid_province = {
+		if = {
+			limit = {
+				has_province_modifier = estate_burghers_monopoly_of_coffee_mod
+			}
+			add_base_tax = -1
+			remove_province_modifier = estate_burghers_monopoly_of_coffee_mod
+		}
+	}
+	penalties = {
+	}
+	benefits = {
+
+	}
+	cooldown_years = 10
+	conditional_modifier = {
+		trigger = {
+			has_country_flag = buffed_monopolies
+		}
+		modifier = {
+			max_absolutism = 10
+			burghers_privilege_slots = 1
+		}
+	}
+	on_cooldown_expires = {
+		country_event = { id = flavor_mam.116 }
+	}
+	ai_will_do = { #having the AI use these could lead to an unstoppable downwards spiral if it can't work out how to get rid of them
+		factor = 0
+	}
+}
+
+#Byzantium
+
+estate_burghers_reliance_on_republics = {
+	icon = estate_burghers_reliance_on_republics
+	loyalty = -0.05
+	influence = 0
+	max_absolutism = -10
+	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 2 } }
+	is_valid = {
+		OR = {
+			tag = BYZ
+			has_estate_privilege = estate_burghers_reliance_on_republics
+		}
+		NOT = { has_country_flag = estate_burghers_reliance_on_republics_removed }
+	}
+	can_revoke = {
+		num_of_ports = 8
+	}
+	on_granted = {
+		custom_tooltip = BYZ_how_to_bring_it_down
+		custom_tooltip = BYZ_no_more_burgher_loans
+	}
+	on_revoked = {
+		set_country_flag = estate_burghers_reliance_on_republics_removed
+		custom_tooltip = BYZ_can_have_burgher_loans
+	}
+	penalties = {
+		#naval_forcelimit = -2
+	}
+	conditional_modifier = {
+		trigger = {
+			NOT = {
+				OR = {
+					reverse_has_opinion = {
+						who = GEN
+						value = 50
+					}
+					reverse_has_opinion = {
+						who = VEN
+						value = 50
+					}
+				}
+			}
+		}
+		is_bad = yes
+		modifier = {
+			global_ship_recruit_speed = 2
+		}
+	}
+	conditional_modifier = {
+		trigger = {
+			OR = {
+				reverse_has_opinion = {
+					who = GEN
+					value = 50
+				}
+				reverse_has_opinion = {
+					who = VEN
+					value = 50
+				}
+			}
+			NOT = {
+				AND = {
+					reverse_has_opinion = {
+						who = GEN
+						value = 50
+					}
+					reverse_has_opinion = {
+						who = VEN
+						value = 50
+					}
+				}
+			}
+		}
+		is_bad = yes
+		modifier = {
+			global_ship_recruit_speed = 1
+		}
+	}
+	ai_will_do = {
+		factor = 0
+	}
+}
+
+estate_burghers_exkousseiai_for_latins = {
+	icon = estate_burghers_exkousseiai_for_latins
+	loyalty = -0.1
+	influence = -0.05
+	max_absolutism = -10
+	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 2 } }
+	is_valid = {
+		OR = {
+			tag = BYZ
+			has_estate_privilege = estate_burghers_exkousseiai_for_latins
+		}
+		NOT = { has_country_flag = estate_burghers_exkousseiai_for_latins_removed }
+	}
+	can_revoke = {
+		custom_trigger_tooltip = {
+			tooltip = BYZ_revokable_via_decision
+			always = no
+		}
+	}
+	penalties = {
+		trade_efficiency = -0.1
+		global_trade_power = -0.1
+	}
+	benefits = {
+		mercenary_cost = -0.25
+	}
+	
+	conditional_modifier = {
+		trigger = {
+			has_country_flag = BYZ_kommerkion_will_give_5_less_loyalty_flag
+		}
+		modifier = {
+			burghers_loyalty_modifier = -0.05
+		}
+	}
+	conditional_modifier = {
+		trigger = {
+			has_country_flag = BYZ_kommerkion_will_give_5_less_trade_eff_flag
+		}
+		modifier = {
+			trade_efficiency = -0.05
+		}
+	}
+	
+	on_revoked = {
+		add_country_modifier = {
+			name = BYZ_alienation_of_western_merchants
+			duration = 10950
+		}
+		
+		set_country_flag = estate_burghers_exkousseiai_for_latins_removed
+	}
+	ai_will_do = {
+		factor = 0
+	}
+}
+
+estate_burghers_BYZ_single_market = {
+	icon = estate_burghers_BYZ_single_market
+	loyalty = 0.1
+	influence = 0.05
+	max_absolutism = -5
+	is_valid = {
+		has_unlocked_estate_privilege = { estate_privilege = estate_burghers_BYZ_single_market }
+	}
+	on_granted = {
+		custom_tooltip = BYZ_bonuses_of_single_market
+	}
+	on_revoked = {
+		custom_tooltip = estate_privilege_revoke_lose_modifier_tooltip
+		custom_tooltip = BYZ_bonuses_of_single_market
+	}
+	benefits = {
+		mercantilism_cost = -0.1
+	}
+	conditional_modifier = {
+		trigger = {
+			mercantilism = 50
+		}
+		modifier = {
+			placed_merchant_power_modifier = 0.5
+		}
+	}
+	conditional_modifier = {
+		trigger = {
+			mercantilism = 80
+		}
+		modifier = {
+			global_trade_goods_size_modifier = 0.1
+		}
+	}
+	ai_will_do = {
+		factor = 0 #AI is not good at intentionally going for mercantilism
+	}
+}
+
+estate_burghers_ARB_oasis_development = {
+	icon = estate_burghers_arb_oasis_development
+	loyalty = 0.05
+	influence = 0.15
+	max_absolutism = -5
+	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 1 } }
+	is_valid = {
+		has_country_flag = ARB_unlock_oasis_development_flag
+	}
+	on_granted = {
+		custom_tooltip = ARB_estate_burghers_arid_development_gt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					has_climate = arid
+				}
+				add_province_modifier = {
+					name = ARB_estate_burghers_arid_climate_development
+					duration = -1
+				}
+			}
+		}
+		
+		custom_tooltip = ARB_estate_burghers_desert_development_gt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					OR = {
+						has_terrain = desert
+						has_terrain = coastal_desert
+					}
+				}
+				add_province_modifier = {
+					name = ARB_estate_burghers_desert
+					duration = -1
+				}
+			}
+		}
+	}
+	on_revoked = {
+		custom_tooltip = ARB_estate_burghers_arid_development_rt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					has_province_modifier = ARB_estate_burghers_arid_climate_development
+				}
+				remove_province_modifier = ARB_estate_burghers_arid_climate_development
+			}
+		}
+		custom_tooltip = ARB_estate_burghers_desert_development_rt
+		hidden_effect = {
+			every_owned_province = {
+				limit = {
+					has_province_modifier = ARB_estate_burghers_desert
+				}
+				remove_province_modifier = ARB_estate_burghers_desert
+			}
+		}
+	}
+	ai_will_do = {
+		factor = 1
+	}
+}
+
+estate_burghers_YEM_coffee_monopoly = {
+	icon = estate_burghers_monopoly_of_coffee
+	loyalty = 0.1
+	influence = 0
+	max_absolutism = -10
+	conditional_modifier = { trigger = { has_absolutism_reduction_for_estate_privileges = yes } modifier = { max_absolutism = 2 } }
+	is_valid = {
+		mission_completed = YEM_coffee
+		any_owned_province = {
+			trade_goods = coffee
+		}
+	}
+	on_granted = {
+		if = {
+			limit = {
+				coffee = 1
+			}
+			add_mercantilism = 1
+		}
+		add_years_of_owned_provinces_production_income = {
+			years = 15
+			trigger = {
+				trade_goods = coffee
+			}
+			custom_tooltip = YEM_MONOPOLY_COFFEE_FROM_COFFEE
+		}
+		custom_tooltip = estate_burghers_YEM_coffee_monopoly_effect_tooltip
+	}
+	on_granted_province = {
+		if = {
+			limit = {
+				trade_goods = coffee
+			}
+			add_province_modifier = {
+				name = estate_burghers_YEM_coffee_monopoly_mod
+				duration = -1
+			}
+		}
+		else_if = {
+			limit = {
+				has_province_modifier = estate_burghers_YEM_coffee_monopoly_mod
+			}
+			remove_province_modifier = estate_burghers_YEM_coffee_monopoly_mod
+		}
+	}
+	on_revoked = {
+		custom_tooltip = estate_burghers_YEM_coffee_monopoly_revoke_tooltip
+	}
+	on_revoked_province = {
+		if = {
+			limit = {
+				has_province_modifier = estate_burghers_YEM_coffee_monopoly_mod
+			}
+			remove_province_modifier = estate_burghers_YEM_coffee_monopoly_mod
+		}
+	}
+	on_invalid = {
+		custom_tooltip = estate_burghers_YEM_coffee_monopoly_revoke_tooltip
+	}
+	on_invalid_province = {
+		if = {
+			limit = {
+				has_province_modifier = estate_burghers_YEM_coffee_monopoly_mod
+			}
+			remove_province_modifier = estate_burghers_YEM_coffee_monopoly_mod
+		}
+	}
+	penalties = {
+	}
+	benefits = {
+	}
+	cooldown_years = 10
+	conditional_modifier = {
+		trigger = {
+			has_country_flag = buffed_monopolies
+		}
+		modifier = {
+			max_absolutism = 10
+			burghers_privilege_slots = 1
+		}
+	}
+	on_cooldown_expires = {
+		country_event = { id = flavor_YEM.4 }
+	}
+	ai_will_do = {
+		factor = 1
+	}
+}
+
+#Persia
+estate_burghers_persian_rugs = {
+	icon = privilege_dev_cost_desert
+	max_absolutism = 0
+	loyalty = 0.05
+	influence = 0.05
+	is_valid = {
+		has_unlocked_estate_privilege = {
+			estate_privilege = estate_burghers_persian_rugs
+		}
+	}
+	can_select = {
+		any_owned_province = {
+			OR = {
+				trade_goods = cloth
+				trade_goods = silk
+				trade_goods = dyes
+			}
+		}
+	}
+	on_granted = {
+		custom_tooltip = estate_burghers_persian_rugs_tt
+		tooltip = {
+			add_province_modifier = {
+				name = estate_burghers_persian_rugs_modifier
+				duration = -1
+				desc = UNTIL_PRIVILEGE_REVOKED
+			}
+		}
+	}
+	on_granted_province = {
+		if = {
+			limit = {
+				OR = {
+					trade_goods = cloth
+					trade_goods = silk
+					trade_goods = dyes
+				}
+			}
+			add_province_modifier = {
+				name = estate_burghers_persian_rugs_modifier
+				duration = -1
+			}
+		}
+	}
+	on_revoked = {
+		custom_tooltip = estate_burghers_persian_rugs_rt
+	}
+	on_revoked_province = {
+		if = {
+			limit = { has_province_modifier = estate_burghers_persian_rugs_modifier }
+			remove_province_modifier = estate_burghers_persian_rugs_modifier
+		}
+	}
+	on_invalid = {
+	}
+	on_invalid_province = {
+		if = {
+			limit = { has_province_modifier = estate_burghers_persian_rugs_modifier }
+			remove_province_modifier = estate_burghers_persian_rugs_modifier
+		}
+	}
+	ai_will_do = {
+		factor = 100
 	}
 }

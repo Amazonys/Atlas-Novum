@@ -2,9 +2,12 @@ feudal_theocracy_mechanic = {
 	alert_icon_gfx = GFX_alerticons_government_mechanics
 	alert_icon_index = 4
 	available = {
-		has_dlc = "Cradle of Civilization"
+		OR = {
+			has_dlc = "Cradle of Civilization"
+			has_dlc = "King of Kings"
+		}
 	}
-
+	
 	interactions = {
 		seize_clerical_holdings = {
 			icon = GFX_seize_clerical_holdings_button
@@ -17,6 +20,46 @@ feudal_theocracy_mechanic = {
 					name = seize_clerical_holdings_modifier
 					duration = 1825
 				}
+				
+				if = {
+					limit = {
+						OR = {
+							has_country_flag = YEM_seize_clerical_holdings_clergy_crownland_flag
+							has_government_attribute = upgrade_feudal_theocracy
+						}
+					}
+					change_estate_land_share = {
+						estate = estate_church
+						share = -5
+					}
+				}
+				if = {
+					limit = {
+						has_country_flag = YEM_seize_clerical_holdings_every_temple_provinces_flag
+					}
+					add_country_modifier = {
+						name = YEM_global_tax_modifier_upgrade
+						duration = 1825
+					}
+					custom_tooltip = YEM_every_province_with_tax
+					tooltip = {
+						add_province_modifier = {
+							name = YEM_extra_buff_to_churches
+							duration = 1825
+						}
+					}
+					hidden_effect = {
+						every_owned_province = {
+							limit = {
+								has_tax_building_trigger = yes
+							}
+							add_province_modifier = {
+								name = YEM_extra_buff_to_churches
+								duration = 1825
+							}
+						}
+					}
+				}
 			}
 			cooldown_years = 5
 			ai_chance = {
@@ -24,23 +67,6 @@ feudal_theocracy_mechanic = {
 				modifier = {
 					factor = 0
 					is_at_war = yes
-				}
-				modifier = {
-					factor = 20
-					treasury = 95
-				}
-				modifier = {
-					factor = 50
-					treasury = 300
-				}
-				modifier = {
-					factor = 50
-					NOT = {
-						has_global_modifier_value = {
-							which = build_cost
-							value = -0.1
-						}
-					}
 				}
 				modifier = {
 					factor = 0
@@ -59,11 +85,28 @@ feudal_theocracy_mechanic = {
 					NOT = { adm_power_cost = 650 }
 					NOT = { monthly_adm = 10 }
 				}
+				modifier = {
+					factor = 2
+					treasury = 95
+				}
+				modifier = {
+					factor = 5
+					treasury = 300
+				}
+				modifier = {
+					factor = 5
+					NOT = {
+						has_global_modifier_value = {
+							which = build_cost
+							value = -0.1
+						}
+					}
+				}
 			}
 		}
 		invite_minorities = {
 			icon = GFX_invite_minorities_button
-			trigger = {
+			trigger = { 
 				dip_power_cost = 50
 				capital_scope = {
 					area_for_scope_province = {
@@ -85,7 +128,7 @@ feudal_theocracy_mechanic = {
 					}
 				}
 			}
-			effect = {
+			effect = { 
 				dip_power_cost = 50
 				capital_scope = {
 					area = {
@@ -108,6 +151,49 @@ feudal_theocracy_mechanic = {
 						add_random_development = 1
 					}
 				}
+				
+				if = {
+					limit = {
+						OR = {
+							has_country_flag = ARB_upgrade_invite_minorities_flag
+							has_country_flag = YEM_invite_minorities_distribute_5_dev_flag
+							has_government_attribute = upgrade_feudal_theocracy
+						}
+					}
+					custom_tooltip = ABR_distribute_5_development_randomly
+					hidden_effect = {
+						for = {
+							amount = 5
+							effect = "
+								random_owned_province = {
+									add_random_development = 1
+								}
+							"
+						}
+					}
+				}
+				
+				custom_tooltip = " "
+				
+				if = {
+					limit = {
+						has_country_flag = YEM_invite_minorities_theologian_flag
+					}
+					random_province = {
+						limit = {
+							religion = ROOT
+						}
+						ROOT = {
+							define_advisor = {
+								type = theologian
+								skill = 3
+								cost_multiplier = 0.25
+								culture = PREV
+								religion = PREV
+							}
+						}
+					}
+				}
 			}
 			cooldown_years = 5
 			ai_chance = {
@@ -120,7 +206,7 @@ feudal_theocracy_mechanic = {
 				}
 				modifier = {
 					factor = 20
-					is_lacking_institutions = yes
+					is_lacking_institutions = yes 
 				}
 			}
 		}
@@ -128,36 +214,111 @@ feudal_theocracy_mechanic = {
 			icon = GFX_sanction_holy_war_button
 			trigger = {
 				mil_power_cost = 50
-				any_neighbor_province = {
-					owner = {
-						exists = yes
-						not = { defensive_pact_with = ROOT }
-						not = { religion = ROOT }
-					}
-					not = { is_claim = ROOT }
-					not = { is_core = ROOT }
-					has_discovered = ROOT
-				}
-			}
-			effect = {
-				mil_power_cost = 50
-				every_neighbor_province = {
-					limit = {
+				if = {
+					limit = { NOT = { has_government_attribute = upgrade_feudal_theocracy } }
+					any_neighbor_province = {
 						owner = {
 							exists = yes
 							not = { defensive_pact_with = ROOT }
 							not = { religion = ROOT }
 						}
-						not = { is_claim = ROOT }
+						not = { is_permanent_claim = ROOT }
 						not = { is_core = ROOT }
 						has_discovered = ROOT
 					}
-					add_claim = ROOT
 				}
 			}
-			cooldown_years = 0
+			effect = { 
+				mil_power_cost = 50
+				if = {
+					limit = {
+						has_government_attribute = upgrade_feudal_theocracy
+					}
+					hidden_effect = { capital_scope = { area = { limit = { owned_by = root } set_province_flag = manpower_source_flag } } }
+					custom_tooltip = sanction_holy_war_tt
+					hidden_effect = {
+						add_years_of_owned_provinces_manpower = {
+							custom_tooltip = sanction_holy_war_tt
+							years = 4
+							trigger = {
+								has_province_flag = manpower_source_flag
+							}
+						}
+					}
+					hidden_effect = { every_owned_province = { limit = { has_province_flag = manpower_source_flag } clr_province_flag = manpower_source_flag } }
+				}
+				if = {
+					limit = {
+						has_country_flag = YEM_sanction_holy_war_claims_permanent_flag
+					}
+					every_neighbor_province = {
+						limit = {
+							owner = {
+								exists = yes
+								not = { defensive_pact_with = ROOT }
+								not = { religion = ROOT }
+							}
+							not = { is_claim = ROOT }
+							not = { is_core = ROOT }
+							has_discovered = ROOT
+						}
+						add_permanent_claim = ROOT
+					}
+				}
+				else_if = {
+					limit = {
+						has_country_flag = YEM_sanction_holy_war_claims_areas_flag
+					}
+					every_neighbor_province = {
+						limit = {
+							owner = {
+								exists = yes
+								not = { defensive_pact_with = ROOT }
+								not = { religion = ROOT }
+							}
+							not = { is_claim = ROOT }
+							not = { is_core = ROOT }
+							has_discovered = ROOT
+						}
+						area = {
+							limit = {
+								owner = {
+									exists = yes
+									not = { defensive_pact_with = ROOT }
+									not = { religion = ROOT }
+								}
+								not = { is_claim = ROOT }
+								not = { is_core = ROOT }
+								has_discovered = ROOT
+							}
+							add_claim = ROOT
+						}
+					}
+				}
+				else = {
+					every_neighbor_province = {
+						limit = {
+							owner = {
+								exists = yes
+								not = { defensive_pact_with = ROOT }
+								not = { religion = ROOT }
+							}
+							not = { is_claim = ROOT }
+							not = { is_core = ROOT }
+							has_discovered = ROOT
+						}
+						add_claim = ROOT
+					}
+				}
+			}
+			cooldown_years = 5
 			ai_chance = {
-				factor = 100
+				factor = 10
+				modifier = {
+					factor = 0
+					NOT = { mil_power_cost = 650 }
+					NOT = { monthly_mil = 10 }
+				}
 				modifier = {
 					factor = 0.1
 					is_at_war = yes
@@ -167,11 +328,6 @@ feudal_theocracy_mechanic = {
 					any_neighbor_country = {
 						tech_difference = 2
 					}
-				}
-				modifier = {
-					factor = 0
-					NOT = { mil_power_cost = 650 }
-					NOT = { monthly_mil = 10 }
 				}
 			}
 		}
