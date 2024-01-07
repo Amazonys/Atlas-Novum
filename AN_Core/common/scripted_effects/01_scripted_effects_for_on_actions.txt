@@ -4130,3 +4130,300 @@ on_startup_dlc_cleanup_effect = {
 		remove_country_modifier = tur_janissary
 	}
 }
+
+on_dependency_gained_effect = {
+	convert_special_subject_to_vassal = {
+		overlord = ROOT
+		subject = FROM
+	}
+	if = {
+		limit = {
+			FROM = {
+				has_government_attribute = has_dutch_election
+			}
+		}
+		ROOT = {
+			country_event = {
+				id = dutch_republic.31
+			}# States General falls under a PU
+		}
+	}
+	if = {
+		limit = {
+			FROM = {
+				tag = AVE
+				government_rank = 1
+			}
+		}
+		FROM = {
+			country_event = {
+				id = flavor_gbr.20
+			}
+		}
+	}
+}
+
+on_dependency_lost_effect = {
+	if = {
+		limit = {
+			has_country_modifier = mng_tibetan_horses_monopoly_modifier
+			FROM = { owns = 667 }
+			
+		}
+		remove_country_modifier = mng_tibetan_horses_monopoly_modifier
+	}
+	if = {
+		limit = {
+			has_country_modifier = tur_tatar_vanguard_modifier
+			FROM = { tag = CRI NOT = { is_subject_of = ROOT } }
+		}
+		remove_country_modifier = tur_tatar_vanguard_modifier
+	}
+	if = {
+		limit = {
+			has_country_modifier = rus_grand_duke_of_finland
+			FROM = { tag = FIN }
+		}
+		remove_country_modifier = rus_grand_duke_of_finland
+	}
+	FROM = {
+		if = {
+			limit = { has_country_modifier = revoked_war_rights }
+			remove_country_modifier = revoked_war_rights
+		}
+		if = {
+			limit = { has_country_modifier = grain_trade_imports_modifier }
+			remove_country_modifier = grain_trade_imports_modifier
+		}
+	}
+}
+
+on_monarch_death_effect = {
+	if = {
+		limit = {
+			tag = ANS
+			BRA = {
+				has_country_flag = albrecht_achilles_flag
+			}
+		}
+		BRA = {
+			clr_country_flag = albrecht_achilles_flag #Just to be sure
+			kill_heir = {} #If Albrecht Achilles dies in Ansbach he will also be dead in Brandenburg, will appear as normal death of heir to BRA.
+		}
+	}
+	if = {
+		limit = { has_country_modifier = sought_after_bachelor }
+		remove_country_modifier = sought_after_bachelor
+	}
+	if = {
+		limit = {
+			tag = SAX
+			has_country_flag = sax_thuringen_split_to_happen
+			OR = {
+				NOT = { dynasty = "von Wettin" }
+				NOT = { senior_union_with = THU }
+				has_regency = yes
+			}
+		}
+		clr_country_flag = sax_thuringen_split_to_happen
+	}
+	if = {
+		limit = { tag = SAM }
+		country_event = { id = polynesian.35 }
+	}
+	if = {
+		limit = { tag = TOG }
+		country_event = { id = polynesian.36 }
+	}
+	if = {	# Ascension of Trailokanat	
+		limit = { tag = AYU }
+		country_event = { id = flavor_suk.1 }
+	}
+	if = {
+		limit = { tag = GOT }
+		country_event = { id = flavor_got.37 }
+	}
+	if = {
+		limit = { has_government_attribute = no_stability_loss_on_monarch_death }
+		add_stability = 1
+	}
+	
+	if = {
+		limit = {
+			is_subject_of_type = pronoia_subject_type
+			NOT = { liberty_desire = 50 }
+		}
+		overlord = {
+			inherit = ROOT
+			if = {
+				limit = {
+					has_country_flag = BYZ_inheriting_pronoia_crownland_flag
+					OR = {
+						NOT = { has_country_flag = BYZ_crownland_from_pronoia_proc }
+						had_country_flag = {
+							flag = BYZ_crownland_from_pronoia_proc
+							days = 1825
+						}
+					}
+				}
+				clr_country_flag = BYZ_crownland_from_pronoia_proc
+				set_country_flag = BYZ_crownland_from_pronoia_proc
+				change_estate_land_share = {
+					estate = all
+					share = -1
+				}
+			}
+		}
+	}
+	if = {
+		limit = {
+			has_government_attribute = civil_war_on_every_new_ruler
+		}
+		country_event = { id = 611 }
+	}
+	
+}
+
+on_conquest_effect = {
+	remove_named_unrest = estate_land_seized
+	clr_province_flag = has_estate_unrest_flag
+	if = {
+		limit = { 
+			is_part_of_hre = no
+			owner = { 
+				has_country_flag = pru_dom_hre_flag 
+				alliance_with = emperor 
+			}
+		}
+		owner = {
+			add_trust = {
+				who = emperor 
+				value = 3 
+				mutual = yes 
+			}
+		}
+	}
+	else_if = {
+		limit = { 
+			is_part_of_hre = no
+			owner = { 
+				has_country_flag = pru_dom_hre_flag 
+				NOT = { alliance_with = emperor } 
+				is_emperor = no
+			}
+		}
+		owner = {
+			add_power_projection = {
+				type = mission_rewards_power_projection
+				amount = 1
+			}
+		}
+	}
+	else_if = {
+		limit = { 
+			is_part_of_hre = no
+			owner = { is_emperor = yes }
+			development = 25
+		}
+		emperor = { 
+			add_imperial_influence = 1
+		}
+	}
+	if = {
+		limit = {
+			owner = {
+				mission_completed = feo_gothic_invasion
+			}
+			OR = {
+				region = north_german_region
+				region = south_german_region
+			}
+		}
+		add_province_modifier = {
+			name = feo_return_to_gothic_ways
+			duration = -1
+		}
+	}
+	if = {
+		limit = {
+			owner = {
+				mission_completed = feo_subdue_the_hordes
+			}
+			OR = {
+				region = ural_region
+				region = central_asia_region
+			}
+		}
+		add_province_modifier = {
+			name = feo_steppe_construction_efforts
+			duration = -1
+		}
+	}
+	if = {
+		limit = {
+			owner = {
+				mission_completed = feo_gothic_invasion
+			}
+		}
+		if = {
+			limit = {
+				134 = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			add_country_modifier = {
+				name = feo_vienna
+				duration = -1
+				hidden = yes
+			}
+		}
+		if = {
+			limit = {
+				266 = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			add_country_modifier = {
+				name = feo_prague
+				duration = -1
+				hidden = yes
+			}
+		}
+		if = {
+			limit = {
+				45 = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			add_country_modifier = {
+				name = feo_lubeck
+				duration = -1
+				hidden = yes
+			}
+		}
+		if = {
+			limit = {
+				1878 = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			add_country_modifier = {
+				name = feo_aachen
+				duration = -1
+				hidden = yes
+			}
+		}
+		if = {
+			limit = {
+				85 = {
+					country_or_non_sovereign_subject_holds = ROOT
+				}
+			}
+			add_country_modifier = {
+				name = feo_cologne
+				duration = -1
+				hidden = yes
+			}
+		}
+	}
+}
