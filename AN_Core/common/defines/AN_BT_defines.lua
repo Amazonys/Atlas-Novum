@@ -293,7 +293,7 @@ NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blo
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
 NDefines.NMilitary.GARRISON_SIZE = 500		-- from 1000		-- GARRISON_SIZE
 NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 4 -- from 3, to 2, to 4
-NDefines.NMilitary.MIN_MONTHLY_MANPOWER = 0
+NDefines.NMilitary.MIN_MONTHLY_MANPOWER = 0.05
 
 --NDefines.NMilitary.MAX_BREACH = 3
 NDefines.NMilitary.SIEGE_GARRISON_SURRENDER = 50			-- from 100		-- A siege ends when there is less than 100 defenders left.
