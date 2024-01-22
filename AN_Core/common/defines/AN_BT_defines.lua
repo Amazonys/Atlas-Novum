@@ -274,7 +274,7 @@ NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is increased from development
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5	-- How much this is increased from local autonomy
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local autonomy is added to this base in the formula.
- --Colonial nations44
+ --Colonial nations
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
  --NMilitary changes
@@ -288,11 +288,11 @@ NDefines.NMilitary.BASE_COMBAT_WIDTH = 10
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 42			-- from 50
 NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.1			-- from 0p25
-NDefines.NMilitary.FORTRESS_COST = 0.1			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
+NDefines.NMilitary.FORTRESS_COST = 0.1		-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
-NDefines.NMilitary.GARRISON_SIZE = 500		-- from 1000		-- GARRISON_SIZE
-NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 4 -- from 3, to 2, to 4
+NDefines.NMilitary.GARRISON_SIZE = 1000		-- from 1000		-- GARRISON_SIZE
+NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 2 -- from 3, to 2, to 4
 NDefines.NMilitary.MIN_MONTHLY_MANPOWER = 0.05
 
 --NDefines.NMilitary.MAX_BREACH = 3
