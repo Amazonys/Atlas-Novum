@@ -120,9 +120,9 @@ NDefines.NCountry.EXPLOIT_DIP_SAILORS = 3			-- from 6
 NDefines.NCountry.EXPLOIT_MIL_MANPOWER = 3			-- from 6
 NDefines.NCountry.EXPLOIT_COOLDOWN_MONTHS = 120			-- from 240
 NDefines.NCountry.ALLOW_ZERO_BASE_VALUES = 1  -- Affects base tax base manpower and base production
-NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 5			-- from 5
-NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 10			-- from 10
-NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 30			-- from 30
+NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 0			-- from 5
+NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 0			-- from 10
+NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 0			-- from 30
 NDefines.NCountry.EMBRACE_INSTITUTION_COST = 1			-- from 2p5
 NDefines.NCountry.CORRUPTION_COST = 0.02			-- from 0p05
 NDefines.NCountry.STATE_MAINTENANCE_DEV_FACTOR = 0.005	-- from 0p007
@@ -267,7 +267,7 @@ NDefines.NEconomy.BASE_INTERESTS = 5.0 -- was 4.0
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
  --Necessary
 --NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable
-NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.25						-- _EDEF_TRADE_WIND_STRENGTH_
+NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.2 -- was 0.5 in vanilla, Bluehunter changed to 0.25						-- _EDEF_TRADE_WIND_STRENGTH_
 NDefines.NEconomy.TRADED_FRACTION_FOR_BONUS = 0.08				-- _EDEF_TRADED_FRACTION_FOR_BONUS_
 
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
