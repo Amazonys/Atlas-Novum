@@ -7303,33 +7303,105 @@ AN_set_secondary_culture = {
 	AN_check_culture_minorities = yes
 }
 
-AN_increase_minority_culture_size = {
-	hidden_effect = { change_variable = { which = AN_minority_culture_size value = 1 } }
+AN_increase_culture_size = {
 	if = {
-		limit = { check_variable = { which = AN_minority_culture_size value = 4 } }
-		change_culture = variable:PREV:AN_minority_culture
+		limit = { culture = $CULTURE$ }
+		if = {
+			limit = { check_variable = { which = AN_minority_culture_size value = 1 } }
+			hidden_effect = { 
+				subtract_variable = { which = AN_minority_culture_size value = 1 }
+			}
+		}
+		else = {
+			add_base_manpower = 1
+		}
+	}
+	else_if = {
+		limit = { minority_culture = { CULTURE = $CULTURE$$ } }
+		hidden_effect = {
+			change_variable = { which = AN_minority_culture_size value = 1 }
+			if = {
+				limit = { check_variable = { which = AN_minority_culture_size value = 4 } }
+				change_culture = variable:PREV:AN_minority_culture
+				hidden_effect = {
+					set_variable = {
+						which = AN_minority_culture
+						which = AN_province_culture
+					}
+					trigger_switch = {
+						on_trigger = has_province_flag
+						AN_int_maj = { clr_province_flag = AN_int_maj set_province_flag = AN_int_min }
+						AN_int_min = { clr_province_flag = AN_int_min set_province_flag = AN_int_maj }
+						AN_protect_maj = { clr_province_flag = AN_protect_maj set_province_flag = AN_protect_min }
+						AN_protect_min = { clr_province_flag = AN_protect_min set_province_flag = AN_protect_maj }
+						AN_expel_maj = { clr_province_flag = AN_expel_maj set_province_flag = AN_expel_min }
+						AN_expel_min = { clr_province_flag = AN_expel_min set_province_flag = AN_expel_maj }
+						AN_enslave_maj = { clr_province_flag = AN_enslave_maj set_province_flag = AN_enslave_min }
+						AN_enslave_min = { clr_province_flag = AN_enslave_min set_province_flag = AN_enslave_maj }
+					}
+					set_variable = { which = AN_minority_culture_size value = 3 }
+				}
+			}
+		}
+	}
+	else_if = {
+		limit = { secondary_culture = { CULTURE = $CULTURE$ } }
 		hidden_effect = {
 			set_variable = {
+				which = AN_secondary_culture
 				which = AN_minority_culture
-				which = AN_province_culture
+			}
+			15000 = {
+				change_culture = $CULTURE$
+				export_to_variable = {
+					variable_name = AN_minority_culture
+					value = culture
+				}
+				PREV = {
+					set_variable = { which = AN_minority_culture which = PREV }
+				}
 			}
 			trigger_switch = {
 				on_trigger = has_province_flag
-				AN_int_maj = { clr_province_flag = AN_int_maj set_province_flag = AN_int_min }
-				AN_int_min = { clr_province_flag = AN_int_min set_province_flag = AN_int_maj }
-				AN_protect_maj = { clr_province_flag = AN_protect_maj set_province_flag = AN_protect_min }
-				AN_protect_min = { clr_province_flag = AN_protect_min set_province_flag = AN_protect_maj }
-				AN_expel_maj = { clr_province_flag = AN_expel_maj set_province_flag = AN_expel_min }
-				AN_expel_min = { clr_province_flag = AN_expel_min set_province_flag = AN_expel_maj }
-				AN_enslave_maj = { clr_province_flag = AN_enslave_maj set_province_flag = AN_enslave_min }
-				AN_enslave_min = { clr_province_flag = AN_enslave_min set_province_flag = AN_enslave_maj }
+				AN_int_sec = { clr_province_flag = AN_int_sec set_province_flag = AN_int_min }
+				AN_int_min = { clr_province_flag = AN_int_min set_province_flag = AN_int_sec }
+				AN_protect_sec = { clr_province_flag = AN_protect_sec set_province_flag = AN_protect_min }
+				AN_protect_min = { clr_province_flag = AN_protect_min set_province_flag = AN_protect_sec }
+				AN_expel_sec = { clr_province_flag = AN_expel_sec set_province_flag = AN_expel_min }
+				AN_expel_min = { clr_province_flag = AN_expel_min set_province_flag = AN_expel_sec }
+				AN_enslave_sec = { clr_province_flag = AN_enslave_sec set_province_flag = AN_enslave_min }
+				AN_enslave_min = { clr_province_flag = AN_enslave_min set_province_flag = AN_enslave_sec }
 			}
-			set_variable = { which = AN_minority_culture_size value = 3 }
+			set_variable = { which = AN_minority_culture_size value = 2 }
 		}
-		custom_tooltip = AN_change_minority_culture_size_swap.tooltip
 	}
 	else = {
-		custom_tooltip = AN_change_minority_culture_size_i.tooltip
+		if = {
+			limit = { check_variable = { which = AN_minority_culture_size value = 1 } }
+			15000 = {
+				change_culture = $CULTURE$
+				export_to_variable = {
+					variable_name = AN_secondary_culture
+					value = culture
+				}
+				PREV = {
+					set_variable = { which = AN_minority_secondary which = PREV }
+				}
+			}
+		}
+		else = {
+			15000 = {
+				change_culture = $CULTURE$
+				export_to_variable = {
+					variable_name = AN_minority_culture
+					value = culture
+				}
+				PREV = {
+					set_variable = { which = AN_minority_culture which = PREV }
+				}
+			}
+			set_variable = { which = AN_minority_culture_size value = 1 }
+		}
 	}
 	AN_check_culture_minorities = yes
 }

@@ -3364,22 +3364,97 @@ AN_set_secondary_religion = {
 	AN_check_religion_minorities = yes
 }
 
-AN_increase_minority_religion_size = {
-	hidden_effect = { change_variable = { which = AN_minority_religion_size value = 1 } }
+AN_increase_religion_size = {
 	if = {
-		limit = { check_variable = { which = AN_minority_religion_size value = 4 } }
-		change_religion = variable:PREV:AN_minority_religion
+		limit = { religion = $RELIGION$ }
+		if = {
+			limit = { check_variable = { which = AN_minority_religion_size value = 1 } }
+			hidden_effect = { 
+				subtract_variable = { which = AN_minority_religion_size value = 1 }
+			}
+		}
+		else = {
+			add_base_manpower = 1
+		}
+	}
+	else_if = {
+		limit = { minority_religion = { RELIGION = $RELIGION$$ } }
+		hidden_effect = {
+			change_variable = { which = AN_minority_religion_size value = 1 }
+			if = {
+				limit = { check_variable = { which = AN_minority_religion_size value = 4 } }
+				change_religion = variable:PREV:AN_minority_religion
+				hidden_effect = {
+					set_variable = {
+						which = AN_minority_religion
+						which = AN_province_religion
+					}
+					trigger_switch = {
+						on_trigger = has_province_flag
+						AN_tolerate_maj = { clr_province_flag = AN_tolerate_maj set_province_flag = AN_tolerate_min }
+						AN_tolerate_min = { clr_province_flag = AN_tolerate_min set_province_flag = AN_tolerate_maj }
+						AN_persecute_maj = { clr_province_flag = AN_persecute_maj set_province_flag = AN_persecute_min }
+						AN_persecute_min = { clr_province_flag = AN_persecute_min set_province_flag = AN_persecute_maj }
+					}
+					set_variable = { which = AN_minority_religion_size value = 3 }
+				}
+			}
+		}
+	}
+	else_if = {
+		limit = { secondary_religion = { RELIGION = $RELIGION$ } }
 		hidden_effect = {
 			set_variable = {
+				which = AN_secondary_religion
 				which = AN_minority_religion
-				which = AN_province_religion
 			}
-			set_variable = { which = AN_minority_religion_size value = 3 }
+			15000 = {
+				change_religion = $RELIGION$
+				export_to_variable = {
+					variable_name = AN_minority_religion
+					value = religion
+				}
+				PREV = {
+					set_variable = { which = AN_minority_religion which = PREV }
+				}
+			}
+			trigger_switch = {
+				on_trigger = has_province_flag
+				AN_tolerate_sec = { clr_province_flag = AN_tolerate_sec set_province_flag = AN_tolerate_min }
+				AN_tolerate_min = { clr_province_flag = AN_tolerate_min set_province_flag = AN_tolerate_sec }
+				AN_persecute_sec = { clr_province_flag = AN_persecute_sec set_province_flag = AN_persecute_min }
+				AN_persecute_min = { clr_province_flag = AN_persecute_min set_province_flag = AN_persecute_sec }
+			}
+			set_variable = { which = AN_minority_religion_size value = 2 }
 		}
-		custom_tooltip = AN_change_minority_religion_size_swap.tooltip
 	}
 	else = {
-		custom_tooltip = AN_change_minority_religion_size_i.tooltip
+		if = {
+			limit = { check_variable = { which = AN_minority_religion_size value = 1 } }
+			15000 = {
+				change_religion = $RELIGION$
+				export_to_variable = {
+					variable_name = AN_secondary_religion
+					value = religion
+				}
+				PREV = {
+					set_variable = { which = AN_minority_secondary which = PREV }
+				}
+			}
+		}
+		else = {
+			15000 = {
+				change_religion = $RELIGION$
+				export_to_variable = {
+					variable_name = AN_minority_religion
+					value = religion
+				}
+				PREV = {
+					set_variable = { which = AN_minority_religion which = PREV }
+				}
+			}
+			set_variable = { which = AN_minority_religion_size value = 1 }
+		}
 	}
 	AN_check_religion_minorities = yes
 }
