@@ -18,7 +18,7 @@ NDefines.NDiplomacy.MARCH_DEVELOPMENT_FRACTION = 0.25
 NDefines.NDiplomacy.AE_ATTACKER_DEVELOPMENT = 0.01			-- from 0p01
 NDefines.NDiplomacy.AE_DEFENDER_DEVELOPMENT = 0.01			-- from 0p01
 NDefines.NDiplomacy.AE_PROVINCE_CAP = 50			-- from 30
-NDefines.NDiplomacy.AE_OTHER_CONTINENT = 5 -- from 10
+NDefines.NDiplomacy.AE_OTHER_CONTINENT = 2 -- from 10
 NDefines.NDiplomacy.AE_SAME_CULTURE = 0.5
 NDefines.NDiplomacy.AE_SAME_CULTURE_GROUP = 0.75
 NDefines.NDiplomacy.AE_INFIDEL_CONQUEST = -0.25		-- different religion group conquered same religion province
@@ -29,12 +29,12 @@ NDefines.NDiplomacy.AE_HRE_INTERNAL = 1
 NDefines.NDiplomacy.AE_DISTANCE_BASE = 1.5
 NDefines.NDiplomacy.AE_SAME_OVERLORD = 0.5
  -- Peace AE
-NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.5			-- from 0p75
-NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.25			-- from 0p5
+NDefines.NDiplomacy.PO_DEMAND_PROVINCES_AE = 0.25			-- from 0p75
+NDefines.NDiplomacy.PO_RETURN_CORES_AE = 0.1			-- from 0p5
 NDefines.NDiplomacy.PO_FORM_PU_AE = 0.05		-- from 0p1
-NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.5			-- from 0p25
-NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.25			-- from 0p5
-NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.25		-- from 0p33
+NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_AE = 0.2			-- from 0p25
+NDefines.NDiplomacy.PO_BECOME_VASSAL_AE = 0.2			-- from 0p5
+NDefines.NDiplomacy.PO_TRANSFER_VASSAL_AE = 0.2		-- from 0p33
  -- Peace Prestige
 NDefines.NDiplomacy.PO_ANNEX_PRESTIGE = 0.15			-- from 0p25
 NDefines.NDiplomacy.PO_DEMAND_PROVINCES_PRESTIGE = 0.2			-- from 0p25   Some peace cost changes moved from Misc Addon to Main BT where they overlap   Directly demanding provinces should be slightly rarer and harder now so offsetting larger penalties minorly with prestige
@@ -50,15 +50,15 @@ NDefines.NDiplomacy.PO_CONCEDE_COLONIAL_PRESTIGE = 1			-- from 2
 NDefines.NDiplomacy.PO_GIVE_UP_CLAIM_PRESTIGE = 1			-- from 2
 NDefines.NDiplomacy.PO_WAR_REPARATIONS_PRESTIGE = 1			-- from 2
  -- Peace Costs
-NDefines.NDiplomacy.PEACE_COST_DEMAND_PROVINCE = 0.75			-- from 1
-NDefines.NDiplomacy.PEACE_COST_CONCEDE_PROVINCE = 0.5			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   More provinces and dev in colonial regions was making this too expensive   Also noticed that occasionally choosing provinces individually was less warscore why I dont know but we dont want that
-NDefines.NDiplomacy.PEACE_COST_BECOME_VASSAL = 0.5			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   This might be a personal thing but completely taking land shouldnt be the same price or cheaper than enforcing vassalage   vassal relations historically happened somewhat often even between larger nations
-NDefines.NDiplomacy.PEACE_COST_RETURN_CORE = 0.5			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   returning a core to a rightful owner should be a less dramatic negotiating factor than taking a completely new province
-NDefines.NDiplomacy.PEACE_COST_REVOKE_CORE = 0.25			-- from 0p5
-NDefines.NDiplomacy.PEACE_COST_RELEASE_ANNEXED = 0.75			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   releasing an annexed vassal shouldn't be as dramatic as demanding a completely new province   Also encourages breaking up of blobs which can only be a good thing
-NDefines.NDiplomacy.PEACE_COST_RELEASE_VASSAL = 0.75		-- from 0p5
+NDefines.NDiplomacy.PEACE_COST_DEMAND_PROVINCE = 0.25			-- from 1
+NDefines.NDiplomacy.PEACE_COST_CONCEDE_PROVINCE = 0.25			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   More provinces and dev in colonial regions was making this too expensive   Also noticed that occasionally choosing provinces individually was less warscore why I dont know but we dont want that
+NDefines.NDiplomacy.PEACE_COST_BECOME_VASSAL = 0.25			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   This might be a personal thing but completely taking land shouldnt be the same price or cheaper than enforcing vassalage   vassal relations historically happened somewhat often even between larger nations
+NDefines.NDiplomacy.PEACE_COST_RETURN_CORE = 0.1			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   returning a core to a rightful owner should be a less dramatic negotiating factor than taking a completely new province
+NDefines.NDiplomacy.PEACE_COST_REVOKE_CORE = 0.2			-- from 0p5
+NDefines.NDiplomacy.PEACE_COST_RELEASE_ANNEXED = 0.25			-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   releasing an annexed vassal shouldn't be as dramatic as demanding a completely new province   Also encourages breaking up of blobs which can only be a good thing
+NDefines.NDiplomacy.PEACE_COST_RELEASE_VASSAL = 0.25		-- from 0p5
 NDefines.NDiplomacy.PEACE_COST_CONVERSION = 0.1		-- from 1   Some peace cost changes moved from Misc Addon to Main BT where they overlap   I know people love their beliefs and resist religious change but the absurdly high price of this made it only possible against very small tags where it was usually preferable to just annex   Now this might be useful
-NDefines.NDiplomacy.PEACE_COST_RELEASE = 1			-- from 2
+NDefines.NDiplomacy.PEACE_COST_RELEASE = 0.5			-- from 2
 
 NDefines.NDiplomacy.PEACE_COST_PILLAGE_CAPITAL = 2 -- from 1
 
@@ -80,7 +80,7 @@ NDefines.NDiplomacy.BREAK_ALLIANCE_DEBT_FACTOR = 0.5		--	idk	-- AI acceptance sc
 NDefines.NDiplomacy.BREAK_ALLIANCE_PENALTY_MONTHS = 240		--	was 120 -- Break Alliance causes resentment for this many months.
 NDefines.NDiplomacy.BREAK_ALLIANCE_PENALTY_SCALER = -0.75	--	was -0.85, slightly less	-- Break Alliance resentment is scaled by this value but is capped at -100.
 NDefines.NDiplomacy.BREAK_ALLIANCE_DIPLOREP_FACTOR = 3		-- idk		-- AI acceptance factor per diplomatic reputation
-NDefines.NDiplomacy.AE_COALITION_THRESHOLD = -50			-- considering a rebalance of AE to -100 = coalition		-- Coalitions can form below this amount of AE opinion
+NDefines.NDiplomacy.AE_COALITION_THRESHOLD = -100			-- considering a rebalance of AE to -100 = coalition		-- Coalitions can form below this amount of AE opinion
 
  --Empire of China
 NDefines.NDiplomacy.CELESTIAL_EMPIRE_MANDATE_PER_STATE_WITH_PROSPERITY = 0.04			-- from 0p06
@@ -119,9 +119,10 @@ NDefines.NCountry.EXPLOIT_ADM_INCOME = 30			-- from 60
 NDefines.NCountry.EXPLOIT_DIP_SAILORS = 3			-- from 6
 NDefines.NCountry.EXPLOIT_MIL_MANPOWER = 3			-- from 6
 NDefines.NCountry.EXPLOIT_COOLDOWN_MONTHS = 120			-- from 240
-NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 0			-- from 5
-NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 0			-- from 10
-NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 0			-- from 30
+NDefines.NCountry.ALLOW_ZERO_BASE_VALUES = 1  -- Affects base tax base manpower and base production
+NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 5			-- from 5
+NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 10			-- from 10
+NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 30			-- from 30
 NDefines.NCountry.EMBRACE_INSTITUTION_COST = 1			-- from 2p5
 NDefines.NCountry.CORRUPTION_COST = 0.02			-- from 0p05
 NDefines.NCountry.STATE_MAINTENANCE_DEV_FACTOR = 0.005	-- from 0p007
@@ -129,7 +130,7 @@ NDefines.NCountry.STATE_MAINTENANCE_DISTANCE_FACTOR = 0.002	-- from 0p001
 NDefines.NCountry.STATE_MAINTENANCE_CONTINENT_FACTOR = 0.3	-- from 0p25
 NDefines.NCountry.STATE_MAINTENANCE_CULTURE_FACTOR = 0.15		-- from 0p25
 NDefines.NCountry.CORRUPTION_FROM_BANNERS = 0.5
-NDefines.NCountry.COUNTRY_DEVELOPMENT_SCALE = 1200			-- from 600     I dont actually know how this works     Might have it reversed better check later
+NDefines.NCountry.COUNTRY_DEVELOPMENT_SCALE = 10000		-- from 600    divides country_development static modifier
 NDefines.NCountry.CULTURAL_UNION_MIN_DEV = 2000			-- from 1000
 NDefines.NCountry.MIN_DEV_FOR_FREE_CITY = 20			-- from 10
 NDefines.NCountry.RANDOM_LUCKY_DEVELOPMENT_WEIGHT = 0.2			-- from 0p4
@@ -180,19 +181,19 @@ NDefines.NCountry.INNOVATIVENESS_FIRST_PICKED_IDEA = 1.0			-- Innovativeness bon
 
 NDefines.NCountry.EXPLORE_COAST_EVENT_CHANCE = 1 --was 2			-- Chance (in %) of getting an event when exploring coasts
 NDefines.NCountry.MIN_TECH_FOR_CIRCUMNAVIGATE = 21	--was 9		-- Must have this level of dip tech to circumnavigate the globe
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_1 = 1468			-- Provinces for circumnavigation (coast of gambia)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_2 = 1539			-- Provinces for circumnavigation (magellan strait)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_3 = 1697			-- Provinces for circumnavigation (hawaii sea)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_4 = 1398			-- Provinces for circumnavigation (hawaii sea)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_5 = 1446			-- Provinces for circumnavigation (hawaii sea)
---NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_6 = 1460			-- Provinces for circumnavigation (cape of good hope)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_1 = 13333			-- Provinces for circumnavigation (coast of gambia)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_2 = 14674			-- Provinces for circumnavigation (magellan strait)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_3 = 14555			-- Provinces for circumnavigation (hawaii sea)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_4 = 14214			-- Provinces for circumnavigation (hawaii sea)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_5 = 13968			-- Provinces for circumnavigation (hawaii sea)
+NDefines.NCountry.CIRCUMNAVIGATION_PROVINCE_6 = 13596			-- Provinces for circumnavigation (cape of good hope)
 
 
 --PROSPERITY/DEV CHANGES
 NDefines.NCountry.PROSPERITY_MONTHLY_DECLINE = -2				-- monthly tick - WAS -2
 NDefines.NCountry.PROSPERITY_INCREASE_SIZE= 0.5				-- if diceroll of d20< monarch stat, while possible ot increase - WAS 1, TURNED TO 0 CAUSE WHY SHOULD MONARCH INCREASE PROSP?? - PROBABLY SHOULD HANDLE THIS THROUGH EVENT/EDICT
  --Colonial
-NDefines.NCountry.MAX_CROWN_COLONIES = 2
+NDefines.NCountry.MAX_CROWN_COLONIES = 4
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_BASE = 5		-- monthly..
 NDefines.NCountry.SIBERIAN_FRONTIER_DAILY_RANGE = 20
 NDefines.NCountry.PS_ESTABLISH_SIBERIAN_FRONTIER = 40
@@ -243,7 +244,7 @@ NDefines.NCountry.NAT_FOCUS_YEARS_RANK = 3
  --SETTLEMENT
 NDefines.NCountry.SETTLEMENT_GROWTH_DEVELOPMENT_INCREASE = 1 -- How much development may increase per year if a colonist is working on Settlement Growth.
 NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MULTIPLIER = 1 -- Affects chance of development increase per year if a colonist is working on Settlement Growth.
-NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.005 -- Minimum chance of increasing development for colonists promoting Settlement Growth
+NDefines.NCountry.SETTLMENT_GROWTH_CHANCE_MIN = 0.0001 -- Minimum chance of increasing development for colonists promoting Settlement Growth
 NDefines.NCountry.SETTLEMENT_GROWTH_CHECK_INTERVAL = 365 -- Interval in days between checks for random development increase when working in Settlement Growth.
 
  --SETTLEMENT
@@ -266,14 +267,14 @@ NDefines.NEconomy.BASE_INTERESTS = 5.0 -- was 4.0
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
  --Necessary
 --NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable
-NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.25						-- _EDEF_TRADE_WIND_STRENGTH_
+NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.2 -- was 0.5 in vanilla, Bluehunter changed to 0.25						-- _EDEF_TRADE_WIND_STRENGTH_
 NDefines.NEconomy.TRADED_FRACTION_FOR_BONUS = 0.08				-- _EDEF_TRADED_FRACTION_FOR_BONUS_
 
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_DEVELOPMENT_FACTOR = 0.5	-- How much this is increased from development
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_FACTOR = 0.5	-- How much this is increased from local autonomy
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_AUTONOMY_BASE = 0.5			-- The local autonomy is added to this base in the formula.
- --Colonial nations44
+ --Colonial nations
  --NDefines.NEconomy.LARGE_COLONIAL_NATION_LIMIT = 10 -- hidden for now
 
  --NMilitary changes
@@ -286,13 +287,13 @@ NDefines.NMilitary.COAST_RAID_RANGE = 3							-- default coastal raid range
 NDefines.NMilitary.BASE_COMBAT_WIDTH = 10
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 42			-- from 50
-NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.25			-- from 0p25
-NDefines.NMilitary.FORTRESS_COST = 0.1			-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
+NDefines.NMilitary.BASE_MP_TO_MANPOWER = 0.1			-- from 0p25
+NDefines.NMilitary.FORTRESS_COST = 0.1		-- Beyond Typus added so many new provinces which means more forts but no more dev so everyone was going broke Base 05
 NDefines.NMilitary.BLOCKADE_FACTOR = 1.5			-- from 3     (Total sail speed / blockade_factor) * blockade_efficiency / province development
 NDefines.NMilitary.JANISSARIES_HEATHEN_DEVELOPMENT_DIVISOR = 20			-- from 10
-NDefines.NMilitary.GARRISON_SIZE = 500		-- from 1000		-- GARRISON_SIZE
-NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 4 -- from 3, to 2, to 4
-NDefines.NMilitary.MIN_MONTHLY_MANPOWER = 0.25
+NDefines.NMilitary.GARRISON_SIZE = 1000		-- from 1000		-- GARRISON_SIZE
+NDefines.NMilitary.SIEGE_FORCE_NEEDED_MULTIPLIER = 2 -- from 3, to 2, to 4
+NDefines.NMilitary.MIN_MONTHLY_MANPOWER = 0.05
 
 --NDefines.NMilitary.MAX_BREACH = 3
 NDefines.NMilitary.SIEGE_GARRISON_SURRENDER = 50			-- from 100		-- A siege ends when there is less than 100 defenders left.

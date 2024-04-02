@@ -13,8 +13,26 @@
 #   base_monthly_growth = <float> #Defines the base amount of progress growing. At default, it is 0.
 #   development_scaled_monthly_growth = <float> #defines the amount of monthly growth you get from development scaled by Development/COUNTRY_DEVELOPMENT_SCALE (i.e. was in country_development)
 #   monarch_power = <adm/mil/dip> #specify if the power also gains from the ruler's skill value. Don't specify if you don't want this feature
-#   scaled_modifier = <conditional modifier> #optional country modifier that scales with the percentage of power. You can have n of them in the power.
-#   reverse_scaled_modifier = <conditional modifier> #optional country modifier that scales with ( 1 - percentage of power ). You can have n of them in the power.
+#   scaled_modifier = { #optional country modifier that scales with the percentage of power. You can have n of them in the power.
+#   	trigger = <trigger>
+#       modifier = <modifier>
+#       start_value = <int> #Optional, default is 0. Determines from which value modifier should start applying. I.e. if set to 5, it will scale to 0% for anything below 5. If set to a value higher than end_value it will work like a reverse_scaled_modifier
+#       end_value = <int> #Optional, default is 100. Determines to which value modifier should still be applying/scaling. I.e. if set to 90, it will scale to 100% for anything above 90. If set to a value lower than start_value it will work like a reverse_scaled_modifier
+#       extend_beyond_value = <yes/no> #Optional, default is 'yes'. Determines if a modifier should still be applying outside of the start_value - end_value range. In other words if set to 'no', if the modifier goes 'outside' 100% (it's capped at 100% still), it will set it to 0%. This way you can create independent value ranges.
+#   }
+#   reverse_scaled_modifier = { #optional country modifier that scales with ( 1 - percentage of power ). You can have n of them in the power.
+#   	trigger = <trigger>
+#       modifier = <modifier>
+#       start_value = <int> #Optional, default is 0.
+#       end_value = <int> #Optional, default is 100.
+#       extend_beyond_value = <yes/no> #Optional, default is 'yes'.
+#   }
+#   range_modifier = { #optional country modifier that doesn't scale but is applied fully when in range.
+#   	trigger = <trigger>
+#       modifier = <modifier>
+#       start_value = <int> #Optional, default is 0. Must be lower or equal to end_value
+#       end_value = <int> #Optional, default is 100. Must be bigger or equal to start_value
+#   }
 #   on_max_reached = <effect> #effect when you get to full power
 #   on_min_reached = <effect> #effect when you get to the least available power
 #   is_good = <yes/no> #is this power....desirable?

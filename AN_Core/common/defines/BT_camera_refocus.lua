@@ -1,6 +1,6 @@
 -- Custom defines for Typus to fix the main menu camera:
 
-NDefines.NGame.MAX_RANDOM_NEW_WORLD = "1000.1.1"
+NDefines.NGame.MAX_RANDOM_NEW_WORLD = "1.1.1"
 NDefines.NGame.SIZE_LIMIT_FOR_ISLANDS = 100000
 
 NDefines.NFrontend.CAMERA_LOOKAT_X = 2787.0
