@@ -322,7 +322,8 @@ NDefines.NMilitary.ARTILLERY_SPEED = 0.4
  -- speeds
 --NDefines.NMilitary.HOSTILE_TERRITORY_SPEED_MODIFIER = 0	-- speed modifier into hostile territory
 --NDefines.NMilitary.SHATTERED_RETREAT_SPEED_MODIFIER = 0.5			-- How much (by percentage) the movement speed will be modified when doing a shattered retreat
-NDefines.NMilitary.SEA_EXPLORE_SPEED = 10 --5						-- Can to some extent determine exploration speed of seas and coasts by specifying how long a ship pauses between exploration targets.
+NDefines.NMilitary.SEA_EXPLORE_SPEED = 5 --5						-- Can to some extent determine exploration speed of seas and coasts by specifying how long a ship pauses between exploration targets.
+NDefines.NMilitary.FLAGSHIP_REQUIRED_NAVY_SIZE_IN_SAILORS = 1000 -- was 1500
 --NDefines.NMilitary.FORT_FLIPPING_TIME = 90 --30
 --NDefines.NMilitary.INF_LOOT = 0.1								-- How many ducats/month will a single full strength infantry regiment loot?
 --NDefines.NMilitary.CAV_LOOT = 0.3								-- How many ducats/month will a single full strength cavalry regiment loot?
