@@ -291,7 +291,7 @@ NDefines.NEconomy.BASE_INTERESTS = 5.0 -- was 4.0
 NDefines.NEconomy.PIRATES_MONOPOLY_BONUS = -0.5
  --Necessary
 --NDefines.NEconomy.ALLOW_DESTROY_MANUFACTORY = 1 -- was 0 needed to disable
-NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.2 -- was 0.5 in vanilla, Bluehunter changed to 0.25						-- _EDEF_TRADE_WIND_STRENGTH_
+NDefines.NEconomy.TRADE_WIND_STRENGTH = 0.1 -- was 0.5 in vanilla, Bluehunter changed to 0.25						-- _EDEF_TRADE_WIND_STRENGTH_
 NDefines.NEconomy.TRADED_FRACTION_FOR_BONUS = 0.08				-- _EDEF_TRADED_FRACTION_FOR_BONUS_
 
 NDefines.NEconomy.MISSIONARY_MAINTENANCE_FACTOR = 0.0			-- How much a missionary costs in itself
@@ -346,7 +346,7 @@ NDefines.NMilitary.ARTILLERY_SPEED = 0.4
  -- speeds
 --NDefines.NMilitary.HOSTILE_TERRITORY_SPEED_MODIFIER = 0	-- speed modifier into hostile territory
 --NDefines.NMilitary.SHATTERED_RETREAT_SPEED_MODIFIER = 0.5			-- How much (by percentage) the movement speed will be modified when doing a shattered retreat
-NDefines.NMilitary.SEA_EXPLORE_SPEED = 5 --5						-- Can to some extent determine exploration speed of seas and coasts by specifying how long a ship pauses between exploration targets.
+NDefines.NMilitary.SEA_EXPLORE_SPEED = 2 --5						-- Can to some extent determine exploration speed of seas and coasts by specifying how long a ship pauses between exploration targets.
 NDefines.NMilitary.FLAGSHIP_REQUIRED_NAVY_SIZE_IN_SAILORS = 1000 -- was 1500
 --NDefines.NMilitary.FORT_FLIPPING_TIME = 90 --30
 --NDefines.NMilitary.INF_LOOT = 0.1								-- How many ducats/month will a single full strength infantry regiment loot?
