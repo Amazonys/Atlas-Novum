@@ -60,6 +60,7 @@ country_event = {
 			#set to treaty first so we can set everything else without elections being called at the wrong time
 			set_hre_religion_treaty = yes
 			set_hre_heretic_religion = catholic
+			enable_religion = protestant
 			set_hre_religion = protestant
 			#now set it to locked once we've completed the tasks
 			set_hre_religion_locked = yes
@@ -157,6 +158,101 @@ country_event = {
 						}
 					}
 					set_global_flag = incident_reformer_dissension_high_chance
+				}
+			}
+			#Check whether Dissensions among the Hussites incident should happen
+			#Needs 2/3 of the Empire to be owned by Hussites princes
+			while = {
+				limit = {
+					any_province = {
+						is_part_of_hre = yes
+						owner = {
+							is_part_of_hre = yes
+							religion = hussite
+						}
+						NOT = { has_province_flag = hre_post_leaguewar_hussite_owned }
+					}
+				}
+				1 = { #Stockholm is the global variable substitute
+					change_variable = {
+						which = hussite_hre_member_provinces
+						value = 1
+					}
+				}
+				random_province = {
+					limit = {
+						is_part_of_hre = yes
+						owner = {
+							is_part_of_hre = yes
+							religion = hussite
+						}
+						NOT = { has_province_flag = hre_post_leaguewar_hussite_owned }
+					}
+					set_province_flag = hre_post_leaguewar_hussite_owned
+				}
+			}
+			while = {
+				limit = {
+					any_province = {
+						is_part_of_hre = yes
+						owner = {
+							is_part_of_hre = yes
+							NOT = { religion = hussite }
+						}
+						NOT = { has_province_flag = hre_post_leaguewar_non_hussite_owned }
+					}
+				}
+				1 = {
+					change_variable = {
+						which = non_hussite_hre_member_provinces
+						value = 1
+					}
+				}
+				random_province = {
+					limit = {
+						is_part_of_hre = yes
+						owner = {
+							is_part_of_hre = yes
+							NOT = { religion = hussite }
+						}
+						NOT = { has_province_flag = hre_post_leaguewar_non_hussite_owned }
+					}
+					set_province_flag = hre_post_leaguewar_non_hussite_owned
+				}
+			}
+			every_province = {
+				limit = {
+					is_part_of_hre = yes
+				}
+				clr_province_flag = hre_post_leaguewar_non_hussite_owned
+				clr_province_flag = hre_post_leaguewar_hussite_owned
+			}
+			1 = {
+				set_variable = {
+					which = hussite_others_member_provinces_ratio
+					which = hussite_hre_member_provinces
+				}
+				divide_variable = {
+					which = hussite_others_member_provinces_ratio
+					which = non_hussite_hre_member_provinces
+				}
+				if = {
+					limit = {
+						check_variable = {
+							which = hussite_others_member_provinces_ratio
+							value = 0.8
+						}
+					}
+					set_global_flag = incident_hussite_protest_can_happen
+				}
+				if = {
+					limit = {
+						check_variable = {
+							which = hussite_others_member_provinces_ratio
+							value = 1
+						}
+					}
+					set_global_flag = incident_hussite_protest_high_chance
 				}
 			}
 			#Check for Anglican princes in the HRE
@@ -265,6 +361,14 @@ country_event = {
 			custom_tooltip = incident_reformer_dissension_can_happen_tt
 			set_imperial_incident = incident_reformer_dissension
 		}
+		else_if = {
+			limit = {
+				has_dlc = "Emperor"
+				has_global_flag = incident_hussite_protest_can_happen
+			}
+			custom_tooltip = incident_hussite_protest_can_happen_tt
+			set_imperial_incident = incident_hussite_protest
+		}
 		# this should elect a new emperor
 		set_hre_religion = protestant
 	}
@@ -281,6 +385,18 @@ country_event = {
 			}
 			set_variable = {
 				which = reformed_others_member_provinces_ratio
+				value = 0
+			}
+			set_variable = {
+				which = non_hussite_hre_member_provinces
+				value = 0
+			}
+			set_variable = {
+				which = hussite_hre_member_provinces
+				value = 0
+			}
+			set_variable = {
+				which = hussite_others_member_provinces_ratio
 				value = 0
 			}
 		}

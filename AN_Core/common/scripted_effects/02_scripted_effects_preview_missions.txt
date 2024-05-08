@@ -1,0 +1,1782 @@
+######################################
+# Branching Missions Preview Effects #
+######################################
+enable_branching_mission_review_of_batch = {
+	if = {
+		limit = { not = { has_country_flag = has_batch_1_active } }
+		set_country_flag = has_batch_1_active
+		set_country_flag = can_choose_$key$_1_branching_missions
+	}
+	else_if = {
+		limit = { not = { has_country_flag = has_batch_2_active } }
+		set_country_flag = has_batch_2_active
+		set_country_flag = can_choose_$key$_2_branching_missions
+	}
+	else_if = {
+		limit = { not = { has_country_flag = has_batch_3_active } }
+		set_country_flag = has_batch_3_active
+		set_country_flag = can_choose_$key$_3_branching_missions
+	}
+	else = {
+		log = "Too many mission batches active at the same time. Make sure that any given moment only 3 batches are active to preview"
+	}
+}
+enable_branching_mission_review = {
+	if = {
+		limit = { ai = yes }
+		country_event = { id = $ai_event_id$ }
+	}
+	else = {
+		custom_tooltip = BYZ_unlock_branches_decision
+		hidden_effect = {
+			enable_branching_mission_review_of_batch = { key = $key$ }
+			change_variable = {
+				which = can_preview_missions_var
+				value = 1
+			}
+		}
+	}
+}
+enable_branching_mission_review_without_ai = {
+	custom_tooltip = BYZ_unlock_branches_decision
+	hidden_effect = {
+		enable_branching_mission_review_of_batch = { key = $key$ }
+		change_variable = {
+			which = can_preview_missions_var
+			value = 1
+		}
+	}
+}
+
+select_current_missions_MAL = {}	#Empty on purpose, preview system only implemented for the sake of completion
+select_current_missions_SON = {
+	if = {
+		limit = { has_country_flag = son_islamic_focus }
+		hidden_effect = { clr_country_flag = son_tolerance_focus }
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = 10
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = -10
+		}
+		add_estate_loyalty = {
+			estate = estate_dhimmi
+			loyalty = -10
+		}
+	}
+	if = {
+		limit = { has_country_flag = son_tolerance_focus }
+		hidden_effect = { clr_country_flag = son_islamic_focus }
+		add_estate_loyalty = {
+			estate = estate_church
+			loyalty = -10
+		}
+		add_estate_loyalty = {
+			estate = estate_nobles
+			loyalty = 10
+		}
+		add_estate_loyalty = {
+			estate = estate_dhimmi
+			loyalty = 10
+		}
+	}
+}
+select_current_missions_KON = {}	#Empty on purpose, preview system only implemented for the sake of completion
+select_scandinavian_religion_mission_effect = {
+	if = {
+		limit = { has_country_flag = sca_unlock_catholic_missions }
+		if = {
+			limit = { NOT = { religion = catholic } }
+			add_stability = -2
+			custom_tooltip = flavor_sca.1.a.tt
+			if = {
+				limit = {
+					NOT = { religion = coptic }
+					NOT = { religion = orthodox }
+				}
+				hidden_effect = {
+					every_known_country = {
+						limit = {
+							religion = ROOT
+						}
+						add_opinion = {
+							who = ROOT
+							modifier = swe_abandoned_the_reformation
+						}
+					}
+				}
+			}
+			else = {
+				hidden_effect = {
+					every_known_country = {
+						limit = {
+							religion = ROOT
+						}
+						add_opinion = {
+							who = ROOT
+							modifier = swe_betrayed_our_faith
+						}
+					}
+				}
+			}
+			change_religion = catholic
+			capital_scope = {
+				change_religion = catholic
+			}
+			random_owned_province = {
+				limit = {
+					region = scandinavia_region
+					NOT = { religion = catholic }
+				}
+				change_religion = catholic
+			}
+		}
+	}
+	if = {
+		limit = { has_country_flag = sca_unlock_protestant_missions }
+		if = {
+			limit = { religion = catholic }
+			add_stability = -2
+			custom_tooltip = flavor_sca.1.a.tt
+			hidden_effect = {
+				every_known_country = {
+					limit = {
+						religion = ROOT
+					}
+					add_opinion = {
+						who = ROOT
+						modifier = swe_betrayed_the_holy_see
+					}
+				}
+			}
+			change_religion = protestant
+			capital_scope = {
+				change_religion = protestant
+			}
+			random_owned_province = {
+				limit = {
+					region = scandinavia_region
+					religion = catholic
+				}
+				change_religion = protestant
+			}
+		}
+		else = {
+			capital_scope = {
+				change_religion = ROOT
+			}
+			random_owned_province = {
+				limit = {
+					region = scandinavia_region
+					NOT = { religion = ROOT }
+				}
+				change_religion = ROOT
+			}
+		}
+	}
+	if = {
+		limit = { has_country_flag = sca_unlock_humanist_missions }
+		custom_tooltip = flavor_sca.1.d.tt
+		hidden_effect = {
+			every_known_country = {
+				limit = {
+					religion_group = christian
+					NOT = { religion = orthodox }
+					NOT = { religion = coptic }
+				}
+				add_opinion = {
+					who = ROOT
+					modifier = swe_is_not_for_us
+				}
+			}
+		}
+	}
+	if = {
+		limit = { has_country_flag = sca_unlock_norse_missions }
+		add_army_tradition = 5
+	}
+}
+select_current_missions_SWE = {
+	select_scandinavian_religion_mission_effect = yes
+}
+select_current_missions_DAN = {
+	select_scandinavian_religion_mission_effect = yes
+}
+select_current_missions_NOR = {
+	select_scandinavian_religion_mission_effect = yes
+}
+select_current_missions_TEU = {
+	if = {
+		limit = { has_country_flag = teu_prussian_path }
+		hidden_effect = {
+			clr_country_flag = teu_crusader_path
+			if = {
+				limit = {
+					has_country_flag = formed_prussia_flag
+					NOT = { tag = PRU }
+					NOT = { was_tag = PRU }
+				}
+				clr_country_flag = formed_prussia_flag
+			}
+		}
+	}
+	if = {
+		limit = { has_country_flag = teu_crusader_path }
+		hidden_effect = {
+			clr_country_flag = teu_prussian_path
+			clr_country_flag = teu_diplomacy_hre_path
+			clr_country_flag = teu_conquest_hre_path
+			set_country_flag = formed_prussia_flag
+		}
+		if = {
+			limit = { has_mission = teu_defeat_the_poles }
+			hidden_effect = {
+				if = {
+					limit = {
+						has_mission = teu_crusader_mil_reform_1
+						NOT = { mission_completed = teu_crusader_mil_reform_1 }
+					}
+					set_country_flag = teu_crusader_battle_counter
+				}
+				else = {
+					clr_country_flag = teu_crusader_battle_counter
+				}
+			}
+		}
+		custom_tooltip = flavor_teu.10.b.ct
+		if = {
+			limit = { is_part_of_hre = yes }
+			set_in_empire = no
+		}
+		samogitia_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		lithuania_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		mazovia_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		malopolska_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		central_poland_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+	}
+}
+select_current_missions_TEU_PRU = {
+	if = {
+		limit = { has_country_flag = teu_diplomacy_hre_path }
+		hidden_effect = {
+			clr_country_flag = teu_conquest_hre_path
+			clr_country_flag = teu_kingdom_prussia_path
+			clr_country_flag = teu_joined_the_hre
+		}
+		if = {
+			limit = { 
+				is_part_of_hre = no
+				hre_size = 1
+			}
+			set_in_empire = yes
+			emperor = { add_imperial_influence = 10 }
+		}
+		if = {
+			limit = { tag = TEU }
+			country_event = { id = flavor_teu.34 }
+		}
+		if = {
+			limit = { exists = BRA }
+			add_casus_belli = {
+				type = cb_vassalize_mission
+				target = BRA
+				months = 240
+			}
+		}			
+		mittelmark_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		neumark_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+	}
+	if = {
+		limit = { has_country_flag = teu_conquest_hre_path }
+		if = {
+			limit = { 
+				is_part_of_hre = no
+				hre_size = 1
+			}
+			set_in_empire = yes
+			emperor = { add_imperial_influence = 10 }
+		}
+		hidden_effect = {
+			set_country_flag = teu_conquest_hre_path
+			clr_country_flag = teu_diplomacy_hre_path
+			clr_country_flag = teu_kingdom_prussia_path
+			clr_country_flag = teu_joined_the_hre
+		}
+		if = {
+			limit = { tag = TEU }
+			country_event = { id = flavor_teu.34 }
+		}
+		mittelmark_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		neumark_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		vorpommern_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		hinter_pommern_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		mecklenburg_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		add_country_modifier = {
+			name = teu_pru_prussian_unification_wars
+			duration = 9125
+		}
+	}
+	if = {
+		limit = { has_country_flag = teu_kingdom_prussia_path }
+		if = {
+			limit = { is_part_of_hre = yes }
+			set_in_empire = no
+		}
+		add_prestige = 50
+		if = {
+			limit = { has_country_flag = teu_is_allowed_to_stay_in_the_hre }
+			reverse_add_opinion = {
+				who = emperor
+				modifier = hre_country_left
+			}
+		}
+		hidden_effect = {
+			clr_country_flag = teu_diplomacy_hre_path
+			clr_country_flag = teu_conquest_hre_path
+			clr_country_flag = teu_joined_the_hre
+		}
+		samogitia_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		lithuania_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		mazovia_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		malopolska_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		central_poland_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+	}
+}
+select_current_missions_LIV = {
+	if = {
+		limit = {
+			has_country_flag = liv_crusader_path
+		}
+		hidden_effect = {
+			set_country_flag = formed_livonia_flag
+			set_country_flag = formed_courland_flag
+		}
+		custom_tooltip = flavor_liv.1.b.ct
+		lithuania_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		samogitia_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		karelia_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		novgorod_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		pskov_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+	}
+}
+select_current_missions_POL = {}	#Empty on purpose, preview system only implemented for the sake of completion
+select_current_missions_TUR = {
+	if = {
+		limit = { has_country_flag = tur_chose_legalism }
+		hidden_effect = {
+			clr_country_flag = tur_chose_mysticism
+			clr_country_flag = tur_non_muslim_path_flag
+		}
+		add_country_modifier = {
+			name = tur_embraced_legalism_modifier
+			duration = 18250
+		}
+	}
+	if = {
+		limit = { has_country_flag = tur_chose_mysticism }
+		hidden_effect = {
+			clr_country_flag = tur_chose_legalism
+			clr_country_flag = tur_non_muslim_path_flag
+		}
+		add_country_modifier = {
+			name = tur_embraced_mysticism_modifier
+			duration = 18250
+		}
+	}
+	if = {
+		limit = { has_country_flag = tur_non_muslim_path_flag }
+		hidden_effect = {
+			clr_country_flag = tur_chose_legalism
+			clr_country_flag = tur_chose_mysticism
+		}
+		add_country_modifier = {
+			name = tur_end_of_the_caliphate_modifier
+			duration = 18250
+		}
+	}
+}
+select_current_missions_MNG = {
+	if = {
+		limit = { has_country_flag = mng_dynamic_1 }
+		clr_country_flag = mng_dynamic_2
+		add_country_modifier = { 
+			name = haijin_policy_modifier
+			duration = -1 
+			desc = until_we_complete_the_appropriate_missions_desc
+		}
+	}
+	if = {
+		limit = { has_country_flag = mng_dynamic_2 }
+		clr_country_flag = mng_dynamic_1
+		add_country_modifier = { 
+			name = haijin_policy_modifier
+			duration = -1 
+			desc = until_we_complete_the_appropriate_missions_desc
+		}
+	}
+}
+select_current_missions_QNG = {
+	if = {
+		limit = { has_country_flag = qng_open_ports_flag }
+		clr_country_flag = qng_close_ports_flag
+		if = {
+			limit = { has_reform = mercantilistic_approach_reform }
+			add_government_reform = free_trade_reform
+		}
+		add_country_modifier = {
+			name = qng_free_trade_modifier
+			duration = 9125 
+		}
+	}
+	if = {
+		limit = { has_country_flag = qng_close_ports_flag }
+		clr_country_flag = qng_open_ports_flag
+		if = {
+			limit = { has_reform = free_trade_reform }
+			add_government_reform = mercantilistic_approach_reform
+		}
+		add_country_modifier = {
+			name = qng_mercantilism_modifier
+			duration = -1 
+		}
+	}
+}
+select_current_missions_GBR = {
+	if = {
+		limit = { has_country_flag = eng_took_gbr_branch }
+		clr_country_flag = eng_took_ave_branch
+		add_country_modifier = {
+			name = gbr_isolation_policy
+			duration = 9125
+		}
+	}
+	if = {
+		limit = { has_country_flag = eng_took_ave_branch }
+		clr_country_flag = eng_took_gbr_branch
+		if = {
+			limit = {
+				FRA = {
+					is_subject = no
+				}
+			}
+			add_casus_belli = {
+				target = FRA
+				type = cb_hundred_years_union
+				months = 360
+			}
+		}
+		ile_de_france_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+		champagne_area = {
+			limit = {
+				NOT = { is_core = ROOT }
+				NOT = { is_permanent_claim = ROOT }
+			}
+			add_permanent_claim = ROOT
+		}
+	}
+}
+select_current_missions_FRA = {
+	if = {
+		limit = { has_country_flag = fra_chose_to_piss_off_pope_flag }
+		add_country_modifier = { 
+			name = fra_italian_wars_modifier
+			duration = 7300 
+		}
+		piedmont_area = { 
+			limit = { 
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+			}
+			add_permanent_claim = ROOT 
+		}
+		liguria_area = {
+			limit = { 
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+			}
+			add_permanent_claim = ROOT 
+		}
+		lombardy_area = {
+			limit = { 
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+			}
+			add_permanent_claim = ROOT 
+		}
+		if = {
+			limit = { 
+				NAP = { is_subject = no exists = yes } 
+			}
+			add_casus_belli = {
+				target = NAP
+				type = cb_vassalize_mission
+				months = 180
+			}
+		}
+		else = { 
+			naples_area = {
+				limit = {
+					NOT = { owned_by = ROOT }
+					NOT = { is_core = ROOT }
+					is_empty = no
+				}
+				add_permanent_claim = ROOT
+			}
+			calabria_area = {
+				limit = {
+					NOT = { owned_by = ROOT }
+					NOT = { is_core = ROOT }
+					is_empty = no
+				}
+				add_permanent_claim = ROOT
+			}
+			apulia_area = {
+				limit = {
+					NOT = { owned_by = ROOT }
+					NOT = { is_core = ROOT }
+					is_empty = no
+				}
+				add_permanent_claim = ROOT
+			}
+		}
+	}
+	if = {
+		limit = { has_country_flag = fra_papal_lap_dop_flag }
+		add_country_modifier = { 
+			name = fra_resurgence_of_crusader_fervor_modifier
+			duration = 9125
+		}
+		palestine_area = {
+			limit = { 
+				NOT = { owned_by = ROOT }
+				NOT = { is_core = ROOT }
+			}
+			add_permanent_claim = ROOT 
+		}
+	}
+}
+select_current_missions_FRA_HRE = {
+	if = {	#Special case when the HRE is already dissolved
+		limit = {
+			not = { hre_size = 1 }
+		}
+		add_country_modifier = { 
+			name = fra_triumph_over_austria_modifier
+			duration = -1 
+		}
+		add_dip_power = 200 
+		clr_country_flag = fra_shed_the_blood_of_the_saxon_man_flag
+		set_country_flag = fra_fufujoni_flag
+		swap_non_generic_missions = yes
+	}
+	else = {
+		if = {
+			limit = { has_country_flag = fra_fufujoni_flag }
+			clr_country_flag = fra_shed_the_blood_of_the_saxon_man_flag
+			add_country_modifier = { 
+				name = fra_war_east_modifier 
+				duration = 5475
+			}
+			if = { 
+				limit = { hre_size = 1 }
+				custom_tooltip = fra_enable_war_on_the_empire_cb_tt
+				hidden_effect = { set_country_flag = fra_enable_war_on_the_empire_cb_flag }
+			}
+		}
+		if = {
+			limit = {
+				or = { 
+					has_country_flag = fra_shed_the_blood_of_the_saxon_man_flag 
+					is_emperor = yes 
+				}
+			}
+			clr_country_flag = fra_fufujoni_flag
+			add_country_modifier = {
+				name = fra_charlemagne_legacy_modifier
+				duration = 7300
+			}
+			every_elector = {
+				limit = { 
+					has_opinion = { 
+						who = ROOT 
+						value = 0 
+					}
+				}
+				add_opinion = { 
+					who = ROOT 
+					modifier = fra_charlemagne_legacy_opinion_modifier
+				}
+			}
+			add_power_projection = {
+				type = mission_rewards_power_projection
+				amount = 25
+			}
+			if = {
+				limit = { 
+					not = { has_country_flag = fra_shed_the_blood_of_the_saxon_man_flag } 
+					is_emperor = yes 
+				}
+				set_country_flag = fra_shed_the_blood_of_the_saxon_man_flag
+				custom_tooltip = fra_charlemagne_legacy_tt
+				swap_non_generic_missions = yes	#Another special for the moment France becomes Emperor before selecing any of the branching missions
+			}
+		}
+	}
+}
+select_current_missions_JAP = {
+	if = {
+		limit = { has_country_flag = jap_mushashi_5_books_flag }
+		clr_country_flag = jap_domineering_naval_focus_flag
+		add_army_tradition = 10 
+		add_country_modifier = {
+			name = jap_mushashi_5_books_modifier
+			duration = -1 
+		}
+	}
+	if = {
+		limit = { has_country_flag = jap_domineering_naval_focus_flag }
+		clr_country_flag = jap_mushashi_5_books_flag
+		add_navy_tradition = 20 
+		add_country_modifier = {
+			name = jap_domineering_naval_focus_modifier
+			duration = -1 
+		}
+	}
+}
+select_current_missions_JAP_RELI = {
+	if = {
+		limit = { has_country_flag = christianity_defeated_flag }
+		clr_country_flag = a_kirishitan_realm
+		if = {
+			limit = { has_country_flag = significant_christian_presence_flag }
+			set_estate_privilege = estate_church_japanese_christian_communities_privilege
+		}
+		else = {
+			add_country_modifier = {
+				name = jap_shinto_warriors_modifier
+				duration = -1 
+			}
+		}
+	}
+	if = {
+		limit = { has_country_flag = a_kirishitan_realm }
+		clr_country_flag = christianity_defeated_flag
+		override_country_name = KRJ
+		set_country_flag = is_KRJ_flag
+		set_country_flag = has_overriden_name_flag
+		add_country_modifier = {
+			name = jap_protectors_east_catholicism
+			duration = 10950 
+		}
+	}
+}
+select_current_missions_BYZ = {}	#Empty, nothing should happen
+select_current_missions_PER = {
+	if = {
+		limit = {
+			OR = {
+				has_country_flag = per_shia_missions
+				has_country_flag = per_sunni_missions
+			}
+		}
+		country_event = { id = flavor_per.34 } 
+	}
+	if = {
+		limit = { has_country_flag = per_zoroastrian_missions }
+		if = { 
+			limit = { NOT = { religion_group = zoroastrian_group } } 
+			country_event = { id = flavor_per.35 } 
+		} 
+		else = { 
+			change_estate_land_share = { estate = estate_church share = -5 } 
+		} 
+	}
+}
+select_current_missions_HAB = {
+	if = {
+		limit = {
+			has_country_flag = hab_germany_branch
+		}
+		give_claims = { area = upper_bavaria_area }
+		give_claims = { area = lower_bavaria_area }
+		give_claims = { area = east_bavaria_area }
+		give_claims = { area = mittelmark_area }
+		give_claims = { area = neumark_area }
+	}
+}
+select_current_missions_BOH_RELIGION = {}	#Empty
+select_current_missions_HSN = {}	#Empty
+select_current_missions_HSN2 = {}	#Empty
+select_current_missions_ITA_TRADE = {
+	if = {
+		limit = {
+			has_country_flag = ITA_venice_missions
+		}
+		custom_tooltip = ITA_priv_upgrade_venice
+	}
+	if = {
+		limit = {
+			has_country_flag = ITA_genoa_missions
+		}
+		custom_tooltip = ITA_priv_upgrade_genoa
+	}
+}
+select_current_missions_FEO = {}	#Empty
+select_current_missions_TIM = {
+	hidden_effect = {
+		if = {
+			limit = {
+				has_country_flag = TIM_nomad_missions
+			}
+			if = {
+				limit = {
+					mission_completed = TIM_qoyunlu
+				}
+				give_claims = { region = egypt_region }
+				give_claims = { area = palestine_area }
+				give_claims = { area = trans_jordan_area }
+				give_claims = { area = syria_area }
+				give_claims = { area = syrian_desert_area }
+				give_claims = { area = aleppo_area }
+				give_claims = { region = anatolia_region }
+				give_claims = { region = balkan_region }
+			}
+			if = {
+				limit = {
+					mission_completed = TIM_delhi
+				}
+				give_claims = { region = hindusthan_region }
+			}
+			if = {
+				limit = {
+					mission_completed = TIM_caucasia
+				}
+				give_claims = { region = crimea_region }
+			}
+			if = {
+				limit = {
+					mission_completed = TIM_recover_north
+				}
+				give_claims = { area = tambov_area }
+				give_claims = { area = lower_yik_area }
+				give_claims = { area = nogai_area }
+				give_claims = { area = saratov_area }
+				give_claims = { area = samara_area }
+				give_claims = { area = bashkiria_area }
+				give_claims = { area = volga_area }
+				give_claims = { area = kazan_area }
+				give_claims = { area = kama_area }
+			}
+			if = {
+				limit = {
+					mission_completed = TIM_delhi
+				}
+				give_claims = { area = marwar_area }
+				give_claims = { area = jangladesh_area }
+				give_claims = { area = multan_area }
+			}
+			if = {
+				limit = {
+					mission_completed = TIM_moghulistan
+				}
+				give_claims = { region = mongolia_region }
+			}
+		}
+	}
+}
+select_current_missions_VEN = {} 	#Empty
+select_current_missions_HORDES = {
+	hidden_effect = {
+		if = {
+			limit = {
+				has_country_flag = hordes_confucian_branch_flag
+			}
+			change_religion = confucianism
+		}
+	}
+}
+
+clr_preview_loc_branch = {
+	clr_country_flag = $key$_loc_preview_$batch$_for_1
+	clr_country_flag = $key$_loc_preview_$batch$_for_2
+	clr_country_flag = $key$_loc_preview_$batch$_for_3
+	clr_country_flag = $key$_loc_preview_$batch$_for_4
+	clr_country_flag = $key$_loc_preview_$batch$_for_5
+}
+
+select_current_missions = {
+    hidden_effect = {
+		if = {
+			limit = { can_preview_mission_of_key_and_batch = { key = $key$ batch = 1 } }
+            clr_country_flag = can_choose_$key$_1_branching_missions
+            clr_country_flag = has_batch_1_active
+			clr_preview_loc_branch = { key = $key$ batch = 1 }
+		}
+		if = {
+			limit = { can_preview_mission_of_key_and_batch = { key = $key$ batch = 2 } }
+            clr_country_flag = can_choose_$key$_2_branching_missions
+            clr_country_flag = has_batch_2_active
+			clr_preview_loc_branch = { key = $key$ batch = 2 }
+		}
+		if = {
+			limit = { can_preview_mission_of_key_and_batch = { key = $key$ batch = 3 } }
+            clr_country_flag = can_choose_$key$_3_branching_missions
+            clr_country_flag = has_batch_3_active
+			clr_preview_loc_branch = { key = $key$ batch = 3 }
+		}
+        change_variable = {
+            which = can_preview_missions_var
+            value = -1
+        }
+    }
+    select_current_missions_$key$ = yes
+}
+select_current_branch = {
+	custom_tooltip = BYZ_end_preview
+	hidden_effect = { clr_country_flag = has_batch_$batch$_active }
+	#Origins
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = MAL batch = $batch$ } } select_current_missions = { key = MAL } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = SON batch = $batch$ } } select_current_missions = { key = SON } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = KON batch = $batch$ } } select_current_missions = { key = KON } }
+	#Lions of the North
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = SWE batch = $batch$ } } select_current_missions = { key = SWE } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = DAN batch = $batch$ } } select_current_missions = { key = DAN } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = NOR batch = $batch$ } } select_current_missions = { key = NOR } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = TEU batch = $batch$ } } select_current_missions = { key = TEU } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = TEU_PRU batch = $batch$ } } select_current_missions = { key = TEU_PRU } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = LIV batch = $batch$ } } select_current_missions = { key = LIV } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = POL batch = $batch$ } } select_current_missions = { key = POL } }
+	#Domination
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = TUR batch = $batch$ } } select_current_missions = { key = TUR } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = MNG batch = $batch$ } } select_current_missions = { key = MNG } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = QNG batch = $batch$ } } select_current_missions = { key = QNG } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = JAP batch = $batch$ } } select_current_missions = { key = JAP } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = JAP_RELI batch = $batch$ } } select_current_missions = { key = JAP_RELI } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = FRA batch = $batch$ } } select_current_missions = { key = FRA } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = FRA_HRE batch = $batch$ } } select_current_missions = { key = FRA_HRE } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = GBR batch = $batch$ } } select_current_missions = { key = GBR } }
+	#King of Kings
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = BYZ batch = $batch$ } } select_current_missions = { key = BYZ } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = PER batch = $batch$ } } select_current_missions = { key = PER } }
+	#Winds of Change
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = HAB batch = $batch$ } } select_current_missions = { key = HAB } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = BOH_RELIGION batch = $batch$ } } select_current_missions = { key = BOH_RELIGION } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = HSN batch = $batch$ } } select_current_missions = { key = HSN } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = HSN2 batch = $batch$ } } select_current_missions = { key = HSN2 } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = ITA_TRADE batch = $batch$ } } select_current_missions = { key = ITA_TRADE } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = FEO batch = $batch$ } } select_current_missions = { key = FEO } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = TIM batch = $batch$ } } select_current_missions = { key = TIM } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = VEN batch = $batch$ } } select_current_missions = { key = VEN } }
+	if = { limit = { can_preview_mission_of_key_and_batch = { key = HORDES batch = $batch$ } } select_current_missions = { key = HORDES } }
+}
+
+clear_all_branching_flags = {
+	#Origins
+	#MAL
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = MAL batch = $batch$ } }
+		clr_preview_loc_branch = { key = MAL batch = $batch$ }
+		clr_country_flag = mal_decide_for_conversion
+		clr_country_flag = mal_decide_for_tolerance
+	}
+	#SON
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = SON batch = $batch$ } }
+		clr_preview_loc_branch = { key = SON batch = $batch$ }
+		clr_country_flag = son_islamic_focus
+		clr_country_flag = son_tolerance_focus
+	}
+	#KON
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = KON batch = $batch$ } }
+		clr_preview_loc_branch = { key = KON batch = $batch$ }
+		clr_country_flag = kon_picked_fetishism
+		clr_country_flag = kon_picked_side_with_europeans
+	}
+	#Lions of the North
+	#SWE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = SWE batch = $batch$ } }
+		clr_preview_loc_branch = { key = SWE batch = $batch$ }
+		clr_country_flag = sca_unlock_catholic_missions
+		clr_country_flag = sca_unlock_protestant_missions
+		clr_country_flag = sca_unlock_norse_missions
+		clr_country_flag = sca_unlock_humanist_missions
+	}
+	#DAN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = DAN batch = $batch$ } }
+		clr_preview_loc_branch = { key = DAN batch = $batch$ }
+		clr_country_flag = sca_unlock_catholic_missions
+		clr_country_flag = sca_unlock_protestant_missions
+		clr_country_flag = sca_unlock_norse_missions
+		clr_country_flag = sca_unlock_humanist_missions
+	}
+	#NOR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = NOR batch = $batch$ } }
+		clr_preview_loc_branch = { key = NOR batch = $batch$ }
+		clr_country_flag = sca_unlock_catholic_missions
+		clr_country_flag = sca_unlock_protestant_missions
+		clr_country_flag = sca_unlock_norse_missions
+		clr_country_flag = sca_unlock_humanist_missions
+	}
+	#TEU
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TEU batch = $batch$ } }
+		clr_preview_loc_branch = { key = TEU batch = $batch$ }
+		clr_country_flag = teu_prussian_path
+		clr_country_flag = teu_crusader_path
+	}
+	#TEU-PRU
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TEU_PRU batch = $batch$ } }
+		clr_preview_loc_branch = { key = TEU_PRU batch = $batch$ }
+		clr_country_flag = teu_conquest_hre_path
+		clr_country_flag = teu_diplomacy_hre_path
+		clr_country_flag = teu_kingdom_prussia_path
+	}
+	#LIV
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = LIV batch = $batch$ } }
+		clr_preview_loc_branch = { key = LIV batch = $batch$ }
+		clr_country_flag = liv_livonian_path
+		clr_country_flag = liv_crusader_path
+	}
+	#POL
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = POL batch = $batch$ } }
+		clr_preview_loc_branch = { key = POL batch = $batch$ }
+		clr_country_flag = pol_chose_pu_flag
+		clr_country_flag = pol_denied_pu_flag
+	}
+	#Domination
+	#TUR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TUR batch = $batch$ } }
+		clr_preview_loc_branch = { key = TUR batch = $batch$ }
+		clr_country_flag = tur_chose_legalism
+		clr_country_flag = tur_chose_mysticism
+		clr_country_flag = tur_non_muslim_path_flag
+	}
+	#MNG
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = MNG batch = $batch$ } }
+		clr_preview_loc_branch = { key = MNG batch = $batch$ }
+		clr_country_flag = mng_dynamic_1
+		clr_country_flag = mng_dynamic_2
+	}
+	#QNG
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = QNG batch = $batch$ } }
+		clr_preview_loc_branch = { key = QNG batch = $batch$ }
+		clr_country_flag = qng_open_ports_flag
+		clr_country_flag = qng_close_ports_flag
+	}
+	#JAP
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = JAP batch = $batch$ } }
+		clr_preview_loc_branch = { key = JAP batch = $batch$ }
+		clr_country_flag = jap_mushashi_5_books_flag
+		clr_country_flag = jap_domineering_naval_focus_flag
+	}
+	#JAP_RELI
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = JAP_RELI batch = $batch$ } }
+		clr_preview_loc_branch = { key = JAP_RELI batch = $batch$ }
+		clr_country_flag = christianity_defeated_flag
+		clr_country_flag = a_kirishitan_realm
+	}
+	#FRA
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = FRA batch = $batch$ } }
+		clr_preview_loc_branch = { key = FRA batch = $batch$ }
+		clr_country_flag = fra_chose_to_piss_off_pope_flag
+		clr_country_flag = fra_papal_lap_dop_flag
+	}
+	#FRA_HRE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = FRA_HRE batch = $batch$ } }
+		clr_preview_loc_branch = { key = FRA_HRE batch = $batch$ }
+		clr_country_flag = fra_shed_the_blood_of_the_saxon_man_flag
+		clr_country_flag = fra_fufujoni_flag
+	}
+	#GBR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = GBR batch = $batch$ } }
+		clr_preview_loc_branch = { key = GBR batch = $batch$ }
+		clr_country_flag = eng_took_gbr_branch
+		clr_country_flag = eng_took_ave_branch
+	}
+	#King of Kings
+	#BYZ
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = BYZ batch = $batch$ } }
+		clr_preview_loc_branch = { key = BYZ batch = $batch$ }
+		clr_country_flag = BYZ_centralized
+		clr_country_flag = BYZ_decentralized
+	}
+	#PER
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = PER batch = $batch$ } }
+		clr_preview_loc_branch = { key = PER batch = $batch$ }
+		clr_country_flag = per_shia_missions
+		clr_country_flag = per_sunni_missions
+		clr_country_flag = per_zoroastrian_missions
+	}
+	#Winds of Change
+	#HAB
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HAB batch = $batch$ } }
+		clr_preview_loc_branch = { key = HAB batch = $batch$ }
+		clr_country_flag = hab_hre_branch
+		clr_country_flag = hab_germany_branch
+	}
+	#BOH_RELIGION
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = BOH_RELIGION batch = $batch$ } }
+		clr_preview_loc_branch = { key = BOH_RELIGION batch = $batch$ }
+		clr_country_flag = boh_hussite_missions
+		clr_country_flag = boh_catholic_missions
+	}
+	#HSN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HSN batch = $batch$ } }
+		clr_preview_loc_branch = { key = HSN batch = $batch$ }
+		clr_country_flag = hsn_unlock_anatolian_alliance
+		clr_country_flag = hsn_unlock_anatolian_conquest
+	}
+	#HSN2
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HSN2 batch = $batch$ } }
+		clr_preview_loc_branch = { key = HSN2 batch = $batch$ }
+		clr_country_flag = hsn_unlock_persian_alliance
+		clr_country_flag = hsn_unlock_persian_conquest
+	}
+	#ITA_TRADE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = ITA_TRADE batch = $batch$ } }
+		clr_preview_loc_branch = { key = ITA_TRADE batch = $batch$ }
+		clr_country_flag = ITA_venice_missions
+		clr_country_flag = ITA_genoa_missions
+	}
+	#FEO
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = FEO batch = $batch$ } }
+		clr_preview_loc_branch = { key = FEO batch = $batch$ }
+		clr_country_flag = feo_russian_conquest_branch
+		clr_country_flag = feo_russian_alliance_branch
+	}
+	#TIM
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TIM batch = $batch$ } }
+		clr_preview_loc_branch = { key = TIM batch = $batch$ }
+		clr_country_flag = TIM_nomad_missions
+		clr_country_flag = TIM_persian_missions
+	}
+	#VEN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = VEN batch = $batch$ } }
+		clr_preview_loc_branch = { key = VEN batch = $batch$ }
+		clr_country_flag = ven_standing_army_missions_flag
+		clr_country_flag = ven_mercenary_army_missions_flag
+		clr_country_flag = ven_navy_missions_flag
+	}
+	#HORDES
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HORDES batch = $batch$ } }
+		clr_preview_loc_branch = { key = HORDES batch = $batch$ }
+		clr_country_flag = hordes_tolerance_branch_flag
+		clr_country_flag = hordes_devout_branch_flag
+		clr_country_flag = hordes_confucian_branch_flag
+	}
+}
+
+set_preview_loc_branch = {
+	set_country_flag = $key$_loc_preview_$batch$_for_$branch$
+}
+
+preview_mission_branch_1 = {
+	#Origins
+	#MAL
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = MAL batch = $batch$ } }
+		set_preview_loc_branch = { key = MAL batch = $batch$ branch = 1 }
+		set_country_flag = mal_decide_for_conversion
+		custom_tooltip = MAL_preview_conversion
+	}
+	#SON
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = SON batch = $batch$ } }
+		set_preview_loc_branch = { key = SON batch = $batch$ branch = 1 }
+		set_country_flag = son_islamic_focus
+		custom_tooltip = SON_preview_islamic
+	}
+	#KON
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = KON batch = $batch$ } }
+		set_preview_loc_branch = { key = KON batch = $batch$ branch = 1 }
+		set_country_flag = kon_picked_fetishism
+		custom_tooltip = KON_preview_fetishism
+	}
+	#Lions of the North
+	#SWE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = SWE batch = $batch$ } }
+		set_preview_loc_branch = { key = SWE batch = $batch$ branch = 1 }
+		set_country_flag = sca_unlock_catholic_missions
+		custom_tooltip = SCA_preview_catholic
+	}
+	#DAN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = DAN batch = $batch$ } }
+		set_preview_loc_branch = { key = DAN batch = $batch$ branch = 1 }
+		set_country_flag = sca_unlock_catholic_missions
+		custom_tooltip = SCA_preview_catholic
+	}
+	#NOR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = NOR batch = $batch$ } }
+		set_preview_loc_branch = { key = NOR batch = $batch$ branch = 1 }
+		set_country_flag = sca_unlock_catholic_missions
+		custom_tooltip = SCA_preview_catholic
+	}
+	#TEU
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TEU batch = $batch$ } }
+		set_preview_loc_branch = { key = TEU batch = $batch$ branch = 1 }
+		set_country_flag = teu_prussian_path
+		custom_tooltip = TEU_preview_prussian
+	}
+	#TEU_PRU
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TEU_PRU batch = $batch$ } }
+		set_preview_loc_branch = { key = TEU_PRU batch = $batch$ branch = 1 }
+		set_country_flag = teu_conquest_hre_path
+		custom_tooltip = TEU_PRU_preview_hre_conquest
+	}
+	#LIV
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = LIV batch = $batch$ } }
+		set_preview_loc_branch = { key = LIV batch = $batch$ branch = 1 }
+		set_country_flag = liv_livonian_path
+		custom_tooltip = LIV_preview_livonian
+	}
+	#POL
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = POL batch = $batch$ } }
+		set_preview_loc_branch = { key = POL batch = $batch$ branch = 1 }
+		set_country_flag = pol_chose_pu_flag
+		custom_tooltip = POL_preview_lith
+	}
+	#Domination
+	#TUR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TUR batch = $batch$ } }
+		set_preview_loc_branch = { key = TUR batch = $batch$ branch = 1 }
+		set_country_flag = tur_chose_legalism
+		custom_tooltip = TUR_preview_legalism
+	}
+	#MNG
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = MNG batch = $batch$ } }
+		set_preview_loc_branch = { key = MNG batch = $batch$ branch = 1 }
+		set_country_flag = mng_dynamic_1
+		custom_tooltip = MNG_preview_improve_haijin
+	}
+	#QNG
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = QNG batch = $batch$ } }
+		set_preview_loc_branch = { key = QNG batch = $batch$ branch = 1 }
+		set_country_flag = qng_open_ports_flag
+		custom_tooltip = QNG_preview_open_ports
+	}
+	#GBR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = GBR batch = $batch$ } }
+		set_preview_loc_branch = { key = GBR batch = $batch$ branch = 1 }
+		set_country_flag = eng_took_gbr_branch
+		custom_tooltip = ENG_preview_gbr_branch
+	}
+	#FRA
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = FRA batch = $batch$ } }
+		set_preview_loc_branch = { key = FRA batch = $batch$ branch = 1 }
+		set_country_flag = fra_chose_to_piss_off_pope_flag
+		custom_tooltip = FRA_preview_italian_wars
+	}
+	#FRA_HRE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = FRA_HRE batch = $batch$ } }
+		set_preview_loc_branch = { key = FRA_HRE batch = $batch$ branch = 1 }
+		set_country_flag = fra_shed_the_blood_of_the_saxon_man_flag
+		custom_tooltip = FRA_preview_charlemagnes_legacy
+	}
+	#JAP
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = JAP batch = $batch$ } }
+		set_preview_loc_branch = { key = JAP batch = $batch$ branch = 1 }
+		set_country_flag = jap_mushashi_5_books_flag
+		custom_tooltip = JAP_preview_mushashi_5_books
+	}
+	#JAP_RELI
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = JAP_RELI batch = $batch$ } }
+		set_preview_loc_branch = { key = JAP_RELI batch = $batch$ branch = 1 }
+		set_country_flag = christianity_defeated_flag
+		custom_tooltip = JAP_preview_christianity_defeated
+	}
+	#King of Kings
+	#BYZ
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = BYZ batch = $batch$ } }
+		set_preview_loc_branch = { key = BYZ batch = $batch$ branch = 1 }
+		set_country_flag = BYZ_centralized
+		custom_tooltip = BYZ_preview_centralized
+	}
+	#PER
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = PER batch = $batch$ } }
+		set_preview_loc_branch = { key = PER batch = $batch$ branch = 1 }
+		set_country_flag = per_shia_missions
+		custom_tooltip = per_preview_shia_missions
+	}
+	#Winds of Change
+	#HSN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HSN batch = $batch$ } }
+		set_preview_loc_branch = { key = HSN batch = $batch$ branch = 1 }
+		set_country_flag = hsn_unlock_anatolian_conquest
+		custom_tooltip = hsn_unlock_anatolian_conquest
+	}
+	#HSN2
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HSN2 batch = $batch$ } }
+		set_preview_loc_branch = { key = HSN2 batch = $batch$ branch = 1 }
+		set_country_flag = hsn_unlock_persian_alliance
+		custom_tooltip = hsn_unlock_persian_alliance
+	}
+	#ITA_TRADE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = ITA_TRADE batch = $batch$ } }
+		set_preview_loc_branch = { key = ITA_TRADE batch = $batch$ branch = 1 }
+		set_country_flag = ITA_venice_missions
+		custom_tooltip = ITA_preview_venice
+	}
+	#FEO
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = FEO batch = $batch$ } }
+		set_preview_loc_branch = { key = FEO batch = $batch$ branch = 1 }
+		set_country_flag = feo_russian_conquest_branch
+		custom_tooltip = feo_preview_russian_conquest_missions
+	}
+	#VEN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = VEN batch = $batch$ } }
+		set_preview_loc_branch = { key = VEN batch = $batch$ branch = 1 }
+		set_country_flag = ven_standing_army_missions_flag
+		custom_tooltip = ven_unlock_standing_army_missions_tt
+	}
+	#Hordes
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HORDES batch = $batch$ } }
+		set_preview_loc_branch = { key = HORDES batch = $batch$ branch = 1 }
+		set_country_flag = hordes_tolerance_branch_flag
+		custom_tooltip = hordes_preview_tolerant
+	}
+	#BOH_RELIGION
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = BOH_RELIGION batch = $batch$ } }
+		set_preview_loc_branch = { key = BOH_RELIGION batch = $batch$ branch = 1 }
+		set_country_flag = boh_catholic_missions
+		custom_tooltip = boh_preview_catholic_branching
+	}
+	#TIM
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TIM batch = $batch$ } }
+		set_preview_loc_branch = { key = TIM batch = $batch$ branch = 1 }
+		set_country_flag = TIM_nomad_missions
+		custom_tooltip = TIM_preview_nomads
+	}
+	#HAB
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HAB batch = $batch$ } }
+		set_preview_loc_branch = { key = HAB batch = $batch$ branch = 1 }
+		set_country_flag = hab_hre_branch
+		custom_tooltip = hab_preview_hre_branch
+	}
+}
+preview_mission_branch_2 = {
+	#Origins
+	#MAL
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = MAL batch = $batch$ } }
+		set_preview_loc_branch = { key = MAL batch = $batch$ branch = 2 }
+		set_country_flag = mal_decide_for_tolerance
+		custom_tooltip = MAL_preview_tolerance
+	}
+	#SON
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = SON batch = $batch$ } }
+		set_preview_loc_branch = { key = SON batch = $batch$ branch = 2 }
+		set_country_flag = son_tolerance_focus
+		custom_tooltip = SON_preview_tolerance
+	}
+	#KON
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = KON batch = $batch$ } }
+		set_preview_loc_branch = { key = KON batch = $batch$ branch = 2 }
+		set_country_flag = kon_picked_side_with_europeans
+		custom_tooltip = KON_preview_christian
+	}
+	#Lions of the North
+	#SWE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = SWE batch = $batch$ } }
+		set_preview_loc_branch = { key = SWE batch = $batch$ branch = 2 }
+		set_country_flag = sca_unlock_protestant_missions
+		custom_tooltip = SCA_preview_protestant
+	}
+	#DAN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = DAN batch = $batch$ } }
+		set_preview_loc_branch = { key = DAN batch = $batch$ branch = 2 }
+		set_country_flag = sca_unlock_protestant_missions
+		custom_tooltip = SCA_preview_protestant
+	}
+	#NOR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = NOR batch = $batch$ } }
+		set_preview_loc_branch = { key = NOR batch = $batch$ branch = 2 }
+		set_country_flag = sca_unlock_protestant_missions
+		custom_tooltip = SCA_preview_protestant
+	}
+	#TEU
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TEU batch = $batch$ } }
+		set_preview_loc_branch = { key = TEU batch = $batch$ branch = 2 }
+		set_country_flag = teu_crusader_path
+		custom_tooltip = TEU_preview_crusader
+	}
+	#TEU_PRU
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TEU_PRU batch = $batch$ } }
+		set_preview_loc_branch = { key = TEU_PRU batch = $batch$ branch = 2 }
+		if = {
+			limit = { hre_size = 1 }
+			set_country_flag = teu_diplomacy_hre_path
+			custom_tooltip = TEU_PRU_preview_hre_diplomacy
+		}
+		else = {
+			set_country_flag = teu_kingdom_prussia_path
+			custom_tooltip = TEU_PRU_preview_prussian_kingdom
+		}
+	}
+	#LIV
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = LIV batch = $batch$ } }
+		set_preview_loc_branch = { key = LIV batch = $batch$ branch = 2 }
+		set_country_flag = liv_crusader_path
+		custom_tooltip = LIV_preview_crusader
+	}
+	#POL
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = POL batch = $batch$ } }
+		set_preview_loc_branch = { key = POL batch = $batch$ branch = 2 }
+		set_country_flag = pol_denied_pu_flag
+		custom_tooltip = POL_preview_hre
+	}
+	#Domination
+	#TUR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TUR batch = $batch$ } }
+		set_preview_loc_branch = { key = TUR batch = $batch$ branch = 2 }
+		set_country_flag = tur_chose_mysticism
+		custom_tooltip = TUR_preview_mysticism
+	}
+	#MNG
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = MNG batch = $batch$ } }
+		set_preview_loc_branch = { key = MNG batch = $batch$ branch = 2 }
+		set_country_flag = mng_dynamic_2
+		custom_tooltip = MNG_preview_repeal_haijin
+	}
+	#QNG
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = QNG batch = $batch$ } }
+		set_preview_loc_branch = { key = QNG batch = $batch$ branch = 2 }
+		set_country_flag = qng_close_ports_flag
+		custom_tooltip = QNG_preview_close_ports
+	}
+	#GBR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = GBR batch = $batch$ } }
+		set_preview_loc_branch = { key = GBR batch = $batch$ branch = 2 }
+		set_country_flag = eng_took_ave_branch
+		custom_tooltip = ENG_preview_ave_branch
+	}
+	#FRA
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = FRA batch = $batch$ } }
+		set_preview_loc_branch = { key = FRA batch = $batch$ branch = 2 }
+		set_country_flag = fra_papal_lap_dop_flag
+		custom_tooltip = FRA_preview_crusader_kings
+	}
+	#FRA_HRE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = FRA_HRE batch = $batch$ } }
+		set_preview_loc_branch = { key = FRA_HRE batch = $batch$ branch = 2 }
+		set_country_flag = fra_fufujoni_flag
+		custom_tooltip = FRA_preview_kill_hre
+	}
+	#JAP
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = JAP batch = $batch$ } }
+		set_preview_loc_branch = { key = JAP batch = $batch$ branch = 2 }
+		set_country_flag = jap_domineering_naval_focus_flag
+		custom_tooltip = JAP_preview_domineering_naval_focus
+	}
+	#JAP_RELI
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = JAP_RELI batch = $batch$ } }
+		set_preview_loc_branch = { key = JAP_RELI batch = $batch$ branch = 2 }
+		set_country_flag = a_kirishitan_realm
+		custom_tooltip = JAP_preview_a_kirishitan_realm
+	}
+	#King of Kings
+	#BYZ
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = BYZ batch = $batch$ } }
+		set_preview_loc_branch = { key = BYZ batch = $batch$ branch = 2 }
+		set_country_flag = BYZ_decentralized
+		custom_tooltip = BYZ_preview_decentralized
+	}
+	#PER
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = PER batch = $batch$ } }
+		set_preview_loc_branch = { key = PER batch = $batch$ branch = 2 }
+		set_country_flag = per_sunni_missions
+		custom_tooltip = per_preview_sunni_missions
+	}
+	#Winds of Change
+	#HAB
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HAB batch = $batch$ } }
+		set_preview_loc_branch = { key = HAB batch = $batch$ branch = 2 }
+		set_country_flag = hab_germany_branch
+		custom_tooltip = hab_preview_germany_branch
+	}
+	#BOH_RELIGION
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = BOH_RELIGION batch = $batch$ } }
+		set_preview_loc_branch = { key = BOH_RELIGION batch = $batch$ branch = 2 }
+		set_country_flag = boh_hussite_missions
+		custom_tooltip = boh_preview_hussite_branching
+	}
+	#HSN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HSN batch = $batch$ } }
+		set_preview_loc_branch = { key = HSN batch = $batch$ branch = 2 }
+		set_country_flag = hsn_unlock_anatolian_alliance
+		custom_tooltip = hsn_unlock_anatolian_alliance
+	}
+	#HSN2
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HSN2 batch = $batch$ } }
+		set_preview_loc_branch = { key = HSN2 batch = $batch$ branch = 2 }
+		set_country_flag = hsn_unlock_persian_conquest
+		custom_tooltip = hsn_unlock_persian_conquest
+	}
+	#ITA_TRADE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = ITA_TRADE batch = $batch$ } }
+		set_preview_loc_branch = { key = ITA_TRADE batch = $batch$ branch = 2 }
+		set_country_flag = ITA_genoa_missions
+		custom_tooltip = ITA_preview_genoa
+	}
+	#FEO
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = FEO batch = $batch$ } }
+		set_preview_loc_branch = { key = FEO batch = $batch$ branch = 2 }
+		set_country_flag = feo_russian_alliance_branch
+		custom_tooltip = feo_preview_russian_alliance_missions
+	}
+	#TIM
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TIM batch = $batch$ } }
+		set_preview_loc_branch = { key = TIM batch = $batch$ branch = 2 }
+		set_country_flag = TIM_persian_missions
+		custom_tooltip = TIM_preview_persians
+	}
+	#VEN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = VEN batch = $batch$ } }
+		set_preview_loc_branch = { key = VEN batch = $batch$ branch = 2 }
+		set_country_flag = ven_mercenary_army_missions_flag
+		custom_tooltip = ven_unlock_mercenary_army_missions_tt
+	}
+	#Hordes
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HORDES batch = $batch$ } }
+		set_preview_loc_branch = { key = HORDES batch = $batch$ branch = 2 }
+		set_country_flag = hordes_devout_branch_flag
+		custom_tooltip = hordes_preview_devout
+	}
+}
+preview_mission_branch_3 = {
+	#Origins
+	# none
+	#Lions of the North
+	#SWE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = SWE batch = $batch$ } }
+		set_preview_loc_branch = { key = SWE batch = $batch$ branch = 3 }
+		set_country_flag = sca_unlock_humanist_missions
+		custom_tooltip = SCA_preview_humanist
+	}
+	#DAN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = DAN batch = $batch$ } }
+		set_preview_loc_branch = { key = DAN batch = $batch$ branch = 3 }
+		set_country_flag = sca_unlock_humanist_missions
+		custom_tooltip = SCA_preview_humanist
+	}
+	#NOR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = NOR batch = $batch$ } }
+		set_preview_loc_branch = { key = NOR batch = $batch$ branch = 3 }
+		set_country_flag = sca_unlock_humanist_missions
+		custom_tooltip = SCA_preview_humanist
+	}
+	#TEU_PRU
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TEU_PRU batch = $batch$ } }
+		set_preview_loc_branch = { key = TEU_PRU batch = $batch$ branch = 3 }
+		set_country_flag = teu_kingdom_prussia_path
+		custom_tooltip = TEU_PRU_preview_prussian_kingdom
+	}
+	#Domination
+	#TUR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = TUR batch = $batch$ } }
+		set_preview_loc_branch = { key = TUR batch = $batch$ branch = 3 }
+		set_country_flag = tur_non_muslim_path_flag
+		custom_tooltip = TUR_preview_non_muslim_path
+	}
+	#King of Kings
+	#PER
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = PER batch = $batch$ } }
+		set_preview_loc_branch = { key = PER batch = $batch$ branch = 3 }
+		set_country_flag = per_zoroastrian_missions
+		custom_tooltip = per_preview_zoroastrian_missions
+	}
+	#Winds of Change
+	#VEN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = VEN batch = $batch$ } }
+		set_preview_loc_branch = { key = VEN batch = $batch$ branch = 3 }
+		set_country_flag = ven_navy_missions_flag
+		custom_tooltip = ven_unlock_navy_missions_tt
+	}
+	#Hordes
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = HORDES batch = $batch$ } }
+		set_preview_loc_branch = { key = HORDES batch = $batch$ branch = 3 }
+		set_country_flag = hordes_confucian_branch_flag
+		custom_tooltip = hordes_preview_confucian
+	}
+}
+preview_mission_branch_4 = {
+	#Origins
+	# none
+	#Lions of the North
+	#SWE
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = SWE batch = $batch$ } }
+		set_preview_loc_branch = { key = SWE batch = $batch$ branch = 4 }
+		set_country_flag = sca_unlock_norse_missions
+		custom_tooltip = SCA_preview_norse
+	}
+	#DAN
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = DAN batch = $batch$ } }
+		set_preview_loc_branch = { key = DAN batch = $batch$ branch = 4 }
+		set_country_flag = sca_unlock_norse_missions
+		custom_tooltip = SCA_preview_norse
+	}
+	#NOR
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = NOR batch = $batch$ } }
+		set_preview_loc_branch = { key = NOR batch = $batch$ branch = 4 }
+		set_country_flag = sca_unlock_norse_missions
+		custom_tooltip = SCA_preview_norse
+	}
+	#Domination
+	# none
+	#King of Kings
+	# none
+	#Winds of Change
+	# none
+}
+preview_mission_branch_5 = {
+	#Origins
+	# none
+	#Lions of the North
+	# none
+	#Domination
+	# none
+	#King of Kings
+	# none
+	#Winds of Change
+	# none
+	if = {
+		limit = { can_preview_mission_of_key_and_batch = { key = DUMMY batch = $batch$ } }
+		custom_tooltip = COOL_EFFECT
+	}
+}
+preview_mission_branch = {
+	clear_all_branching_flags = { batch = $batch$ }
+	preview_mission_branch_$branch$ = { batch = $batch$ }
+	hidden_effect = { swap_non_generic_missions = yes }
+}

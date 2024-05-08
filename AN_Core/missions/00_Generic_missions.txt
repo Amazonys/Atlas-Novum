@@ -23,6 +23,19 @@ military_missions = { #Series name is displayed over the slot?
 				name = "thriving_arms_industry"
 				duration = 9125 #25 years
 			}
+			custom_tooltip = claim_neighbor_province
+			hidden_effect = {
+				every_owned_province = {
+					every_neighbor_province = {
+						limit = {
+							NOT = { owned_by = ROOT }
+							NOT = { is_permanent_claim = ROOT	}
+							NOT = { is_core = ROOT	}
+						}
+						add_claim = ROOT
+					}
+				}
+			}
 		}
 		ai_weight = {
 			factor = 10 # AI will go (up to) this many percent above army budget in order to reach the army size needed
@@ -46,6 +59,19 @@ military_missions = { #Series name is displayed over the slot?
 					}
 				}
 			}
+			custom_tooltip = claim_neighbor_province
+			hidden_effect = {
+				every_owned_province = {
+					every_neighbor_province = {
+						limit = {
+							NOT = { owned_by = ROOT }
+							NOT = { is_permanent_claim = ROOT	}
+							NOT = { is_core = ROOT	}
+						}
+						add_claim = ROOT
+					}
+				}
+			}
 		}
 	}
 	#3d Tier: (not actually scripted as third, it's third as it is the 3rd one in this mission series)
@@ -54,9 +80,25 @@ military_missions = { #Series name is displayed over the slot?
 		required_missions = { expand_country_mission }
 		trigger = { grown_by_states = 5 }
 		effect = {
+			add_mil_power = 100
 			add_country_modifier = {
 				name = "expansionist_country"
 				duration = 9125 #25 years
+			}
+			custom_tooltip = perma_claim_neighbor_area
+			hidden_effect = {
+				every_owned_province = {
+					every_neighbor_province = {
+						area = {
+							limit = {
+								NOT = { owned_by = ROOT }
+								NOT = { is_permanent_claim = ROOT    }
+								NOT = { is_core = ROOT    }
+							}
+							add_permanent_claim = ROOT
+						}
+					}
+				}
 			}
 		}
 	}
@@ -66,9 +108,23 @@ military_missions = { #Series name is displayed over the slot?
 		required_missions = { conquer_states }
 		trigger = { army_size = 80 }
 		effect = {
+			add_army_tradition_or_mil_power = { amount = 20 }
 			add_country_modifier = {
 				name = "army_enthusiasm"
 				duration = 9125 #25 years
+			}
+			custom_tooltip = perma_claim_home_region
+			hidden_effect = {
+				capital_scope = {
+					every_province = {
+						limit = {
+							region = PREV
+							NOT = { owned_by = ROOT }
+							NOT = { is_core = ROOT }
+						}
+						add_permanent_claim = ROOT
+					}
+				}
 			}
 		}
 	}
@@ -94,12 +150,39 @@ military_missions = { #Series name is displayed over the slot?
 			}
 		}
 		effect = {
-			add_dip_power = 50
-			add_adm_power = 50
-			add_mil_power = 50
+			add_power_projection = {
+				type = mission_rewards_power_projection
+				amount = 25
+			}
 			add_country_modifier = {
 				name = "hegemonic_ambition"
 				duration = 9125 #25 years
+			}
+			custom_tooltip = home_region_generic_reward
+			tooltip = {
+				add_nationalism = -10
+			}
+			custom_tooltip = " "
+			custom_tooltip = perma_claim_neighbor_area
+			hidden_effect = {
+				every_owned_province = {
+					every_neighbor_province = {
+						area = {
+							limit = {
+								NOT = { owned_by = ROOT }
+								NOT = { is_permanent_claim = ROOT    }
+								NOT = { is_core = ROOT    }
+							}
+							add_permanent_claim = ROOT
+						}
+					}
+				}
+				every_owned_province = {
+					limit = {
+						region = capital
+					}
+					add_nationalism = -10
+				}
 			}
 		}
 	}
@@ -139,6 +222,13 @@ diplomatic_missions = {
 				name = "influential_diplomacy"
 				duration = 9125 #25 years
 			}
+			define_advisor = {
+				type = diplomat
+				skill = 1
+				culture = ROOT
+				religion = ROOT
+				cost_multiplier = 0.5
+			}
 		}
 	}
 	have_two_subjects = {
@@ -146,9 +236,13 @@ diplomatic_missions = {
 		required_missions = { building_alliances }
 		trigger = { num_of_non_tributary_subjects = 2 }
 		effect = {
+			add_dip_power = 100
 			add_country_modifier = {
 				name = "obedient_subjects"
 				duration = 9125 #25 years
+			}
+			every_subject_country = {
+				add_liberty_desire = -10
 			}
 		}
 	}
@@ -165,6 +259,33 @@ diplomatic_missions = {
 			add_country_modifier = {
 				name = "naval_enthusiasm_mission"
 				duration = 9125 #25 years
+			}
+			if = {
+				limit = {
+					NOT = {
+						navy_tradition = 40
+					}
+				}
+				create_admiral = { tradition = 40 }
+			}
+			else_if = {
+				limit = {
+					NOT = {
+						navy_tradition = 60
+					}
+				}
+				create_admiral = { tradition = 60 }
+			}
+			else_if = {
+				limit = {
+					NOT = {
+						navy_tradition = 80
+					}
+				}
+				create_admiral = { tradition = 80 }
+			}
+			else = {
+				create_admiral = { tradition = 100 }
 			}
 		}
 	}
@@ -244,6 +365,8 @@ diplomatic_missions = {
 			else = {
 				custom_tooltip = dominant_home_node_reward_tooltip
 			}
+			custom_tooltip = " "
+			add_mercantilism_or_monarch_power = { amount = 3 }
 		}
 	}
 	trade_company_region_abroad = {
@@ -272,6 +395,33 @@ diplomatic_missions = {
 				name = "east_india_trade_rush"
 				duration = 9125 #25 years
 			}
+			if = {
+				limit = {
+					NOT = {
+						navy_tradition = 40
+					}
+				}
+				create_explorer = { tradition = 40 }
+			}
+			else_if = {
+				limit = {
+					NOT = {
+						navy_tradition = 60
+					}
+				}
+				create_explorer = { tradition = 60 }
+			}
+			else_if = {
+				limit = {
+					NOT = {
+						navy_tradition = 80
+					}
+				}
+				create_explorer = { tradition = 80 }
+			}
+			else = {
+				create_explorer = { tradition = 100 }
+			}
 		}
 	}
 }
@@ -293,6 +443,13 @@ administrative_missions = {
 			add_country_modifier = {
 				name = "growing_economy"
 				duration = 9125 #25 years
+			}
+			define_advisor = {
+				type = treasurer
+				skill = 1
+				culture = ROOT
+				religion = ROOT
+				cost_multiplier = 0.5
 			}
 		}
 	}
@@ -326,6 +483,7 @@ administrative_missions = {
 				name = "strong_treasury"
 				duration = 9125
 			}
+			add_corruption = -2
 		}
 	}
 	build_manufactories = {
@@ -364,10 +522,27 @@ administrative_missions = {
 			total_development = 1000
 		}
 		effect = {
-			add_prestige = 30
+			add_prestige_or_monarch_power = {
+				amount = 30
+			}
 			add_country_modifier = {
 				name = "imperial_ambition"
 				duration = 9125
+			}
+			custom_tooltip = perma_claim_neighbor_area
+			hidden_effect = {
+				every_owned_province = {
+					every_neighbor_province = {
+						area = {
+							limit = {
+								NOT = { owned_by = ROOT }
+								NOT = { is_permanent_claim = ROOT    }
+								NOT = { is_core = ROOT    }
+							}
+							add_permanent_claim = ROOT
+						}
+					}
+				}
 			}
 		}
 	}

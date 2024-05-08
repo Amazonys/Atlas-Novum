@@ -1,0 +1,279 @@
+######################################
+### Incident for a Reformed Empire ###
+### By Pierre du Plessis           ###
+### Adapted for a Hussite Empire   ###
+### by howard & Parmelion          ###
+######################################
+
+namespace = hussite_protest
+
+country_event = {
+	id = hussite_protest.1
+	title = hussite_protest.1.name
+	desc = hussite_protest.1.desc
+	picture = RELIGIOUS_WARS_eventPicture
+	
+	fire_only_once = yes
+	is_triggered_only = yes
+	major = yes
+	
+	immediate = {
+		hidden_effect = {
+			random_country = { #largest Hussite country in HRE (by province number)
+				limit = {
+					is_part_of_hre = yes
+					religion = hussite
+					is_free_or_tributary_trigger = yes
+					NOT = {
+						any_country = {
+							is_part_of_hre = yes
+							religion = hussite
+							is_free_or_tributary_trigger = yes
+							num_of_cities = prev
+							NOT = { prev = { num_of_cities = prev } }
+						}
+					}
+				}
+				save_event_target_as = hussite_leader_country
+			}
+		}
+	}
+	
+	option = {
+		name = hussite_protest.1.a
+		custom_tooltip = hussite_protest.1.a.leave_empire_tt
+		hidden_effect = {
+			every_country = {
+				limit = {
+					is_part_of_hre = yes
+					religion = hussite
+					is_free_or_tributary_trigger = yes
+				}
+				add_opinion = {
+					who = root
+					modifier = opinion_annoyed_at_hre_protestant
+				}
+				country_event = { id = hussite_protest.2 }
+			}
+		}
+
+		ai_chance = {
+			factor = 1000
+			modifier = {
+				factor = 0.5
+				has_global_flag = incident_hussite_protest_high_chance
+			}
+			modifier = {
+				factor = 0.5
+				any_country = {
+					OR = {
+						is_part_of_hre = yes
+						religion = hussite
+					}
+					OR = {
+						total_own_and_non_tributary_subject_development = root
+						army_size = root
+					}
+				}
+			}
+			modifier = {
+				factor = 0.01
+				calc_true_if = {
+					amount = 3
+					all_country = {
+						OR = {
+							is_part_of_hre = yes
+							religion = hussite
+						}
+						OR = {
+							total_own_and_non_tributary_subject_development = root
+							army_size = root
+						}
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					NOT = { num_of_cities = 2 }
+					any_country = {
+						is_part_of_hre = yes
+						religion = hussite
+						OR = {
+							is_in_war = {
+								attacker_leader = this
+								defenders = root
+								war_score = 50
+							}
+							is_in_war = {
+								defender_leader = this
+								attackers = root
+								war_score = 50
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = hussite_protest.1.b
+		set_hre_religion_treaty = yes
+		add_imperial_influence = -20
+
+		ai_chance = {
+			factor = 1000
+			modifier = {
+				factor = 0.01
+				NOT = {
+					any_country = {
+						OR = {
+							is_part_of_hre = yes
+							religion = hussite
+						}
+						OR = {
+							total_own_and_non_tributary_subject_development = root
+							army_size = root
+						}
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					NOT = { num_of_cities = 2 }
+					any_country = {
+						is_part_of_hre = yes
+						religion = hussite
+						OR = {
+							is_in_war = {
+								attacker_leader = this
+								defenders = root
+								war_score = 50
+							}
+							is_in_war = {
+								defender_leader = this
+								attackers = root
+								war_score = 50
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = hussite_protest.1.c
+		set_hre_religion = hussite
+		custom_tooltip = hussite_protest.1.c.emperor_pick_conditions_tt
+
+		ai_chance = {
+			factor = 1000
+			modifier = {
+				factor = 0.01
+				OR = {
+					num_of_cities = 2
+					NOT = {
+						any_country = {
+							is_part_of_hre = yes
+							religion = hussite
+							OR = {
+								is_in_war = {
+									attacker_leader = this
+									defenders = root
+									war_score = 50
+								}
+								is_in_war = {
+									defender_leader = this
+									attackers = root
+									war_score = 50
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+country_event = {
+	id = hussite_protest.2
+	title = hussite_protest.2.name
+	desc = hussite_protest.2.desc
+	picture = RELIGIOUS_WARS_eventPicture
+	is_triggered_only = yes
+
+	option = {
+		name = hussite_protest.2.a
+		add_stability = -1
+		add_imperial_influence = 10
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+				has_global_flag = incident_hussite_protest_high_chance
+			}
+		}
+	}
+	option = {
+		name = hussite_protest.2.b
+		event_target:Emperor = {
+			add_opinion = {
+				who = root
+				modifier = opinion_abandoned_hre
+			}
+		}
+		set_in_empire = no
+		every_subject_country = {
+			limit = {
+				is_part_of_hre = yes
+				is_free_or_tributary_trigger = no
+			}
+			set_in_empire = no
+		}
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 0
+				has_reform = free_city
+			}
+			modifier = {
+				factor = 0.75
+				NOT = { num_of_cities = 10 }
+			}
+			modifier = {
+				factor = 0.5
+				NOT = { num_of_cities = 4 }
+			}
+			modifier = {
+				factor = 0.5
+				NOT = { num_of_cities = 2 }
+			}
+			modifier = {
+				factor = 0.5
+				NOT = { num_of_cities = 2 }
+			}
+			modifier = {
+				factor = 0.25
+				alliance_with = event_target:Emperor
+			}
+			modifier = {
+				factor = 2
+				OR = {
+					is_rival = event_target:Emperor
+					event_target:Emperor = { is_rival = root }
+				}
+			}
+			modifier = {
+				factor = 10
+				OR = {
+					total_own_and_non_tributary_subject_development = event_target:Emperor
+					army_size = event_target:Emperor
+				}
+			}
+		}
+	}
+}

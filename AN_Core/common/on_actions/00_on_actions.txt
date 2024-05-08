@@ -6,8 +6,19 @@ on_startup = {
 		save_global_event_target_as = Emperor
 	}
 	if = {
-		limit = { is_emperor_of_china = yes }
-		save_global_event_target_as = EmperorOfChina
+		limit = {
+			has_dlc = "Mandate of Heaven"
+		}
+		if = {
+			limit = { is_emperor_of_china = yes }
+			save_global_event_target_as = EmperorOfChina
+		}
+	}
+	else = {
+		if = {
+			limit = { has_reform = celestial_empire }
+			save_global_event_target_as = EmperorOfChina
+		}
 	}
 	events = {
 		muslim_school_events.20 #Pick School
@@ -135,6 +146,12 @@ on_secondary_religion_change = {
 			which = khojas_retained value = 0
 		}
 	}
+	if = {
+		limit = {
+			has_country_flag = hordes_devout_tengri_completion_flag
+		}
+		add_prestige = 50
+	}
 }
 
 # country. Spawned when Enforcing Rebel Demands through a Support Rebels-war.
@@ -175,6 +192,14 @@ on_peace_recipient = {
 # country
 # root = winning country, from = loser country
 on_war_won = {
+	if = {
+		limit = {
+			has_country_modifier = hun_avenge_varna
+			FROM = { tag = TUR }
+		}
+		remove_country_modifier = hun_avenge_varna
+	}
+	
 	FROM = { country_event = { id = flavor_cri.6 } }
 	ROOT = { country_event = { id = tributary_events.32 } }
 	if = {
@@ -302,6 +327,10 @@ on_war_won = {
 			id = flavor_swe.121
 		}
 	}
+	change_variable = {
+		which = num_of_wars_won_var
+		value = 1
+	}
 }
 
 # country
@@ -317,6 +346,13 @@ on_main_war_won = {
 # country
 # root = winning country, from = loser country
 on_separate_war_won = {
+	if = {
+		limit = {
+			has_country_modifier = hun_avenge_varna
+			FROM = { tag = TUR }
+		}
+		remove_country_modifier = hun_avenge_varna
+	}
 	if = {
 		limit = {
 			ROOT = {
@@ -336,6 +372,29 @@ on_separate_war_won = {
 # country
 # root = loser country, from = winner country
 on_war_lost = {
+	if = {
+		limit = {
+			ROOT = {
+				has_country_modifier = hun_avenge_varna
+			}
+			FROM = { tag = TUR }
+		}
+		remove_country_modifier = hun_avenge_varna
+	}
+	if = {
+		limit = {
+			ROOT = {
+				has_country_modifier = boh_hegemon
+			}
+		}
+		remove_country_modifier = boh_hegemon
+	}
+	if = {
+		limit = {
+			has_country_modifier = hun_avenge_varna
+		}
+		remove_country_modifier = hun_avenge_varna
+	}
 	ROOT = { country_event = { id = flavor_cri.6 } }
 	ROOT = { country_event = { id = tributary_events.32 } }
 	if = {
@@ -371,12 +430,30 @@ on_war_lost = {
 	}
 }
 on_main_war_lost = {
+	if = {
+		limit = {
+			ROOT = {
+				has_country_modifier = hun_avenge_varna
+			}
+			FROM = { tag = TUR }
+		}
+		remove_country_modifier = hun_avenge_varna
+	}
 	events = {
 		flavor_kor.15
 		flavor_tur.300 #Defeat of the Ottomans
 	}
 }
 on_separate_war_lost = {
+	if = {
+		limit = {
+			ROOT = {
+				has_country_modifier = hun_avenge_varna
+			}
+			FROM = { tag = TUR }
+		}
+		remove_country_modifier = hun_avenge_varna
+	}
 }
 
 
@@ -385,54 +462,22 @@ on_separate_war_lost = {
 on_battle_won_country = {
 	on_battle_ended_effect = yes
 	on_battle_won_country_effect = yes
+	#Hungary Achievement -> this triggers first
 	if = {
 		limit = {
-			ROOT = {
-				tag = ALB
-				NOT = { has_country_flag = albanian_victory }
+			any_hired_mercenary_company = {
+				OR = {
+					template = merc_black_army
+					template = merc_black_army_2
+				}
 			}
-			FROM = {
-				tag = TUR
-			}
-		}
-		ROOT = { set_country_flag = albanian_victory }
-	}
-	count_won_battles_and_reward_at_end = {
-		counting_flag = teu_crusader_battle_counter
-		max_value = 20
-		effect = "
-			country_event = {
-				id = flavor_teu.12
-			}
-		"
-	}
-	count_won_battles_and_reward_at_end = {
-		counting_flag = has_rus_kill_counter
-		max_value = 40
-		effect = "set_country_flag = rus_finished_kill_mission"
-	}
-	if = {
-		limit = {
-			has_country_modifier = geo_bane_khagan
-			FROM = {
-				has_reform = steppe_horde
+			from = {
+				war_with = root
+				NOT = { has_country_flag = hun_uniqe_defeated_country }
 			}
 		}
-		add_army_tradition = 0.5
-	}
-	if = {
-		limit = {
-			ROOT = {
-				has_country_modifier = turkoman_triumphant_conquest
-			}
-			FROM = {
-				tag = TIM
-			}
-		}
-		random_list = {
-			20 = { ROOT = { add_manpower = 2 } }
-			80 = { }
-		}
+		set_country_flag = hun_won_battle
+		from = { set_country_flag = hun_lost_battle }
 	}
 }
 
@@ -597,6 +642,153 @@ on_battle_won_unit = {
 			}
 		}
 	}
+	if = {
+		limit = {
+			unit_owner = {
+				religion = mesoamerican_religion
+			}
+		}
+		unit_owner = {
+			change_variable = {
+				which = land_units_killed_since_last_reform
+				which = land_units_killed
+			}
+		}
+	}
+	if = {
+		limit = {
+			unit_owner = {
+				has_government_mechanic = blood_gathering_mechanic
+			}
+		}
+		unit_owner = {
+			set_variable = {
+				which = blood_kill
+				which = land_units_killed
+			}
+			if = {
+				limit = {
+					NOT = { has_country_flag = azt_blood_cap_flag }
+					check_variable = {
+						which = blood_kill
+						value = 200001
+					}
+				}
+				set_variable = {
+					which = blood_kill
+					value = 200000
+				}
+			}
+			else_if = {
+				limit = {
+					has_country_flag = azt_blood_cap_flag
+					check_variable = {
+						which = blood_kill
+						value = 400001
+					}
+				}
+				set_variable = {
+					which = blood_kill
+					value = 400000
+				}
+			}
+			while = {
+				limit = {
+					check_variable = {
+						which = blood_kill
+						value = 1000
+					}
+				}
+				change_variable = {
+					which = blood_kill
+					value = -1000
+				}
+				add_government_power = { 
+					mechanic_type = blood_gathering_mechanic 
+					power_type = blood
+					value = 0.1
+				}
+			}
+		}
+	}
+	if = {
+		limit = {
+			unit_owner = {
+				has_country_flag = hordes_legendary_conqueror_battles_flag
+				ruler_has_personality = conqueror_personality
+			}
+			is_ruler_commanding_unit = yes
+		}
+		unit_owner = {
+			change_variable = {
+				which = NumOfRulerBattles
+				value = 1
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = NumOfRulerBattles
+						value = 50
+					}
+				}
+				remove_ruler_personality = conqueror_personality
+				add_ruler_personality = legendary_conqueror_personality
+			}
+		}
+	}
+	if = {
+		limit = {
+			is_ruler_commanding_unit = yes
+		}
+		unit_owner = {
+			change_variable = {
+				which = num_of_battles_won_ruler
+				value = 1
+			}
+		}
+	}
+	if = {
+		limit = {
+			OR = {
+				mercenary_company = merc_black_army
+				mercenary_company = merc_black_army_2
+			}
+			unit_owner = {
+				has_country_flag = hun_won_battle
+				any_war_enemy_country = {
+					has_country_flag = hun_lost_battle
+				}
+			}
+		}
+		unit_owner = {
+			change_variable = {
+				which = black_army_glorious_victories
+				value = 1
+			}
+			clr_country_flag = hun_won_battle
+			random_war_enemy_country = {
+				limit = { has_country_flag = hun_lost_battle }
+				clr_country_flag = hun_lost_battle
+				set_country_flag = hun_uniqe_defeated_country
+			}
+		}
+	}
+	else = {
+		if = {
+			limit = {
+				unit_owner = {
+					has_country_flag = hun_won_battle
+				}
+			}
+			unit_owner = {
+				clr_country_flag = hun_won_battle
+				random_war_enemy_country = {
+					limit = { has_country_flag = hun_lost_battle }
+					clr_country_flag = hun_lost_battle
+				}
+			}
+		}
+	}
 }
 
 # #Unit Scope OnAction for Battle Lost
@@ -660,6 +852,17 @@ on_company_disolved ={
 # province
 # root = location, from = winner country
 on_battle_lost_province = {
+	if = {
+		limit = {
+			FROM = {
+				has_government_attribute = battles_on_own_territory_bonus_tradition
+			}
+			owned_by = FROM
+		}
+		FROM = {
+			add_army_tradition = 0.1
+		}
+	}
 	random_events = {
 		1000 = 0
 		100 = tyw_events.22	# Capital Battle in Religious War
@@ -743,6 +946,7 @@ on_siege_won_country = {
 			has_dlc = "Domination"
 			not = { tag = MAM }
 			exists = MAM
+			NOT = { exists = EGY }
 			FROM = {
 				is_capital = yes
 				owner = { tag = MAM }
@@ -884,6 +1088,23 @@ on_new_monarch = {
 	hab_remove_mission_mods_if_not_emperor_effect = yes
 	thu_remain_von_wettin_effect = yes
 	ladislaus_postumus_union_effect = yes
+	if = {
+		limit = {
+			has_country_flag = hordes_legendary_conqueror_battles_flag
+		}
+		set_variable = {
+			which = NumOfRulerBattles
+			value = 0
+		}
+	}
+	if = {
+		limit = {
+			has_country_flag = hordes_guaranteed_conquerors
+			has_dlc = "Rights of Man"
+			NOT = { ruler_has_personality = conqueror_personality }
+		}
+		add_ruler_personality = conqueror_personality
+	}
 	events = {
 		tribal_succession.1		# Harsh anti-tribals.
 		9492 					# Remove some event modifiers
@@ -972,6 +1193,7 @@ on_monarch_death = {
 		flavor_mal.11 # Mali pretenders
 		flavor_mal.47 # Pilgrimage ends prematurely
 		government_events.3	# Election of a new Ruler
+		flavor_inc.27 # Mummification of the Dead
 	}
 }
 
@@ -1044,6 +1266,14 @@ on_death_election = {
 		elections.721		# Dutch Republic
 		elections.800	# Lottery election
 		flavor_tus.16 #Savonarola Leaves This World
+	}
+	if = {
+		limit = { has_country_flag = ven_lichking_rulers_flag }
+		add_ruler_modifier = {
+			name = ven_plague_doctors_modifier
+			duration = -1
+			hidden = yes
+		}
 	}
 }
 
@@ -1230,6 +1460,15 @@ on_successive_emperor = {
 	events = {
 		900
 	}
+	if = {
+		limit = {
+			emperor = {
+				has_country_flag = hun_imperial_reelection_bonus
+			}
+		}
+		add_prestige = 10
+		add_imperial_influence = 5
+	}
 }
 
 # Called whenever a new emperor is elected
@@ -1392,6 +1631,21 @@ on_native_change_government = {
 
 # Nation is integrated after being in union
 on_integrate = {
+	if = {
+		limit = {
+			has_country_flag = hun_integrate_pu_bonus
+			FROM = { junior_union_with = ROOT }
+		}
+		if = {
+			limit = {
+				has_dlc = "Mandate of Heaven"
+			}
+			add_splendor = 100
+		}
+		else = {
+			add_dip_power = 100
+		}
+	}
 	events = {
 		610
 	}
@@ -1423,6 +1677,36 @@ on_annexed = {
 		if = {
 			limit = { tag = FIN }
 			every_country = { limit = { has_country_modifier = rus_grand_duke_of_finland } remove_country_modifier = rus_grand_duke_of_finland }
+		}
+	}
+	if = {
+		limit = {
+			tag = HAB
+			FROM = { tag = HUN }
+			NOT = { has_country_flag = hab_hungarian_crown_event_flag }
+			num_of_owned_provinces_with = {
+				value = 1
+				OR = {
+					culture = hungarian
+					is_core = HUN
+				}
+			}
+		}
+		country_event = { id = hungarian_revolt_events.4 }
+	}
+	if = {
+		limit = {
+			has_country_flag = hun_integrate_pu_bonus
+			FROM = { junior_union_with = ROOT }
+		}
+		if = {
+			limit = {
+				has_dlc = "Mandate of Heaven"
+			}
+			add_splendor = 100
+		}
+		else = {
+			add_dip_power = 100
 		}
 	}
 }
@@ -1652,174 +1936,17 @@ on_dismantle_revolution = {
 
 # province
 on_adm_development = {
-	on_adm_development_effect = yes
-	on_development_effect = yes
-	if = {
-		limit = { owner = { has_country_flag = enable_supplemental_development_flag } }
-		random_list = {
-			20 = { add_base_tax = 1 }
-			80 = { }
-		}
-	}
-	if = {
-		limit = { 
-			owner = { has_country_modifier = lit_increased_dev_modifier }
-		}
-		add_base_tax = 1 
-	}
-	if = { 
-		limit = { has_state_edict = chinese_industrialization } 
-		random_list = {
-			10 = { add_base_tax = 1 } 
-			10 = { add_prosperity = 1 } 
-			10 = { add_province_modifier = { name = qng_center_of_industrialization_modifier duration = 3650 } }
-			70 = {  } 
-		}
-	}
-	if = {
-		limit = { owner = { has_country_modifier = JAP_cadastral_surveys has_dlc = "Domination" } }
-		owner = {
-			change_estate_land_share = {
-				estate = all 
-				share = -0.2
-			}
-		}
-	}
-	
-	if = {
-		limit = { owner = { has_country_modifier = jap_20_years_devving_tax_yields_twice_bonus_1_burgher_loyalt_modifier } }
-		add_base_tax = 1 
-		owner = {
-			add_estate_loyalty = {
-				estate = estate_burghers 
-				loyalty = 1 
-			}
-		}
-	}
-	
-	if = { 
-		limit = { 
-			owner = { has_country_modifier = pru_victory_lower_saxony_modifier }
-			OR = { 
-				culture = saxon
-				culture = lower_saxon
-			}
-		}
-		add_nationalism = -3
-		add_local_autonomy = -5
-		add_prosperity = 1
-	}
-	if = {
-		limit = {
-			religion = ROOT
-			owner = {
-				has_country_flag = geo_orthodox_dev
-			}
-		}
-		random_list = {
-			10 = { add_base_tax = 1 }
-			90 = { }
-		}
-	}
-	if = {
-		limit = {
-			OR = {
-				trade_goods = cloth
-				trade_goods = silk
-			}
-			owner = { has_country_modifier = turkoman_expanding_industry }
-		}
-		random_list = {
-			20 = { add_base_tax = 1 } 
-			80 = {  } 
-		}
-	}
+	on_development_effect = { type = adm }
 }
 
 # province
 on_dip_development = {
-	on_dip_development_effect = yes
-	on_development_effect = yes
-	if = { 
-		limit = { 
-			owner = { has_country_modifier = pru_victory_lower_saxony_modifier }
-			OR = { 
-				culture = saxon
-				culture = lower_saxon
-			}
-		}
-		add_nationalism = -3
-		add_local_autonomy = -5
-		add_prosperity = 1
-	}
-	if = {
-		limit = {
-			religion = ROOT
-			owner = {
-				has_country_flag = geo_orthodox_dev
-			}
-		}
-		random_list = {
-			10 = { add_base_production = 1 }
-			90 = { }
-		}
-	}
-	if = {
-		limit = {
-			OR = {
-				trade_goods = cloth
-				trade_goods = silk
-			}
-			owner = { has_country_modifier = turkoman_expanding_industry }
-		}
-		random_list = {
-			20 = { add_base_production = 1 } 
-			80 = {  } 
-		}
-	}
+	on_development_effect = { type = dip }
 }
 
 # province
 on_mil_development = {
-	on_mil_development_effect = yes
-	on_development_effect = yes
-	if = { 
-		limit = { 
-			owner = { has_country_modifier = pru_victory_lower_saxony_modifier }
-			OR = { 
-				culture = saxon
-				culture = lower_saxon
-			}
-		}
-		add_nationalism = -3
-		add_local_autonomy = -5
-		add_prosperity = 1
-	}
-	if = {
-		limit = {
-			religion = ROOT
-			owner = {
-				has_country_flag = geo_orthodox_dev
-			}
-		}
-		random_list = {
-			10 = { add_base_manpower = 1 }
-			90 = { }
-		}
-	}
-	if = {
-		limit = {
-			OR = {
-				trade_goods = cloth
-				trade_goods = silk
-			}
-			owner = { has_country_modifier = turkoman_expanding_industry }
-		}
-		random_list = {
-			20 = { add_base_manpower = 1 } 
-			80 = {  } 
-		}
-	}
+	on_development_effect = { type = mil }
 }
 
 on_overextension_pulse = {
@@ -4241,44 +4368,7 @@ on_province_culture_changed = {
 
 # THIS = Province, FROM = Country who Propogated
 on_convert_by_trade_policy = {
-	if = {
-		limit = {
-			trade_company_region = trade_company_moluccas
-			FROM = { is_defender_of_faith = yes }
-		}
-		FROM = {
-			if = {
-				limit = {
-					ai = no
-					NOT = { check_variable = { which = religion_propagated_in_moluccas value = 1 } }
-				}
-				set_variable = {
-					which = religion_propagated_in_moluccas value = 1
-				}
-			}
-			else_if = {
-				limit = {
-					ai = no
-					check_variable = { which = religion_propagated_in_moluccas value = 1 }
-					NOT = { check_variable = { which = religion_propagated_in_moluccas value = 6 } }
-				}
-				change_variable = {
-					which = religion_propagated_in_moluccas value = 1
-				}
-			}
-		}
-	}
-	
-	if = {
-		limit = {
-			FROM = {
-				has_country_flag = YEM_propagation_gives_navy_tradition
-			}
-		}
-		FROM = {
-			add_navy_tradition = 1
-		}
-	}
+	on_convert_by_trade_policy_effect = yes
 }
 
 # province
@@ -4305,6 +4395,36 @@ on_province_owner_change = {
 			has_province_modifier = sufi_shrine
 		}
 		remove_province_modifier = sufi_shrine
+	}
+	if = {
+		limit = {
+			OR = {
+				religion_group = christian
+				religion_group = muslim
+			}
+			owner = {
+				has_church_aspect = jewish_abrahamic_aspect
+			}
+		}
+		add_province_modifier = {
+			name = judaism_abrahamic_roots
+			duration = -1
+		}
+	}
+	else_if = {
+		limit = {
+			has_province_modifier = judaism_abrahamic_roots
+			OR = {
+				AND = {
+					NOT = { religion_group = christian }
+					NOT = { religion_group = muslim }
+				}
+				owner = {
+					NOT = { has_church_aspect = jewish_abrahamic_aspect }
+				}
+			}
+		}
+		remove_province_modifier = judaism_abrahamic_roots
 	}
 	on_province_owner_change_estate_privileges_effect = yes
 	imperial_modifiers_on_province_change_culture_or_change_owner_effect = yes
@@ -4410,6 +4530,251 @@ on_province_owner_change = {
 			name = ottoman_siyasah_tax_reform_manpower
 			duration = -1
 		}
+	}
+	if = {
+		limit = {
+			owner = { has_government_attribute = negate_unaccepted_levantine_culture }
+			culture_group = turko_semitic
+			has_owner_accepted_culture = no
+		}
+		add_province_modifier = {
+			name = hsn_ayyubid_tolerance
+			duration = -1
+		}
+	}
+	if = {
+		limit = {
+			owner = {
+				has_government_attribute = seven_provinces_organization
+			}
+		}
+		if = {
+			limit = {
+				region = low_countries_region
+				culture_group = ROOT
+			}
+			add_province_modifier = {
+				name = ned_seven_provinces_organization_positive_modifier
+				duration = -1
+				hidden = yes
+			}
+		}
+		else_if = {
+			limit = {
+				NOT = { region = low_countries_region }
+				continent = europe
+			}
+			add_province_modifier = {
+				name = ned_seven_provinces_organization_negative_modifier
+				duration = -1
+				hidden = yes
+			}
+		}
+	}
+	
+	if = {
+		limit = {
+			owner = {
+				has_country_flag = ned_buffed_forts_flag
+				NOT = {
+					full_idea_group = defensive_ideas
+				}
+			}
+			region = low_countries_region
+			has_fort_building_trigger = yes
+		}
+		add_province_modifier = {
+			name = ned_low_countries_fort_buff
+			duration = -1
+			hidden = yes
+		}
+	}
+	else_if = {
+		limit = {
+			owner = {
+				has_country_flag = ned_buffed_forts_flag
+				full_idea_group = defensive_ideas
+			}
+			region = low_countries_region
+			has_fort_building_trigger = yes
+		}
+		add_province_modifier = {
+			name = ned_low_countries_fort_buff_buffed
+			duration = -1
+			hidden = yes
+		}
+	}
+	
+	if = {
+		limit = {
+			owner = {
+				has_country_flag = ned_unlock_dutch_urbanization_flag
+			}
+			region = low_countries_region
+			development = 25
+		}
+		add_province_modifier = {
+			name = ned_dutch_urbanization
+			duration = -1
+		}
+	}
+	if = {
+		limit = {
+			owner = {
+				has_country_flag = ned_unlock_flemish_urbanization_flag
+			}
+			region = low_countries_region
+			development = 25
+		}
+		add_province_modifier = {
+			name = ned_flemish_urbanization
+			duration = -1
+		}
+	}
+	if = {
+		limit = {
+			OR = {
+				continent = south_america
+				continent = north_america
+				continent = new_world
+			}
+			colonial_territory_trigger_on_action = yes
+		}
+		set_province_flag = SUN_colonial_territory
+	}
+	if = {
+		limit = {
+			owner = {
+				has_country_flag = INC_royal_roads_flag 
+			}
+			OR = {
+				has_terrain = mountain
+				has_terrain = highlands
+				has_terrain = hills
+			}
+			continent = south_america
+		}
+		add_province_modifier = {
+			name = INC_royal_roads
+			duration = -1
+		}
+	}
+	
+	if = {
+		limit = {
+			owner = {
+				has_estate_privilege = estate_church_INC_idol_making 
+			}
+			trade_goods = gold
+		}
+		add_province_modifier = {
+			name = INC_gold_debuff
+			duration = -1
+		}
+	}
+	
+	if = {
+		limit = {
+			owner = {
+				has_country_flag = azt_temples_buffs_flag
+			}
+			has_tax_building_trigger = yes
+		}
+		add_province_modifier = {
+			name = azt_religious_classes
+			duration = -1
+			hidden = yes
+		}
+	}
+	
+	if = {
+		limit = {
+			owner = {
+				has_government_attribute = chinampa_farms_mechanic
+			}
+			trade_goods = grain
+		}
+		add_province_modifier = {
+			name = chinampa_farms_modifier
+			duration = -1
+			hidden = yes
+		}
+	}
+
+	if = {
+        limit = {
+            owner = {
+                has_estate_privilege = estate_nobles_vegvar_system
+            }
+            has_fort_building_trigger = yes
+            any_neighbor_province = {
+                NOT = { owned_by = ROOT }
+            }
+        }
+        add_province_modifier = {
+            name = estate_nobles_vegvar_system_modifier
+            duration = -1
+        }
+    }
+	if = {
+        limit = {
+			has_province_modifier = estate_nobles_vegvar_system_modifier
+            NOT = {
+				any_neighbor_province = {
+                	NOT = { owned_by = ROOT }
+            	}
+			}
+        }
+        remove_province_modifier = estate_nobles_vegvar_system_modifier
+    }
+    if = {
+        limit = {
+            owner = {
+                has_estate_privilege = estate_nobles_vegvar_system
+            }
+        }
+        owner = {
+            every_owned_province = {
+                limit = {
+                    has_province_modifier = estate_nobles_vegvar_system_modifier
+                    has_fort_building_trigger = yes
+                    all_neighbor_province = {
+                        owned_by = ROOT
+                    }
+                }
+                remove_province_modifier = estate_nobles_vegvar_system_modifier
+            }
+        }
+    }
+	if = {
+        limit = {
+			has_province_modifier = estate_nobles_vegvar_system_modifier
+			NOT = {
+				owner = {
+					has_estate_privilege = estate_nobles_vegvar_system
+				}
+				has_fort_building_trigger = yes
+				any_neighbor_province = {
+					NOT = { owned_by = ROOT }
+				}
+			}
+        }
+		remove_province_modifier = estate_nobles_vegvar_system_modifier
+	}
+	if = {
+        limit = {
+			has_province_modifier = estate_nobles_vegvar_system_modifier
+			NOT = {
+				owner = {
+					has_estate_privilege = estate_nobles_vegvar_system
+				}
+				has_fort_building_trigger = yes
+				any_neighbor_province = {
+					NOT = { owned_by = ROOT }
+				}
+			}
+        }
+		remove_province_modifier = estate_nobles_vegvar_system_modifier
 	}
 }
 
@@ -4551,10 +4916,63 @@ on_consecrate_patriarch = {
 			}
 		}
 	}
+	if = {
+		limit = {
+			owner = { has_country_flag = metropolitan_double_buff }
+		}
+		every_province_in_state = {
+			add_province_modifier = {
+				name = tre_consecrated_ground
+				duration = -1
+				hidden = yes
+			}
+		}
+	}
 }
 
 # country. from = overlord
 on_accept_tribute = {
+	if = {
+		limit = {
+			FROM = {
+				has_country_flag = azt_imperial_tributes_flag
+			}
+		}
+		FROM = {
+			add_estate_loyalty = {
+				estate = estate_nobles
+				loyalty = 1
+			}
+		}
+	}
+	if = {
+		limit = {
+			FROM = {
+				has_country_flag = basaqs_tribes_loyalty_from_tribute_flag
+				has_estate_privilege = estate_nomadic_tribes_basqaq_autonomy
+			}
+		}
+		FROM = {
+			add_estate_loyalty = {
+				estate = estate_nomadic_tribes
+				loyalty = 1
+			}
+		}
+	}
+	if = {
+		limit = {
+			FROM = {
+				has_country_flag = basaqs_tribes_loyalty_from_tribute_flag
+				has_estate_privilege = estate_nobles_basqaq_autonomy
+			}
+		}
+		FROM = {
+			add_estate_loyalty = {
+				estate = estate_nobles
+				loyalty = 1
+			}
+		}
+	}
 }
 
 # country. from = overlord
@@ -4834,6 +5252,8 @@ on_culture_promoted = {
 	judaism_on_culture_country_effect = yes
 	imperial_modifiers_on_culture_country_effect = yes
 	
+	GER_on_culture_promoted = yes
+	
 	if = { 
 		limit = { has_country_flag = reduce_ae_from_prom_cultures_flag }
 		every_country = {
@@ -4851,10 +5271,13 @@ on_culture_demoted = {
 	judaism_on_culture_country_effect = yes
 	imperial_modifiers_on_culture_country_effect = yes
 	on_culture_demoted_effect = yes
-	on_culture_demoted_effect_remove_all_free_slots = yes
+	#on_culture_demoted_effect_remove_all_free_slots = yes
+	
+	GER_on_culture_demoted = yes
 }
 
 on_primary_culture_changed = {
+	on_primary_culture_changed_effect = yes
 	on_primary_culture_changed_privileges_effect = yes
 	judaism_on_culture_country_effect = yes
 	imperial_modifiers_on_primary_culture_change_effect = yes
@@ -4895,6 +5318,42 @@ on_create_vassal = {
 	on_religion_change_estate_privileges_effect = yes
 	if = {
 		limit = {
+			ai = no
+			tag = BOH
+			has_dlc = "Winds of Change"
+			not_in_mission_preview_mode = { key = BOH_RELIGION }
+			NOT = { mission_completed = boh_hussite_regency }
+		}
+		enable_branching_mission_review_without_ai  = {
+			key = BOH_RELIGION
+		}
+	}
+    if = {
+        limit = {
+			ai = no
+            tag = HSN
+            has_dlc = "Winds of Change"
+			not_in_mission_preview_mode = { key = HSN }
+			NOT = { mission_completed = hsn_fate_of_anatolia }
+        }
+        enable_branching_mission_review_without_ai  = {
+            key = HSN
+        }
+    }
+    if = {
+        limit = {
+			ai = no
+            tag = HSN
+            has_dlc = "Winds of Change"
+			not_in_mission_preview_mode = { key = HSN2 }
+			NOT = { mission_completed = hsn_sultan_shah }
+        }
+        enable_branching_mission_review_without_ai  = {
+            key = HSN2
+        }
+    }
+	if = {
+		limit = {
 			has_dlc = "Emperor"
 			FROM = {
 				is_revolutionary = yes
@@ -4922,7 +5381,14 @@ on_create_vassal = {
 # ROOT = Country establishing it
 # First province in state is set
 on_holy_order_established = {
-
+	ROOT = {
+		if = {
+			limit = {
+				has_country_flag = ven_establish_scuola_effect_flag
+			}
+			change_innovativeness = 1
+		}
+	}
 }
 
 # When a minority is expelled to a colony
@@ -5012,6 +5478,42 @@ on_flagship_destroyed = {
 on_country_released = {
 	if = {
 		limit = {
+			ai = no
+			tag = BOH
+			has_dlc = "Winds of Change"
+			not_in_mission_preview_mode = { key = BOH_RELIGION }
+			NOT = { mission_completed = boh_hussite_regency }
+		}
+		enable_branching_mission_review_without_ai  = {
+			key = BOH_RELIGION
+		}
+	}
+    if = {
+        limit = {
+			ai = no
+            tag = HSN
+            has_dlc = "Winds of Change"
+			not_in_mission_preview_mode = { key = HSN }
+			NOT = { mission_completed = hsn_fate_of_anatolia }
+        }
+        enable_branching_mission_review_without_ai  = {
+            key = HSN
+        }
+    }
+    if = {
+        limit = {
+			ai = no
+            tag = HSN
+            has_dlc = "Winds of Change"
+			not_in_mission_preview_mode = { key = HSN2 }
+			NOT = { mission_completed = hsn_sultan_shah }
+        }
+        enable_branching_mission_review_without_ai  = {
+            key = HSN2
+        }
+    }
+	if = {
+		limit = {
 			tag = PAP
 		}
 		change_government = theocracy
@@ -5054,6 +5556,24 @@ on_trade_good_changed = {
 				base_production = 2
 			}
 			add_base_production = -1 
+		}
+		if = {
+			limit = {
+				has_province_modifier = INC_gold_debuff
+				NOT = { trade_goods = gold }
+			}
+			remove_province_modifier = INC_gold_debuff
+		}
+		else_if = {
+			limit = {
+				from = { has_estate_privilege = estate_church_INC_idol_making }
+				NOT = { has_province_modifier = INC_gold_debuff }
+				trade_goods = gold
+			}
+			add_province_modifier = {
+				name = INC_gold_debuff
+				duration = -1
+			}
 		}
 	}
 }
@@ -5161,7 +5681,7 @@ on_golden_bull_enacted = {
 	set_country_flag = enacted_golden_bull
 	if = {
 		limit = { 
-			FRA = { has_country_flag = fu_gain_25_random_pp_and_10_pi_per_bull_flag } 
+			FRA = { has_country_flag = gain_25_random_pp_and_10_pi_per_bull_flag } 
 		}
 		FRA = {
 			random_list = {
@@ -5178,50 +5698,7 @@ on_golden_bull_enacted = {
 # province:  spawned whenever a new owner takes over the province
 # FROM = The previous owner.
 on_conquest = {
-	remove_named_unrest = estate_land_seized
-	clr_province_flag = has_estate_unrest_flag
-	if = {
-		limit = { 
-			is_part_of_hre = no
-			owner = { 
-				has_country_flag = pru_dom_hre_flag 
-				alliance_with = emperor 
-			}
-		}
-		owner = {
-			add_trust = {
-				who = emperor 
-				value = 3 
-				mutual = yes 
-			}
-		}
-	}
-	else_if = {
-		limit = { 
-			is_part_of_hre = no
-			owner = { 
-				has_country_flag = pru_dom_hre_flag 
-				NOT = { alliance_with = emperor } 
-				is_emperor = no
-			}
-		}
-		owner = {
-			add_power_projection = {
-				type = mission_rewards_power_projection
-				amount = 1
-			}
-		}
-	}
-	else_if = {
-		limit = { 
-			is_part_of_hre = no
-			owner = { is_emperor = yes }
-			development = 25
-		}
-		emperor = { 
-			add_imperial_influence = 1
-		}
-	}
+	on_conquest_effect = yes
 }
 
 on_country_creation = {
@@ -5447,12 +5924,62 @@ on_institution_embracement = {
 }
 on_national_focus_change = {}
 
+#ROOT = new capital province, FROM = old capital
 on_capital_moved = {
 	on_capital_moved_effect = yes
 }
 
 #ROOT = province that was expanded in, FROM = country that did it
 on_expanded_infrastructure = {
+	if = {
+		limit = {
+			province_id = 266
+			owner = {
+				has_country_flag = boh_expand_infrastructure_prague_flag
+			}
+		}
+		add_base_tax = 1
+		add_base_production = 1
+		add_base_manpower = 1
+	}
+	if = {
+		limit = {
+			has_province_flag = feo_expand_infrastructure_gold_income
+		}
+		FROM = {
+			add_years_of_owned_provinces_production_income = {
+				years = 2
+				trigger = {
+					province_id = 1766
+				}
+			}
+		}
+		1766 = { clr_province_flag = feo_expand_infrastructure_gold_income}
+	}
+	if = {
+		limit = {
+			has_province_flag = azt_tenochtitlan_expand_infrastructure_flag
+		}
+		FROM = {
+			change_government_reform_progress = 10
+		}
+	}
+	if = {
+		limit = {
+			FROM = {
+				has_country_flag = MUG_upgrade_expanding_infrastructure
+			}
+		}
+		area = {
+			limit = {
+				owned_by = FROM
+			}
+			add_province_modifier = {
+				name = MUG_expanded_infrastructure
+				duration = 7300
+			}
+		}
+	}
 }
 
 #ROOT = province that was centralized in
@@ -5478,6 +6005,26 @@ on_centralized_state = {
 	if = {
 		limit = {
 			owner = { has_government_attribute = centralize_state_development }
+		}
+		area = {
+			limit = {
+				owned_by = ROOT
+			}
+			random_list = {
+				1 = { add_base_tax = 1 }
+				1 = { add_base_production = 1 }
+				1 = { add_base_manpower = 1 }
+			}
+		}
+	}
+	if = {
+		limit = {
+			owner = { 
+				OR = {
+					has_government_attribute = centralize_state_development
+					has_country_modifier = hun_strengthen_the_government
+				}
+			}
 		}
 		area = {
 			limit = {
@@ -5583,6 +6130,13 @@ on_new_age = {
 			desc = until_end_of_age_desc
 		}
 	}
+	if = {
+		limit = {
+			has_country_flag = ITA_gain_100_splendor_flag
+			has_dlc = "Mandate of Heaven"
+		}
+		add_splendor = 100
+	}
 }
 
 #ROOT = province
@@ -5608,15 +6162,104 @@ on_adm_exploited = {
 			add_base_tax = 1
 		}
 	}
+	if = {
+		limit = {
+			owner = { has_government_mechanic = blood_gathering_mechanic }
+		}
+		owner = {
+			add_government_power = {
+				mechanic_type = blood_gathering_mechanic
+				power_type = blood
+				value = 1
+			}
+		}
+	}
+    if = {
+        limit = {
+            has_province_modifier = estate_burghers_hungarian_royal_city_modifier
+			NOT = { development = 20 }
+		}
+    }
+    remove_province_modifier = estate_burghers_hungarian_royal_city_modifier
 }
 on_dip_exploited = {
+	if = {
+		limit = {
+			owner = { has_government_mechanic = blood_gathering_mechanic }
+		}
+		owner = {
+			add_government_power = {
+				mechanic_type = blood_gathering_mechanic
+				power_type = blood
+				value = 1
+			}
+		}
+	}
+	if = {
+        limit = {
+            has_province_modifier = estate_burghers_hungarian_royal_city_modifier
+			NOT = { development = 20 }
+		}
+    }
+    remove_province_modifier = estate_burghers_hungarian_royal_city_modifier
 }
 on_mil_exploited = {
+	if = {
+		limit = {
+			owner = { has_government_mechanic = blood_gathering_mechanic }
+		}
+		owner = {
+			add_government_power = {
+				mechanic_type = blood_gathering_mechanic
+				power_type = blood
+				value = 1
+			}
+		}
+	}
+	if = {
+        limit = {
+            has_province_modifier = estate_burghers_hungarian_royal_city_modifier
+			NOT = { development = 20 }
+		}
+    }
+    remove_province_modifier = estate_burghers_hungarian_royal_city_modifier
 }
 on_raze = {
 	add_permanent_province_modifier = {
 		name = province_razed
 		duration = 7300
+	}
+	owner = {
+		change_variable = {
+			which = HordeProvincesRazed
+			value = 1
+		}
+	}
+	
+	if = {
+		limit = {
+			has_tax_building_trigger = yes
+			owner = {
+				has_country_flag = tatars_curch_raze_flag
+			}
+		}
+		owner = {
+			add_treasury = 10
+		}
+	}
+	
+	if = {
+		limit = {
+			owner = {
+				has_country_flag = hordes_unlock_tribes_loyalty_through_razing_flag
+			}
+		}
+		owner = {
+			add_estate_loyalty = {
+				estate = estate_nomadic_tribes
+				loyalty = 1
+			}
+		}
 	}
 }
 on_concentrate_development = {
@@ -5651,7 +6294,12 @@ on_adm_advisor_hired = { #ROOT - Country, executed after on_advisor_hired!
 }
 
 on_dip_advisor_hired = { #ROOT - Country, executed after on_advisor_hired!
-
+	if = {
+		limit = {
+			has_country_flag = ITA_cavour_alive
+		}
+		clr_country_flag = ITA_cavour_alive
+	}
 }
 
 on_mil_advisor_hired = { #ROOT - Country, executed after on_advisor_hired!
@@ -5659,23 +6307,88 @@ on_mil_advisor_hired = { #ROOT - Country, executed after on_advisor_hired!
 }
 
 on_core = { #ROOT - Province, #FROM - Country that gets the core
-
+	if = {
+		limit = {
+			FROM = { has_country_flag = GER_get_full_core_on_cored_italian_provinces_flag }
+		}
+		add_core = FROM
+	}
+	if = {
+		limit = {
+			FROM = { has_country_modifier = INC_the_mitma_for_control }
+			NOT = { is_territorial_core = FROM }
+		}
+		FROM = {
+			random_owned_province = {
+				limit = {
+					is_state_core = ROOT
+					NOT = { has_province_modifier = INC_mitma_settlers }
+					NOT = { nationalism = 1 }
+				}
+				random_list = {
+					50 = { }
+					50 = { add_random_development = 1 }
+				}
+				add_province_modifier = {
+					name = INC_mitma_settlers
+					duration = 10950
+				}
+			}
+		}
+	}
 }
 
 on_tech_taken = { #ROOT - Country
-
+	if = {
+		limit = { has_country_flag = ven_academy_of_the_unknowns_reward_flag }
+		if = {
+			limit = { has_dlc = "Rule Britannia" }
+			change_innovativeness = 1
+		}
+		add_republican_tradition = 1
+	}
 }
 
 on_adm_tech_taken = { #ROOT - Country, executed after on_tech_taken!
-
+	if = {
+		limit = {
+			ROOT = {
+				ruler_total_stats = {
+					amount = 12
+				}
+				has_country_flag = hun_refund_mana_on_tech
+			}
+		}
+		add_adm_power = 50
+	}
 }
 
 on_dip_tech_taken = { #ROOT - Country, executed after on_tech_taken!
-
+	if = {
+		limit = {
+			ruler_total_stats = {
+				amount = 12
+			}
+			ROOT = {
+				has_country_flag = hun_refund_mana_on_tech
+			}
+		}
+		add_dip_power = 50
+	}
 }
 
 on_mil_tech_taken = { #ROOT - Country, executed after on_tech_taken!
-
+	if = {
+		limit = {
+			ruler_total_stats = {
+				amount = 12
+			}
+			ROOT = {
+				has_country_flag = hun_refund_mana_on_tech
+			}
+		}
+		add_mil_power = 50
+	}
 } 
 
 on_barrage = { #ROOT - barraging country, FROM - barraged province 
@@ -5719,7 +6432,6 @@ on_alliance_broken = { #ROOT - Original alliance creator, FROM - Alliance accept
 }
 
 on_royal_marriage_broken = { #ROOT - Original marriage creator, FROM - Marriage accepter
-
 }
 
 on_alliance_created = { #ROOT - Alliance sender, FROM - Alliance accepter
@@ -5727,12 +6439,27 @@ on_alliance_created = { #ROOT - Alliance sender, FROM - Alliance accepter
 }
 
 on_royal_marriage = { #ROOT - Marraige sender, FROM - marriage accepter
-
+	if = {
+		limit = {
+			tag = BUR
+			NOT = { has_country_flag = burgundian_succession_has_already_fired }
+		}
+		FROM = { set_country_flag = received_burgundian_marriage }
+	}
 }
 
 on_heir_disinherited = {
 	on_heir_disinherited_or_death_effect = yes
 }
 on_overrun = { #ROOT - winner, FROM - loser, on stackwipe
-
+	if = {
+		limit = {
+			ROOT = {
+				has_government_attribute = army_tradition_on_stackwipe
+			}
+		}
+		ROOT = {
+			add_army_tradition = 0.1
+		}
+	}
 }

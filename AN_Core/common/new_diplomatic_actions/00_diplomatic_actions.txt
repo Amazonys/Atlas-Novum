@@ -2157,11 +2157,11 @@ request_access_to_modern_ideas = {
 	is_allowed = {
 		if = {
 			limit = {
-				FROM = { NOT = { tech_difference = 0 } }
+				FROM = { NOT = { tech_difference = 1 } }
 			}
 			custom_trigger_tooltip = {
 				tooltip = FROM_HAS_LESS_THAN_ROOT_TECHNOLOGY
-				FROM = { tech_difference = 0 }
+				FROM = { tech_difference = 1 }
 			}
 		}
 		if = {
@@ -2185,12 +2185,8 @@ request_access_to_modern_ideas = {
 	}
 	on_accept = {
 		if = {
-			limit = { FROM = { tech_difference = 0 } }
-			add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 2.0 }
-		}
-		if = {
 			limit = { FROM = { tech_difference = 1 } }
-			add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 0.5 }
+			add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 2.0 }
 		}
 		if = {
 			limit = { FROM = { tech_difference = 2 } }
@@ -2210,6 +2206,10 @@ request_access_to_modern_ideas = {
 		}
 		if = {
 			limit = { FROM = { tech_difference = 6 } }
+			add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 0.5 }
+		}
+		if = {
+			limit = { FROM = { tech_difference = 7 } }
 			add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 0.5 }
 		}
 		FROM = {
@@ -2458,11 +2458,11 @@ share_modern_ideas = {
 	is_allowed = {
 		if = {
 			limit = {
-				FROM = { ROOT = { NOT = { tech_difference = 0 } } }
+				FROM = { tech_difference = 1 }
 			}
 			custom_trigger_tooltip = {
 				tooltip = ROOT_HAS_LESS_THAN_ROOT_TECHNOLOGY
-				FROM = { ROOT = { tech_difference = 0 } }
+				FROM = { NOT = { tech_difference = 1 } }
 			}
 		}
 		if = {
@@ -2475,12 +2475,8 @@ share_modern_ideas = {
 	}
 	on_accept = {
 		if = {
-			limit = { FROM = { ROOT = { tech_difference = 0 } } }
-			FROM = { add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 2.0 } }
-		}
-		if = {
 			limit = { FROM = { ROOT = { tech_difference = 1 } } }
-			FROM = { add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 0.5 } }
+			FROM = { add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 2.0 } }
 		}
 		if = {
 			limit = { FROM = { ROOT = { tech_difference = 2 } } }
@@ -2500,6 +2496,10 @@ share_modern_ideas = {
 		}
 		if = {
 			limit = { FROM = { ROOT = { tech_difference = 6 } } }
+			FROM = { add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 0.5 } }
+		}
+		if = {
+			limit = { FROM = { ROOT = { tech_difference = 7 } } }
 			FROM = { add_government_power = { mechanic_type = russian_modernization_mechanic power_type = russian_modernization value = 0.5 } }
 		}
 		FROM = {
@@ -2588,6 +2588,18 @@ share_modern_ideas = {
 	}
 
 	ai_acceptance = {
+		add_entry = {
+			name = all_nations	#"Base", using this loc key 
+			limit = { always = yes }
+			export_to_variable = {
+				variable_name = ai_value
+				value = 1
+			}
+			multiply_variable = {
+				which = ai_value
+				value = 25
+			}
+		}
 		add_entry = {
 			name = HAS_DEFICIT
 			limit = {
@@ -5093,6 +5105,13 @@ mam_sponsor_hajj = {
 				dip_power = 50
 			}
 		}
+		if = {
+			limit = { war_with = FROM }
+			custom_trigger_tooltip = {
+				tooltip = sell_indulgence_war
+				NOT = { war_with = FROM }
+			}
+		}
 	}
 	on_accept = {
 		FROM = { set_ruler_flag = performed_hajj_already_flag }
@@ -5318,5 +5337,862 @@ mam_sponsor_hajj = {
 				value = -0.2
 			}
 		}
+	}
+}
+
+incorporate_vassal = {
+	category = influence
+
+	alert_index = 17 #doesn't matter. it is forced onto the subject
+	alert_tooltip = sell_indulgence_alert_tooltip #doesn't matter. it is forced onto the subject
+
+	require_acceptance = no
+
+	is_visible = {
+		can_have_incorporated_vassals = yes
+		FROM = {
+			is_subject_of = ROOT
+			is_subject_of_type = vassal
+		}
+	}
+	is_allowed = {
+		
+	}
+	on_accept = {
+		create_subject = {
+			subject_type = incorporated_vassal
+			subject = FROM
+			keep_liberty_desire = yes
+		}
+	}
+
+	ai_will_do = {
+		always = yes
+	}
+}
+
+recruit_foreign_general = {
+	category = relation
+
+	alert_index = 56
+	alert_tooltip = recruit_foreign_general_alert_tooltip
+
+	require_acceptance = yes # Whether the recipient gets an option to decline
+
+	is_visible = {
+		has_government_attribute = enables_recruit_foreign_generals
+	}
+	is_allowed = {
+		years_of_income = 1
+		if = {
+			limit = {
+				FROM = { 
+					OR = {
+						NOT = { is_subject_of = ROOT }
+						NOT = { alliance_with = ROOT }
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = FROM_IS_SUBJECT_OR_ALLY_TT
+				FROM = { 
+					OR = {
+						is_subject_of = ROOT
+						alliance_with = ROOT
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				FROM = {
+					NOT = { army_tradition = 10 }
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = FROM_10_AT_TT
+				FROM = {
+					army_tradition = 10
+				}
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					has_country_flag = feo_recruit_general_cooldown
+					NOT = {
+						had_country_flag = {
+							flag = feo_recruit_general_cooldown
+							days = 3650
+						}
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = ROOT_10_YEAR_CD_TT
+				ROOT = {
+					had_country_flag = {
+						flag = feo_recruit_general_cooldown
+						days = 3650
+					}
+				}
+			}
+		}
+	}
+	on_accept = {
+		clr_country_flag = feo_recruit_general_cooldown
+		set_country_flag = feo_recruit_general_cooldown
+		#add all variables, then determine the general
+		FROM = {
+			add_army_tradition = -10
+		}
+		add_army_tradition = 10
+		hidden_effect = { #Pays the Money
+			set_variable = {
+				which = MoneyToPay
+				value = years_of_income
+			}
+			while = {
+				limit = {
+					check_variable = {
+						which = MoneyToPay
+						value = 1
+					}
+				}
+				FROM = {
+					add_treasury = 1
+				}
+				add_treasury = -1
+				subtract_variable = {
+					which = MoneyToPay
+					value = -1
+				}
+			}
+		}
+		if = {
+			limit = {
+				mission_completed = feo_gavras_triumphant
+			}
+			define_advisor = {
+				type = commandant
+				religion = FROM
+				culture = FROM
+				cost_multiplier = 0.75
+			}
+		}
+		#Final Army Tradition = ArmyTradtionOfFROM * (OpinionOfFROM / 200)
+		#Example: 
+		#Final Army Tradition = 75 * (150 / 200)
+		#Final Army Tradition = 75 * 0.75
+		#Final Army Tradition = 56
+		#In the feo_create_general_diplomatic_action_effect scripted effect, this would mean it generates a general of 50 Army Tradition
+		export_to_variable = {
+			which = ArmyTradtionOfFROM
+			value = army_tradition
+			who = FROM
+		}
+		export_to_variable = {
+			which = OpinionOfFROM
+			value = opinion
+			who = FROM
+		}
+		divide_variable = {
+			which = OpinionOfFROM
+			value = 200
+		}
+		multiply_variable = {
+			which = ArmyTradtionOfFROM
+			value = OpinionOfFROM
+		}
+		feo_create_general_diplomatic_action_effect = yes
+	}
+	on_decline = {
+	}
+
+	ai_acceptance = { # This works similarly to variable_arithmetic_trigger, but does not support triggers generally. Instead, "limit" will be evaluated first and the rest ignored if it isn't passed.
+		add_entry = {
+			name = TRUST
+			export_to_variable = {
+				variable_name = ai_value
+				value = trust
+				who = FROM
+				with = ROOT
+			}			
+			subtract_variable = { 
+				which = ai_value
+				value = 50
+			}
+			#1 trust = +3 ai points
+			multiply_variable = {
+				which = ai_value
+				value = 0.3
+			}
+		}
+		add_entry = {
+			name = OPINION
+			export_to_variable = {
+				variable_name = ai_value
+				value = opinion
+				who = FROM
+				with = ROOT
+			}
+			multiply_variable = {
+				which = ai_value 
+				value = 0.2
+			}
+		}
+		add_entry = {
+			name = DIPLO_IS_RIVAL
+			limit = {
+				FROM = {
+					ai_attitude = {
+						who = ROOT
+						attitude = attitude_rivalry
+					}
+				}
+			}
+			export_to_variable = {
+				variable_name = ai_value
+				value = 1
+			}
+			
+			multiply_variable = {
+				which = ai_value
+				value = -1000
+			}
+		}
+		add_entry = {
+			name = diplomatic_reputation
+			limit = { }
+			export_to_variable = {
+				variable_name = ai_value
+				value = trigger_value:diplomatic_reputation
+			}
+			#1 rep = 1
+			multiply_variable = {
+				which = ai_value
+				value = 1
+			}
+		}
+		add_entry = {
+			name = attitude_neutral_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_neutral } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -5 }
+		}
+		add_entry = {
+			name = attitude_rivalry_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_rivalry } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -1000 }
+		}
+		add_entry = {
+			name = attitude_hostile_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_hostile } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -1000 }
+		}
+		add_entry = {
+			name = attitude_friendly_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_friendly } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = 10 }
+		}
+		add_entry = {
+			name = attitude_threatened_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_threatened } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -1000 }
+		}
+		add_entry = {
+			name = attitude_outraged_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_outraged } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -1000 }
+		}
+		add_entry = {
+			name = attitude_domineering_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_domineering } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -1000 }
+		}
+		add_entry = {
+			name = DIPLO_BORDER_DISTANCE_TT
+			export_to_variable = {
+				variable_name = ai_value
+				value = border_distance
+				who = FROM
+				with = ROOT
+			}
+			#2 units = -1
+			multiply_variable = {
+				which = ai_value
+				value = -0.1
+			}
+		}
+	}
+
+	ai_will_do = { # this is a trigger
+		has_opinion = {
+			who = FROM
+			value = 50
+		}
+		FROM = {
+			NOT = { stability = 2 }
+		}
+		NOT = { is_rival = FROM }
+		NOT = { is_enemy = FROM }
+		trust = {
+			who = FROM
+			value = 65
+		}
+	}
+}
+
+create_european_colony =  {
+	category = influence
+	require_acceptance = no
+	is_visible = {
+		can_be_overlord = european_colony
+		FROM = {
+			is_overseas_subject = yes
+			NOT = { is_subject_of_type = tributary_state }
+			NOT = { is_subject_of_type = european_colony }
+			is_subject_of = ROOT
+		}
+		NOT = {
+            any_subject_country = {
+                is_subject_of_type = european_colony
+                capital_scope = {
+                    region_for_scope_province = {
+                        FROM = {
+                            capital_scope = {
+                                province_id = PREV_PREV
+                            }
+                        }
+                    }
+                }
+            }
+        }
+	}
+	is_allowed = {
+		FROM = {
+			NOT = { liberty_desire = 50 }
+		}
+	}
+	on_accept = {
+		create_subject = {
+			subject_type = european_colony
+			subject = FROM
+		}
+	}
+	ai_will_do = {
+		always = no
+	}
+}
+
+demand_sacrifices =  {
+	category = influence
+	require_acceptance = no
+	is_visible = {
+		FROM = {
+			is_subject_of = ROOT
+		}
+		religion = nahuatl
+		is_primitive = yes
+	}
+	is_allowed = {
+		FROM = {
+			NOT = { liberty_desire = 50 }
+		}
+	}
+	on_accept = {
+		add_doom = -10
+		every_subject_country = {
+			add_liberty_desire = 10
+		}
+	}
+	ai_will_do = {
+		always = no
+	}
+}
+
+heathen_royal_marriage = {
+	category = dynasty
+
+	alert_index = 1
+	alert_tooltip = ICON_RM
+
+	require_acceptance = yes
+
+	is_visible = {
+		FROM = {
+			NOT = { religion_group = ROOT }
+			NOT = { marriage_with = ROOT }
+		}
+		OR = {
+			AND = {
+				has_government_attribute = can_royal_marry_heathens
+				religion_group = christian
+			}
+			FROM = {
+				has_government_attribute = can_royal_marry_heathens
+				religion_group = christian
+			}
+		}
+	}
+
+	is_allowed = {
+		hidden_trigger = {
+			FROM = {
+				NOT = { religion_group = ROOT }
+				NOT = { marriage_with = ROOT }
+			}
+			OR = {
+				AND = {
+					has_government_attribute = can_royal_marry_heathens
+					religion_group = christian
+				}
+				FROM = {
+					has_government_attribute = can_royal_marry_heathens
+					religion_group = christian
+				}
+			}
+		}
+		if = {
+			limit = { war_with = FROM }
+			custom_trigger_tooltip = {
+				tooltip = HEATHEN_MARWAR
+				NOT = { war_with = FROM }
+			}
+		}
+		
+		if = {
+			limit = { FROM = { is_subject_other_than_tributary_trigger = yes is_lesser_in_union = no } }
+			custom_trigger_tooltip = {
+				tooltip = HEATHEN_MARVAS
+				NOT = { FROM = { is_subject_other_than_tributary_trigger = yes } }
+			}
+		}
+		
+		if = {
+			limit = { FROM = { is_lesser_in_union = yes } }
+			custom_trigger_tooltip = {
+				tooltip = HEATHEN_MARJUN
+				NOT = { FROM = { is_lesser_in_union = yes } }
+			}
+		}
+		
+	}
+
+	on_accept = {
+		force_create_marriage = FROM
+	}
+
+	on_decline = {
+		add_opinion = {
+			who = FROM
+			modifier = opinion_refused_marriage
+		}
+	}
+
+	ai_acceptance = {
+		add_entry = {
+			name = attitude_friendly_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_friendly } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = 40 }
+		}
+		add_entry = {
+			name = attitude_protective_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_protective } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = 40 }
+		}
+		add_entry = {
+			name = attitude_threatened_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_threatened } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = 10 }
+		}
+		add_entry = {
+			name = attitude_neutral_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_neutral } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -20 }
+		}
+		add_entry = {
+			name = attitude_domineering_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_domineering } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -1000 }
+		}
+		add_entry = {
+			name = attitude_hostile_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_hostile } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -1000 }
+		}
+		add_entry = {
+			name = attitude_outraged_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_outraged } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -1000 }
+		}
+		add_entry = {
+			name = attitude_rivalry_DIPLO_ATTITUDE_TT
+			limit = { FROM = { ai_attitude = { who = ROOT attitude = attitude_rivalry } } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = -1000 }
+		}
+		add_entry = {
+			name = AI_DIPLOMATIC_REPUTATION
+			export_to_variable = {
+				variable_name = ai_value
+				value = trigger_value:diplomatic_reputation
+			}
+			#1 rep = 3
+			multiply_variable = {
+				which = ai_value
+				value = 5
+			}
+		}
+        add_entry = {
+            name = DIPLO_OPPINION
+			export_to_variable = {
+				variable_name = ai_value
+				value = opinion
+				who = FROM
+				with = ROOT
+			}
+			multiply_variable = {
+				which = ai_value 
+				value = 0.25
+			}
+        }
+		add_entry = {
+			name = DIPLO_SAME_CULTURE_GROUP
+			limit = { FROM = { culture_group = ROOT } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = 20 }
+		}
+		add_entry = {
+			name = DIPLO_SAME_RELIGION
+			limit = { FROM = { religion = ROOT } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = 5 }
+		}
+		add_entry = {
+			name = DIPLO_MSG_FILTER_NEIGHBOURS
+			limit = { FROM = { is_neighbor_of = ROOT } }
+			export_to_variable = { variable_name = ai_value value = 1 }
+			multiply_variable = { which = ai_value value = 5 }
+		}
+		add_entry = {
+			name = DIPLO_BORDER_DISTANCE_TT
+			export_to_variable = {
+				variable_name = ai_value
+				value = border_distance
+				who = FROM
+				with = ROOT
+			}
+			#2 units = -1
+			multiply_variable = {
+				which = ai_value
+				value = -0.1
+			}
+		}
+	}
+
+	ai_will_do = {
+		OR = {
+			num_of_free_diplomatic_relations = 1
+			alliance_with = FROM
+			has_guaranteed = FROM
+			FROM = { is_subject_of = ROOT }
+		}
+		OR = {
+			ai_attitude = {
+				who = FROM
+				attitude = attitude_friendly
+			}
+			ai_attitude = {
+				who = FROM
+				attitude = attitude_loyal
+			}
+			ai_attitude = {
+				who = FROM
+				attitude = attitude_allied
+			}
+			ai_attitude = {
+				who = FROM
+				attitude = attitude_protective
+			}
+		}
+		NOT = {
+			ai_attitude = {
+				who = FROM
+				attitude = attitude_domineering
+			}
+		}
+		NOT = {
+			ai_attitude = {
+				who = FROM
+				attitude = attitude_hostile
+			}
+		}
+		NOT = {
+			ai_attitude = {
+				who = FROM
+				attitude = attitude_outraged
+			}
+		}
+		has_opinion = {
+			who = FROM
+			value = 50
+		}
+	}
+}
+
+# Create Incorporated Personal Union
+convert_to_core_personal_union = {
+	category = influence
+
+	require_acceptance = no
+
+	is_visible = {
+		has_country_flag = hab_integrated_vassals_flag
+		FROM = {
+			is_subject_of = ROOT
+			is_subject_of_type = personal_union
+		}
+	}
+	is_allowed = {
+		FROM = { NOT = { liberty_desire = 25 } }
+		NOT = {
+			integrated_personal_union = 5
+		}
+		OR = {
+			NOT = {
+				has_country_flag = convert_subject_to_incorporated_subject_cooldown_flag
+			}
+			had_country_flag = {
+				flag = convert_subject_to_incorporated_subject_cooldown_flag
+				days = 3650
+			}
+		}
+	}
+	on_accept = {
+		create_subject = {
+			subject_type = integrated_personal_union
+			subject = FROM
+			keep_liberty_desire = yes
+		}
+		clr_country_flag = convert_subject_to_incorporated_subject_cooldown_flag
+		set_country_flag = convert_subject_to_incorporated_subject_cooldown_flag
+	}
+	on_decline = {
+	}
+
+	ai_will_do = { # this is a trigger
+		always = no
+	}
+}
+
+create_soyurghal = {
+	category = influence
+
+	alert_index = 17 #doesn't matter. it is forced onto the subject
+	alert_tooltip = sell_indulgence_alert_tooltip #doesn't matter. it is forced onto the subject
+
+	require_acceptance = no
+
+	is_visible = {
+		has_country_flag = TIM_soyurghals_flag
+		FROM = {
+			is_subject_of = ROOT
+			NOT = {
+				is_subject_of_type = soyurghal_subject_type
+			}
+			is_subject_other_than_tributary_trigger = yes
+		}
+	}
+	is_allowed = {
+		if = {
+			limit = { TIM_reached_soyurghal_slot_limit = yes }
+			custom_trigger_tooltip = {
+				tooltip = TIM_not_enough_free_soyurghal_slots
+				TIM_enough_soyurghal_slots = yes
+			}
+		}
+		if = {
+			limit = { from = { total_development = 100 } }
+			custom_trigger_tooltip = {
+				tooltip = FROM_HAS_NOT_100_TOTAL_DEV
+				from = { not = { total_development = 100 } }
+			}
+		}
+		if = {
+			limit = { from = { not = { government = monarchy } } }
+			custom_trigger_tooltip = {
+				tooltip = FROM_IS_NOT_MONARCHY
+				from = { government = monarchy }
+			}
+		}
+		if = {
+			limit = {
+				from = {
+					not = { is_subject_of_type = vassal }
+					not = { is_subject_of_type = client_vassal }
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = FROM_IS_NOT_VASSAL_OF_ROOT
+				FROM = {
+					OR = {
+						is_subject_of_type = vassal
+						is_subject_of_type = client_vassal
+					}
+				}
+			}
+		}
+	}
+	on_accept = {
+		from = { grant_independence = { keep_liberty_desire = yes } }
+		hidden_effect = {
+			FROM = {
+				set_saved_name = {
+					key = timurid_noble
+					type = advisor
+					scope = ROOT
+				}
+				define_ruler = {
+					name = timurid_noble
+					change_mil = 3
+					change_adm = 1
+					change_dip = 2
+					min_age = 35
+					male = yes
+					religion = ROOT
+					culture = ROOT
+				}
+				if = {
+					limit = {
+						has_heir = yes
+					}
+					kill_heir = { allow_new_heir = no }
+				}
+			}
+		}
+		create_subject = {
+			subject_type = soyurghal_subject_type
+			subject = FROM
+			keep_liberty_desire = yes
+		}
+	}
+
+	ai_will_do = {
+		always = no
+	}
+}
+release_soyurghal = {
+	category = influence
+	require_acceptance = no
+	is_visible = {
+		FROM = {
+			is_subject_of = ROOT
+			is_subject_of_type = soyurghal_subject_type
+		}
+	}
+	is_allowed = {
+		always = yes
+	}
+	on_accept = {
+		from = {
+			if = {
+				limit = { not = { liberty_desire = 50 } }
+				add_opinion = {
+					who = root
+					modifier = vassal_abandoned
+				}
+			}
+			grant_independence = yes
+			every_owned_province = {
+				limit = {
+					or = {
+						is_claim = root
+						is_permanent_claim = root
+						is_core = root
+					}
+				}
+				if = {
+					limit = { is_permanent_claim = root }
+					remove_claim = root
+				}
+				if = {
+					limit = { is_claim = root }
+					remove_claim = root
+				}
+				if = {
+					limit = { is_core = root }
+					remove_core = root
+				}
+			}
+		}
+		add_prestige = -25
+	}
+	ai_will_do = {
+		always = no
+	}
+}
+
+release_nahuatl_tributary = {
+	category = influence
+	require_acceptance = no
+	is_visible = {
+		FROM = {
+			is_subject_of = ROOT
+			is_subject_of_type = nahuatl_tributary
+		}
+	}
+	is_allowed = {
+		always = yes
+	}
+	on_accept = {
+		from = {
+			if = {
+				limit = { not = { liberty_desire = 50 } }
+				add_opinion = {
+					who = root
+					modifier = vassal_abandoned
+				}
+			}
+			grant_independence = yes
+			every_owned_province = {
+				limit = {
+					or = {
+						is_claim = root
+						is_permanent_claim = root
+						is_core = root
+					}
+				}
+				if = {
+					limit = { is_permanent_claim = root }
+					remove_claim = root
+				}
+				if = {
+					limit = { is_claim = root }
+					remove_claim = root
+				}
+				if = {
+					limit = { is_core = root }
+					remove_core = root
+				}
+			}
+		}
+		add_prestige = -25
+	}
+	ai_will_do = {
+		always = no
 	}
 }

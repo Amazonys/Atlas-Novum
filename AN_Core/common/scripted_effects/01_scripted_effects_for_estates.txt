@@ -973,6 +973,16 @@ on_province_religion_converted_estate_privileges_effect = {
 
 on_province_culture_converted_estate_privilges_effect = {
 	if = {
+		limit = { 
+			owner = {
+				has_estate_privilege = estate_nobles_reformatio_sigismundi
+			}
+			has_province_modifier = boh_cultural_integration 
+			NOT = { culture_group = germanic }
+		}
+		remove_province_modifier = boh_cultural_integration
+	}
+	if = {
 		limit = {
 			owner = {
 				OR = {
@@ -1107,39 +1117,55 @@ on_province_owner_change_estate_privileges_effect = {
 	if = {
 		limit = { has_terrain = steppe }
 		if = {
-			limit = {
-				owner = {
-					has_estate_privilege = estate_cossacks_prime_herding_rights
-				}
-				NOT = { has_province_modifier = estate_cossacks_prime_herding_rights_mod }
-			}
+			limit = { owner = { has_estate_privilege = estate_cossacks_prime_herding_rights } }
 			add_province_modifier = {
 				name = estate_cossacks_prime_herding_rights_mod
 				duration = -1
 			}
+			if = {
+				limit = { owner = { has_country_flag = feo_upgrade_prime_herding_rights_flag } }
+				add_province_modifier = {
+					name = feo_upgrade_prime_herding_rights_mod
+					duration = -1
+				}
+			}
+		}
+		else = {
+			if = {
+				limit = { has_province_modifier = estate_cossacks_prime_herding_rights_mod }
+				remove_province_modifier = estate_cossacks_prime_herding_rights_mod
+			}
+			if = {
+				limit = { has_province_modifier = feo_upgrade_prime_herding_rights_mod }
+				remove_province_modifier = feo_upgrade_prime_herding_rights_mod
+			}
 		}
 		if = {
-			limit = {
-				owner = {
-					has_estate_privilege = estate_cossacks_exploration_expedition
-				}
-				NOT = { has_province_modifier = estate_cossacks_exploration_expedition_mod }
-			}
+			limit = { owner = { has_estate_privilege = estate_cossacks_exploration_expedition } }
 			add_province_modifier = {
 				name = estate_cossacks_exploration_expedition_mod
 				duration = -1
 			}
 		}
-	}
-	else_if = {
-		limit = {
-			has_terrain = steppe
-			has_province_modifier = estate_cossacks_prime_herding_rights_mod
-			owner = {
-				NOT = { has_estate_privilege = estate_cossacks_prime_herding_rights }
+		else = {
+			if = {
+				limit = { has_province_modifier = estate_cossacks_exploration_expedition_mod }
+				remove_province_modifier = estate_cossacks_exploration_expedition_mod
 			}
 		}
-		remove_province_modifier = estate_cossacks_prime_herding_rights_mod
+		if = {
+			limit = { owner = { has_estate_privilege = estate_cossacks_exempt_from_bureaucracy has_country_flag = feo_cossack_self_governance_buff_flag } }
+			add_province_modifier = {
+				name = feo_cossack_self_governance_buff_mod
+				duration = -1
+			}
+		}
+		else = {
+			if = {
+				limit = { has_province_modifier = feo_cossack_self_governance_buff_mod }
+				remove_province_modifier = feo_cossack_self_governance_buff_mod
+			}
+		}
 	}
 	if = {
 		limit = {
@@ -1863,6 +1889,30 @@ on_province_owner_change_estate_privileges_effect = {
 	if = {
 		limit = {
 			owner = {
+				has_estate_privilege = estate_burghers_MAY_tropical_adaptation
+			}
+			has_terrain = jungle
+		}
+		if = {
+			limit = {
+				owner = { has_country_flag = MAY_upgraded_privilege }
+			}
+			add_province_modifier = {
+				name = MAY_jungle_reduction_upgrade
+				duration = -1
+			}
+		}
+		else = {
+			add_province_modifier = {
+				name = MAY_jungle_reduction
+				duration = -1
+			}
+		}
+	}
+	
+	if = {
+		limit = {
+			owner = {
 				has_estate_privilege = estate_dhimmi_millet_system
 			}
 		}
@@ -1974,11 +2024,22 @@ on_province_owner_change_estate_privileges_effect = {
 				name = estate_cossacks_freedom_of_the_steppes_mod
 				duration = -1
 			}
+			if = {
+				limit = { owner = { has_country_flag = feo_buffed_freedom_of_steppes_flag } }
+				add_province_modifier = {
+					name = feo_buffed_freedom_of_steppes_mod
+					duration = -1
+				}
+			}
 		}
 		else = {
 			if = {
 				limit = { has_province_modifier = estate_cossacks_freedom_of_the_steppes_mod }
 				remove_province_modifier = estate_cossacks_freedom_of_the_steppes_mod
+			}
+			if = {
+				limit = { has_province_modifier = feo_buffed_freedom_of_steppes_mod }
+				remove_province_modifier = feo_buffed_freedom_of_steppes_mod
 			}
 		}
 	}
@@ -4558,7 +4619,25 @@ on_completed_agenda_effect_estate_brahmins = {
 		change_statists_vs_orangists = -0.05
 	}
 }
-on_completed_agenda_effect_estate_burghers = {}
+on_completed_agenda_effect_estate_burghers = {
+	if = {
+		limit = {
+			has_country_flag = ITA_upgrade_city_expansion_privileges_flag
+			has_estate_privilege = estate_burghers_development_of_cities
+		}
+		custom_tooltip = ITA_3_random_dev_distribution
+		hidden_effect = {
+			for = {
+				amount = 3
+				effect = "
+					random_owned_province = {
+						add_random_development = 1
+					}
+				"
+			}
+		}
+	}
+}
 on_completed_agenda_effect_estate_church = {
 	if = {
 		limit = { has_government_attribute = clergy_estate_agendas_gives_karma }
@@ -4938,8 +5017,16 @@ estate_action_COMISSION_MERCHANT_SHIPS_FOR_WAR_BURGHERS = {
 	#	estate = estate_burghers
 	#	loyalty = -15
 	#}
-	add_ship_construction_scaled_to_ports = {
-		type = heavy_ship
+	if = {
+		limit = {
+			has_country_flag = SUN_draft_ships_for_war_flag
+		}
+		add_ship_construction_scaled_to_ports_MAY = yes
+	}
+	else = {
+		add_ship_construction_scaled_to_ports = {
+			type = heavy_ship
+		}
 	}
 }
 estate_action_MAKE_GENEROUS_DONATION_CHURCH = {
@@ -5017,12 +5104,17 @@ estate_action_DEMAND_SUPPORT_CHURCH = {
 	}
 }
 estate_action_SEEK_SUPPORT_OF_CLERGY_CHURCH = {
-	add_prestige = -5
-	add_legitimacy = -5
-	add_republican_tradition = -3
-	add_devotion = -5
-	add_horde_unity = -5
-	add_meritocracy = -2
+	if = {
+		limit = {
+			NOT = { has_country_flag = MAY_upgrade_institutionalized_clergy_privilege_flag }
+		}
+		add_prestige = -5
+		add_legitimacy = -5
+		add_republican_tradition = -3
+		add_devotion = -5
+		add_horde_unity = -5
+		add_meritocracy = -2
+	}
 	change_piety_effect = {
 		amount = 0.05
 	}
@@ -5656,9 +5748,20 @@ estate_action_CALL_DIET_NOBLES = {
 	}
 }
 estate_action_GRANT_GENERALSHIP_NOBLES = {
-	create_leader_scaling_with_tradition = {
-		leader = general
-		type = army
+	if = {
+		limit = {
+			has_country_flag = INC_upgrade_general_privilege_for_the_nobles_flag
+		}
+		create_general_scaling_with_tradition_and_pips = {
+			add_shock = 1
+			add_manuever = 1
+		}
+	}
+	else = {
+		create_leader_scaling_with_tradition = {
+			leader = general
+			type = army
+		}
 	}
 	#add_estate_influence_modifier = {
 	#	estate = estate_nobles
@@ -5737,6 +5840,15 @@ estate_action_RECRUIT_MINISTER_NOBLES = {
 	generate_estate_advisor = {
 		estate = estate_nobles
 		type = diplomat
+	}
+	if = {
+		limit = {
+			has_country_flag = GER_upgrade_the_statesman_privilege_flag
+		}
+		generate_estate_advisor = {
+			estate = estate_nobles
+			type = statesman
+		}
 	}
 	#add_estate_influence_modifier = {
 	#	estate = estate_nobles
