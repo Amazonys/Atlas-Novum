@@ -1,0 +1,1446 @@
+WoC_eoc_yuan_flavor_1 = {
+	slot = 1
+	generic = no
+	ai = yes
+	has_country_shield = yes
+	potential_on_load = {
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+	}
+	potential = { 
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+		OR = {
+			tag = YUA 
+			AND = {
+				tag = MGE
+				was_tag = YUA
+			}
+		}
+		is_emperor_of_china = yes
+	} 
+	
+	yua_cornerstone_empire = {
+		icon = mission_cornerstone_empire 
+		required_missions = {  }
+		position = 17
+		provinces_to_highlight = {
+		}
+		trigger = {
+			OR = {
+				AND = {
+					estate_loyalty = {
+						estate = estate_eunuchs 
+						loyalty = 60 
+					}
+					num_of_estate_privileges = {
+						estate = estate_eunuchs
+						value = 5
+					}
+				}
+				AND = { 
+					custom_trigger_tooltip = {
+						tooltip = mng_kept_restrictions_tt
+						has_country_flag = mng_kept_restrictions_flag
+					}
+					has_adm_advisor = yes 
+					has_dip_advisor = yes 
+					has_mil_advisor = yes 
+					crown_land_share = 40
+				}
+			}
+		}
+		
+		effect = {
+			complex_dynamic_effect = {
+				first_custom_tooltip = YUA_IF_EMPOWERED_EUNUCHS
+				first_limit = "
+					estate_loyalty = {
+						estate = estate_eunuchs 
+						loyalty = 60 
+					}
+					num_of_estate_privileges = {
+						estate = estate_eunuchs
+						value = 5
+					}
+					NOT = { has_country_flag = mng_kept_restrictions_flag }
+				"
+				first_effect = "
+					add_country_modifier = { 
+						name = mng_increased_eunuch_influence_modifier
+						duration = 18250
+					}
+					
+					add_adm_power = 100
+				"
+				second_custom_tooltip = YUA_IF_NOT_EMPOWERED_EUNUCHS
+				second_limit = "
+					has_country_flag = mng_kept_restrictions_flag
+					has_adm_advisor = yes 
+					has_dip_advisor = yes 
+					has_mil_advisor = yes 
+					crown_land_share = 40
+				"
+				second_effect = "
+					if = {
+						limit = { 
+							has_dlc = \"Mandate of Heaven\" 
+							is_emperor_of_china = yes 
+						} 
+						custom_tooltip = mng_palace_bureaucracy_benefits_tt
+						set_country_flag = mng_expanded_palace_bureaucracy_flag 
+					}
+					else = { 
+						change_estate_land_share = {
+							estate = all 
+							share = -10
+						}
+						add_stability_or_adm_power = yes 
+					}
+				"
+			}
+		}
+	}
+	
+	yua_control_eunuchs = {
+		icon = mission_censorate 
+		required_missions = { yua_cornerstone_empire }
+		position = 19
+		
+		trigger = {
+			NOT = { corruption = 1 } 
+			has_adm_advisor_3 = yes 
+			has_dip_advisor_3 = yes 
+			has_mil_advisor_3 = yes 
+			stability = 3 
+			if = {
+				limit = {
+					has_estate = estate_eunuchs
+				}
+				OR = {
+					AND = {
+						num_of_estate_privileges = {
+							estate = estate_eunuchs
+							value = 5
+						}
+					}
+					AND = {
+						NOT = {
+							estate_influence = {
+								estate = estate_eunuchs
+								influence = 50
+							}
+						}
+						estate_loyalty = {
+							estate = estate_eunuchs
+							loyalty = 50
+						}
+					}
+				}
+			}
+			else = {
+				NOT = { average_unrest = -5 } 
+				num_of_owned_provinces_with = { 
+					has_courthouse_building_trigger = yes 
+					value = 15 
+				}
+			}
+		}
+		
+		effect = {
+			if = {
+				limit = {
+					has_estate = estate_eunuchs
+				}
+				complex_dynamic_effect = {
+					first_custom_tooltip = YUA_IF_EMPOWERED_EUNUCHS
+					first_limit = "
+						num_of_estate_privileges = {
+							estate = estate_eunuchs
+							value = 5
+						}
+					"
+					first_effect = "
+						add_estate_loyalty_modifier = {
+							estate = estate_eunuchs
+							desc = EST_EUNUCHS_SIDED_WITH_THEM
+							loyalty = 15
+							duration = -1
+						}
+						custom_tooltip = SEPERATOR_TOOLTIP
+						set_country_flag = yua_buff_imperial_council_flag
+						custom_tooltip = YUA_IMPERIAL_COUNCIL_GETS_BUFFED
+					"
+					second_custom_tooltip = YUA_IF_CURTAILED_EUNUCHS
+					second_limit = "
+						NOT = {
+							estate_influence = {
+								estate = estate_eunuchs
+								influence = 50
+							}
+							num_of_estate_privileges = {
+								estate = estate_eunuchs
+								value = 5
+							}
+						}
+					"
+					second_effect = "
+						add_country_modifier = {
+							name = yua_curbed_eunuch_influence
+							duration = -1
+						}
+						
+						add_ruler_personality = incorruptible_personality
+					"
+				}
+			}
+			else = {
+				add_country_modifier = {
+					name = yua_curbed_eunuch_influence
+					duration = -1
+				}
+				
+				add_adm_power = 100
+				
+				custom_tooltip = SEPERATOR_TOOLTIP
+				
+				add_ruler_personality = incorruptible_personality
+			}
+		}
+	}
+	
+	yua_promote_grand_coordinators = {
+		icon = mission_kowtow
+		required_missions = { yua_control_eunuchs }
+		position = 20
+		
+		trigger = { 
+			if = { 
+				limit = { is_emperor_of_china = yes } 
+				meritocracy = 90 
+			}
+			else = { legitimacy_equivalent = 90 } 
+			if = {
+				limit = { is_emperor_of_china = yes } 
+				OR = {
+					empire_of_china_has_active_decree = issue_the_great_warnings_decree
+					AND = {
+						monthly_adm = 10 
+						estate_loyalty = {
+							estate = estate_eunuchs
+							loyalty = 60 
+						}
+						estate_influence = {
+							estate = estate_eunuchs 
+							influence = 60 
+						}
+					}
+				}
+			}
+		}
+		
+		effect = {
+			if = {
+				limit = { has_dlc = "Golden Century" }
+				custom_tooltip = yua_enable_3_grand_coordinators_offices_tt
+				set_country_flag = mng_enable_3_grand_coordinators_offices_flag 
+			}
+			else = {
+				add_corruption = -2
+				change_government_reform_progress = 100
+				change_ruler_stat = {
+					type = adm
+					amount = 1
+				}
+			}
+		}
+	}
+}
+
+WoC_eoc_yuan_flavor_2 = {
+	slot = 2
+	generic = no
+	ai = yes
+	has_country_shield = yes
+	potential_on_load = {
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+	}
+	potential = { 
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+		OR = {
+			tag = YUA 
+			AND = {
+				tag = MGE
+				was_tag = YUA
+			}
+		}
+		is_emperor_of_china = yes
+	} 
+	
+	yua_reform_civil_registration = {
+		icon = mission_plc_governance_act 
+		required_missions = { } 
+		position = 17
+		
+		trigger = {
+			if = {
+				limit = {
+					is_emperor_of_china = yes 
+					has_dlc = "Mandate of Heaven" 
+				}
+				OR = { 
+					empire_of_china_reform_passed = reform_civil_registration_decision
+					imperial_mandate = 85 
+				}
+			}
+			OR = {
+				absolutism = 50
+				custom_trigger_tooltip = {
+					tooltip = mng_all_available_estates_granted_land_rights_tt
+					if = {
+						limit = { has_estate = estate_eunuchs } 
+						has_estate_privilege = estate_eunuchs_land_rights_privilege
+					}
+					if = {
+						limit = { has_estate = estate_burghers } 
+						has_estate_privilege = estate_burghers_land_rights 
+					}
+					if = {
+						limit = { has_estate = estate_nobles } 
+						has_estate_privilege = estate_nobles_land_rights 
+					}
+					if = {
+						limit = { has_estate = estate_church } 
+						has_estate_privilege = estate_church_land_rights 
+					}
+					if = {
+						limit = { has_estate = estate_nomadic_tribes } 
+						has_estate_privilege = estate_nomadic_tribes_land_rights
+					}
+				}
+				AND = {
+					empire_of_china_has_active_decree = conduct_census_decree
+					if = {
+						limit = { has_estate = estate_eunuchs } 
+						estate_loyalty = {
+							estate = estate_eunuchs
+							loyalty = 60 
+						}
+					}
+					if = {
+						limit = { has_estate = estate_burghers } 
+						estate_loyalty = {
+							estate = estate_burghers
+							loyalty = 60 
+						}
+					}
+					if = {
+						limit = { has_estate = estate_nobles } 
+						estate_loyalty = {
+							estate = estate_nobles
+							loyalty = 60 
+						}
+					}
+					if = {
+						limit = { has_estate = estate_church } 
+						estate_loyalty = {
+							estate = estate_church
+							loyalty = 60 
+						}
+					}
+					if = {
+						limit = { has_estate = estate_nomadic_tribes } 
+						estate_loyalty = {
+							estate = estate_nomadic_tribes
+							loyalty = 60 
+						}
+					}
+					government_reform_progress = 150 
+				}
+			}
+		}
+		
+		effect = {
+			complex_dynamic_effect = {
+				first_custom_tooltip = YUA_IF_COOPERATED_WITH_ESTATES
+				first_limit = "
+					reform_civil_registration_first_limit = yes
+				"
+				first_effect = "
+					set_country_flag = mng_increased_land_rights_flag 
+					add_ruler_modifier = {
+						name = mng_cabinet_cooperation_modifier
+						duration = -1 
+					}
+					custom_tooltip = YUA_BUFF_LAND_RIGHTS_PRIVILEGES
+				"
+				second_custom_tooltip = YUA_IF_NOT_COOPERATED_WITH_ESTATES
+				second_limit = "
+					reform_civil_registration_second_limit = yes
+				"
+				second_effect = "
+					reform_civil_registration_effect = yes
+				"
+			}
+		}
+	}
+	
+	yua_examination_system = {
+		icon = mission_vedic_education 
+		required_missions = { yua_cornerstone_empire yua_reform_civil_registration }
+		position = 18
+
+		provinces_to_highlight = {
+			province_id = 700 
+			NOT = { owned_by = ROOT }
+		}
+		
+		trigger = {
+			OR = {
+				has_reform = examination_system_reform
+				AND = {
+					government_reform_progress = 250 
+					reform_level = 3 
+					NOT = { has_reform = examination_system_reform }
+				}
+			}
+			crown_land_share = 45 
+			700 = { owned_by = ROOT }
+		}
+		
+		effect = {
+			complex_dynamic_effect = {
+				first_custom_tooltip = YUA_IF_EXAMINATION_SYSTEM
+				first_limit = "
+					has_reform = examination_system_reform
+				"
+				first_effect = "
+					country_event_with_effect_insight = {
+						id = flavor_mng.30
+						effect = \"
+							700 = { add_province_triggered_modifier = mng_hanlin_academy_modifier }
+							add_splendor = 100
+						\"
+					}
+				"
+				second_custom_tooltip = YUA_IF_NO_EXAMINATION_SYSTEM
+				second_limit = "
+					NOT = { has_reform = examination_system_reform }
+				"
+				second_effect = "
+					define_advisor = {
+						name = \"Buwei Zhao\" 
+						type = natural_scientist
+						cost_multiplier = 0.33 
+						skill = 2
+					}
+					define_advisor = {
+						name = \"Yilong Ma\" 
+						type = trader
+						cost_multiplier = 0.33
+						skill = 2
+					}
+					define_advisor = {
+						name = \"Chao Meng\" 
+						type = quartermaster
+						cost_multiplier = 0.33
+						skill = 2
+					}
+				"
+			}
+		}
+	}
+	
+	yua_mutual_trade_system = {
+		icon = mission_diplomatic_relation 
+		required_missions = { yua_control_eunuchs yua_examination_system }
+		position = 20
+		
+		trigger = {
+			OR = {
+				calc_true_if = {
+					all_subject_country = {
+						is_subject_of_type_with_overlord = { who = ROOT type = tributary_state }
+						NOT = { liberty_desire = 10 } 
+						has_opinion = { 
+							who = ROOT 
+							value = 120 
+						}
+					}
+					desc = mng_5_tribs_with_opinion_and_lib_desire_tt
+					amount = 5
+				}
+				calc_true_if = {
+					all_ally = {
+						has_opinion = {
+							who = ROOT 
+							value = 150 
+						}
+						if = {
+							limit = { has_dlc = "Leviathan" }
+							trust = {
+								who = ROOT 
+								value = 70 
+							}
+						}
+					}
+					amount = 4 
+				}
+			}
+			government_reform_progress = 150 
+		}
+		
+		effect = { 
+			complex_dynamic_effect = {
+				first_custom_tooltip = YUA_IF_NOT_TRIBUTARIES
+				first_limit = "
+					NOT = {
+						calc_true_if = {
+							all_subject_country = {
+								is_subject_of_type_with_overlord = { who = ROOT type = tributary_state }
+								NOT = { liberty_desire = 10 } 
+								has_opinion = { 
+									who = ROOT 
+									value = 120 
+								}
+							}
+							desc = mng_5_tribs_with_opinion_and_lib_desire_tt
+							amount = 5
+						}
+					}
+				"
+				first_effect = "
+					yua_mutual_trade_effect_1 = yes
+				"
+				second_custom_tooltip = YUA_IF_TRIBUTARIES
+				second_limit = "
+					calc_true_if = {
+						all_subject_country = {
+							is_subject_of_type_with_overlord = { who = ROOT type = tributary_state }
+							NOT = { liberty_desire = 10 } 
+							has_opinion = { 
+								who = ROOT 
+								value = 120 
+							}
+						}
+						desc = mng_5_tribs_with_opinion_and_lib_desire_tt
+						amount = 5
+					}
+				"
+				second_effect = "
+					tooltip = {
+						country_event_with_effect_insight = { 
+							id = flavor_mng.31 
+							effect = \"
+								add_country_modifier = {
+									name = mng_reformed_tributary_obligation_system_modifier
+									duration = -1 
+								}
+							\"
+						}
+					}
+				"
+			}
+			hidden_effect = {
+				if = {
+					limit = {
+						calc_true_if = {
+							all_subject_country = {
+								is_subject_of_type_with_overlord = { who = ROOT type = tributary_state }
+								NOT = { liberty_desire = 10 } 
+								has_opinion = { 
+									who = ROOT 
+									value = 120 
+								}
+							}
+							desc = mng_5_tribs_with_opinion_and_lib_desire_tt
+							amount = 5
+						}
+					}
+					country_event = { 
+						id = flavor_mng.31
+					}
+				}
+			}
+		}
+	}
+}
+
+WoC_eoc_yuan_flavor_3 = {
+	slot = 3
+	generic = no
+	ai = yes
+	has_country_shield = yes
+	potential_on_load = {
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+	}
+	potential = { 
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+		OR = {
+			tag = YUA 
+			AND = {
+				tag = MGE
+				was_tag = YUA
+			}
+		}
+		is_emperor_of_china = yes
+	} 
+	
+	yua_tame_china_sorrow = {
+		icon = mng_tame_china_sorrow
+		required_missions = { } 
+		position = 17
+		provinces_to_highlight = { 
+			OR = {
+				province_id = 2142
+				province_id = 4196
+				province_id = 2141
+				province_id = 688
+				province_id = 1836
+			}
+			OR = { 
+				NOT = { controlled_by = ROOT }
+				devastation = 1
+				NOT = { num_of_times_improved = 3 } 
+			}	
+		}
+		
+		trigger = {
+			2142 = { 
+				num_of_times_improved = 3 
+				owned_by = ROOT 
+				if = {
+					limit = { has_dlc = "Mandate of Heaven" }
+					NOT = { devastation = 1 } 
+				}
+			}
+			4196 = { 
+				num_of_times_improved = 3 
+				owned_by = ROOT 
+				if = {
+					limit = { has_dlc = "Mandate of Heaven" }
+					NOT = { devastation = 1 } 
+				}
+			}
+			2141 = { 
+				num_of_times_improved = 3 
+				owned_by = ROOT 
+				if = {
+					limit = { has_dlc = "Mandate of Heaven" }
+					NOT = { devastation = 1 } 
+				}
+			}
+			688 = { 
+				num_of_times_improved = 3 
+				owned_by = ROOT 
+				if = {
+					limit = { has_dlc = "Mandate of Heaven" }
+					NOT = { devastation = 1 } 
+				}
+			}
+			1836 = { 
+				num_of_times_improved = 3 
+				owned_by = ROOT 
+				if = {
+					limit = { has_dlc = "Mandate of Heaven" }
+					NOT = { devastation = 1 } 
+				}
+			}
+		}
+		
+		effect = { 
+			country_event_with_effect_insight = { 
+				id = flavor_mng.35 
+				effect = "
+					custom_tooltip = mng_all_provinces_in_mission_req_tt
+					tooltip = { 
+						add_province_modifier = {
+							name = mng_yellow_river_dykes_modifier
+							duration = -1 
+						}
+						if = { 
+							limit = { has_dlc = \"Mandate of Heaven\" } 
+							add_prosperity = 100 
+						}
+						else = { add_base_tax = 1 } 
+					}
+					if = { 
+						limit = {
+							is_emperor_of_china = yes 
+						}
+						add_mandate = 5 
+					}
+					else = { add_adm_power = 100 } 
+				"
+			}
+		}
+	}
+	
+	yua_single_whip_law = {
+		icon = mission_african_gold 
+		required_missions = { yua_examination_system }
+		position = 19
+		provinces_to_highlight = { 
+			OR = {
+				province_id = 2174 
+				province_id = 2139 
+			}
+			NOT = { base_production = 12 }
+		}
+		
+		trigger = {
+			empire_of_china_reform_passed = reform_land_tax_decision
+			2174 = { 
+				owned_by = ROOT 
+				base_production = 12 
+			}
+			2139 = { 
+				owned_by = ROOT 
+				base_production = 12 
+			}
+			NOT = { inflation = 1 }
+			NOT = { num_of_loans = 1 } 
+			current_income_balance = 35
+			OR = {
+				has_estate_privilege = estate_eunuchs_single_whip_law_privilege 
+				government_reform_progress = 250 
+			}
+		}
+		
+		effect = {
+			country_event_with_effect_insight = { 
+				id = flavor_mng.36
+				effect = "
+					yua_single_whip_law_effect = yes
+				"
+			}
+		}
+	}
+	
+	yua_pure_land = {
+		icon = mng_pure_land 
+		required_missions = { }
+		position = 20
+		provinces_to_highlight = { 
+			province_id = 2140 
+			OR = {
+				NOT = { has_tax_building_trigger = yes } 
+				NOT = { num_of_times_improved = 5 } 
+			}
+		}
+		
+		trigger = {
+			num_of_owned_provinces_with = {
+				has_tax_building_trigger = yes 
+				value = 15 
+			}
+			2140 = {
+				num_of_times_improved = 5 
+				has_tax_building_trigger = yes 
+			}
+			if = {
+				limit = { 
+					has_dlc = "Mandate of Heaven" 
+					religion = confucianism 
+				} 
+				harmony = 90 
+			}
+			else_if = {
+				limit = { has_estate = estate_church } 
+				estate_loyalty = {
+					estate = estate_church 
+					loyalty = 65 
+				}
+			}
+			else = { prestige = 40 } 
+		}
+		
+		effect = {
+			if = {
+				limit = { 
+					has_dlc = "Leviathan" 
+					2140 = {
+						NOT = { 
+							has_great_project = {
+								type = temple_of_confucius 
+								tier = 3 
+							}
+						}
+					}
+				}
+				2140 = {
+					add_great_project_tier = {
+						type = temple_of_confucius 
+						tier = 1 
+					}
+				}
+			}
+			else = {
+				2140 = {
+					add_base_tax = 3 
+					add_base_production = 3 
+				}
+			}
+			2140 = { 
+				add_building = cathedral 
+				remove_building = temple 
+			}
+			add_stability_or_adm_power = yes 
+		}
+	}
+	
+	yua_shengshi_zhishi = {
+		icon = mng_shengshi_zhishi 
+		required_missions = { yua_mutual_trade_system yua_pure_land yua_expand_yongle_dadian }
+		position = 21
+		trigger = {
+			if = {
+				limit = { 
+					has_dlc = "Mandate of Heaven" 
+					is_emperor_of_china = yes 
+				}
+				empire_of_china_num_reforms_passed = 10
+				imperial_mandate = 95 
+			}
+			else = { prestige = 90 } 
+			NOT = { 
+				num_of_estate_privileges = {	
+					estate = estate_eunuchs 
+					value = 1
+				}
+			}
+			NOT = { 
+				num_of_estate_privileges = {	
+					estate = estate_nobles  
+					value = 1 
+				}
+			}
+			NOT = { 
+				num_of_estate_privileges = {	
+					estate = estate_burghers  
+					value = 1 
+				}
+			}
+			NOT = { 
+				num_of_estate_privileges = {	
+					estate = estate_church  
+					value = 1 
+				}
+			}
+			NOT = {
+				estate_influence = {
+					estate = estate_nobles 
+					influence = 40 
+				}
+			}
+			NOT = {
+				estate_influence = {
+					estate = estate_church 
+					influence = 40 
+				}
+			}
+			NOT = {
+				estate_influence = {
+					estate = estate_burghers  
+					influence = 40 
+				}
+			}
+			NOT = {
+				estate_influence = {
+					estate = estate_eunuchs  
+					influence = 40 
+				}
+			}
+			monthly_adm = 12 
+			NOT = { num_of_loans = 1 } 
+			OR = { 
+				in_golden_age = yes  
+				monthly_income = 500 
+			}
+		}
+		
+		effect = {
+			custom_tooltip = mng_passing_reform_grants_10_estate_loyalty_tt
+			custom_tooltip = SEPERATOR_TOOLTIP
+			add_power_projection = {
+				type = 25_permanent_power_projection
+				amount = 25
+			}
+			custom_tooltip = zim_amongst_the_great_powers_tt
+			if = { 
+				limit = { has_dlc = "Mandate of Heaven" }
+				if = {
+					limit = { has_had_golden_age = yes } 
+					reset_golden_age = yes 
+				}
+				else_if = {
+					limit = { in_golden_age = yes } 
+					extend_golden_age = 240
+				}
+			}
+			set_country_flag = mng_shengshi_reward_flag 
+			add_country_modifier = {
+				name = mng_well_governed_era_modifier 
+				duration = 9125 
+			}
+			change_ruler_stat = {
+				type = adm
+				amount = 1
+			}
+			change_ruler_stat = {
+				type = dip
+				amount = 1
+			}
+			change_ruler_stat = {
+				type = mil
+				amount = 1
+			}
+		}
+	}	
+}
+
+WoC_eoc_yuan_flavor_4 = {
+	slot = 4
+	generic = no
+	ai = yes
+	has_country_shield = yes
+	potential_on_load = {
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+	}
+	potential = { 
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+		OR = {
+			tag = YUA 
+			AND = {
+				tag = MGE
+				was_tag = YUA
+			}
+		}
+		is_emperor_of_china = yes
+	} 
+	
+	yua_expand_bogue = {
+		icon = mng_expand_bogue 
+		required_missions = {  } 
+		position = 17
+		provinces_to_highlight = { 
+			province_id = 667 
+			OR = {
+				NOT = { num_of_times_improved = 4 } 
+				NOT = { num_of_times_expanded_infrastructure = 1 } 
+				has_trade_building_trigger = no 
+			}
+		} 
+		
+		trigger = { 
+			667 = {
+				country_or_non_sovereign_subject_holds = ROOT
+				num_of_times_improved = 4 
+				OR = {
+					num_of_times_expanded_infrastructure = 1 
+					has_trade_building_trigger = yes 
+				}
+			}
+			if = { 
+				limit = { has_estate = estate_burghers }
+				estate_loyalty = {
+					estate = estate_burghers 
+					loyalty = 60 
+				}
+			}
+		}
+		
+		effect = {
+			custom_tooltip = yua_pearly_estuary_upgraded_tt
+			hidden_effect = {
+				667 = {
+					remove_province_modifier = pearl_estuary_modifier
+					add_province_modifier = {
+						name = mng_bogue_modifier 
+						duration = -1 
+					}
+				}
+				if = { 
+					limit = { has_dlc = "Leviathan" }
+					custom_tooltip = mng_10_loyalty_for_burghers_on_expand_infr_tt
+					set_country_flag = mng_10_loyalty_for_burghers_on_expand_infr_flag
+				}
+				else = { add_adm_power = 100 }
+			}
+		}
+	}
+	
+	yua_jing_hang_grand_canal = {
+		icon = mng_jing_hang_grand_canal 
+		required_missions = { yua_tame_china_sorrow yua_expand_bogue } 
+		position = 18
+		provinces_to_highlight = { 
+			OR = { 
+				province_id = 684 
+				province_id = 1822 
+				province_id = 2145 
+				province_id = 1821
+			}
+			OR = { 
+				NOT = { num_of_buildings_in_province = 3 }
+				has_production_building_trigger = no 
+				NOT = { num_of_times_expanded_infrastructure = 1 }
+			}
+		}
+		
+		trigger = {
+			if = { 
+				limit = { has_dlc = "Leviathan" }
+				684 = {
+					OR = { 
+						has_great_project = {
+							type = grand_canal_1
+							tier = 2 
+						}
+						AND = {
+							num_of_buildings_in_province = 3
+							has_production_building_trigger = yes 
+							num_of_times_expanded_infrastructure = 1 
+						}
+					}
+				}
+			}
+			else = { 
+				684 = { num_of_times_improved = 5 }
+			} 
+			if = {
+				limit = { has_dlc = "Mandate of Heaven" }
+				684 = {
+					NOT = { devastation = 1 } 
+				}
+			}
+			else = { 
+				684 = {
+					NOT = { local_autonomy_above_min = 5 } 
+				}
+			}
+			if = { 
+				limit = { has_dlc = "Leviathan" }
+				1822 = { 
+					OR = { 
+						has_great_project = {
+							type = grand_canal_2
+							tier = 2 
+						}
+						AND = {
+							num_of_buildings_in_province = 3
+							has_production_building_trigger = yes 
+							num_of_times_expanded_infrastructure = 1 
+						}
+					}
+				}
+			}
+			else = { 
+				1822 = { num_of_times_improved = 5 }
+			} 
+			if = {
+				limit = { has_dlc = "Mandate of Heaven" }
+				1822 = {
+					NOT = { devastation = 1 } 
+				}
+			}
+			else = { 
+				1822 = {
+					NOT = { local_autonomy_above_min = 5 } 
+				}
+			}
+			if = { 
+				limit = { has_dlc = "Leviathan" }
+				2145 = { 
+					OR = { 
+						has_great_project = {
+							type = grand_canal_3
+							tier = 2 
+						}
+						AND = {
+							num_of_buildings_in_province = 3
+							has_production_building_trigger = yes 
+							num_of_times_expanded_infrastructure = 1 
+						}
+					}
+				}
+			}
+			else = { 
+				2145 = { num_of_times_improved = 5 }
+			} 
+			if = {
+				limit = { has_dlc = "Mandate of Heaven" }
+				2145 = {
+					NOT = { devastation = 1 } 
+				}
+			}
+			else = { 
+				2145 = {
+					NOT = { local_autonomy_above_min = 5 } 
+				}
+			}
+			if = { 
+				limit = { has_dlc = "Leviathan" }
+				1821 = { 
+					OR = { 
+						has_great_project = {
+							type = grand_canal_4
+							tier = 2 
+						}
+						AND = {
+							num_of_buildings_in_province = 3
+							has_production_building_trigger = yes 
+							num_of_times_expanded_infrastructure = 1 
+						}
+					}
+				}
+			}
+			else = { 
+				1821 = { num_of_times_improved = 5 }
+			} 
+			if = {
+				limit = { has_dlc = "Mandate of Heaven" }
+				1821 = {
+					NOT = { devastation = 1 } 
+				}
+			}
+			else = { 
+				1821 = {
+					NOT = { local_autonomy_above_min = 5 } 
+				}
+			}
+		}
+		
+		effect = { 
+			country_event_with_effect_insight = { 
+				id = flavor_mng.34 
+				effect = "
+					if = {
+					limit = { 
+						has_dlc = \"Rights of Man\" 
+						NOT = { num_of_ruler_traits = { amount = 3 } }
+					}
+					add_ruler_personality = great_engineer_personality
+				}
+				else = {
+					add_ruler_modifier = {
+						name = mng_great_engineer_modifier
+						duration = -1 
+					}
+				}
+				
+				custom_tooltip = mng_every_grand_canal_province_base_production_and_workshop_upgraded_tt
+				"
+			}
+		}
+	}
+	
+	yua_expand_yongle_dadian = {
+		icon = mng_expand_yongle_dadian 
+		required_missions = { yua_single_whip_law yua_fortify_coast  } 
+		position = 20
+		provinces_to_highlight = {
+			owned_by = ROOT 
+			trade_goods = paper 
+			OR = {
+				NOT = { base_production = 10 }
+				has_production_building_trigger = no
+			}
+		}
+		
+		trigger = {
+			if = { 
+				limit = { 
+					has_dlc = "Mandate of Heaven" 
+					is_emperor_of_china = yes 
+				}
+				imperial_mandate = 80 
+			}
+			else = { prestige = 40 }
+			num_of_owned_provinces_with = { 
+				trade_goods = paper 
+				base_production = 10 
+				has_production_building_trigger = yes 
+				value = 4 
+			}
+			OR = { 
+				if = { 
+					limit = { has_dlc = "Rights of Man" }
+					ruler_has_personality = free_thinker_personality 
+				}
+				else = { monthly_adm = 9 } 
+				if = { 
+					limit = { has_dlc = "Rights of Man" }
+					ruler_has_personality = scholar_personality 
+				}
+				else = { has_adm_advisor_3 = yes }
+				full_idea_group = innovativeness_ideas 
+				has_institution = printing_press 
+			}	
+		}
+		
+		effect = {
+			if = { 
+				limit = { has_dlc = "Rule Britannia" }
+				change_innovativeness = 5 
+			}
+			else = { add_adm_power = 50 add_dip_power = 50 add_mil_power = 50 } 
+			
+			custom_tooltip = yua_every_province_requirements_tt
+			tooltip = { 
+				add_province_modifier = { 
+					name = mng_imperial_printing_center_modifier
+					duration = -1 
+				}
+				add_base_production = 1
+			}
+			hidden_effect = { 
+				every_owned_province = { 
+					limit = {
+						trade_goods = paper 
+						base_production = 10 
+						has_production_building_trigger = yes 
+					}
+					add_province_modifier = { 
+						name = mng_imperial_printing_center_modifier
+						duration = -1 
+					}
+					add_base_production = 1
+				}
+			}
+		}
+	}
+}
+
+WoC_eoc_yuan_flavor_5 = {
+	slot = 5
+	generic = no
+	ai = yes
+	has_country_shield = yes
+	potential_on_load = {
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+	}
+	potential = { 
+		has_dlc = "Winds of Change"
+		has_dlc = "Domination"
+		OR = {
+			tag = YUA 
+			AND = {
+				tag = MGE
+				was_tag = YUA
+			}
+		}
+		is_emperor_of_china = yes
+	} 
+	
+	yua_form_depots = {
+		icon = mng_form_depots 
+		required_missions = {  } 
+		position = 17
+		provinces_to_highlight = {
+			OR = { 
+				province_id = 696 
+				province_id = 4194
+			}
+		} 
+		trigger = { 
+			OR = { 
+				spymaster = 1 
+				ruler_has_personality = intricate_web_weaver_personality
+				dip = 5 
+				has_idea = efficient_spies
+				national_focus = DIP 
+			}
+			OR = { 
+				696 = { 
+					development = 15 
+					owned_by = ROOT 
+				}
+				4194 = {
+					development = 15 
+					owned_by = ROOT 
+				}
+			}
+			if = { 
+				limit = { has_estate = estate_eunuchs } 
+				estate_loyalty = {
+					estate = estate_eunuchs 
+					loyalty = 60 
+				}
+			}
+		}
+		
+		effect = {
+			country_event_with_option_insight = { 
+				id = flavor_mng.40 
+				option_1 = "
+					set_country_flag = mng_make_available_western_bureau_privilege_flag 
+					set_estate_privilege = estate_eunuchs_western_bureau_privilege
+				"
+				option_2 = "
+					set_country_flag = mng_make_available_eastern_bureau_privilege_flag 
+					set_estate_privilege = estate_eunuchs_eastern_bureau_privilege
+				"
+				option_3 = "
+					add_country_modifier = {
+						name = mng_inner_branch_bureau_modifier 
+						duration = -1 
+					}
+				"
+			}
+		}
+	}
+	
+	yua_outer_city_beijing = {
+		icon = mng_outer_city_beijing 
+		required_missions = { yua_form_depots } 
+		position = 18
+		provinces_to_highlight = { 
+			province_id = 1816 
+			OR = { 
+				has_tax_building_trigger = no 
+				has_production_building_trigger = no 
+				has_trade_building_trigger = no 
+				has_manpower_building_trigger = no 
+			}
+		} 
+		
+		trigger = { 
+			1816 = { development = 35 }
+			1816 = { 
+				has_tax_building_trigger = yes
+				has_production_building_trigger = yes  
+				has_trade_building_trigger = yes  
+				has_manpower_building_trigger = yes 
+			}
+			1816 = { 
+				OR = { 
+					if = {
+						limit = { has_dlc = "Mandate of Heaven" } 
+						prosperity = 50 
+					}
+					if = { 
+						limit = { has_dlc = "Leviathan" } 
+						num_of_times_expanded_infrastructure = 1
+					}
+					else = { num_of_times_improved = 5 } 
+				}
+			}
+		}
+		
+		effect = {	
+			if = {
+				limit = { 
+					1816 = { has_manufactory_trigger = no } 
+				}
+				1816 = {
+					add_province_modifier = {
+						name = mng_outer_wall_beijing_modifier
+						duration = -1 
+						desc = until_it_is_conquered_desc
+					}
+				}
+			}
+			else = {
+				1816 = {
+					add_province_modifier = {
+						name = mng_outer_wall_beijing_and_imperial_granary_modifier
+						duration = -1
+					}
+				}
+			}
+			complex_dynamic_effect = {
+				first_custom_tooltip = YUA_IF_COMPLETED_WITH_MANUFACTORY
+				first_limit = "
+					1816 = { has_manufactory_trigger = yes } 
+				"
+				first_effect = "
+					custom_tooltip = YUA_ABOVE_MODIFIER_WILL_GAIN_EXTRA_LOCAL_GOODS_PRODUCED
+				"
+			}
+		}
+	}
+	
+	yua_fortify_coast = {
+		icon = mission_portuguese_malacca 
+		required_missions = { yua_outer_city_beijing yua_jing_hang_grand_canal } 
+		position = 19
+		provinces_to_highlight = { 
+			owned_by = ROOT 
+			has_port = yes 
+			OR = {
+				has_coast_defense_building_trigger = no 
+				NOT = { development = 20 }
+				devastation = 1 
+			}
+		} 
+		
+		trigger = { 
+			if = {
+				limit = { has_dlc = "Mandate of Heaven" } 
+				NOT = { 
+					any_owned_province = {
+						has_port = yes 
+						devastation = 1 
+					}
+				}
+			}
+			num_of_owned_provinces_with = { 
+				has_coast_defense_building_trigger = yes 
+				development = 20 
+				value = 8 
+			}
+			OR = { 
+				num_of_galley = 50 
+				num_of_light_ship = 50
+			}
+			OR = { 
+				full_idea_group = trade_ideas 
+				dip = 6 
+				monthly_dip = 10 
+				national_focus = DIP 
+			}
+		}
+		
+		effect = {
+			custom_tooltip = YUA_EVERY_ADM_ADVISOR_NOW_GRANTS_DEV_COST
+			set_country_flag = mng_dev_per_adm_advisor_level_flag
+			
+			custom_tooltip = SEPERATOR_TOOLTIP
+			
+			custom_tooltip = YUA_EVERY_OWNED_PROVINCE_WITH_COASTAL_DEFENCE_GAINS_MODIFIER
+			tooltip = {
+				add_province_modifier = {
+					name = mng_safe_coasts_modifier
+					duration = 9125 
+				}
+				if = {
+					limit = {
+						has_dlc = "Mandate of Heaven"
+					}
+					add_prosperity = 100
+				}
+			}
+			hidden_effect = {
+				every_owned_province = {
+					limit = {
+						has_coast_defense_building_trigger = yes 
+						development = 20 
+					}
+					add_province_modifier = {
+						name = mng_safe_coasts_modifier
+						duration = 9125 
+					}
+					add_prosperity = 100 
+				}
+			}
+		}
+	}
+}
