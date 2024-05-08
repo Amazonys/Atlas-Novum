@@ -1,0 +1,717 @@
+###########################################################
+# Events for the Persian Influence
+###########################################################
+
+namespace = persian_influence_events
+
+#Drain the Persian Influence when you elevate a country
+#For some reason, the diplo action itself does not drain *exactly* the amount it should
+country_event = {
+	id = persian_influence_events.100
+	title = none
+	desc = none
+	picture = none
+	is_triggered_only = yes
+	hidden = yes
+	option = {
+		from = {
+			create_subject = {
+				subject_type = vassal
+				subject = root
+				keep_liberty_desire = yes
+			}
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Influenced Country breaks free through Religious Changes - Subject
+country_event = {
+	id = persian_influence_events.1000
+	title = persian_influence_events.1000.t
+	desc = persian_influence_events.1000.desc
+	picture = ARTWORK_eventPicture	
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			overlord = {
+				save_event_target_as = overlord_scope
+			}
+		}
+	}
+	#So be it
+	option = {
+		name = persian_influence_events.1000.a
+		hidden_effect = {
+			overlord = {
+				country_event = {
+					id = persian_influence_events.1001
+				}
+			}
+		}
+		grant_independence = yes
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Influenced Country breaks free through Religious Changes - Overlord
+country_event = {
+	id = persian_influence_events.1001
+	title = persian_influence_events.1001.t
+	desc = persian_influence_events.1001.desc
+	picture = ARTWORK_eventPicture	
+	is_triggered_only = yes
+	
+	#Curses
+	option = {
+		name = persian_influence_events.1001.a
+		tooltip = { FROM = { grant_independence = yes } }
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Sphere of Influence dissolves due to religious changes - Overlord
+country_event = {
+	id = persian_influence_events.2000
+	title = persian_influence_events.2000.t
+	desc = persian_influence_events.2000.desc
+	picture = ARTWORK_eventPicture	
+	is_triggered_only = yes
+	
+	#Curses
+	option = {
+		name = persian_influence_events.2000.a
+		custom_tooltip = persian_influence_events.2000.a.tt
+		hidden_effect = {
+			every_subject_country = {
+				limit = { is_subject_of_type = cultural_sphere_of_influence_subject }
+				country_event = {
+					id = persian_influence_events.2001
+				}
+			}
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Sphere of Influence dissolves due to religious changes - Subject
+country_event = {
+	id = persian_influence_events.2001
+	title = persian_influence_events.2001.t
+	desc = persian_influence_events.2001.desc
+	picture = ARTWORK_eventPicture	
+	is_triggered_only = yes
+	
+	#So be it
+	option = {
+		name = persian_influence_events.2001.a
+		grant_independence = yes
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Sphere of Influence dissolves due to other kind of changes
+country_event = {
+	id = persian_influence_events.3000
+	title = persian_influence_events.3000.t
+	desc = persian_influence_events.3000.desc
+	picture = COUNTRY_COLLAPSE_eventPicture	
+	is_triggered_only = yes
+	
+	#Curses
+	option = {
+		name = persian_influence_events.3000.a
+		custom_tooltip = persian_influence_events.2000.a.tt
+		hidden_effect = {
+			every_subject_country = {
+				limit = { is_subject_of_type = cultural_sphere_of_influence_subject }
+				country_event = {
+					id = persian_influence_events.3001
+				}
+			}
+		}
+		ai_chance = { factor = 1 }
+	}
+}
+
+#Sphere of Influence dissolves due to religious changes - Subject
+country_event = {
+	id = persian_influence_events.3001
+	title = persian_influence_events.3001.t
+	desc = persian_influence_events.3001.desc
+	picture = ARTWORK_eventPicture	
+	is_triggered_only = yes
+	
+	#So be it
+	option = {
+		name = persian_influence_events.3001.a
+		grant_independence = yes
+		ai_chance = { factor = 1 }
+	}
+}
+
+###########################################################
+# Events from promoting art
+###########################################################
+
+namespace = promoting_art_events
+
+#Selecting the Type of Art
+country_event = {
+	id = promoting_art_events.1
+	title = promoting_art_events.1.t
+	desc = promoting_art_events.1.desc
+	picture = ARTWORK_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_government_mechanic = persian_influence_mechanic
+		has_country_modifier = promoting_art
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	#Architecture
+	option = {
+		name = promoting_art_events.1.a
+		add_country_modifier = {
+			name = promoting_architecture
+			duration = -1
+			desc = UNTIL_ART_COMPLETION_TT
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	#Textiles
+	option = {
+		name = promoting_art_events.1.b
+		add_country_modifier = {
+			name = promoting_textiles
+			duration = -1
+			desc = UNTIL_ART_COMPLETION_TT
+		}
+		ai_chance = {
+			factor = 75
+		}
+	}
+	#Painting
+	option = {
+		name = promoting_art_events.1.c
+		add_country_modifier = {
+			name = promoting_painting
+			duration = -1
+			desc = UNTIL_ART_COMPLETION_TT
+		}
+		ai_chance = {
+			factor = 75
+		}
+	}
+}
+
+#Art finishes
+country_event = {
+	id = promoting_art_events.2
+	title = promoting_art_events.2.t
+	desc = promoting_art_events.2.desc
+	picture = ARTWORK_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_government_mechanic = persian_influence_mechanic
+		has_country_modifier = promoting_art
+		OR = {
+			has_country_modifier = promoting_architecture
+			has_country_modifier = promoting_textiles
+			has_country_modifier = promoting_painting
+		}
+		check_variable = {
+			which = art_progress
+			value = 10
+		}
+	}
+	
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	#Magnificent Art!
+	option = {
+		name = promoting_art_events.2.a
+		trigger = {
+			check_variable = { which = art_quality value = 4 }
+			OR = {
+				has_country_modifier = promoting_architecture
+				has_country_modifier = promoting_textiles
+				has_country_modifier = promoting_painting
+			}
+		}
+		if = {
+			limit = { has_country_modifier = promoting_architecture }
+			complete_artwork_effect = { type = architecture }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_textiles }
+			complete_artwork_effect = { type = textiles }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_painting }
+			complete_artwork_effect = { type = painting }
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	#Magnificent Art!
+	option = {
+		name = promoting_art_events.2.b
+		trigger = {
+			is_variable_equal = { which = art_quality value = 3 }
+			OR = {
+				has_country_modifier = promoting_architecture
+				has_country_modifier = promoting_textiles
+				has_country_modifier = promoting_painting
+			}
+		}
+		if = {
+			limit = { has_country_modifier = promoting_architecture }
+			complete_artwork_effect = { type = architecture }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_textiles }
+			complete_artwork_effect = { type = textiles }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_painting }
+			complete_artwork_effect = { type = painting }
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	#Great Art!
+	option = {
+		name = promoting_art_events.2.c
+		trigger = {
+			is_variable_equal = { which = art_quality value = 2 }
+			OR = {
+				has_country_modifier = promoting_architecture
+				has_country_modifier = promoting_textiles
+				has_country_modifier = promoting_painting
+			}
+		}
+		if = {
+			limit = { has_country_modifier = promoting_architecture }
+			complete_artwork_effect = { type = architecture }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_textiles }
+			complete_artwork_effect = { type = textiles }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_painting }
+			complete_artwork_effect = { type = painting }
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	#Ok Art!
+	option = {
+		name = promoting_art_events.2.d
+		trigger = {
+			is_variable_equal = { which = art_quality value = 1 }
+			OR = {
+				has_country_modifier = promoting_architecture
+				has_country_modifier = promoting_textiles
+				has_country_modifier = promoting_painting
+			}
+		}
+		if = {
+			limit = { has_country_modifier = promoting_architecture }
+			complete_artwork_effect = { type = architecture }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_textiles }
+			complete_artwork_effect = { type = textiles }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_painting }
+			complete_artwork_effect = { type = painting }
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	#Horrendous Art!
+	option = {
+		name = promoting_art_events.2.d
+		trigger = {
+			NOT = { check_variable = { which = art_quality value = 1 } }
+			OR = {
+				has_country_modifier = promoting_architecture
+				has_country_modifier = promoting_textiles
+				has_country_modifier = promoting_painting
+			}
+		}
+		if = {
+			limit = { has_country_modifier = promoting_architecture }
+			complete_artwork_effect = { type = architecture }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_textiles }
+			complete_artwork_effect = { type = textiles }
+		}
+		if = {
+			limit = { has_country_modifier = promoting_painting }
+			complete_artwork_effect = { type = painting }
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+	#Fallback
+	option = {
+		name = promoting_art_events.2.d
+		trigger = {
+			NOT = { has_country_modifier = promoting_architecture }
+			NOT = { has_country_modifier = promoting_textiles }
+			NOT = { has_country_modifier = promoting_painting }
+		}
+		add_government_power = {
+			mechanic_type = persian_influence_mechanic
+			power_type = persian_influence
+			value = 5
+		}
+		ai_chance = {
+			factor = 75
+		}
+	}
+}
+
+#Art request additional funds
+country_event = {
+	id = promoting_art_events.3
+	title = promoting_art_events.3.t
+	desc = promoting_art_events.3.desc
+	picture = ARTWORK_eventPicture
+	trigger = {
+		has_government_mechanic = persian_influence_mechanic
+		has_country_modifier = promoting_art
+	}
+	is_triggered_only = yes
+	mean_time_to_happen = { days = 1 }
+	option = {
+		name = promoting_art_events.3.a
+		add_years_of_income = -1
+		hidden_effect = {
+			change_art_quality = { amount = 1 }
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.3.b
+		add_years_of_income = -0.5
+		hidden_effect = {
+			random_list = {
+				1 = { change_art_quality = { amount = 1 } }
+				2 = {  }
+				1 = { change_art_quality = { amount = -1 } }
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.3.c
+		add_years_of_income = -0.25
+		hidden_effect = {
+			random_list = {
+				2 = {  }
+				1 = { change_art_quality = { amount = -1 } }
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 0
+				years_of_income = 1
+			}
+		}
+	}
+	after = {
+		hidden_effect = {
+			change_art_progress = { amount = 1 }
+		}
+	}
+}
+
+#Artist made great progress
+country_event = {
+	id = promoting_art_events.4
+	title = promoting_art_events.4.t
+	desc = promoting_art_events.4.desc
+	picture = ARTWORK_eventPicture
+	trigger = {
+		has_government_mechanic = persian_influence_mechanic
+		has_country_modifier = promoting_art
+	}
+	is_triggered_only = yes
+	mean_time_to_happen = { days = 1 }
+	option = {
+		name = promoting_art_events.4.a
+		add_dip_power = -100
+		hidden_effect = {
+			random_list = {
+				1 = { change_art_quality = { amount = 1 } }
+				1 = {  }
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.4.b
+		add_dip_power = -50
+		hidden_effect = {
+			random_list = {
+				1 = { change_art_quality = { amount = 1 } }
+				2 = {  }
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.4.c
+		add_dip_power = 5
+		ai_chance = {
+			factor = 1
+		}
+	}
+	after = {
+		hidden_effect = {
+			change_art_progress = { amount = 1 }
+		}
+	}
+}
+
+#Creativity blockade
+country_event = {
+	id = promoting_art_events.5
+	title = promoting_art_events.5.t
+	desc = promoting_art_events.5.desc
+	picture = ARTWORK_eventPicture
+	trigger = {
+		has_government_mechanic = persian_influence_mechanic
+		has_country_modifier = promoting_art
+	}
+	is_triggered_only = yes
+	mean_time_to_happen = { days = 1 }
+	option = {
+		name = promoting_art_events.5.a
+		add_mil_power = -50
+		hidden_effect = {
+			change_art_progress = { amount = 1 }
+			random_list = {
+				1 = { change_art_quality = { amount = -2 } }
+				1 = { change_art_quality = { amount = -1 } }
+				3 = {  }
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.5.b
+		add_prestige = -10
+		add_dip_power = -50
+		hidden_effect = {
+			random_list = {
+				1 = { change_art_quality = { amount = 1 } }
+				4 = {  }
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.5.c
+		hidden_effect = {
+			change_art_progress = { amount = -1 }
+			random_list = {
+				3 = { change_art_quality = { amount = 1 } }
+				1 = {  }
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+#Inspriation from other cultures
+country_event = {
+	id = promoting_art_events.6
+	title = promoting_art_events.6.t
+	desc = promoting_art_events.6.desc
+	picture = ARTWORK_eventPicture
+	trigger = {
+		has_government_mechanic = persian_influence_mechanic
+		has_country_modifier = promoting_art
+		any_neighbor_country = {
+			NOT = { primary_culture = root }
+			NOT = { war_with = root }
+			NOT = { is_subject_of = root }
+		}
+	}
+	immediate = {
+		hidden_effect = {
+			random_neighbor_country = {
+				limit = {
+					NOT = { primary_culture = root }
+					NOT = { war_with = root }
+					NOT = { is_subject_of = root }
+				}
+				save_event_target_as = target_country
+			}
+		}
+	}
+	is_triggered_only = yes
+	mean_time_to_happen = { days = 1 }
+	option = {
+		name = promoting_art_events.6.a
+		custom_tooltip = promoting_art_events.6.a.tt
+		add_yearly_manpower = -0.25
+		hidden_effect = {
+			random_list = {
+				1 = { change_art_quality = { amount = 2 } }
+				1 = { change_art_quality = { amount = 1 } }
+				7 = {  }
+				1 = { change_art_quality = { amount = -2 } }
+			}
+			change_art_quality = { amount = 1 }
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.6.b
+		add_adm_power = -100
+		hidden_effect = {
+			random_list = {
+				1 = { change_art_quality = { amount = 1 } }
+				1 = {  }
+			}
+			
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.6.c
+		add_prestige = -5
+		hidden_effect = {
+			random_list = {
+				1 = { change_art_quality = { amount = -1 } }
+				1 = {  }
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.6.d
+		highlight = yes
+		trigger = {
+			alliance_with = event_target:target_country
+		}
+		add_mutual_opinion_modifier_effect = {
+			modifier = per_traveling_artist
+			target = event_target:target_country
+		}
+		hidden_effect = {
+			change_art_quality = { amount = 1 }
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	after = {
+		hidden_effect = {
+			change_art_progress = { amount = 1 }
+		}
+	}
+}
+
+#Artist requires specific trade goods
+country_event = {
+	id = promoting_art_events.7
+	title = promoting_art_events.7.t
+	desc = promoting_art_events.7.desc
+	picture = ARTWORK_eventPicture
+	trigger = {
+		has_government_mechanic = persian_influence_mechanic
+		has_country_modifier = promoting_art
+	}
+	is_triggered_only = yes
+	mean_time_to_happen = { days = 1 }
+	option = {
+		name = promoting_art_events.7.a
+		add_mercantilism = -2
+		add_years_of_income = -0.1
+		hidden_effect = {
+			change_art_quality = { amount = 2 }
+			change_art_progress = { amount = 1 }
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.7.b
+		trigger = {
+			has_estate = estate_burghers
+		}
+		hidden_effect = {
+			change_art_quality = { amount = 1 }
+		}
+		add_estate_loyalty = {
+			estate = estate_burghers
+			loyalty = -20
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = promoting_art_events.7.c
+		add_prestige = -5
+		hidden_effect = {
+			change_art_quality = { amount = -2 }
+			change_art_progress = { amount = -1 }
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	after = {
+		hidden_effect = {
+			change_art_progress = { amount = 1 }
+		}
+	}
+}
