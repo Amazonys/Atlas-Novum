@@ -28,5 +28,5 @@ tags={
 	"Trade"
 	"Graphics"
 }
-supported_version="1.36.*.*"
+supported_version="1.37.*.*"
 path="D:/Users/RJack/Documents/Paradox Interactive/Europa Universalis IV/mod/Atlas-Novum/AN_Core"

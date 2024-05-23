@@ -1,0 +1,350 @@
+###########################
+# Disaster Events		  #
+# Atlas Novum			  #
+# Turcoman Succession 	  #
+###########################
+
+
+namespace = AN_disaster_turcoman_succession
+
+#
+country_event = {
+	id = AN_disaster_turcoman_succession.1
+	title = "AN_disaster_turcoman_succession.1.t"
+	desc = "AN_disaster_turcoman_succession.1.d"
+	picture = ACCUSATION_eventPicture
+
+	is_triggered_only = yes
+	#fire_only_once = yes
+
+	trigger = {
+		OR = {
+			tag = QAR
+			tag = AKK
+		}
+		NOT = { has_country_flag = AN_disaster_turcoman_succession.1_happened }
+	}
+	
+	immediate = {
+		set_country_flag = AN_disaster_turcoman_succession.1_happened
+	}
+	
+	option = {		# 
+		name = "AN_disaster_turcoman_succession.1.a"
+		trigger = {
+			tag = AKK
+		}
+		if = {
+			limit = { NOT = { war_with = QAR } }
+			QAR = {
+				declare_war_with_cb = {
+					who = AKK
+					casus_belli = cb_annex
+				}
+			}
+		}
+		
+		country_event = { id = AN_disaster_turcoman_succession.3 days = 15 random = 15 }
+	}
+	option = {		# 
+		name = "AN_disaster_turcoman_succession.1.a"
+		trigger = {
+			tag = QAR
+		}
+		if = {
+			limit = { NOT = { war_with = AKK } }
+			AKK = {
+				declare_war_with_cb = {
+					who = QAR
+					casus_belli = cb_annex
+				}
+			}
+		}
+		country_event = { id = AN_disaster_turcoman_succession.2 days = 15 random = 15 }
+		country_event = { id = AN_disaster_turcoman_succession.3 days = 15 random = 15 }
+	}
+}
+
+country_event = { #Iraq disloyalty?
+	id = AN_disaster_turcoman_succession.2
+	title = "AN_disaster_turcoman_succession.2.t"
+	desc = "AN_disaster_turcoman_succession.2.d"
+	picture = BORDER_TENSION_eventPicture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	trigger = {
+		tag = QAR
+		IRQ = { is_subject_of = ROOT }
+		NOT = { has_country_flag = AN_disaster_turcoman_succession.2_happened }
+	}
+	
+	immediate = {
+		set_country_flag = AN_disaster_turcoman_succession.2_happened
+	}
+	
+	option = { #
+		name = "AN_disaster_turcoman_succession.2.a"
+		ai_chance = { factor = 1 }
+		IRQ = { country_event = { id = AN_disaster_turcoman_succession.5 days = 0 } }
+	}
+}
+
+country_event = { #Subject disloyalty?
+	id = AN_disaster_turcoman_succession.3
+	title = "AN_disaster_turcoman_succession.3.t"
+	desc = "AN_disaster_turcoman_succession.3.d"
+	picture = BORDER_TENSION_eventPicture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	trigger = {
+		OR = {
+			tag = AKK
+			tag = QAR
+		}
+		any_subject_country = {
+			NOT = { tag = IRQ }
+		}
+		NOT = { has_country_flag = AN_disaster_turcoman_succession.3_happened }
+	}
+	
+	immediate = {
+		set_country_flag = AN_disaster_turcoman_succession.3_happened
+	}
+	
+	option = { #Choose
+		name = "AN_disaster_turcoman_succession.3.a"
+		ai_chance = { factor = 1 }
+		every_subject_country = {
+			limit = { NOT = { tag = IRQ } }
+			country_event = { id = AN_disaster_turcoman_succession.4 days = 15 random = 15 }
+		}		
+	}
+}
+
+
+country_event = { #Subject disloyalty?
+	id = AN_disaster_turcoman_succession.4
+	title = "AN_disaster_turcoman_succession.4.t"
+	desc = "AN_disaster_turcoman_succession.4.d"
+	picture = BORDER_TENSION_eventPicture
+
+	is_triggered_only = yes
+	#fire_only_once = yes
+
+	trigger = {
+		
+		NOT = { has_country_flag = AN_disaster_turcoman_succession.4_happened }
+	}
+	
+	immediate = {
+		set_country_flag = AN_disaster_turcoman_succession.4_happened
+	}
+	
+	option = { #Choose AKK
+		name = "AN_disaster_turcoman_succession.4.a"
+		ai_chance = { 
+			factor = 100 
+			modifier = { 
+				factor = 0.25
+				is_neighbor_of = AKK
+				NOT = { is_neighbor_of = QAR }
+			}
+			modifier = { 
+				factor = 2
+				is_neighbor_of = AKK
+			}
+			modifier = {
+				factor = 4 
+				is_subject_of = QAR
+				liberty_desire = 50
+			}
+		}
+		if = {
+			limit = { is_subject_of = AKK }
+			add_liberty_desire = -30
+		}
+		else = {
+			AKK = { 
+				create_subject = {
+					subject_type = fief
+					subject = ROOT
+				}
+			}
+			hidden_effect = {
+				join_all_offensive_wars_of = AKK join_all_defensive_wars_of = AKK
+			}
+		}
+		
+	}
+	option = { #Choose QAR
+		name = "AN_disaster_turcoman_succession.4.b"
+		ai_chance = { 
+			factor = 100
+			modifier = { 
+				factor = 0.25 
+				is_neighbor_of = QAR
+				NOT = { is_neighbor_of = AKK }
+			}
+			modifier = { 
+				factor = 2
+				is_neighbor_of = QAR
+			}
+			modifier = {
+				factor = 4 
+				is_subject_of = AKK
+				liberty_desire = 50
+			}
+			modifier = {
+				factor = 0.1
+				QAR = { ai = yes }
+			}
+		}
+		if = {
+			limit = { is_subject_of = QAR }
+			add_liberty_desire = -30
+		}
+		else = {
+			QAR = { 
+				create_subject = {
+					subject_type = fief
+					subject = ROOT
+				}
+			}
+			hidden_effect = {
+				join_all_offensive_wars_of = QAR join_all_defensive_wars_of = QAR
+			}
+		}		
+	}
+}
+
+country_event = { #Iraq disloyalty?
+	id = AN_disaster_turcoman_succession.5
+	title = "AN_disaster_turcoman_succession.5.t"
+	desc = "AN_disaster_turcoman_succession.5.d"
+	picture = BORDER_TENSION_eventPicture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	trigger = {
+		OR = {
+			tag = AKK
+			tag = QAR
+		}
+		NOT = { has_country_flag = AN_disaster_turcoman_succession.5_happened }
+	}
+	
+	immediate = {
+		set_country_flag = AN_disaster_turcoman_succession.5_happened
+	}
+	
+	option = { #Remain loyal
+		name = "AN_disaster_turcoman_succession.5.a"
+		ai_chance = { factor = 0 }
+		IRQ = { add_liberty_desire = -50 }
+	}
+	option = { #side with AKK
+		name = "AN_disaster_turcoman_succession.5.b"
+		ai_chance = { factor = 100 }
+		AKK = {
+			create_subject = {
+				subject_type = fief
+				subject = IRQ
+			}
+		}
+		hidden_effect = {
+			IRQ = { join_all_offensive_wars_of = AKK join_all_defensive_wars_of = AKK }
+		}
+	}
+}
+
+country_event = {
+	id = AN_disaster_turcoman_succession.100
+	title = "AN_disaster_turcoman_succession.100.t"
+	desc = "AN_disaster_turcoman_succession.100.d"
+	picture = COURT_eventPicture
+
+	is_triggered_only = yes
+	#fire_only_once = yes
+	major = yes
+
+	trigger = {
+		OR = {
+			tag = AKK
+			tag = QAR
+		}
+	}
+
+	immediate = {
+		set_country_flag = AN_turcoman_succession_complete
+	}
+
+	option = {
+		name = "AN_disaster_turcoman_succession.100.a" #Aq Qoyunlu Wins
+		trigger = { tag = AKK }
+		tooltip = {
+			inherit = QAR
+			inherit = IRQ	
+		}
+		hidden_effect = {
+			QAR = {
+				every_owned_province = {
+					cede_province = AKK
+					add_core = AKK
+				}
+			}
+			IRQ = {
+				every_owned_province = {
+					cede_province = AKK
+					add_core = AKK
+				}
+			}
+		}
+		QAR = {
+			every_subject_country = {
+				AKK = {
+					create_subject = {
+						subject_type = fief
+						subject = PREV
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = "AN_disaster_turcoman_succession.100.b" #Qara Qoyunlu Wins
+		trigger = { tag = QAR }
+		tooltip = {
+			inherit = AKK
+			inherit = IRQ			
+		}
+		hidden_effect = {
+			AKK = {
+				every_owned_province = {
+					cede_province = QAR
+					add_core = QAR
+				}
+			}
+			IRQ = {
+				every_owned_province = {
+					cede_province = QAR
+					add_core = QAR
+				}
+			}
+		}
+		AKK = {
+			every_subject_country = {
+				QAR = {
+					create_subject = {
+						subject_type = fief
+						subject = PREV
+					}
+				}
+			}
+		}
+	}
+}
