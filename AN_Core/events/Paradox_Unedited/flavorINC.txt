@@ -107,9 +107,18 @@ country_event = {
 	fire_only_once = yes
 	
 	trigger = {
-		tag = CSU
-		has_ruler = "Pachacuti"
-		NOT = { is_year = 1450 }
+		OR = {
+			AND = {
+				NOT = { has_dlc = "Winds of Change" }
+				tag = CSU
+				has_ruler = "Pachacuti"
+				NOT = { is_year = 1450 }
+			}
+			AND = {
+				has_country_flag = flavor_inc_2_can_fire
+				has_dlc = "Winds of Change"
+			}
+		}
 	}
 	
 	mean_time_to_happen = {
@@ -125,6 +134,31 @@ country_event = {
 		add_adm_power = 75
 		add_dip_power = 75
 		add_mil_power = 75
+		
+		if = {
+			limit = {
+				has_dlc = "Winds of Change"
+			}
+			custom_tooltip = " "
+			set_ruler_flag = CSU_pachakuti_upgrades_flag
+			custom_tooltip = CSU_pachakuti_upgrades
+			
+			custom_tooltip = " "
+			
+			if = {
+				limit = {
+					has_dlc = "Leviathan"
+					NOT = { is_year = 1480 }
+				}
+				custom_tooltip = CSU_if_we_form_inca_before_1480_machu_picchu
+				set_country_flag = CSU_if_we_form_inca_before_1480_machu_picchu_flag
+			}
+		}
+		else = {
+			change_adm = 1
+			change_dip = 1
+			change_mil = 1
+		}
 	}
 }
 
@@ -139,20 +173,20 @@ country_event = {
 	is_triggered_only = yes
 	
 	trigger = {
-		owns = 807 #Though losing this is very unlikely.
+		owns = 808 #Though losing this is very unlikely.
 	}
 	
 	option = { #Let us create a worthy capital!
 		name = flavor_inc.3.a
-		goto = 807
+		goto = 808
 		set_country_flag = inc_cusco_began
-		807 = {
+		808 = {
 			add_province_modifier = {
 				name = "inc_cusco_construction"
 				duration = 7300	#Illustrates the length of construction
 			}
 		}
-		add_prestige = 10
+		add_prestige_or_monarch_power = { amount = 10 }
 		add_adm_power = -25
 		add_dip_power = -25
 	}
@@ -168,13 +202,13 @@ country_event = {
 	title = flavor_inc.4.t
 	desc = flavor_inc.4.d
 	picture = CITY_VIEW_eventPicture
-	goto = 807
+	goto = 808
 	fire_only_once = yes
 	
 	trigger = {
 		tag = CSU
 		had_country_flag = { flag = inc_cusco_began days = 7300 }
-		owns = 807
+		owns = 808
 	}
 	
 	mean_time_to_happen = {
@@ -183,7 +217,7 @@ country_event = {
 	
 	option = { #Great!
 		name = flavor_inc.4.a
-		807 = {
+		808 = {
 			add_province_modifier = {
 				name = "inc_cusco_reconstructed"
 				duration = -1
@@ -299,13 +333,18 @@ country_event = {
 	fire_only_once = yes
 	
 	trigger = {
-		tag = INC
-		NOT =  { exists = CHM }
-		NOT = { has_country_flag = INC_used_to_be_CHM }
-		owns = 809 #Lima
-		owns = 812 #Chanchan
-		owns = 2821 #Piwra
-		owns = 2822 #Tucume
+		OR = {
+			AND = {
+				tag = INC
+				NOT =  { exists = CHM }
+				NOT = { has_country_flag = INC_used_to_be_CHM }
+				owns = 809 #Lima
+				owns = 812 #Chanchan
+				owns = 2821 #Piwra
+				owns = 2822 #Tucume
+			}
+			has_country_flag = flavor_inc_7_flag
+		}
 	}
 	
 	mean_time_to_happen = {
@@ -318,16 +357,18 @@ country_event = {
 			name = "inc_chimu_integration"
 			duration = -1
 		}
-		every_owned_province = {
-			limit = { culture = chimuan }
-			add_local_autonomy = 25 #Trusted to rule themselves a bit more.
-		}
+		
+		add_accepted_culture_or_dip_power = { culture = chimuan dip_reward = yes }
 	}
 	option = { #Don't integrate them.
 		name = flavor_inc.7.b
-		every_owned_province = {
-			limit = { culture = chimuan }
-			add_local_autonomy = -10 #No special treatment.
+		
+		custom_tooltip = INC_every_province_in_chimu_area_loses_25_autonomy
+		hidden_effect = {
+			chimor_area = {
+				limit = { country_or_non_sovereign_subject_holds = ROOT }
+				add_local_autonomy = -25 #No special treatment.
+			}
 		}
 	}
 }
@@ -557,6 +598,7 @@ country_event = {
 				name = "inc_smallpox_outbreak"
 				duration = 365
 			}
+			set_province_flag = had_smallpox_at_one_point
 			clr_province_flag = inc_smallpox_here
 		}
 	}
@@ -1106,6 +1148,7 @@ country_event = {
 				name = "inc_smallpox_outbreak"
 				duration = 365
 			}
+			set_province_flag = had_smallpox_at_one_point
 			clr_province_flag = inc_smallpox_here
 		}
 	}
@@ -1167,4 +1210,382 @@ country_event = {
 		}
 	}
 	
+}
+
+country_event = {
+	id = flavor_inc.22
+	title = flavor_inc.22.t
+	desc = flavor_inc.22.d
+	picture = CONQUEST_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = flavor_inc.22.a
+		ai_chance = { factor = 1 }
+		
+		add_authority = 25
+		
+		custom_tooltip = " "
+		
+		antisuyu_area = {
+			limit = { 
+				country_or_non_sovereign_subject_holds = ROOT
+			}
+			add_local_autonomy = -33
+			add_nationalism = -5
+		}
+	}
+	
+	option = {
+		ai_chance = { factor = 0 }
+		name = flavor_inc.22.b
+		
+		add_accepted_culture_or_dip_power = { culture = aimara dip_reward = yes }
+	}
+}
+
+
+country_event = {
+	id = flavor_inc.23
+	title = flavor_inc.23.t
+	desc = flavor_inc.23.d
+	picture = CITY_VIEW_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.23.a
+		
+		add_country_modifier = {
+			name = INC_the_mitma_for_control
+			duration = -1
+		}
+		
+		custom_tooltip = INC_how_mitma_works
+		tooltip = {
+			add_province_modifier = {
+				name = INC_mitma_settlers
+				duration = 10950
+			}
+		}
+	}
+	
+	option = {
+		ai_chance = { factor = 0 }
+		name = flavor_inc.23.b
+		
+		add_adm_power = 100
+		change_government_reform_progress = 50
+	}
+}
+
+
+country_event = {
+	id = flavor_inc.24
+	title = flavor_inc.24.t
+	desc = flavor_inc.24.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.24.a
+		
+		add_country_modifier = {
+			name = INC_integrating_local_dieties
+			duration = -1
+		}
+		
+		define_advisor = {
+			type = theologian
+			skill = 3
+			culture = ROOT
+			religion = ROOT
+			cost_multiplier = 0.33
+		}
+	}
+	
+	option = {
+		ai_chance = { factor = 0 }
+		name = flavor_inc.24.b
+		
+		add_country_modifier = {
+			name = INC_not_integrating_foreign_dieties
+			duration = -1
+		}
+		
+		add_dip_power = 100
+	}
+}
+
+country_event = {
+	id = flavor_inc.25
+	title = flavor_inc.25.t
+	desc = flavor_inc.25.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.25.a
+		
+		set_country_flag = INC_divine_missionary
+		custom_tooltip = INC_divine_missionary_tt
+		
+		custom_tooltip = " "
+		
+		add_adm_power = 100
+	}
+	
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.25.b
+		
+		set_country_flag = INC_divine_corruption
+		custom_tooltip = INC_divine_corruption_tt
+		
+		custom_tooltip = " "
+		
+		add_corruption = -2
+	}
+	
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.25.c
+		
+		set_country_flag = INC_divine_unrest
+		custom_tooltip = INC_divine_unrest_tt
+		
+		custom_tooltip = " "
+		
+		add_stability_or_adm_power = yes
+	}
+}
+
+country_event = {
+	id = flavor_inc.26
+	title = flavor_inc.26.t
+	desc = flavor_inc.26.d
+	picture = RELIGION_eventPicture
+	
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			pick_best_provinces = {
+				1 = yes
+				scale = higher_development_than
+				scope = every_owned_province
+				global_trigger = "
+					NOT = { has_manpower_building_trigger = yes }
+				"
+				event_target_name = inca_manpower_prov
+			}
+			pick_best_provinces = {
+				1 = yes
+				scale = higher_development_than
+				scope = every_owned_province
+				global_trigger = "
+					NOT = { has_production_building_trigger = yes }
+					NOT = { trade_goods = gold }
+				"
+				event_target_name = inca_workshop_prov
+			}
+		}
+	}
+	
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.26.a
+		
+		add_yearly_manpower = 1
+		
+		if = {
+			limit = {
+				has_saved_event_target = inca_manpower_prov_1
+			}
+			custom_tooltip = " "
+		
+			event_target:inca_manpower_prov_1 = {
+				add_building = barracks
+			}
+		}
+	}
+	
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.26.b
+		
+		add_years_of_income = 0.75
+		
+		custom_tooltip = " "
+		
+		if = {
+			limit = {
+				has_saved_event_target = inca_workshop_prov_1
+			}
+			custom_tooltip = " "
+		
+			event_target:inca_workshop_prov_1 = {
+				add_building = workshop
+			}
+		}
+	}
+	
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.26.c
+		
+		add_prestige_or_monarch_power = { amount = 25 }
+		
+		custom_tooltip = " "
+		
+		add_authority = 15
+		
+		if = {
+			limit = {
+				has_dlc = "Mandate of Heaven"
+			}
+			custom_tooltip = " "
+			add_splendor = 200
+		}
+	}
+}
+
+country_event = {
+	id = flavor_inc.27
+	title = flavor_inc.27.t
+	desc = flavor_inc.27.d
+	picture = DEATH_OF_HEIR_eventPicture
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		religion = inti
+		NOT = { has_ruler_flag = INC_suffered_for_parent_death }
+	}
+	
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.27.a
+		change_estate_land_share = {
+			estate = all
+			share = 5
+		}
+		
+		custom_tooltip = " "
+		
+		custom_tooltip = INC_increase_amount_of_mummified_rulers
+		hidden_effect = {
+			change_variable = {
+				which = inca_amount_of_mummies
+				value = 1
+			}
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					has_regency = yes
+				}
+				set_heir_flag = INC_suffered_for_parent_death
+			}
+		}
+	}
+}
+
+country_event = {
+	id = flavor_inc.28
+	title = flavor_inc.28.t
+	desc = flavor_inc.28.d
+	picture = COUNTRY_COLLAPSE_eventPicture
+	
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		is_neighbor_of = event_target:INC_target
+	}
+	
+	immediate = {
+		hidden_effect = {
+			save_event_target_as = INC_target
+		}
+	}
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.28.a
+		
+		tooltip = {
+			add_government_power = {
+				mechanic_type = divine_authority_mechanic
+				power_type = divine_authority
+				value = 25
+			}
+			
+			custom_tooltip = " "
+			
+			add_stability = -1
+			
+			custom_tooltip = " "
+			
+			add_country_modifier = {
+				name = INC_religious_reform
+				duration = 3650
+			}
+			
+			capital_scope = {
+				pretender_rebels = 3
+			}
+		}
+	}
+}
+
+country_event = {
+	id = flavor_inc.29
+	title = flavor_inc.29.t
+	desc = flavor_inc.29.d
+	picture = GOOD_WITH_MONARCH_eventPicture
+	
+	is_triggered_only = yes
+	
+	major = yes
+
+	option = {
+		ai_chance = { factor = 1 }
+		name = flavor_inc.29.a
+		
+		tooltip = {
+			add_government_power = {
+				mechanic_type = divine_authority_mechanic
+				power_type = divine_authority
+				value = -75
+			}
+			
+			custom_tooltip = " "
+			
+			change_adm = 1
+			change_dip = 1
+			change_mil = 1
+			
+			custom_tooltip = " "
+			
+			custom_tooltip = INC_destroy_all_mummies
+			hidden_effect = {
+				set_variable = {
+					which = inca_amount_of_mummies
+					value = 0
+				}
+			}
+			
+			custom_tooltip = " "
+			
+			add_ruler_modifier = {
+				name = INC_pachakuti
+				duration = -1
+			}
+		}
+	}
 }
