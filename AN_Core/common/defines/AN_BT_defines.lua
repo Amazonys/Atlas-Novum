@@ -307,7 +307,7 @@ NDefines.NMilitary.SLACKEN_MIN_AP = 0			--Defines how much AP is at least needed
 NDefines.NMilitary.SLACKEN_MAX_MP_PERCENTAGE = 0.95   		--Defines how much manpower percentage of your whole manpower pool you can have before the toggle turns off automatically. "1" would mean "100% of your manpower pool". Put a -1 here if you don't want this toggle to turn off from having manpower
 
 NDefines.NMilitary.COAST_RAID_RANGE = 3							-- default coastal raid range
-
+NDefines.NMilitary.NAVAL_MISSION_REGION_MIN_PROVINCES_IN_RANGE = 8 --5
 NDefines.NMilitary.BASE_COMBAT_WIDTH = 10
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 42			-- from 50
