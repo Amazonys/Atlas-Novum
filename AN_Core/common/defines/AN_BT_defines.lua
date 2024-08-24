@@ -307,7 +307,7 @@ NDefines.NMilitary.SLACKEN_MIN_AP = 0			--Defines how much AP is at least needed
 NDefines.NMilitary.SLACKEN_MAX_MP_PERCENTAGE = 0.95   		--Defines how much manpower percentage of your whole manpower pool you can have before the toggle turns off automatically. "1" would mean "100% of your manpower pool". Put a -1 here if you don't want this toggle to turn off from having manpower
 
 NDefines.NMilitary.COAST_RAID_RANGE = 3							-- default coastal raid range
-
+NDefines.NMilitary.NAVAL_MISSION_REGION_MIN_PROVINCES_IN_RANGE = 8 --5
 NDefines.NMilitary.BASE_COMBAT_WIDTH = 10
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 42			-- from 50
@@ -465,8 +465,8 @@ NDefines.NReligion.REFORM_DESIRE_PER_YEAR = 0.01								-- Increase of reform de
 ---- NGovernment
 
 NDefines.NGovernment.GOVERNMENT_REFORM_BASE_COST = 100.0
-NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 100.0 -- to be set to 0 soon
-NDefines.NGovernment.GOVERNMENT_REFORM_YEARLY_BASE_PROGRESS = 10.0
+NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 0.0 -- to be set to 0 soon
+NDefines.NGovernment.GOVERNMENT_REFORM_YEARLY_BASE_PROGRESS = 5.0 -- 10
 NDefines.NGovernment.GOVERNMENT_REFORM_HISTORIC_AUTONOMY = 0.25
 NDefines.NGovernment.GOVERNMENT_REFORM_CHANGE_PROGRESS_COST = 50.0
 NDefines.NGovernment.DICTATORSHIP_TO_MONARCHY_REFORM_PENALTY = 4
