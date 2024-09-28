@@ -21,7 +21,7 @@ and probably others.
 2. Link ATLAS NOVUM to your GitHub:
 
 Go to File and click:
-Glone Repository.  
+Clone Repository.  
 Click on URL ([Preview](https://gyazo.com/ef5734c701bf4df2503ffa6be534220d))
 and copy in this link:
 https://github.com/Amazonys/Atlas-Novum
