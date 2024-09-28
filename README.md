@@ -12,7 +12,7 @@ The Steam Workshop version lags behind slightly, but all Github changes eventual
 Methods of downloading from Github include:
 - [Github Desktop](https://desktop.github.com/) GUI client
 - [Git](https://git-scm.com/) CLI client
-- ZIP direct download
+- ZIP direct download  
 and probably others.
 	
 ##### Github Desktop Client instructions:		
