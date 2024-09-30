@@ -7,7 +7,7 @@
 # Nor do they support setting provinces (like cede province) or third party countries (like annull treaties) as targets.
 
 # Example:
-po_make_domain = {
+po_make_confederate = {
 	# The following strings need localization:
 	#		"make_dummy_desc" (uses text processing, supporting bracket notation) ("[FROM.GetName] becomes a [THIS.GetName] Dummy")
 	#		"CB_ALLOWED_make_dummy" (uses plain localization) ("Enforced Dumbness")
@@ -17,15 +17,15 @@ po_make_domain = {
 
 	category = 6 # Any number between 0 and 6. Represents the tab under which it will be listed. 6 corresponds to "treaties". This value currently defaults to 6.
 	power_projection = vassalized_rival # "power_projection" will only be applied if giver is your rival.
-	power_cost_base = 0.5 # Base factor for diplomatic power cost when treaty is not allowed by casus belli. Scales with war score cost.
-	prestige_base = 0.5 # Base factor for prestige gain and loss. Scales with war score cost.
-	ae_base = 0.25 # Base factor for aggressive expansion. Scales with war score cost.
+	power_cost_base = 0.75 # Base factor for diplomatic power cost when treaty is not allowed by casus belli. Scales with war score cost.
+	prestige_base = 2 # Base factor for prestige gain and loss. Scales with war score cost.
+	ae_base = 0.5 # Base factor for aggressive expansion. Scales with war score cost.
 	warscore_cost = {
 		# Which of the giver's provinces' war score costs are included and by how much. All entries default to 0. Any combination of entries can be used. Try negative values at your own risk.
-		all_provinces = 0.0 # All the giver's provinces
+		all_provinces = 1.0 # All the giver's provinces
 		no_provinces = 0.0 # This is just a constant. Equivalent to a single province with with war score cost 1
-		owner_keeps = 1.0 # The provinces that are not of any of the types below
-		conquered = 0.0 # Provinces that are selected by a Demand Province treaty
+		owner_keeps = 0.5 # The provinces that are not of any of the types below
+		conquered = 2.5 # Provinces that are selected by a Demand Province treaty
 		returned_core = 0.0 # Provinces that are selected by a Return Core treaty
 		released_nation = 0.0 # Provinces that will become a part of a selected released-to-be nation
 		cancelled_subject = 0.0 # This one should not be relevant here since Giver can't be a cancelled subject. Including anyway for completeness
@@ -37,42 +37,88 @@ po_make_domain = {
 	requires_is_allowed = yes # If set to "yes", treaty will only be visible when explicitly allowed by casus belli. If not, it will be available but cost diplomatic power.
 
 	is_visible = { # Defaults to equivalent of "always = yes"
-		#OR = { current_age = age_of_absolutism current_age = age_of_revolutions }
-		is_great_power = yes
-		is_fief_domain_tech = yes
 		is_subject = no
-		FROM = {
-			is_great_power = no
-			is_fief_domain_tech = yes
-			is_subject = no
-			is_neighbor_of = ROOT
-			NOT = { OR = { culture_group = ROOT is_part_of_hre = yes } }
+		has_reform = confederal_republic_reform
+		government = republic
+		OR = {
+			is_neighbor_of = FROM
+			any_subject_country = {
+				is_neighbor_of = FROM
+			}
 		}
-	}
-	is_allowed = { # Defaults to equivalent of "always = yes"
-		custom_trigger_tooltip = {
-			tooltip = dominion.tooltip
-			FROM = { capital_scope = { controlled_by = ROOT } }
-		}
-	}
-	effect = { # Defaults to empty effect (which makes error log entry but is safe)
-		hidden_effect = {
+		if = {
+			limit = {
+				OR = {
+					primary_culture = swiss
+					primary_culture = romansh
+					culture_group = arpitan_g
+					primary_culture = swabian
+					primary_culture = alemannic
+					primary_culture = tiroler
+				}
+			}
 			FROM = {
-				add_opinion = {
-    				who = ROOT
-    				modifier = forced_dominion
+				OR = {
+					primary_culture = swiss
+					primary_culture = romansh
+					culture_group = arpitan_g
+					primary_culture = swabian
+					primary_culture = alemannic
+					primary_culture = tiroler
 				}
 			}
 		}
+		if = {
+			limit = {
+				OR = {
+					culture_group = occitan
+					culture_group = iberian
+					primary_culture = sardinian
+					primary_culture = corsican_culture
+					primary_culture = sicilian
+					primary_culture = neapolitan
+				}
+			}
+			FROM = {
+				OR = {
+					culture_group = occitan
+					culture_group = iberian
+					primary_culture = sardinian
+					primary_culture = corsican_culture
+					primary_culture = sicilian
+					primary_culture = neapolitan
+				}
+			}
+		}
+		if = {
+			limit = {
+				culture_group = illyrian
+			}
+			FROM = {
+				culture_group = illyrian
+			}
+		}
+	}
+	is_allowed = { # Defaults to equivalent of "always = yes"
+		#custom_trigger_tooltip = {
+		#	tooltip = confederate.tooltip
+		#	FROM = { capital_scope = { controlled_by = ROOT }}
+		#}
+	}
+	effect = { # Defaults to empty effect (which makes error log entry but is safe)
 		create_subject = {
 			subject = FROM
-			subject_type = dominion
+			subject_type = confederate
+		}
+		FROM = {
+			change_government = republic
+			add_government_reform = confederal_republic_reform
 		}
 	}
 	ai_weight = { # Defaults to always evaluate to 0
 		export_to_variable = {
 			variable_name = ai_value # Mandatory to have entry called "ai_value". Its value at the end of the ai_weight scope is what will be used
-			value = 1000
+			value = 1100
 		}
 	}
 }

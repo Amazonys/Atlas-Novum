@@ -7,7 +7,7 @@
 # Nor do they support setting provinces (like cede province) or third party countries (like annull treaties) as targets.
 
 # Example:
-po_make_fief = {
+po_make_paramountcy = {
 	# The following strings need localization:
 	#		"make_dummy_desc" (uses text processing, supporting bracket notation) ("[FROM.GetName] becomes a [THIS.GetName] Dummy")
 	#		"CB_ALLOWED_make_dummy" (uses plain localization) ("Enforced Dumbness")
@@ -19,10 +19,10 @@ po_make_fief = {
 	power_projection = vassalized_rival # "power_projection" will only be applied if giver is your rival.
 	power_cost_base = 1.0 # Base factor for diplomatic power cost when treaty is not allowed by casus belli. Scales with war score cost.
 	prestige_base = 0.25 # Base factor for prestige gain and loss. Scales with war score cost.
-	ae_base = 0.25 # Base factor for aggressive expansion. Scales with war score cost.
+	ae_base = 0.3 # Base factor for aggressive expansion. Scales with war score cost.
 	warscore_cost = {
 		# Which of the giver's provinces' war score costs are included and by how much. All entries default to 0. Any combination of entries can be used. Try negative values at your own risk.
-		all_provinces = 0.5 # All the giver's provinces
+		all_provinces = 0.25 # All the giver's provinces
 		no_provinces = 0.0 # This is just a constant. Equivalent to a single province with with war score cost 1
 		owner_keeps = 0.0 # The provinces that are not of any of the types below
 		conquered = 0.0 # Provinces that are selected by a Demand Province treaty
@@ -31,79 +31,40 @@ po_make_fief = {
 		cancelled_subject = 0.0 # This one should not be relevant here since Giver can't be a cancelled subject. Including anyway for completeness
 		concede_colonial_region = 0.0 # Ditto
 	}
-	warscore_cap = 100 # Warscore cost will never go above this value. Only enabled if non-negative. This value defaults to -1.
-	requires_demand_independence = no # Whether this can be demanded by the former subject in an independence war without also demanding independence.
+	warscore_cap = 50 # Warscore cost will never go above this value. Only enabled if non-negative. This value defaults to -1.
+	requires_demand_independence = yes # Whether this can be demanded by the former subject in an independence war without also demanding independence.
 	is_make_subject = yes # This will make the treaty mutually exclusive with other treaties that makes the giver a subject, or that explicitly frees the giver from their current overlord.
 	requires_is_allowed = yes # If set to "yes", treaty will only be visible when explicitly allowed by casus belli. If not, it will be available but cost diplomatic power.
+	applies_to_war_target = yes
 
 	is_visible = { # Defaults to equivalent of "always = yes"
-		is_fief_domain_tech = yes
+		OR = {
+			government = native
+			government = tribal
+		}
+		NOT = { has_reform = tribal_federation }
 		is_subject = no
-		if = {
-			limit = { is_part_of_hre = yes }
-			FROM = {
-				is_subject = no
-				NOT = { num_of_cities = ROOT }
-				NOT = { is_subject_of = ROOT }
-				NOT = { is_great_power = yes }
-				NOT = { government_rank = 4 }
-				is_part_of_hre = yes
-				is_elector = no
-				NOT = { has_reform = imperial_city }
-				is_emperor = no
-				religion_group = ROOT
-				is_neighbor_of = ROOT
-				is_fief_domain_tech = yes
+		FROM = {
+			is_subject = no
+			OR = {
+				government = native
+				government = tribal
 			}
-		}
-		else_if = {
-			limit = { religion_group = muslim }
-			FROM = {
-				is_subject = no
-				NOT = { num_of_cities = ROOT }
-				NOT = { is_subject_of = ROOT }
-				NOT = { is_great_power = yes }
-				NOT = { government_rank = 4 }
-				OR = {
-					religion_group = ROOT
-					culture_group = ROOT
-				}
-				is_neighbor_of = ROOT
-				is_fief_domain_tech = yes
-			}
-		}
-		else = {
-			FROM = {
-				is_subject = no
-				NOT = { num_of_cities = ROOT }
-				NOT = { is_subject_of = ROOT }
-				NOT = { is_great_power = yes }
-				NOT = { government_rank = 4 }
-				culture_group = ROOT
-				religion_group = ROOT
-				is_neighbor_of = ROOT
-				is_part_of_hre = no
-				is_fief_domain_tech = yes
-			}
+			NOT = { has_reform = tribal_federation }
+			NOT = { is_great_power = yes }
+			is_neighbor_of = ROOT
 		}
 	}
 	is_allowed = { # Defaults to equivalent of "always = yes"
-		custom_trigger_tooltip = {
-		tooltip = fief.tooltip
-		FROM = { capital_scope = { controlled_by = ROOT }}}
+		#custom_trigger_tooltip = {
+		#	tooltip = paramountcy.tooltip
+		#	FROM = { capital_scope = { controlled_by = ROOT }}
+		#}
 	}
 	effect = { # Defaults to empty effect (which makes error log entry but is safe)
-		hidden_effect = {
-			FROM = {
-				add_opinion = {
-    				who = ROOT
-    				modifier = forced_fief
-				}
-			}
-		}
 		create_subject = {
 			subject = FROM
-			subject_type = fief
+			subject_type = paramountcy
 		}
 	}
 	ai_weight = { # Defaults to always evaluate to 0
