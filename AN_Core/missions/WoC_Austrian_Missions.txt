@@ -104,10 +104,19 @@ WoC_austria_1_holy_roman_empire = {
 						AND = {
 							is_part_of_hre = yes
 							owner = {
-								is_part_of_hre = yes
 								OR = {
-									is_subject = no
 									AND = {
+										is_part_of_hre = yes
+										OR = {
+											is_subject = no
+											AND = {
+												is_subject = yes
+												overlord = { is_part_of_hre = yes }
+											}
+										}
+									}
+									AND = {
+										is_part_of_hre = no
 										is_subject = yes
 										overlord = { is_part_of_hre = yes }
 									}
@@ -1252,7 +1261,10 @@ WoC_austria_2_holy_roman_empire = {
 			complex_dynamic_effect = {
 				first_custom_tooltip = HAB_IF_CENTRALIZATION
 				first_limit = "
-					hre_reform_passed = emperor_reichskrieg
+					OR = {
+						hre_reform_passed = privilegia_de_non_appelando
+						hre_reform_passed = emperor_privilegia_de_non_appelando
+					}
 				"
 				first_effect = "
 					add_prestige_or_monarch_power = { amount = 15 }
@@ -1264,10 +1276,7 @@ WoC_austria_2_holy_roman_empire = {
 				"
 				second_custom_tooltip = HAB_IF_DECENTRALIZED
 				second_limit = "
-					OR = {
-						hre_reform_passed = privilegia_de_non_appelando
-						hre_reform_passed = emperor_privilegia_de_non_appelando
-					}
+					hre_reform_passed = emperor_reichskrieg
 				"
 				second_effect = "
 					add_adm_power = 50
@@ -1577,7 +1586,7 @@ WoC_austria_2_1 = {
 			}
 		}
 		effect = {
-			complex_dynamic_effect = {
+			complex_dynamic_effect_without_alternative = {
 				first_custom_tooltip = HAB_IF_SHADOW_KINGDOM
 				first_limit = "
 					is_emperor = yes
@@ -1928,12 +1937,8 @@ WoC_austria_2_1 = {
 					}
 				"
 				first_effect = "
-					BYZ = {
-						change_tag = LAE
-						change_religion = ROOT
-						set_dynasty = ROOT
-					}
-					add_scaled_imperial_influence = 5
+					BYZ = { change_tag = LAE change_religion = ROOT set_dynasty = ROOT }
+					if = { limit = { is_emperor =  yes } add_scaled_imperial_influence = 5 }
 				"
 			}
 		} 
@@ -3793,10 +3798,11 @@ WoC_austria_5 = {
 		}
 	
 		trigger = {
-			OR = {
-				if = {
-					limit = {
+			if = {
+				limit = {
+					OR = {
 						exists = SPA
+						exists = CAS
 					}
 					AND = {
 						variable_arithmetic_trigger = {
