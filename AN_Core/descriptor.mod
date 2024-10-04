@@ -30,4 +30,4 @@ tags={
 	"Graphics"
 }
 supported_version="v1.37.*.*"
-path="C:/Users/Amyzonis/Documents/Paradox Interactive/Europa Universalis IV/mod/!improvedhistory_dev/AN_Core"
+path="mod/Atlas-Novum/AN_Core"
