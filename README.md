@@ -1,3 +1,6 @@
+### DLC REQUIREMENTS
+From our observations, Art of War and Leviathan are needed for the game to not crash.  
+
 ### ATLAS NOVUM INSTALLATION INSTRUCTIONS
 
 #### 1. Obtain the code
