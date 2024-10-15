@@ -1,6 +1,10 @@
 ### DLC REQUIREMENTS
 From our observations, Art of War and Leviathan are needed for the game to not crash.  
 
+### COMPATIBILITY ACROSS MOD VERSIONS/COMMITS
+It should be assumed that newer commits aren't compatibile with games in progress.  
+If you have a game in progress, it might be best to stay on a certain mod version/commit until the end of that save, unless a commit specifically targets a bug report you've made.  
+
 ### ATLAS NOVUM INSTALLATION INSTRUCTIONS
 
 #### 1. Obtain the code
