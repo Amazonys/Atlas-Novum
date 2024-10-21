@@ -120,9 +120,9 @@ NDefines.NCountry.EXPLOIT_DIP_SAILORS = 3			-- from 6
 NDefines.NCountry.EXPLOIT_MIL_MANPOWER = 3			-- from 6
 NDefines.NCountry.EXPLOIT_COOLDOWN_MONTHS = 120			-- from 240
 NDefines.NCountry.ALLOW_ZERO_BASE_VALUES = 1  -- Affects base tax base manpower and base production
-NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 5			-- from 5
-NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 10			-- from 10
-NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 30			-- from 30
+NDefines.NCountry.INSTITUTION_BONUS_FROM_IMP_DEVELOPMENT = 2.5			-- from 5
+NDefines.NCountry.INSTITUTION_CAP_IMP_DEVELOPMENT = 5			-- from 10
+NDefines.NCountry.INSTITUTION_BASE_IMP_DEVELOPMENT = 15			-- from 30
 NDefines.NCountry.EMBRACE_INSTITUTION_COST = 1			-- from 2p5
 NDefines.NCountry.CORRUPTION_COST = 0.02			-- from 0p05
 NDefines.NCountry.STATE_MAINTENANCE_DEV_FACTOR = 0.005	-- from 0p007
@@ -153,6 +153,10 @@ NDefines.NCountry.REVOLT_TECH_IMPACT = 0.03		-- % each tech increases size of re
 NDefines.NCountry.REVOLT_TECH_MORALE = 0.01
 NDefines.NCountry.CROWN_LANDS_ALERT_THRESHOLD = 35
 NDefines.NCountry.MIN_POPULATION_FOR_TRADEGOOD_ASSIGNMENT = 1001
+
+NDefines.NCountry.ESTATE_DROP_LOYALTY_IF_LOST_PRIVILEDGE = 0 -- -0.2
+NDefines.NCountry.ESTATE_PRIVILEGES_MAX_CONCURRENT = 15 -- 6
+NDefines.NAI.ESTATE_MAX_PRIVILEGES = 15 -- 6
 
 NDefines.NCountry.CULTURE_LOSS_THRESHOLD = 0.05 					-- _CDEF_CULTURE_LOSS_THRESHOLD = 10,
 NDefines.NCountry.CULTURE_GAIN_THRESHOLD = 0.10 					-- _CDEF_CULTURE_GAIN_THRESHOLD = 10,
@@ -307,7 +311,7 @@ NDefines.NMilitary.SLACKEN_MIN_AP = 0			--Defines how much AP is at least needed
 NDefines.NMilitary.SLACKEN_MAX_MP_PERCENTAGE = 0.95   		--Defines how much manpower percentage of your whole manpower pool you can have before the toggle turns off automatically. "1" would mean "100% of your manpower pool". Put a -1 here if you don't want this toggle to turn off from having manpower
 
 NDefines.NMilitary.COAST_RAID_RANGE = 3							-- default coastal raid range
-
+NDefines.NMilitary.NAVAL_MISSION_REGION_MIN_PROVINCES_IN_RANGE = 8 --5
 NDefines.NMilitary.BASE_COMBAT_WIDTH = 10
 NDefines.NMilitary.PARTICIPATION_SCORE_BLOCKADE = 0.0005			-- from 0p001
 NDefines.NMilitary.FORT_PER_DEV_RATIO = 42			-- from 50
@@ -465,10 +469,10 @@ NDefines.NReligion.REFORM_DESIRE_PER_YEAR = 0.01								-- Increase of reform de
 ---- NGovernment
 
 NDefines.NGovernment.GOVERNMENT_REFORM_BASE_COST = 100.0
-NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 100.0 -- to be set to 0 soon
-NDefines.NGovernment.GOVERNMENT_REFORM_YEARLY_BASE_PROGRESS = 10.0
+NDefines.NGovernment.GOVERNMENT_REFORM_COST_INCREASE = 0.0 -- to be set to 0 soon
+NDefines.NGovernment.GOVERNMENT_REFORM_YEARLY_BASE_PROGRESS = 5.0 -- 10
 NDefines.NGovernment.GOVERNMENT_REFORM_HISTORIC_AUTONOMY = 0.25
-NDefines.NGovernment.GOVERNMENT_REFORM_CHANGE_PROGRESS_COST = 50.0
+NDefines.NGovernment.GOVERNMENT_REFORM_CHANGE_PROGRESS_COST = 100.0
 NDefines.NGovernment.DICTATORSHIP_TO_MONARCHY_REFORM_PENALTY = 4
 NDefines.NGovernment.NATIVE_REFORM_REFORM_PENALTY = 2
 NDefines.NGovernment.EXPAND_ADMIN_COST = 20.0

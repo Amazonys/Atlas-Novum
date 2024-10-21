@@ -308,14 +308,6 @@ AN_check_dev_variables = {
 			value = trigger_value:base_tax
 		}
 		###
-		export_to_variable = {
-			variable_name = AN_province_culture
-			value = culture
-		}
-		export_to_variable = {
-			variable_name = AN_province_religion
-			value = religion
-		}
 
 		### CIV
 		set_variable = { which = AN_civ_stat which = AN_prov_infrastructure }
@@ -1151,6 +1143,12 @@ AN_check_dev_variables = {
 				change_variable = { which = AN_prov_pop_cap value = 5 }
 				change_variable = { which = AN_prov_infrastructure_cap value = 5 }
 			}
+			coastal_desert = {
+			#	change_variable = { which = AN_wealth_production value = 4 }
+			#	change_variable = { which = AN_pop_production value = 3 }
+				change_variable = { which = AN_prov_pop_cap value = 5 }
+				change_variable = { which = AN_prov_infrastructure_cap value = 4 }
+			}
 			moorlands = {
 			#	change_variable = { which = AN_wealth_production value = 4 }
 			#	change_variable = { which = AN_pop_production value = 3 }
@@ -1804,6 +1802,7 @@ AN_migration_calc = {
 			else_if = { limit = { owner = { technology_group = patagonian_group } } 11559 = { change_variable = { which = AN_sum_I which = PREV } } }
 			else_if = { limit = { owner = { technology_group = high_american } } 1804 = { change_variable = { which = AN_sum_I which = PREV } } }
 			else_if = { limit = { owner = { technology_group = chthonic } } 4162 = { change_variable = { which = AN_sum_I which = PREV } } }
+			else = { }
 		}
 	}
 }
@@ -1866,7 +1865,8 @@ AN_dev_calc = {
 			else_if = { limit = { owner = { technology_group = patagonian_group } } 11559 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
 			else_if = { limit = { owner = { technology_group = high_american } } 1804 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
 			else_if = { limit = { owner = { technology_group = chthonic } } 4162 = { PREV = { set_variable = { which = AN_sum_I which = PREV } set_variable = { which = AN_sum_E which = PREV } } } }
-
+			else = { }
+			
 			set_variable = { which = AN_migration_progress which = AN_migration_factor }
 			divide_variable = { which = AN_migration_progress which = AN_sum_I }
 			multiply_variable = { which = AN_migration_progress which = AN_sum_E }
@@ -1912,6 +1912,15 @@ AN_dev_calc = {
 				}
 				add_base_tax = -2
 				add_base_production = 1
+			}
+		}
+		if = { #if still greater than 100
+			limit = {
+				check_variable = { which = AN_wealth_progress value = 100 }
+			}
+			set_variable = {
+				which = AN_wealth_progress
+				value = 1
 			}
 		}
 		#POP CALC
@@ -2152,7 +2161,8 @@ AN_dev_calc = {
 		}
 
 		#CULTURE ASSIMILATION
-		AN_check_culture_process = yes
+		#AN_check_culture_process = yes
+		AN_select_target_culture = yes
 		if = {
 			limit = { check_variable = { which = AN_target_culture value = 1 } NOT = { OR = { is_variable_equal = { which = AN_target_culture which = AN_province_culture } is_variable_equal = { which = AN_target_culture which = AN_minority_culture } } } }
 			if = {
@@ -2186,7 +2196,7 @@ AN_dev_calc = {
 						}
 					}
 				}
-				change_variable = { which = AN_culture_progress value = 0.5 }
+				change_variable = { which = AN_culture_progress value = 1 }
 			}
 			else_if = {
 				limit = {
@@ -2219,7 +2229,7 @@ AN_dev_calc = {
 						}
 					}
 				}
-				change_variable = { which = AN_culture_progress value = 1 }
+				change_variable = { which = AN_culture_progress value = 1.5 }
 			}
 			else_if = {
 				limit = {
@@ -2252,7 +2262,10 @@ AN_dev_calc = {
 						}
 					}
 				}
-				change_variable = { which = AN_culture_progress value = 1.5 }
+				change_variable = { which = AN_culture_progress value = 2 }
+			}
+			else = {
+				change_variable = { which = AN_culture_progress value = 0.5 }
 			}
 			if = {
 				limit = { is_overseas = yes }
@@ -2382,7 +2395,7 @@ AN_dev_calc = {
 		# CULTURE RESETTLEMENT
 		if = {
 			limit = {
-				owner = { OR = { NOT = { government = native } can_migrate = no } }
+				owner = { NOT = { government = native } }
 				OR = {
 					AND = {
 						has_building = village
@@ -2409,7 +2422,16 @@ AN_dev_calc = {
 				NOT = { OR = { has_province_modifier = AN_sent_migrants has_province_modifier = AN_received_migrants } }
 				check_variable = { which = AN_prov_pop which = AN_prov_infrastructure }
 			}
-
+			
+			16000 = {
+				set_variable = { which = AN_province_culture value = 0 }
+				set_variable = { which = AN_minority_culture value = 0 }
+				set_variable = { which = AN_secondary_culture value = 0 }
+				set_variable = { which = AN_province_religion value = 0 }
+				set_variable = { which = AN_minority_religion value = 0 }
+				set_variable = { which = AN_secondary_religion value = 0 }
+			}
+			
 			AN_select_culture_religion = yes
 
 			save_global_event_target_as = AN_resettle_origin
@@ -3834,6 +3856,15 @@ AN_dev_calc = {
 						base_manpower = 4
 						NOT = { base_manpower = 5 }
 					}
+					
+					16000 = {
+						set_variable = { which = AN_province_culture value = 0 }
+						set_variable = { which = AN_minority_culture value = 0 }
+						set_variable = { which = AN_secondary_culture value = 0 }
+						set_variable = { which = AN_province_religion value = 0 }
+						set_variable = { which = AN_minority_religion value = 0 }
+						set_variable = { which = AN_secondary_religion value = 0 }
+					}
 				}
 			}
 
@@ -3844,6 +3875,7 @@ AN_dev_calc = {
 					random_list = {
 						1 = {
 							AN_mig_sub = yes
+							AN_check_minorities = yes
 						}
 						1 = {
 							modifier = {
@@ -3896,6 +3928,7 @@ AN_dev_calc = {
 				}
 				else = {
 					AN_mig_sub = yes
+					AN_check_minorities = yes
 				}
 
 				event_target:AN_resettle_target = {
@@ -3904,50 +3937,51 @@ AN_dev_calc = {
 						random_list = {
 							1 = {
 								AN_mig_add = yes
+								AN_check_minorities = yes
 							}
 							1 = {
 								modifier = {
-									factor = 2
+									factor = 1.5
 									base_manpower = 11
 									NOT = { base_manpower = 21 }
 								}
 								modifier = {
-									factor = 3
+									factor = 2
 									base_manpower = 21
 									NOT = { base_manpower = 31 }
 								}
 								modifier = {
-									factor = 4
+									factor = 2.5
 									base_manpower = 31
 									NOT = { base_manpower = 41 }
 								}
 								modifier = {
-									factor = 5
+									factor = 3
 									base_manpower = 41
 									NOT = { base_manpower = 51 }
 								}
 								modifier = {
-									factor = 6
+									factor = 3.5
 									base_manpower = 51
 									NOT = { base_manpower = 61 }
 								}
 								modifier = {
-									factor = 7
+									factor = 4
 									base_manpower = 61
 									NOT = { base_manpower = 71 }
 								}
 								modifier = {
-									factor = 8
+									factor = 4.5
 									base_manpower = 71
 									NOT = { base_manpower = 81 }
 								}
 								modifier = {
-									factor = 9
+									factor = 5
 									base_manpower = 81
 									NOT = { base_manpower = 91 }
 								}
 								modifier = {
-									factor = 10
+									factor = 5.5
 									base_manpower = 91
 								}
 								#Do Nothing
@@ -3956,13 +3990,23 @@ AN_dev_calc = {
 					}
 					else = {
 						AN_mig_add = yes
+						AN_check_minorities = yes
 					}
 
-
-					add_province_modifier = {
-						name = AN_received_migrants
-						duration = 730
-						#hidden = yes
+					if = {
+						limit = { event_target:AN_resettle_origin = { OR = { has_province_flag = AN_expel_maj has_province_flag = AN_expel_min has_province_flag = AN_expel_sec } } }
+						add_province_modifier = {
+							name = AN_received_refugees
+							duration = 730
+							#hidden = yes
+						}
+					}
+					else = {
+						add_province_modifier = {
+							name = AN_received_migrants
+							duration = 730
+							#hidden = yes
+						}
 					}
 				}
 
@@ -3973,11 +4017,20 @@ AN_dev_calc = {
 					add_base_tax = 1
 				}
 
-
-				add_province_modifier = {
-					name = AN_sent_migrants
-					duration = 730
-					#hidden = yes
+				if = {
+					limit = { OR = { has_province_flag = AN_expel_maj has_province_flag = AN_expel_min has_province_flag = AN_expel_sec } }
+					#add_province_modifier = {
+					#	name = AN_sent_migrants
+					#	duration = 730
+						#hidden = yes
+					#}
+				}
+				else = {
+					add_province_modifier = {
+						name = AN_sent_migrants
+						duration = 730
+						#hidden = yes
+					}
 				}
 
 				clr_province_flag = AN_migration
@@ -4719,9 +4772,17 @@ AN_religion_select_sec = {
 }
 
 AN_select_culture_religion = {
+	#event_target:AN_DUMMY_PROV = {
+	#	set_variable = { which = AN_province_culture value = 0 }
+	#	set_variable = { which = AN_minority_culture value = 0 }
+	#	set_variable = { which = AN_secondary_culture value = 0 }
+	#	set_variable = { which = AN_province_religion value = 0 }
+	#	set_variable = { which = AN_minority_religion value = 0 }
+	#	set_variable = { which = AN_secondary_religion value = 0 }
+	#}
 	if = { # HAS SECONDARY
 		limit = {
-			NOT = { is_variable_equal = { which = AN_secondary_culture value = 0 } }
+			check_variable = { which = AN_secondary_culture value = 1 }
 		}
 		#SELECT MAJ/MIN/SEC ORIGIN
 		if = {
@@ -4813,34 +4874,34 @@ AN_select_culture_religion = {
 					trigger = {
 						NOT = {
 							OR = {
-								has_province_modifier = AN_primary_secondary_culture_3
-								has_province_modifier = AN_enslaved_secondary_culture_3
+								has_province_modifier = AN_primary_secondary_culture
+								has_province_modifier = AN_enslaved_secondary_culture
 							}
 						}
 					}
 					modifier = {
 						factor = 0.1
-						has_province_modifier = AN_unified_secondary_culture_3
+						has_province_modifier = AN_unified_secondary_culture
 					}
 					modifier = {
 						factor = 0.5
-						has_province_modifier = AN_accepted_secondary_culture_3
+						has_province_modifier = AN_accepted_secondary_culture
 					}
 					modifier = {
 						factor = 0.75
-						has_province_modifier = AN_coexisting_secondary_culture_3
+						has_province_modifier = AN_coexisting_secondary_culture
 					}
 					modifier = {
 						factor = 2
-						has_province_modifier = AN_protected_secondary_culture_3
+						has_province_modifier = AN_protected_secondary_culture
 					}
 					modifier = {
 						factor = 3
-						has_province_modifier = AN_non_accepted_secondary_culture_3
+						has_province_modifier = AN_non_accepted_secondary_culture
 					}
 					modifier = {
 						factor = 10
-						has_province_modifier = AN_expelled_secondary_culture_3
+						has_province_modifier = AN_expelled_secondary_culture
 					}
 					event_target:AN_DUMMY_PROV = {
 						set_variable = { which = AN_secondary_culture which = PREV }
@@ -4940,34 +5001,34 @@ AN_select_culture_religion = {
 					trigger = {
 						NOT = {
 							OR = {
-								has_province_modifier = AN_primary_secondary_culture_2
-								has_province_modifier = AN_enslaved_secondary_culture_2
+								has_province_modifier = AN_primary_secondary_culture
+								has_province_modifier = AN_enslaved_secondary_culture
 							}
 						}
 					}
 					modifier = {
 						factor = 0.1
-						has_province_modifier = AN_unified_secondary_culture_2
+						has_province_modifier = AN_unified_secondary_culture
 					}
 					modifier = {
 						factor = 0.5
-						has_province_modifier = AN_accepted_secondary_culture_2
+						has_province_modifier = AN_accepted_secondary_culture
 					}
 					modifier = {
 						factor = 0.75
-						has_province_modifier = AN_coexisting_secondary_culture_2
+						has_province_modifier = AN_coexisting_secondary_culture
 					}
 					modifier = {
 						factor = 2
-						has_province_modifier = AN_protected_secondary_culture_2
+						has_province_modifier = AN_protected_secondary_culture
 					}
 					modifier = {
 						factor = 3
-						has_province_modifier = AN_non_accepted_secondary_culture_2
+						has_province_modifier = AN_non_accepted_secondary_culture
 					}
 					modifier = {
 						factor = 10
-						has_province_modifier = AN_expelled_secondary_culture_2
+						has_province_modifier = AN_expelled_secondary_culture
 					}
 					event_target:AN_DUMMY_PROV = {
 						set_variable = { which = AN_secondary_culture which = PREV }
