@@ -1,0 +1,455 @@
+#For Atlas Novum by Bluehunter
+
+SCA_exploration_1_slot_6 = {
+	slot = 6
+	generic = no
+	ai = yes
+	potential = {
+		tag = SCA
+		has_country_flag = SCA_exploration_1_active
+		NOT = { has_country_flag = SCA_exploration_1_completed }
+	}
+	has_country_shield = yes
+
+	SCA_expand_bergen_harbour = {
+		icon = mission_pol_develop_countryside
+		required_missions = {  }
+		position = 1
+
+		provinces_to_highlight = {
+			province_id = 10189
+		}
+
+		trigger = {
+			treasury = 350
+			10189 = { owned_by = ROOT }
+		}
+
+		effect = {
+			add_treasury = -350
+			10189 = {
+				set_center_level_3_center_of_trade = yes
+				add_base_production = 2
+			}
+		}
+	}
+
+	SCA_assemble_atlantic_fleet = {
+		icon = imperial_navy
+		required_missions = { SCA_expand_bergen_harbour }
+		position = 2
+
+		provinces_to_highlight = {
+			province_id = 10189
+		}
+
+		trigger = {
+			if = {
+				limit = { ai = yes }
+				navy_size = 25
+				10189 = {
+					owned_by = ROOT
+				}
+			}
+			else = {
+				10189 = {
+					owned_by = ROOT
+					heavy_ships_in_province = 5
+					light_ships_in_province = 12
+					transports_in_province = 8
+				}
+			}
+		}
+
+		effect = {
+			add_prestige = 5
+		}
+	}
+
+	SCA_norvegica_mare_nostrum = {
+		icon = mission_conquer_norway
+		required_missions = { SCA_secure_islands_to_iceland }
+		position = 4
+
+		provinces_to_highlight = {
+			OR = {
+				province_group = norwegian_sea_group
+				province_id = 5591
+			}
+			NOT = { country_or_non_sovereign_subject_holds = ROOT }
+		}
+
+		trigger = {
+			custom_trigger_tooltip = {
+				tooltip = SCA_norwegian_sea_ours
+				norwegian_sea_group = {
+					type = all
+					owner = {
+						OR = {
+							NOT = { navy_size = ROOT }
+							tag = ROOT
+							vassal_of = ROOT
+						}
+					}
+				}
+				5591 = {
+					OR = {
+						owner = {
+							OR = {
+								NOT = { navy_size = ROOT }
+								tag = ROOT
+								vassal_of = ROOT
+							}
+						}
+						is_empty = yes
+					}
+				}
+			}
+			13035 = {
+				trade_share = {
+					country = ROOT
+					share = 10
+				}
+			}
+		}
+
+		effect = {
+			add_prestige = 10
+			complete_module_3 = {
+				SIDE = right
+				MODULE = SCA_exploration_1
+				PREREQ_1 = SCA_seize_iceland
+				PREREQ_2 = SCA_found_havshirden
+			}
+		}
+	}
+}
+
+SCA_exploration_1_slot_7 = {
+	slot = 7
+	generic = no
+	ai = yes
+	potential = {
+		tag = SCA
+		has_country_flag = SCA_exploration_1_active
+		NOT = { has_country_flag = SCA_exploration_1_completed }
+	}
+	has_country_shield = yes
+
+	SCA_follow_sagas_west = {
+		icon = mission_look_west
+		required_missions = { SCA_rekindle_exploration_spirit }
+		position = 2
+
+		provinces_to_highlight = {
+			OR = {
+				province_id = 369
+				province_id = 1978
+				province_id = 1979
+			}
+		}
+
+		trigger = {
+			is_at_war = no
+		}
+
+		effect = {
+			369 = { add_permanent_claim = ROOT }
+			1978 = { add_permanent_claim = ROOT }
+			1979 = { add_permanent_claim = ROOT }
+		}
+	}
+
+	SCA_secure_islands_to_iceland = {
+		icon = mission_invade_island
+		required_missions = { SCA_assemble_atlantic_fleet SCA_follow_sagas_west }
+		position = 3
+
+		provinces_to_highlight = {
+			OR = {
+				province_id = 369
+				province_id = 1978
+				province_id = 1979
+			}
+		}
+
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				OR = {
+					province_id = 369
+					province_id = 1978
+					province_id = 1979
+				}
+				value = 1
+			}
+		}
+
+		effect = {
+			iceland_area = { add_permanent_claim = ROOT }
+			complex_dynamic_effect = {
+				first_custom_tooltip = SCA_if_controls_faroese
+				first_limit = "
+					1979 = { owned_by = ROOT }
+					1978 = { NOT = { owned_by = ROOT } }
+					369 = { NOT = { owned_by = ROOT } }
+				"
+				first_effect = "
+					custom_tooltip = SCA_controls_faroese
+					country_event = { id = AN_flavor_SCA.2 days = 0 }
+				"
+				second_custom_tooltip = SCA_if_controls_two
+				second_limit = "
+					1979 = {
+						country_or_non_sovereign_subject_holds = ROOT
+					}
+					OR = {
+						1979 = {
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+						369 = {
+							country_or_non_sovereign_subject_holds = ROOT
+						}
+					}
+					NOT = {
+						num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+							OR = {
+								province_id = 369
+								province_id = 1978
+								province_id = 1979
+							}
+							value = 3
+						}
+					}
+				"
+				second_effect = "
+					custom_tooltip = SCA_controls_two
+					country_event = { id = AN_flavor_SCA.2 days = 0 }
+					add_dip_power = 50
+				"
+				third_custom_tooltip = SCA_if_controls_all
+				third_limit = "
+					num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+						OR = {
+							province_id = 369
+							province_id = 1978
+							province_id = 1979
+						}
+						value = 3
+					}
+				"
+				third_effect = "
+					extend_country_modifier = {
+						name = sca_rekindle_spirit
+						duration = 9125
+					}
+					custom_tooltip = SCA_controls_all
+					add_dip_power = 100
+				"
+			}
+		}
+	}
+}
+
+SCA_exploration_1_slot_8 = {
+	slot = 8
+	generic = no
+	ai = yes
+	potential = {
+		tag = SCA
+		has_country_flag = SCA_exploration_1_active
+		NOT = { has_country_flag = SCA_exploration_1_completed }
+	}
+	has_country_shield = yes
+
+	SCA_rekindle_exploration_spirit = {
+		icon = mission_longships
+		required_missions = {  }
+		position = 1
+
+		provinces_to_highlight = {
+		}
+
+		trigger = {
+			dip_power = 50
+			navy_tradition = 10
+		}
+
+		effect = {
+			add_country_modifier = {
+				name = sca_rekindle_spirit
+				duration = 18250
+			}
+			add_ruler_personality = expansionist_personality
+			add_dip_power = -50
+		}
+	}
+
+	SCA_win_riksting_support = {
+		icon = mission_monarch_in_throne_room
+		required_missions = { SCA_rekindle_exploration_spirit }
+		position = 2
+
+		provinces_to_highlight = {
+		}
+
+		trigger = {
+			treasury = 1
+		}
+
+		effect = {
+			country_event = { id = AN_flavor_SCA.1 days = 30 random = 10 }
+		}
+	}
+
+	SCA_overseas_council = {
+		icon = contracts_of_correspondence
+		required_missions = { SCA_win_riksting_support SCA_fund_mapmaker_guild }
+		position = 3
+
+		provinces_to_highlight = {
+			is_capital_of = ROOT
+		}
+
+		trigger = {
+			treasury = 100
+		}
+
+		effect = {
+			capital_scope = {
+				add_permanent_province_modifier = {
+					name = sca_capital_overseas_council
+					duration = -1
+				}
+			}
+			add_treasury = -100
+		}
+	}
+
+	SCA_seize_iceland = {
+		icon = mission_iceland
+		required_missions = { SCA_secure_islands_to_iceland SCA_overseas_council }
+		position = 4
+
+		provinces_to_highlight = {
+			area = iceland_area
+		}
+
+		trigger = {
+			num_of_provinces_owned_or_owned_by_non_sovereign_subjects_with = {
+				area = iceland_area
+				value = 8
+			}
+		}
+
+		effect = {
+			add_prestige = 10
+			complete_module_3 = {
+				SIDE = right
+				MODULE = SCA_exploration_1
+				PREREQ_1 = SCA_norvegica_mare_nostrum
+				PREREQ_2 = SCA_found_havshirden
+			}
+		}
+	}
+}
+
+SCA_exploration_1_slot_9 = {
+	slot = 9
+	generic = no
+	ai = yes
+	potential = {
+		tag = SCA
+		has_country_flag = SCA_exploration_1_active
+		NOT = { has_country_flag = SCA_exploration_1_completed }
+	}
+	has_country_shield = yes
+
+	SCA_fund_mapmaker_guild = {
+		icon = mission_explore_the_world
+		required_missions = { SCA_rekindle_exploration_spirit SCA_promote_captains }
+		position = 2
+
+		trigger = {
+			OR = {
+				is_ahead_of_time_in_technology = { tech = dip }
+				innovativeness = 10
+				navy_tradition = 20
+			}
+			treasury = 50
+		}
+
+		effect = {
+			define_advisor = {
+				type = navigator
+				skill = 2
+				culture = ROOT
+				religion = ROOT
+				cost_multiplier = 0.5
+			}
+			capital_scope = {
+				add_building_construction = {
+					building = school
+					speed = 1.5
+					cost = 0.5
+				}
+			}
+		}
+	}
+}
+
+SCA_exploration_1_slot_10 = {
+	slot = 10
+	generic = no
+	ai = yes
+	potential = {
+		tag = SCA
+		has_country_flag = SCA_exploration_1_active
+		NOT = { has_country_flag = SCA_exploration_1_completed }
+	}
+	has_country_shield = yes
+
+	SCA_promote_captains = {
+		icon = mission_dominate_home_trade_node
+		required_missions = {  }
+		position = 1
+
+		provinces_to_highlight = {
+		}
+
+		trigger = {
+			dip_power = 25
+			treasury = 25
+		}
+
+		effect = {
+			create_admiral = { tradition = 60 }
+			add_sailors = 1000
+			add_treasury = -25
+			add_dip_power = -25
+		}
+	}
+
+	SCA_found_havshirden = {
+		icon = mission_modernized_vikings
+		required_missions = { SCA_promote_captains }
+		position = 4
+
+		trigger = {
+			army_tradition = 10
+		}
+
+		effect = {
+			add_country_modifier = {
+				name = sca_havshirden
+				duration = -1
+			}
+			add_army_tradition = -10
+			complete_module_3 = {
+				SIDE = right
+				MODULE = SCA_exploration_1
+				PREREQ_1 = SCA_norvegica_mare_nostrum
+				PREREQ_2 = SCA_seize_iceland
+			}
+		}
+	}
+}
